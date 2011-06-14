@@ -1,0 +1,15 @@
+{% load i18n %}
+<table class="list" width="100%">
+  <tr>
+    <th>{% trans "ID" %}</th>
+    <th>{% trans "Name" %}</th>
+    <th>{% trans "Enabled" %}</th>
+  </tr>
+{% for mock_config in mock_config_list %}
+  <tr>
+    <td>{{ mock_config.id }}</a></td>
+    <td>{{ mock_config.name }}</td>
+    <td>{{ mock_config.enabled }}</td>
+  </tr>
+{% endfor %}
+</table>

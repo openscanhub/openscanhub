@@ -1,0 +1,9 @@
+#header {
+    background-color: #cc0000;
+    background: -moz-linear-gradient(top, #ff0000, #cc0000, #a60000);
+    background: -webkit-gradient(linear, left top, left bottom, from(#ff0000), to(#a60000), color-stop(0.5, #cc0000));
+}
+
+#menu a.active {
+    color: #9e292b;
+}

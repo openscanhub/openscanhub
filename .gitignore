@@ -1,0 +1,7 @@
+*.py[co]
+*.sqlite
+*.db
+build/*
+dist/*
+MANIFEST
+settings_local.py
