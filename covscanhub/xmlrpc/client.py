@@ -24,6 +24,12 @@ def diff_build(request, mock_config, upload_id, comment=None, options=None):
     comment = comment or ""
     options = options or {}
 
+    priority = options.pop("priority", 10)
+    if priority is not None:
+        max_prio = 20
+        if int(priority) >= max_prio and not request.user.is_superuser:
+            raise RuntimeError("Setting high task priority (>=%s) requires admin privileges." % max_prio)
+
     try:
         conf = MockConfig.objects.get(name=mock_config)
     except:
@@ -44,7 +50,8 @@ def diff_build(request, mock_config, upload_id, comment=None, options=None):
     options["mock_config"] = mock_config
     options["srpm_name"] = upload.name
 
-    task_id = Task.create_task(request.user.username, "", "DiffBuild", options, comment=comment, state=TASK_STATES["CREATED"])
+
+    task_id = Task.create_task(request.user.username, "", "DiffBuild", options, comment=comment, state=TASK_STATES["CREATED"], priority=priority)
     task_dir = Task.get_task_dir(task_id)
     import shutil
 

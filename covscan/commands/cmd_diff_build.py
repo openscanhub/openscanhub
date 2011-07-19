@@ -54,6 +54,12 @@ class Diff_Build(covscan.CovScanCommand):
             help="send output to this address"
         )
 
+        self.parser.add_option(
+            "--priority",
+            type="int",
+            help="task priority (20+ is admin only)"
+        )
+
     def run(self, *args, **kwargs):
         # optparser output is passed via *args (args) and **kwargs (opts)
         username = kwargs.pop("username", None)
@@ -64,6 +70,7 @@ class Diff_Build(covscan.CovScanCommand):
         comment = kwargs.pop("comment")
         nowait = kwargs.pop("nowait")
         task_id_file = kwargs.pop("task_id_file")
+        priority = kwargs.pop("priority")
 
         if len(args) != 1:
             self.parser.error("please specify exactly one SRPM")
@@ -90,6 +97,8 @@ class Diff_Build(covscan.CovScanCommand):
         }
         if email_to:
             options["email_to"] = email_to
+        if priority is not None:
+            options["priority"] = priority
 
         task_id = self.hub.client.diff_build(config, upload_id, comment, options)
         self.write_task_id_file(task_id, task_id_file)
