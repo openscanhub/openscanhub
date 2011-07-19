@@ -68,12 +68,12 @@ MEDIA_ROOT = os.path.join(PROJECT_DIR, "media/")
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash if there is a path component (optional in other cases).
 # Examples: "http://media.lawrence.com", "http://example.com/media/"
-MEDIA_URL = '/covscanhub/media/'
+MEDIA_URL = '/covscan/media/'
 
 # URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
 # trailing slash.
 # Examples: "http://foo.com/media/", "/media/".
-ADMIN_MEDIA_PREFIX = '/covscanhub/admin/media/'
+ADMIN_MEDIA_PREFIX = '/covscan/admin/media/'
 
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = '$e9r6h6n@@zw)g@_6vkiug_ys0pv)tn(2x4e@zgkaany8qau8@'
@@ -92,8 +92,8 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.transaction.TransactionMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
+    'kobo.django.auth.krb5.Krb5AuthenticationMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    #'kobo.django.auth.krb5.Krb5AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     # kobo related middleware:
     'kobo.hub.middleware.WorkerMiddleware',
