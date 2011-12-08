@@ -144,7 +144,7 @@ XMLRPC_METHODS = {
         ('kobo.hub.xmlrpc.system',    'system'),
         ('kobo.django.upload.xmlrpc', 'upload'),
         ('covscanhub.xmlrpc.mock_config', 'mock_config'),
-        ('covscanhub.xmlrpc.client', 'client'),
+        ('covscanhub.xmlrpc.scan', 'scan'),
     ),
     'worker': (
         ('kobo.hub.xmlrpc.auth',      'auth'),
