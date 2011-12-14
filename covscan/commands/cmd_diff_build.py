@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 
-#import kobo.tback
-#kobo.tback.set_except_hook()
 
+import os
 
 import covscan
 from kobo.shortcuts import random_string
@@ -60,6 +59,28 @@ class Diff_Build(covscan.CovScanCommand):
             help="task priority (20+ is admin only)"
         )
 
+        self.parser.add_option(
+            "--brew-build",
+            action="store_true",
+            default=False,
+            help="use a brew build (specified by NVR) instead of a local file"
+        )
+
+        self.parser.add_option(
+            "--all",
+            action="store_true",
+            default=False,
+            help="turn all checkers on"
+        )
+
+        self.parser.add_option(
+            "--security",
+            action="store_true",
+            default=False,
+            help="turn security checkers on"
+        )
+
+
     def run(self, *args, **kwargs):
         # optparser output is passed via *args (args) and **kwargs (opts)
         username = kwargs.pop("username", None)
@@ -71,26 +92,42 @@ class Diff_Build(covscan.CovScanCommand):
         nowait = kwargs.pop("nowait")
         task_id_file = kwargs.pop("task_id_file")
         priority = kwargs.pop("priority")
+        brew_build = kwargs.pop("brew_build")
+        all = kwargs.pop("all")
+        security = kwargs.pop("security")
 
         if len(args) != 1:
             self.parser.error("please specify exactly one SRPM")
         srpm = args[0]
-        if not srpm.endswith(".src.rpm"):
+
+        if not brew_build and not srpm.endswith(".src.rpm"):
             self.parser.error("provided file doesn't appear to be a SRPM")
 
-        # login to the hub
-        self.set_hub(username, password)
+        if brew_build:
+            import brew
+            srpm = os.path.basename(srpm) # strip path if any
+            if srpm.endswith(".src.rpm"):
+                srpm = srpm[:-8]
+            # XXX: hardcoded
+            brew_proxy = brew.ClientSession("http://brewhub.devel.redhat.com/brewhub")
+            try:
+                build_info = brew_proxy.getBuild(srpm)
+            except brew.GenericError:
+                build_info = None
+            if build_info is None:
+                self.parser.error("Build does not exist in brew: %s" % srpm)
 
         if not config:
             self.parser.error("please specify a mock config")
+
+        # login to the hub
+        self.set_hub(username, password)
 
         mock_conf = self.hub.mock_config.get(config)
         if not mock_conf["enabled"]:
             self.parser.error("Mock config is not enabled: %s" % config)
 
-        # check if config is valid (rpc call) (move to call?)
-        target_dir = random_string(32)
-        upload_id, err_code, err_msg = self.hub.upload_file(srpm, target_dir)
+        # end of CLI options handling
 
         options = {
             "keep_covdata": keep_covdata,
@@ -100,10 +137,25 @@ class Diff_Build(covscan.CovScanCommand):
         if priority is not None:
             options["priority"] = priority
 
-        task_id = self.hub.client.diff_build(config, upload_id, comment, options)
+        if all:
+            options["all"] = all
+        if security:
+            options["security"] = security
+
+        if brew_build:
+            options["brew_build"] = srpm
+        else:
+            target_dir = random_string(32)
+            upload_id, err_code, err_msg = self.hub.upload_file(srpm, target_dir)
+            options["upload_id"] = upload_id
+
+        task_id = self.submit_task(config, comment, options)
         self.write_task_id_file(task_id, task_id_file)
         print "Task info: %s" % self.hub.client.task_url(task_id)
 
         if not nowait:
             from kobo.client.task_watcher import TaskWatcher
             TaskWatcher.watch_tasks(self.hub, [task_id])
+
+    def submit_task(self, config, comment, options):
+        return self.hub.scan.diff_build(config, comment, options)
