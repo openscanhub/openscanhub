@@ -92,8 +92,8 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.transaction.TransactionMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
-    'kobo.django.auth.krb5.Krb5AuthenticationMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'kobo.django.auth.krb5.Krb5AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     # kobo related middleware:
     'kobo.hub.middleware.WorkerMiddleware',
