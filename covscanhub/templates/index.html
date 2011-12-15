@@ -2,5 +2,51 @@
 
 {% block content %}
 <h2>Home page</h2>
-This is the default home page text.
+
+<p>
+Covscan is a tool that allows Red Hat users to run Coverity Scan on their packages<br />
+without logging on the Coverity server or installing their own Coverity server.<br />
+Users only need to download and install the covscan client and its requirements,<br />
+configure the client and acquire a valid Kerberos ticket (if not acquired already).<br />
+The usage of the covscan client is similar to brew/koji.<br />
+The client provides an easy to use command line interface.
+</p>
+
+<p>
+Another benefit for covscan users in already included workarounds for Coverity bugs;<br />
+especially C++ packages are hard to scan with the default Coverity setup.
+</p>
+
+<p>
+Please remember that we have only one shared Coverity license<br />
+and that's why only one package can be analyzed at a time in the whole Red Hat.<br />
+Please don't abuse this tool with multiple scans of scan expensive packages.<br />
+If we experience overload of this kind, we will blacklist the individuals.
+</p>
+
+<h3>Required setup before usage</h3>
+<ol>
+  <li>Make sure you have the latest version installed.
+    <ul>
+      <li>Install covscan-client and it's depenencies (kobo-client, python-krbV) from <a href="http://download.lab.bos.redhat.com/devel/dmach/covscan/">here</a> - only RHEL-5/RHEL-6 rpms available</li>
+      <li>On Fedora, use rpmbuild --rebuild on the latest covscan.src.rpm from RHEL-6 repo to build covscan yourself (we'll provide Fedora packages later)</li>
+    </ul>
+  </li>
+  <li>Generate a kerberos ticket (kinit)</li>
+</ol>
+
+<h3>How to use it ?</h3>
+
+<ul>
+  <li>Check available mock configs by <strong><tt>covscan list-mock-configs</tt></strong>, choose the best fit for your package</li>
+  <li><strong><tt>covscan mock-build --config=... [--security/--all] [--comment=...] /path/to/srpm</tt></strong></li>
+  <li>Wait for results (email notification)</li>
+  <li>Download the results (.xz tarball) from the covscan <a href="http://releng-test1.englab.brq.redhat.com/covscan/">WebUI</a></li>
+  <li>Extract .xz, check the results, fix the defects :), share them with upstream</li>
+</ul>
+
+<p>
+For additional information please check <a href="https://engineering.redhat.com/trac/CoverityScan/wiki/covscan/advanced">advanced usage page</a>
+</p>
+
 {% endblock %}
