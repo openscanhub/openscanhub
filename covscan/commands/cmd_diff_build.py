@@ -158,4 +158,5 @@ class Diff_Build(covscan.CovScanCommand):
             TaskWatcher.watch_tasks(self.hub, [task_id])
 
     def submit_task(self, config, comment, options):
+        #xmlrpc call
         return self.hub.scan.diff_build(config, comment, options)

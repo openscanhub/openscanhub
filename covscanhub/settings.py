@@ -129,8 +129,9 @@ INSTALLED_APPS = (
     # kobo apps:
     'kobo.django.upload',
     'kobo.hub',
-    # add your apps here:
+    # covscan
     'covscanhub.scan',
+    'covscanhub.waiving',
 )
 
 # kobo XML-RPC API calls
@@ -156,6 +157,20 @@ XMLRPC_METHODS = {
     ),
 }
 
+if not DEBUG:
+    qpid_connection = {
+        'broker': "qpid-stage.app.eng.bos.redhat.com",
+        'address': "eso.topic",
+        'mechanism': "GSSAPI",
+    }
+else:
+    qpid_connection = {
+        'broker': "localhost:5672",
+        'address': "amq.topic",
+        'mechanism': 'ANONYMOUS',
+    }
+
+qpid_connection['routing_key'] = 'covscan.scan'
 
 # override default values with custom ones from local settings
 try:

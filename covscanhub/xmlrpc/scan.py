@@ -11,12 +11,15 @@ from kobo.hub.models import Task, TASK_STATES
 from kobo.django.upload.models import FileUpload
 from kobo.django.xmlrpc.decorators import login_required
 
-from covscanhub.scan.models import MockConfig
+from covscanhub.scan.models import MockConfig, SCAN_TYPES
+from covscanhub.scan.service import create_diff_scan
 
 
 __all__ = (
     "diff_build",
     "mock_build",
+    "create_user_diff_scan",
+    "create_errata_diff_scan",
 )
 
 
@@ -119,3 +122,37 @@ def diff_build(*args, **kwargs):
 def mock_build(*args, **kwargs):
     global mock_build_obj
     return mock_build_obj(*args, **kwargs)
+
+
+@login_required
+def create_user_diff_scan(request, kwargs):
+    """
+        create scan of a package and perform diff on results against specified
+        version
+
+        kwargs:
+         - username - name of user who is requesting scan (from ET)
+         - nvr - name, version, release of scanned package
+         - base - previous version of package, the one to make diff against
+         - mock - mock config
+    """
+    kwargs['scan_type'] = SCAN_TYPES['USER']
+    kwargs['task_user'] = request.user.username
+    create_diff_scan(kwargs)
+
+
+@login_required
+def create_errata_diff_scan(request, kwargs):
+    """
+        create differential task submited from errata tool
+
+        kwargs:
+         - username - name of user who is requesting scan (from ET)
+         - nvr - name, version, release of scanned package
+         - base - previous version of package, the one to make diff against
+         - id - errata ID
+         - tag - tag from brew
+    """
+    kwargs['scan_type'] = SCAN_TYPES['ERRATA']
+    kwargs['task_user'] = request.user.username
+    create_diff_scan(kwargs)

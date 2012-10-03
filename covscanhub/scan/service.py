@@ -1,0 +1,287 @@
+# -*- coding: utf-8 -*-
+"""
+    This module contains several services provided to XML-RPC calls mostly
+"""
+
+from models import Scan, Task, SCAN_STATES, Tag, SCAN_TYPES, MockConfig
+from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
+from kobo.shortcuts import run
+import os
+import pipes
+#import messaging.send_message
+#import django.conf.settings
+import brew
+import shutil
+
+ET_SCAN_PRIORITY = 20
+
+__all__ = (
+    "update_scans_state",
+    "run_diff",
+    "get_scan_by_nvr",
+    "extract_logs_from_tarball",
+    "create_diff_scan",
+    "finish_scanning",
+)
+
+
+def update_scans_state(scan_id, state):
+    """
+    update state of scan with 'scan_id'
+
+    TODO: add transaction most likely
+    """
+    scan = Scan.objects.get(id=scan_id)
+    scan.state = state
+    scan.save()
+
+
+def run_diff(scan_id):
+    """
+        Runs csdiff command for results of scan with id 'scan_id' against its
+        base scan
+    """
+    scan = Scan.objects.get(id=scan_id)
+    if scan.base is None:
+        print 'Cannot run diff command, there is no base scan\
+ for scan %s' % scan_id
+        return
+        #raise RuntimeError('Cannot run diff command, there is no base scan\
+        #for scan %s' % scan_id)
+
+    diff_output_file = 'csdiff.out'
+
+    task_dir = Task.get_task_dir(scan.task.id)
+    diff_output_path = os.path.join(task_dir, diff_output_file)
+    task_nvr = scan.task.label
+    base_task_dir = Task.get_task_dir(scan.base.task.id)
+    base_nvr = scan.base.nvr
+
+    #<task_dir>/<nvr>/run1/<nvr>.err
+    old_err = os.path.join(base_task_dir, base_nvr, 'run1', base_nvr + '.err')
+    new_err = os.path.join(task_dir, task_nvr, 'run1', task_nvr + '.err')
+
+    #csdiff [options] old.err new.err
+    """
+      -c [ --coverity-output ]  write the result in Coverity format
+      -x [ --fixed ]            print fixed defects (just swaps the arguments)
+      -z [ --ignore-path ]      ignore directory structure when matching
+      -j [ --json-output ]      write the result in JSON format
+      -q [ --quiet ]            do not report any parsing errors
+      --help                    produce help message
+    """
+    #whole csdiff call must be in one string, because character '>' cannot be
+    #enclosed into quotes -- command '"csdiff" "-j" "old.err" "new.err" ">"
+    #"csdiff.out"' does not work
+    cmd = ' '.join(['csdiff', '-j', pipes.quote(old_err),
+                    pipes.quote(new_err), '>', diff_output_path])
+
+    retcode, output = run(cmd,
+                          workdir=task_dir,
+                          stdout=False,
+                          logfile='err_diff.log',
+                          return_stdout=False,
+                          show_cmd=False)
+
+    if not retcode:
+        print "csdiff wasn't successfull; scan: %s path: %s, code: %s" % \
+            (scan_id, task_dir, retcode)
+        """
+        raise RuntimeError("csdiff wasn't successfull; scan: %s path: %s" %
+                           (scan_id, task_dir))
+        """
+    return os.path.getsize(os.path.join(task_dir, diff_output_file))
+
+
+def get_scan_by_nvr(nvr):
+    """
+        returns scan by specified nvr
+        get_scan_by_nvr(nvr="package-1.2.3-el6")
+    """
+    return Scan.objects.get(nvr=nvr)
+
+
+def extract_logs_from_tarball(task_id, name=None):
+    """
+        Extracts files from tarball for specified task.
+
+        currently (sep 2012) module tarfile does not support lzma compression
+        so I used program tar (and xz, because RHEL5 does not have latest tar
+        program with lzma compression support)
+    """
+    task = Task.objects.get(id=task_id)
+    task_dir = task.get_task_dir(task.id)
+
+    tar_archive = None
+
+    #name was specified
+    if name is not None and len(name) > 0:
+        if os.path.isfile(os.path.join(task_dir, name)):
+            tar_archive = os.path.join(task_dir, name)
+        else:
+            raise RuntimeError(
+                'There is no tar ball with name %s for task %s'
+                % (name, task_id))
+    else:
+        #name wasn't specified, guess tarball name:
+        #label (nvr) + tar.xz|tar.lzma
+        tarball_logs = os.path.join(task_dir, task.label + '.tar.xz')
+        tarball_logs2 = os.path.join(task_dir, task.label + '.tar.lzma')
+        if os.path.isfile(tarball_logs):
+            tar_archive = tarball_logs
+        elif os.path.isfile(tarball_logs2):
+            tar_archive = tarball_logs2
+        else:
+            raise RuntimeError('There is no tarball (%s, %s) for task %s' %
+                               (tarball_logs, tarball_logs2, task_id))
+
+    if tar_archive is None:
+        raise RuntimeError('There is no tarball specfied for task %s' %
+                           (task_id))
+
+    tmp_tar_file_name = 'tmp_%s' % os.path.split(tar_archive)[1]
+    tmp_tar_archive = os.path.join(task_dir, tmp_tar_file_name)
+    shutil.copy2(tar_archive, tmp_tar_archive)
+
+    # unxz file.tar.xz|lzma && tar xf file.tar -C /output/directory
+    # tar xvf file.tar.gz -C /output/directory
+    if tmp_tar_archive.endswith('xz'):
+            command = ' '.join(['unxz', pipes.quote(tmp_tar_archive),
+                                '&&', 'tar', '-xf',
+                                pipes.quote(tmp_tar_archive[:-3]),
+                                '-C ' + pipes.quote(task_dir)])
+            run(command, can_fail=False, stdout=False)
+    elif tmp_tar_archive.endswith('lzma'):
+            command = ' '.join(['unxz', pipes.quote(tmp_tar_archive),
+                                '&&', 'tar', '-xf',
+                                pipes.quote(tmp_tar_archive[:-5]),
+                                '-C ' + pipes.quote(task_dir)])
+    elif tmp_tar_archive.endswith('gz'):
+            command = ['tar', '-xzf', pipes.quote(tmp_tar_archive),
+                       '-C ' + pipes.quote(task_dir)]
+    else:
+        raise RuntimeError('Unsupported compression format (%s), task id: %s' %
+                           (tmp_tar_archive, task_id))
+    try:
+        run(command, can_fail=False, stdout=False)
+    except RuntimeError:
+        raise RuntimeError('unable to extract tarball archive %s \
+            I have used this command: %s' % (tar_archive, command))
+    if os.path.exists(tmp_tar_archive):
+        os.remove(tmp_tar_archive)
+    if os.path.exists(tmp_tar_archive[:-5]) and \
+            tmp_tar_archive[:-5].endswith('.tar'):
+        os.remove(tmp_tar_archive)
+    if os.path.exists(tmp_tar_archive[:-3]) and \
+            tmp_tar_archive[:-3].endswith('.tar'):
+        os.remove(tmp_tar_archive)
+#def send_qpid_message(message, key):
+#    """
+#        sends specified message to predefined broker, topic
+#    """
+#    messaging.send_message(django.conf.settings.qpid_connection, message, key)
+
+
+def create_diff_scan(kwargs):
+    """
+        create scan of a package and perform diff on results against specified
+        version
+        options of this scan are in dict 'kwargs'
+
+        kwargs
+         - scan_type - type of scan (SCAN_TYPES in covscanhub.scan.models)
+         - username - name of user who is requesting scan (from ET)
+         - task_user - username from request.user.username
+         - nvr - name, version, release of scanned package
+         - base - previous version of package, the one to make diff against
+         - id - errata ID
+         - tag - tag from brew
+    """
+    options = {}
+
+    #from request.user
+    task_user = kwargs['task_user']
+
+    #supplied by scan initiator
+    username = kwargs['username']
+    scan_type = kwargs['scan_type']
+    nvr = kwargs['nvr']
+    base = kwargs['base']
+    #TODO request two mock configs
+
+    #Label, description or any reason for this task.
+    task_label = nvr
+
+    mock = kwargs['mock']
+    priority = kwargs.get('priority', 10)
+    comment = kwargs.get('comment', '')
+
+    #does mock config exist?
+    try:
+        conf = MockConfig.objects.get(name=mock)
+    except:
+        raise ObjectDoesNotExist("Unknown mock config: %s" % mock)
+    if not conf.enabled:
+        raise RuntimeError("Mock config is disabled: %s" % conf)
+    options["mock_config"] = mock
+
+    #Test if SRPM exists
+    if nvr.endswith(".src.rpm"):
+        srpm = nvr[:-8]
+    else:
+        srpm = nvr
+    # XXX: hardcoded
+    brew_proxy = brew.ClientSession("http://brewhub.devel.redhat.com/brewhub")
+    try:
+        brew_proxy.getBuild(srpm)
+        options['brew_build'] = srpm
+    except brew.GenericError:
+        raise RuntimeError("Brew build of package %s does not exist" % nvr)
+
+    #TODO: which username? errata tool, or user?
+    task_id = Task.create_task(
+        owner_name=task_user,
+        label=task_label,
+        method='VersionDiffBuild',
+        args={},  # I want to add scan's id here, so I update it later
+        comment=comment,
+        state=SCAN_STATES["QUEUED"],
+        priority=priority
+    )
+    task_dir = Task.get_task_dir(task_id)
+
+    if not os.path.isdir(task_dir):
+        try:
+            os.makedirs(task_dir, mode=0755)
+        except OSError, ex:
+            if ex.errno != 17:
+                raise
+
+    if base:
+        try:
+            base_obj = get_scan_by_nvr(base)
+        except ObjectDoesNotExist:
+            import copy
+            o = copy.deepcopy(kwargs)
+            o['nvr'] = base
+            o['base'] = None
+            o['priority'] = o['priority'] + 1
+            if id in o:
+                o['id'] = None
+            #TODO shouldn't we change tag?
+            #TODO this scan /base/ has to be made earlier than outer scan /nvr/
+            create_diff_scan(o)
+        except MultipleObjectsReturned:
+            """
+            TODO what to do?
+            """
+    else:
+        base_obj = None
+
+    scan = Scan.create_scan(scan_type=scan_type, nvr=nvr, task_id=task_id,
+                            tag=tag_obj, base=base_obj, username=username)
+
+    options['scan_id'] = scan.id
+    task = Task.objects.get(id=task_id)
+    task.args = options
+    task.save()

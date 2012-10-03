@@ -5,3 +5,4 @@ build/*
 dist/*
 MANIFEST
 settings_local.py
+.spyderproject
