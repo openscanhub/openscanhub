@@ -40,7 +40,9 @@ class Defect(models.Model):
     result = models.ForeignKey(Result, verbose_name="Result",
                                blank=True, null=True,
                                help_text="Result of scan")
-                                     
 
-class Waive(models.Model):
-    pass
+
+#class Waive(models.Model):
+#    date = models.DateTimeField()
+#    message = models.TextField("Message")
+#    group = models.ForeignKey(...)

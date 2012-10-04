@@ -84,8 +84,9 @@ def extract_tarball(request, task_id, name):
 
 
 @validate_worker
-def finish_scan(request, scan_id)
+def finish_scan(request, scan_id):
     finish_scanning(scan_id)
+
 
 @validate_worker
 def set_scan_to_scanning(request, scan_id):

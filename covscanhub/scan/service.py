@@ -38,8 +38,9 @@ def update_scans_state(scan_id, state):
 
 def run_diff(scan_id):
     """
-        Runs csdiff command for results of scan with id 'scan_id' against its
-        base scan
+        Runs 'csdiff' and 'csdiff -x' command for results of scan with id
+        'scan_id' against its base scan
+        Returns size of output file
     """
     scan = Scan.objects.get(id=scan_id)
     if scan.base is None:
@@ -49,11 +50,14 @@ def run_diff(scan_id):
         #raise RuntimeError('Cannot run diff command, there is no base scan\
         #for scan %s' % scan_id)
 
-    diff_output_file = 'csdiff.out'
+    fixed_diff_file = 'csdiff_fixed.out'
+    diff_file = 'csdiff.out'
 
     task_dir = Task.get_task_dir(scan.task.id)
-    diff_output_path = os.path.join(task_dir, diff_output_file)
-    task_nvr = scan.task.label
+    diff_file_path = os.path.join(task_dir, diff_file)
+    fixed_diff_file_path = os.path.join(task_dir, fixed_diff_file)
+
+    task_nvr = scan.nvr
     base_task_dir = Task.get_task_dir(scan.base.task.id)
     base_nvr = scan.base.nvr
 
@@ -73,24 +77,32 @@ def run_diff(scan_id):
     #whole csdiff call must be in one string, because character '>' cannot be
     #enclosed into quotes -- command '"csdiff" "-j" "old.err" "new.err" ">"
     #"csdiff.out"' does not work
-    cmd = ' '.join(['csdiff', '-j', pipes.quote(old_err),
-                    pipes.quote(new_err), '>', diff_output_path])
-
-    retcode, output = run(cmd,
+    diff_cmd = ' '.join(['csdiff', '-j', pipes.quote(old_err),
+                         pipes.quote(new_err), '>', diff_file_path])
+    fixed_diff_cmd = ' '.join(['csdiff', '-jx', pipes.quote(old_err),
+                              pipes.quote(new_err), '>',
+                              fixed_diff_file_path])
+    retcode, output = run(diff_cmd,
                           workdir=task_dir,
                           stdout=False,
                           logfile='err_diff.log',
                           return_stdout=False,
                           show_cmd=False)
-
+    #command wasn't successfull -- handle this somehow
     if not retcode:
-        print "csdiff wasn't successfull; scan: %s path: %s, code: %s" % \
-            (scan_id, task_dir, retcode)
-        """
-        raise RuntimeError("csdiff wasn't successfull; scan: %s path: %s" %
-                           (scan_id, task_dir))
-        """
-    return os.path.getsize(os.path.join(task_dir, diff_output_file))
+        print "'%s' wasn't successfull; scan: %s path: %s, code: %s" % \
+            (diff_cmd, scan_id, task_dir, retcode)
+    else:
+        retcode, output = run(fixed_diff_cmd,
+                              workdir=task_dir,
+                              stdout=False,
+                              logfile='err_diff.log',
+                              return_stdout=False,
+                              show_cmd=False)
+        if not retcode:
+            print "'%s' wasn't successfull; scan: %s path: %s, code: %s" % \
+                (fixed_diff_cmd, scan_id, task_dir, retcode)
+    return os.path.getsize(diff_file_path)
 
 
 def get_scan_by_nvr(nvr):

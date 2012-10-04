@@ -22,6 +22,7 @@ SCAN_TYPES = Enum(
     "USER",             # some user posted this scan
 )
 
+
 class MockConfig(models.Model):
     name        = models.CharField(max_length=256, unique=True)
     enabled     = models.BooleanField(default=True)
@@ -53,6 +54,7 @@ class Tag(models.Model):
     def __unicode__(self):
         return "%s <-> %s" % (self.name, str(self.mock))
 
+
 class Scan(models.Model):
     """
     #This class stores information about differential scans
@@ -79,8 +81,6 @@ class Scan(models.Model):
     state = models.PositiveIntegerField(default=SCAN_STATES["QUEUED"],
                                         choices=SCAN_STATES.get_mapping(),
                                         help_text="Current scan state")
-    result = models.ForeignKey(Result, blank=True, null=True,
-                               verbose_name="Scan's result")
     # string containing user's name who is responsible for scan
     username = models.CharField("Username", max_length=32, blank=True,
                                 null=True,)
@@ -92,7 +92,7 @@ class Scan(models.Model):
         if self.base is None:
             return u"#%s [%s]" % (self.id, self.nvr)
         else:
-            return u"#%s [%s <->]" % (self.id, self.nvr, self.base.nvr)
+            return u"#%s [%s <-> %s]" % (self.id, self.nvr, self.base.nvr)
 
     def is_errata_scan(self):
         return self.scan_type == SCAN_TYPES['ERRATA']
@@ -127,7 +127,32 @@ class Scan(models.Model):
         r.scan = self.id
         r.save()
 
-        scan.save()
+        if 'defects' in json_dict:
+            for defect in json_dict['defects']:
+                d = Defect()
+                d.checker = defect['checker']
+                d.annotation = defect['annotation']
+                d.result = r.id
+                key_event = defect['key_event_idx']
+
+                if 'events' in defect:
+                    for event in defect['events']:
+                        e_id = None
+                        e = Event()
+                        e.file_name = event['file_name']
+                        e.line = event['line']
+                        e.message = event['message']
+                        e.defect = d.id
+                        e.save()
+                        if e_id is None:
+                            if key_event == 0:
+                                e_id = e.id
+                            else:
+                                key_event -= 1
+
+                    d.key_event = e_id
+                d.save()
+
         f.close()
 
     @classmethod
@@ -138,8 +163,6 @@ class Scan(models.Model):
         scan.base = base
         scan.tag = tag
         scan.task = Task.objects.get(id=task_id)
-        scan.scanner = None
-        scan.scanner_version = None
         scan.state = SCAN_STATES["QUEUED"]
         scan.username = username
         scan.save()
