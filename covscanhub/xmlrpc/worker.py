@@ -7,15 +7,15 @@ from kobo.client.constants import TASK_STATES
 from kobo.hub.decorators import validate_worker
 from kobo.hub.models import Task
 from covscanhub.scan.service import extract_logs_from_tarball, \
-    update_scans_state, run_diff, finish_scanning
+    update_scans_state
+from covscanhub.errata.service import finish_scanning
 from covscanhub.scan.models import SCAN_STATES
 
 __all__ = (
     "email_task_notification",
     "extract_tarball",
     "set_scan_to_scanning",
-    "set_scan_to_finished",
-    "run_diff_on_scans",
+    "finish_scan",
 )
 
 

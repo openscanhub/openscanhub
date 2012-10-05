@@ -36,7 +36,8 @@ class Defect(models.Model):
                                   blank=True, null=True)
     key_event = models.OneToOneField(Event, verbose_name="Key event",
                                      blank=True, null=True,
-                                     help_text="Event that resulted in defect")
+                                     help_text="Event that resulted in defect",
+                                     related_name='defect_key_event')
     result = models.ForeignKey(Result, verbose_name="Result",
                                blank=True, null=True,
                                help_text="Result of scan")
