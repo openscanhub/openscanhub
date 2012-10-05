@@ -3,7 +3,7 @@
 from covscanhub.scan.models import Scan
 from covscanhub.waiving.models import Defect
 
-def update_fixed(scan):
+def update_fixed(scan, diff_json_dict):
     """
     Checks all defects in result and compares them against diff. The result is
     that all missing defects are actually fixed.

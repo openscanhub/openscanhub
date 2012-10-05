@@ -73,8 +73,9 @@ class Scan(models.Model):
     base = models.ForeignKey('self', verbose_name="Base Scan",
                              blank=True, null=True,
                              help_text="NVR of package to diff against")
+    #user scans dont have to specify this option -- allow None                         
     tag = models.ForeignKey(Tag, verbose_name="Tag",
-                            blank=False, null=False,
+                            blank=True, null=True,
                             help_text="Tag from brew")
     task = models.ForeignKey(Task, verbose_name="Asociated Task",
                              help_text="Asociated task on worker")
