@@ -3,7 +3,7 @@
     This module contains several services provided to XML-RPC calls mostly
 """
 
-from models import Scan, Task, SCAN_STATES, Tag, SCAN_TYPES, MockConfig
+from models import Scan, Task, SCAN_STATES, MockConfig
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from kobo.shortcuts import run
 import os
@@ -12,6 +12,8 @@ import pipes
 #import django.conf.settings
 import brew
 import shutil
+import django.utils.simplejson as json
+from covscanhub.waiving.models import Result, Defect, Event
 
 ET_SCAN_PRIORITY = 20
 
@@ -291,9 +293,65 @@ def create_diff_scan(kwargs):
         base_obj = None
 
     scan = Scan.create_scan(scan_type=scan_type, nvr=nvr, task_id=task_id,
-                            tag=tag_obj, base=base_obj, username=username)
+                            tag=None, base=base_obj, username=username)
 
     options['scan_id'] = scan.id
     task = Task.objects.get(id=task_id)
     task.args = options
     task.save()
+
+
+def create_results(scan):
+    """
+    Task finished, so this method should update results
+    """
+
+    task_dir = Task.get_task_dir(scan.task.id)
+
+    #json's path is <TASK_DIR>/<NVR>/run1/<NVR>.js
+    defects_path = os.path.join(task_dir, scan.nvr,
+                                'run1', scan.nvr + '.js')
+    try:
+        f = open(defects_path, 'r')
+    except IOError:
+        print 'Unable to open file %s' % defects_path
+        return
+    json_dict = json.load(f)
+
+    r = Result()
+
+    if 'scan' in json_dict:
+        if 'analyzer' in json_dict['scan']:
+            r.scanner = json_dict['scan']['analyzer']
+        if 'analyzer-version' in json_dict['scan']:
+            r.scanner_version = json_dict['scan']['analyzer-version']
+    r.scan = scan.id
+    r.save()
+
+    if 'defects' in json_dict:
+        for defect in json_dict['defects']:
+            d = Defect()
+            d.checker = defect['checker']
+            d.annotation = defect['annotation']
+            d.result = r.id
+            key_event = defect['key_event_idx']
+
+            if 'events' in defect:
+                for event in defect['events']:
+                    e_id = None
+                    e = Event()
+                    e.file_name = event['file_name']
+                    e.line = event['line']
+                    e.message = event['message']
+                    e.defect = d.id
+                    e.save()
+                    if e_id is None:
+                        if key_event == 0:
+                            e_id = e.id
+                        else:
+                            key_event -= 1
+
+                d.key_event = e_id
+            d.save()
+
+    f.close()

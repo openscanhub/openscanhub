@@ -4,9 +4,6 @@
 from django.db import models
 from kobo.hub.models import Task
 from kobo.types import Enum
-import os
-import django.utils.simplejson as json
-from covscanhub.waiving.models import Result, Defect, Event
 
 SCAN_STATES = Enum(
     "QUEUED",            # scan was submitted, waiting for scheduler
@@ -73,7 +70,7 @@ class Scan(models.Model):
     base = models.ForeignKey('self', verbose_name="Base Scan",
                              blank=True, null=True,
                              help_text="NVR of package to diff against")
-    #user scans dont have to specify this option -- allow None                         
+    #user scans dont have to specify this option -- allow None
     tag = models.ForeignKey(Tag, verbose_name="Tag",
                             blank=True, null=True,
                             help_text="Tag from brew")
@@ -100,61 +97,6 @@ class Scan(models.Model):
 
     def is_user_scan(self):
         return self.scan_type == SCAN_TYPES['USER']
-
-    def create_results(self):
-        """
-        Task finished, so this method should update results
-        """
-
-        task_dir = Task.get_task_dir(self.task.id)
-
-        #json's path is <TASK_DIR>/<NVR>/run1/<NVR>.js
-        defects_path = os.path.join(task_dir, self.nvr,
-                                    'run1', self.nvr + '.js')
-        try:
-            f = open(defects_path, 'r')
-        except IOError:
-            print 'Unable to open file %s' % defects_path
-            return
-        json_dict = json.load(f)
-
-        r = Result()
-
-        if 'scan' in json_dict:
-            if 'analyzer' in json_dict['scan']:
-                r.scanner = json_dict['scan']['analyzer']
-            if 'analyzer-version' in json_dict['scan']:
-                r.scanner_version = json_dict['scan']['analyzer-version']
-        r.scan = self.id
-        r.save()
-
-        if 'defects' in json_dict:
-            for defect in json_dict['defects']:
-                d = Defect()
-                d.checker = defect['checker']
-                d.annotation = defect['annotation']
-                d.result = r.id
-                key_event = defect['key_event_idx']
-
-                if 'events' in defect:
-                    for event in defect['events']:
-                        e_id = None
-                        e = Event()
-                        e.file_name = event['file_name']
-                        e.line = event['line']
-                        e.message = event['message']
-                        e.defect = d.id
-                        e.save()
-                        if e_id is None:
-                            if key_event == 0:
-                                e_id = e.id
-                            else:
-                                key_event -= 1
-
-                    d.key_event = e_id
-                d.save()
-
-        f.close()
 
     @classmethod
     def create_scan(cls, scan_type, nvr, tag, task_id, username, base=None):

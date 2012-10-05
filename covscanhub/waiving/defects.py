@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from covscanhub.scan.models import Scan
-from covscanhub.waiving.models import Defect
+#from covscanhub.scan.models import Scan
+#from covscanhub.waiving.models import Defect
 
 def update_fixed(scan, diff_json_dict):
     """
