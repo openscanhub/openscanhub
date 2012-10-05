@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import django.db.models as models
-import covscanhub.scan.models.Scan as Scan
+from covscanhub.scan.models import Scan
 
 
 class Result(models.Model):
