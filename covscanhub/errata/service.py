@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 
-from models import Scan, Task, SCAN_STATES, Tag, SCAN_TYPES, MockConfig
+from covscanhub.scan.models import Scan, Task, SCAN_STATES, Tag, SCAN_TYPES, MockConfig
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from kobo.shortcuts import run
 import os
