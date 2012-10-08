@@ -41,7 +41,7 @@ def create_errata_scan(kwargs):
     task_label = nvr
 
     tag = kwargs['tag']
-    priority = settings.ET_SCAN_PRIORITY
+    priority = kwargs.get('priority', settings.ET_SCAN_PRIORITY)
 
     #if kwargs does not have 'id', it is base scan
     if kwargs['id'] is None:
@@ -102,17 +102,18 @@ def create_errata_scan(kwargs):
             o['nvr'] = base
             o['base'] = None
             o['requestor'] = nvr
-            o['priority'] = o['priority'] + 1
+            o['priority'] = o.get('priority', settings.ET_SCAN_PRIORITY) + 1
             o['id'] = None
             o['parent_task'] = task_id
             #TODO base tag vs. parent tag
 
             parent_task = Task.objects.get(id=task_id)
-            parent_task.waiting = True
 
             create_errata_scan(o)
 
-            #wait has to be after creation of new subtask
+            # wait has to be after creation of new subtask
+            # TODO wait should be executed in one transaction with creation of
+            # child
             parent_task.wait()
         except MultipleObjectsReturned:
             #return latest, but this shouldnt happened
