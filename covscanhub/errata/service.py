@@ -91,6 +91,8 @@ def create_errata_scan(kwargs):
             if ex.errno != 17:
                 raise
 
+    # if base is specified, try to fetch it; if it doesn't exist, create
+    # new task for it
     if base:
         try:
             base_obj = get_scan_by_nvr(base)
@@ -105,16 +107,17 @@ def create_errata_scan(kwargs):
             o['parent_task'] = task_id
             #TODO base tag vs. parent tag
 
+            parent_task = Task.objects.get(id=task_id)
+            parent_task.waiting = True
+
             create_errata_scan(o)
 
             #wait has to be after creation of new subtask
-            t = Task.objects.get(id=task_id)
-            t.wait()
+            parent_task.wait()
         except MultipleObjectsReturned:
-            """
-            TODO what to do? return latest, most likely, but this shouldnt
-            happened
-            """
+            #return latest, but this shouldnt happened
+            Task.objects.filter(base=base).order_by('-dt_created')[0]
+
     else:
         base_obj = None
 
