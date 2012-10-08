@@ -177,7 +177,8 @@ def extract_logs_from_tarball(task_id, name=None):
         raise RuntimeError('Unsupported compression format (%s), task id: %s' %
                            (tmp_tar_archive, task_id))
     try:
-        run(command, can_fail=False, stdout=False)
+        run(command, can_fail=False, stdout=False,
+            logfile='/tmp/covscanhub_extract_tarball.log')
     except RuntimeError:
         raise RuntimeError('unable to extract tarball archive %s \
             I have used this command: %s' % (tar_archive, command))
