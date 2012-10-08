@@ -134,6 +134,9 @@ INSTALLED_APPS = (
     'covscanhub.waiving',
 )
 
+BREW_HUB = 'http://brewhub.devel.redhat.com/brewhub'
+ET_SCAN_PRIORITY = 20
+
 # kobo XML-RPC API calls
 # If you define additional methods, you have to list them there.
 XMLRPC_METHODS = {
@@ -146,6 +149,7 @@ XMLRPC_METHODS = {
         ('kobo.django.upload.xmlrpc', 'upload'),
         ('covscanhub.xmlrpc.mock_config', 'mock_config'),
         ('covscanhub.xmlrpc.scan', 'scan'),
+        ('covscanhub.xmlrpc.errata', 'errata'),
     ),
     'worker': (
         ('kobo.hub.xmlrpc.auth',      'auth'),

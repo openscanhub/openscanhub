@@ -139,20 +139,3 @@ def create_user_diff_scan(request, kwargs):
     kwargs['scan_type'] = SCAN_TYPES['USER']
     kwargs['task_user'] = request.user.username
     create_diff_scan(kwargs)
-
-
-@login_required
-def create_errata_diff_scan(request, kwargs):
-    """
-        create differential task submited from errata tool
-
-        kwargs:
-         - username - name of user who is requesting scan (from ET)
-         - nvr - name, version, release of scanned package
-         - base - previous version of package, the one to make diff against
-         - id - errata ID
-         - tag - tag from brew
-    """
-    kwargs['scan_type'] = SCAN_TYPES['ERRATA']
-    kwargs['task_user'] = request.user.username
-    create_diff_scan(kwargs)

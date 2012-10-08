@@ -1,19 +1,14 @@
 # -*- coding: utf-8 -*-
 
 
-from covscanhub.scan.models import Scan, Task, SCAN_STATES, Tag, SCAN_TYPES, MockConfig
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
-from kobo.shortcuts import run
 import os
-import pipes
 #import messaging.send_message
-#import django.conf.settings
+from django.conf import settings
 import brew
-import shutil
 from covscanhub.scan.service import get_scan_by_nvr, run_diff
+from covscanhub.scan.models import Scan, Task, SCAN_STATES, Tag
 
-
-ET_SCAN_PRIORITY = 20
 
 def create_errata_scan(kwargs):
     """
@@ -46,9 +41,12 @@ def create_errata_scan(kwargs):
     task_label = nvr
 
     tag = kwargs['tag']
-    priority = ET_SCAN_PRIORITY
+    priority = settings.ET_SCAN_PRIORITY
+
+    #if kwargs does not have 'id', it is base scan
     if kwargs['id'] is None:
-        comment = 'Errata Tool Base scan generated for %s' % kwargs['requestor']
+        comment = 'Errata Tool Base scan generated for %s'\
+            % kwargs['requestor']
     else:
         comment = 'Errata Tool Scan of %s' % nvr
 
@@ -65,9 +63,9 @@ def create_errata_scan(kwargs):
         srpm = nvr[:-8]
     else:
         srpm = nvr
+
     # Test if SRPM exists
-    # XXX: hardcoded
-    brew_proxy = brew.ClientSession("http://brewhub.devel.redhat.com/brewhub")
+    brew_proxy = brew.ClientSession(settings.BREW_HUB)
     try:
         brew_proxy.getBuild(srpm)
         options['brew_build'] = srpm
@@ -81,7 +79,7 @@ def create_errata_scan(kwargs):
         args={},  # I want to add scan's id here, so I update it later
         comment=comment,
         state=SCAN_STATES["QUEUED"],
-        priority=priority, 
+        priority=priority,
         parent_id=kwargs.get('parent_task', None),
     )
     task_dir = Task.get_task_dir(task_id)
@@ -106,12 +104,12 @@ def create_errata_scan(kwargs):
             o['id'] = None
             o['parent_task'] = task_id
             #TODO base tag vs. parent tag
-            
+
             create_errata_scan(o)
 
-            #wait has to be after creation of new subtask            
+            #wait has to be after creation of new subtask
             t = Task.objects.get(id=task_id)
-            t.wait()            
+            t.wait()
         except MultipleObjectsReturned:
             """
             TODO what to do? return latest, most likely, but this shouldnt
