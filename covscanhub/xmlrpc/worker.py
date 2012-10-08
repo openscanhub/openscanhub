@@ -14,8 +14,8 @@ from covscanhub.scan.models import SCAN_STATES
 __all__ = (
     "email_task_notification",
     "extract_tarball",
-    "set_scan_to_scanning",
     "finish_scan",
+    "set_scan_to_scanning",
 )
 
 

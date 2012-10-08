@@ -5,6 +5,11 @@ from covscanhub.scan.models import SCAN_TYPES
 from kobo.django.xmlrpc.decorators import login_required
 
 
+__all__ = (
+    "create_errata_diff_scan",
+)
+
+
 @login_required
 def create_errata_diff_scan(request, kwargs):
     """

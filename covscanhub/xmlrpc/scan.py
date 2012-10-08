@@ -19,7 +19,6 @@ __all__ = (
     "diff_build",
     "mock_build",
     "create_user_diff_scan",
-    "create_errata_diff_scan",
 )
 
 
