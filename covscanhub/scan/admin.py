@@ -3,11 +3,12 @@
 
 import django.contrib.admin as admin
 
-from models import *
+from models import Tag, MockConfig, Scan
 
-import kobo.django.forms
+class ScanAdmin(admin.ModelAdmin):
+    list_display = ("nvr", "scan_type", "base", "tag", "task", "state", 'username')
 
 
 admin.site.register(MockConfig)
 admin.site.register(Tag)
-admin.site.register(Scan)
+admin.site.register(Scan, ScanAdmin)

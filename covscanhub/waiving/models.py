@@ -11,6 +11,9 @@ class Result(models.Model):
                                        max_length=32, blank=True, null=True)
     scan = models.ForeignKey(Scan, verbose_name="Scan",
                              blank=True, null=True,)
+ 
+    def __unicode__(self):
+        return "%s %s" % (self.scanner, self.scanner_version)
 
 
 class Event(models.Model):
@@ -25,6 +28,9 @@ class Event(models.Model):
                                blank=True, null=True)
     defect = models.ForeignKey('Defect', verbose_name="Defect",
                                blank=True, null=True,)
+
+    def __unicode__(self):
+        return "%s:%s, %s" % (self.file_name, self.line, self.event)
 
 
 class Defect(models.Model):
@@ -41,6 +47,9 @@ class Defect(models.Model):
     result = models.ForeignKey(Result, verbose_name="Result",
                                blank=True, null=True,
                                help_text="Result of scan")
+
+    def __unicode__(self):
+        return "%s, %s" % (self.checker, self.annotation)
 
 
 #class Waive(models.Model):
