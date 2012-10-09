@@ -6,7 +6,7 @@ import os
 #import messaging.send_message
 from django.conf import settings
 import brew
-from covscanhub.scan.service import get_scan_by_nvr, run_diff
+from covscanhub.scan.service import get_scan_by_nvr, run_diff, create_results
 from covscanhub.scan.models import Scan, Task, SCAN_STATES, Tag
 
 
@@ -139,11 +139,13 @@ def create_errata_scan(kwargs):
 def finish_scanning(scan_id):
     scan = Scan.objects.get(id=scan_id)
 
+    size = None    
     if scan.base:
         size = run_diff(scan_id)
         # TODO insert found defects into database
 
     if scan.is_errata_scan():
+        create_results(scan)
         if size is None or size == 0:
             scan.state = SCAN_STATES['PASSED']
         else:

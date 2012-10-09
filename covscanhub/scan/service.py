@@ -45,12 +45,11 @@ def run_diff(scan_id):
         Returns size of output file
     """
     scan = Scan.objects.get(id=scan_id)
-    if scan.base is None:
-        print 'Cannot run diff command, there is no base scan\
- for scan %s' % scan_id
-        return
-        #raise RuntimeError('Cannot run diff command, there is no base scan\
-        #for scan %s' % scan_id)
+    if not scan.base:
+        print 'Cannot run diff command, there is no base scan \
+for scan %s' % scan_id
+        raise RuntimeError('Cannot run diff command, there is no base scan \
+for scan %s' % scan_id)
 
     fixed_diff_file = 'csdiff_fixed.out'
     diff_file = 'csdiff.out'
@@ -66,6 +65,10 @@ def run_diff(scan_id):
     #<task_dir>/<nvr>/run1/<nvr>.err
     old_err = os.path.join(base_task_dir, base_nvr, 'run1', base_nvr + '.err')
     new_err = os.path.join(task_dir, task_nvr, 'run1', task_nvr + '.err')
+
+    if not os.path.exists(old_err) or not os.path.exists(new_err):
+        raise RuntimeError('Error output from coverity does not exist'
+                               % scan_id)        
 
     #csdiff [options] old.err new.err
     """
@@ -92,17 +95,18 @@ def run_diff(scan_id):
                           return_stdout=False,
                           show_cmd=False)
     #command wasn't successfull -- handle this somehow
-    if not retcode:
+    if retcode != 0:
         print "'%s' wasn't successfull; scan: %s path: %s, code: %s" % \
             (diff_cmd, scan_id, task_dir, retcode)
     else:
         retcode, output = run(fixed_diff_cmd,
                               workdir=task_dir,
                               stdout=False,
+                              can_fail=False,
                               logfile='err_diff.log',
                               return_stdout=False,
                               show_cmd=False)
-        if not retcode:
+        if retcode != 0:
             print "'%s' wasn't successfull; scan: %s path: %s, code: %s" % \
                 (fixed_diff_cmd, scan_id, task_dir, retcode)
     return os.path.getsize(diff_file_path)
@@ -331,6 +335,7 @@ def create_results(scan):
     r.scan = scan.id
     r.save()
 
+    #load all defects
     if 'defects' in json_dict:
         for defect in json_dict['defects']:
             d = Defect()
@@ -356,5 +361,9 @@ def create_results(scan):
 
                 d.key_event = e_id
             d.save()
+
+    # find out which are fixed or newly introduced
+    # fixed_diff_file = 'csdiff_fixed.out'
+    # diff_file = 'csdiff.out'
 
     f.close()
