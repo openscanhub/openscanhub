@@ -33,7 +33,7 @@ from kobo.django.menu import MenuItem, include
 menu = (
     MenuItem("Home", "index"),
     MenuItem("Scan", "mock_config/index", menu=(
-        MenuItem("Errata", "scan/index"),
+        MenuItem("Errata", "errata/index"),
         MenuItem("Mock configs", "mock_config/index"),
     )),
     MenuItem("Tasks", "task/index", menu=(
