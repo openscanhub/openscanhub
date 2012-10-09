@@ -345,11 +345,12 @@ def create_results(scan):
             key_event = defect['key_event_idx']
 
             if 'events' in defect:
+                e_id = None
                 for event in defect['events']:
-                    e_id = None
                     e = Event()
                     e.file_name = event['file_name']
                     e.line = event['line']
+                    e.event = event['event']
                     e.message = event['message']
                     e.defect = d
                     e.save()

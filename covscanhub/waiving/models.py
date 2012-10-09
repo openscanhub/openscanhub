@@ -22,9 +22,9 @@ class Event(models.Model):
     line = models.CharField("Line", max_length=16,
                             blank=True, null=True)
     #check_return | example_assign | unterminated_case | fallthrough
-    event = models.CharField("Line", max_length=16,
+    event = models.CharField("Event", max_length=16,
                              blank=True, null=True)
-    message = models.CharField("Line", max_length=256,
+    message = models.CharField("Message", max_length=256,
                                blank=True, null=True)
     defect = models.ForeignKey('Defect', verbose_name="Defect",
                                blank=True, null=True,)

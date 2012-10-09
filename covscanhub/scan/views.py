@@ -37,7 +37,7 @@ def errata_scan_list(request):
         "allow_empty": True,
         "paginate_by": 50,
         "template_name": "errata/list.html",
-        "template_object_name": "scan_list",
+        "template_object_name": "scan",
         "extra_context": {
             "title": "List errata scans",
         }
