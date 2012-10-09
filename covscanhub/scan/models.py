@@ -83,9 +83,6 @@ class Scan(models.Model):
     username = models.CharField("Username", max_length=32, blank=True,
                                 null=True,)
 
-    #defects count
-    #defects information
-
     def __unicode__(self):
         if self.base is None:
             return u"#%s [%s]" % (self.id, self.nvr)

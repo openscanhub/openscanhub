@@ -27,3 +27,19 @@ def mock_config_list(request):
     }
 
     return object_list(request, **args)
+
+def errata_scan_list(request):
+
+    args = {
+        "queryset": Scan.objects.exclude(base__isnull=True).\
+            exclude(base__exact=''),
+        "allow_empty": True,
+        "paginate_by": 50,
+        "template_name": "errata/list.html",
+        "template_object_name": "scan_list",
+        "extra_context": {
+            "title": "List errata scans",
+        }
+    }
+
+    return object_list(request, **args)

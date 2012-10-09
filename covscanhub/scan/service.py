@@ -87,6 +87,7 @@ def run_diff(scan_id):
     retcode, output = run(diff_cmd,
                           workdir=task_dir,
                           stdout=False,
+                          can_fail=False,
                           logfile='err_diff.log',
                           return_stdout=False,
                           show_cmd=False)
@@ -187,10 +188,10 @@ I have used this command: %s' % (task_id, tar_archive, command))
         os.remove(tmp_tar_archive)
     if os.path.exists(tmp_tar_archive[:-5]) and \
             tmp_tar_archive[:-5].endswith('.tar'):
-        os.remove(tmp_tar_archive)
+        os.remove(tmp_tar_archive[:-5])
     if os.path.exists(tmp_tar_archive[:-3]) and \
             tmp_tar_archive[:-3].endswith('.tar'):
-        os.remove(tmp_tar_archive)
+        os.remove(tmp_tar_archive[:-3])
 #def send_qpid_message(message, key):
 #    """
 #        sends specified message to predefined broker, topic

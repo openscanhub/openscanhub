@@ -1,0 +1,17 @@
+{% load i18n %}
+<table class="list" width="100%">
+  <tr>
+    <th>{% trans "ID" %}</th>
+    <th>{% trans "NVR" %}</th>
+    <th>{% trans "Base" %}</th>
+    <th>{% trans "State" %}</th>
+  </tr>
+{% for scan in scan_list %}
+  <tr>
+    <td>{{ scan.id }}</a></td>
+    <td>{{ scan.nvr }}</td>
+    <td>{{ scan.base }}</td>
+    <td>{{ scan.state }}</td>
+  </tr>
+{% endfor %}
+</table>

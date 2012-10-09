@@ -94,6 +94,7 @@ def create_errata_scan(kwargs):
     # if base is specified, try to fetch it; if it doesn't exist, create
     # new task for it
     base_obj = None
+    base_scan = None
     if base:
         try:
             base_obj = get_scan_by_nvr(base)
@@ -110,7 +111,7 @@ def create_errata_scan(kwargs):
 
             parent_task = Task.objects.get(id=task_id)
 
-            create_errata_scan(o)
+            base_scan = create_errata_scan(o)
 
             # wait has to be after creation of new subtask
             # TODO wait should be executed in one transaction with creation of
@@ -123,10 +124,16 @@ def create_errata_scan(kwargs):
     scan = Scan.create_scan(scan_type=scan_type, nvr=nvr, task_id=task_id,
                             tag=tag_obj, base=base_obj, username=username)
 
+    if base_scan is not None:    
+        scan.base = base_scan
+        scan.save()
+
     options['scan_id'] = scan.id
     task = Task.objects.get(id=task_id)
     task.args = options
     task.save()
+    
+    return scan
 
 
 def finish_scanning(scan_id):
