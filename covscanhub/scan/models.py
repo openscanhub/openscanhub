@@ -4,6 +4,8 @@
 from django.db import models
 from kobo.hub.models import Task
 from kobo.types import Enum
+from django.contrib.auth.models import User
+
 
 SCAN_STATES = Enum(
     "QUEUED",            # scan was submitted, waiting for scheduler
@@ -82,8 +84,7 @@ class Scan(models.Model):
                                         choices=SCAN_STATES.get_mapping(),
                                         help_text="Current scan state")
     # string containing user's name who is responsible for scan
-    username = models.CharField("Username", max_length=32, blank=True,
-                                null=True,)
+    username = models.ForeignKey(User)
 
     def __unicode__(self):
         if self.base is None:

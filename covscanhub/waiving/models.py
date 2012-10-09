@@ -3,6 +3,7 @@
 import django.db.models as models
 from covscanhub.scan.models import Scan
 from kobo.types import Enum
+from django.contrib.auth.models import User
 
 
 DEFECT_STATES = Enum(
@@ -44,7 +45,7 @@ class Event(models.Model):
 class Defect(models.Model):
     #ARRAY_VS_SINGLETON | BUFFER_SIZE_WARNING
     checker = models.ForeignKey("Checker", max_length=64,
-                                verbose_name="Checker"
+                                verbose_name="Checker",
                                 blank=False, null=False)
     #CWE-xxx
     annotation = models.CharField("Annotation", max_length=32,
@@ -93,7 +94,7 @@ class Waiver(models.Model):
                               blank=False, null=False,
                               help_text="Waiver is associated with this \
 checker group")
-    user = 
+    user = models.ForeignKey(User)
 
     def __unicode__(self):
         return "%s - %s [%s]" % (self.result, self.group, self.message)
