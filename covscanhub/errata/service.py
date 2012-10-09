@@ -119,7 +119,7 @@ def create_errata_scan(kwargs):
             parent_task.wait()
         except MultipleObjectsReturned:
             #return latest, but this shouldnt happened
-            Task.objects.filter(base=base).order_by('-dt_created')[0]
+            base_obj = Task.objects.filter(base=base).order_by('-dt_created')[0]
 
     scan = Scan.create_scan(scan_type=scan_type, nvr=nvr, task_id=task_id,
                             tag=tag_obj, base=base_obj, username=username)
@@ -137,10 +137,11 @@ def create_errata_scan(kwargs):
 
 
 def finish_scanning(scan_id):
-    size = run_diff(scan_id)
-
     scan = Scan.objects.get(id=scan_id)
-    # TODO insert found defects into database
+
+    if scan.base:
+        size = run_diff(scan_id)
+        # TODO insert found defects into database
 
     if scan.is_errata_scan():
         if size is None or size == 0:
