@@ -332,7 +332,7 @@ def create_results(scan):
             r.scanner = json_dict['scan']['analyzer']
         if 'analyzer-version' in json_dict['scan']:
             r.scanner_version = json_dict['scan']['analyzer-version']
-    r.scan = scan.id
+    r.scan = scan
     r.save()
 
     #load all defects
@@ -341,7 +341,7 @@ def create_results(scan):
             d = Defect()
             d.checker = defect['checker']
             d.annotation = defect['annotation']
-            d.result = r.id
+            d.result = r
             key_event = defect['key_event_idx']
 
             if 'events' in defect:
@@ -351,11 +351,11 @@ def create_results(scan):
                     e.file_name = event['file_name']
                     e.line = event['line']
                     e.message = event['message']
-                    e.defect = d.id
+                    e.defect = d
                     e.save()
                     if e_id is None:
                         if key_event == 0:
-                            e_id = e.id
+                            e_id = e
                         else:
                             key_event -= 1
 
