@@ -133,7 +133,7 @@ def finish_scanning(scan_id):
     size = run_diff(scan_id)
 
     scan = Scan.objects.get(id=scan_id)
-    scan.set_scanner()
+    # TODO insert found defects into database
 
     if scan.is_errata_scan():
         if size is None or size == 0:

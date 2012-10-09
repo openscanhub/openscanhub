@@ -164,7 +164,6 @@ def extract_logs_from_tarball(task_id, name=None):
                                 '&&', 'tar', '-xf',
                                 pipes.quote(tmp_tar_archive[:-3]),
                                 '-C ' + pipes.quote(task_dir)])
-            run(command, can_fail=False, stdout=False)
     elif tmp_tar_archive.endswith('lzma'):
             command = ' '.join(['unxz', pipes.quote(tmp_tar_archive),
                                 '&&', 'tar', '-xf',
@@ -177,11 +176,13 @@ def extract_logs_from_tarball(task_id, name=None):
         raise RuntimeError('Unsupported compression format (%s), task id: %s' %
                            (tmp_tar_archive, task_id))
     try:
-        run(command, can_fail=False, stdout=False,
-            logfile='/tmp/covscanhub_extract_tarball.log')
+        run(command, can_fail=False, stdout=False)
+#            logfile='/tmp/covscanhub_extract_tarball.log')
     except RuntimeError:
-        raise RuntimeError('unable to extract tarball archive %s \
-            I have used this command: %s' % (tar_archive, command))
+        raise RuntimeError('[%s] Unable to extract tarball archive %s \
+I have used this command: %s' % (task_id, tar_archive, command))
+    
+    #clean temporary file tmp_<nvr>.tar
     if os.path.exists(tmp_tar_archive):
         os.remove(tmp_tar_archive)
     if os.path.exists(tmp_tar_archive[:-5]) and \
