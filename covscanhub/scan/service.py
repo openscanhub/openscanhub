@@ -342,6 +342,8 @@ def create_results(scan):
             d.checker = defect['checker']
             d.annotation = defect['annotation']
             d.result = r
+            d.save() 
+            # we have to aquire id for 'd' so it is correctly linked to events
             key_event = defect['key_event_idx']
 
             if 'events' in defect:

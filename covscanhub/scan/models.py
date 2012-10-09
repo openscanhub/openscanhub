@@ -16,6 +16,8 @@ SCAN_STATES = Enum(
 
 SCAN_TYPES = Enum(
     "ERRATA",           # this scan was submitted from ET
+    "ERRATA_BASE",      # base scan for ERRATA does not exist
+                        # (this is basicly just mock build)
     "USER",             # some user posted this scan
 )
 
