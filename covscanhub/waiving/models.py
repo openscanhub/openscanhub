@@ -7,13 +7,17 @@ from django.contrib.auth.models import User
 
 
 DEFECT_STATES = Enum(
-    "NEW",    # newly introduced defect
-    "OLD",    # this one was present in base scan -- nothing new
-    "FIXED",  # present in base scan, but no longer in actual version; good job
+    "NEW",     # newly introduced defect
+    "OLD",     # this one was present in base scan -- nothing new
+    "FIXED",   # present in base, but no longer in actual version; good job
+    "UNKNOWN", # default value
 )
 
 
 class Result(models.Model):
+    """
+    Result of submited scan is held by this method.
+    """
     scanner = models.CharField("Analyser", max_length=32,
                                blank=True, null=True)
     scanner_version = models.CharField("Analyser's Version",
@@ -26,6 +30,10 @@ class Result(models.Model):
 
 
 class Event(models.Model):
+    """
+    Each Event is associated with some Defect. Event represents error in 
+    specified file on exact line with appropriate message.
+    """
     file_name = models.CharField("Filename", max_length=128,
                                  blank=True, null=True)
     line = models.CharField("Line", max_length=16,
@@ -43,6 +51,10 @@ class Event(models.Model):
 
 
 class Defect(models.Model):
+    """
+    One Result is composed of several Defects, each Defect is defined by
+    some Events where one is key event
+    """
     #ARRAY_VS_SINGLETON | BUFFER_SIZE_WARNING
     checker = models.ForeignKey("Checker", max_length=64,
                                 verbose_name="Checker",
@@ -58,7 +70,7 @@ class Defect(models.Model):
                                blank=True, null=True,
                                help_text="Result of scan")
 
-    state = models.PositiveIntegerField(default=DEFECT_STATES["NEW"],
+    state = models.PositiveIntegerField(default=DEFECT_STATES["UNKNOWN"],
                                         choices=DEFECT_STATES.get_mapping(),
                                         help_text="Defect state")
     def __unicode__(self):
@@ -66,6 +78,10 @@ class Defect(models.Model):
 
 
 class CheckerGroup(models.Model):
+    """
+    We don't want users to waive each defect so instead we compose checkers
+    into specified groups and users waive these groups.
+    """
     name = models.CharField("Checker's name", max_length=32,
                             blank=False, null=False)
 
@@ -74,6 +90,9 @@ class CheckerGroup(models.Model):
 
 
 class Checker(models.Model):
+    """
+    Checker is a type of defect.
+    """
     name = models.CharField("Checker's name", max_length=32,
                             blank=False, null=False)
     group = models.ForeignKey(CheckerGroup, verbose_name="Checker group",
@@ -85,6 +104,9 @@ checker belong")
         return "%s: %s" % (self.name, self.group)
 
 class Waiver(models.Model):
+    """
+    User acknowledges that defect is not a bug -- false positive.
+    """
     date = models.DateTimeField()
     message = models.TextField("Message")
     result = models.ForeignKey(Result, verbose_name="Result",

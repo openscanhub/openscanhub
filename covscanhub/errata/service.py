@@ -6,8 +6,10 @@ import os
 #import messaging.send_message
 from django.conf import settings
 import brew
-from covscanhub.scan.service import get_scan_by_nvr, run_diff, create_results
-from covscanhub.scan.models import Scan, Task, SCAN_STATES, Tag
+from covscanhub.scan.service import run_diff
+from covscanhub.scan.models import Scan, SCAN_STATES, Tag
+from covscanhub.waiving.service import create_results
+from kobo.hub.models import Task
 
 
 def create_errata_scan(kwargs):
@@ -97,7 +99,7 @@ def create_errata_scan(kwargs):
     base_scan = None
     if base:
         try:
-            base_obj = get_scan_by_nvr(base)
+            base_obj = Scan.objects.get(nvr=base)
         except ObjectDoesNotExist:
             import copy
             o = copy.deepcopy(kwargs)

@@ -3,7 +3,8 @@
     This module contains several services provided to XML-RPC calls mostly
 """
 
-from models import Scan, Task, SCAN_STATES, MockConfig
+from kobo.hub.models import Task
+from models import Scan, SCAN_STATES, MockConfig
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from kobo.shortcuts import run
 import os
@@ -12,7 +13,6 @@ import pipes
 #import django.conf.settings
 import brew
 import shutil
-import django.utils.simplejson as json
 from covscanhub.waiving.models import Result, Defect, Event
 
 ET_SCAN_PRIORITY = 20
@@ -20,7 +20,6 @@ ET_SCAN_PRIORITY = 20
 __all__ = (
     "update_scans_state",
     "run_diff",
-    "get_scan_by_nvr",
     "extract_logs_from_tarball",
     "create_diff_scan",
     "finish_scanning",
@@ -110,14 +109,6 @@ for scan %s' % scan_id)
             print "'%s' wasn't successfull; scan: %s path: %s, code: %s" % \
                 (fixed_diff_cmd, scan_id, task_dir, retcode)
     return os.path.getsize(diff_file_path)
-
-
-def get_scan_by_nvr(nvr):
-    """
-        returns scan by specified nvr
-        get_scan_by_nvr(nvr="package-1.2.3-el6")
-    """
-    return Scan.objects.get(nvr=nvr)
 
 
 def extract_logs_from_tarball(task_id, name=None):
@@ -280,7 +271,7 @@ def create_diff_scan(kwargs):
 
     if base:
         try:
-            base_obj = get_scan_by_nvr(base)
+            base_obj = Scan.objects.get(nvr=base)
         except ObjectDoesNotExist:
             import copy
             o = copy.deepcopy(kwargs)
@@ -306,67 +297,3 @@ def create_diff_scan(kwargs):
     task = Task.objects.get(id=task_id)
     task.args = options
     task.save()
-
-
-def create_results(scan):
-    """
-    Task finished, so this method should update results
-    """
-
-    task_dir = Task.get_task_dir(scan.task.id)
-
-    #json's path is <TASK_DIR>/<NVR>/run1/<NVR>.js
-    defects_path = os.path.join(task_dir, scan.nvr,
-                                'run1', scan.nvr + '.js')
-    try:
-        f = open(defects_path, 'r')
-    except IOError:
-        print 'Unable to open file %s' % defects_path
-        return
-    json_dict = json.load(f)
-
-    r = Result()
-
-    if 'scan' in json_dict:
-        if 'analyzer' in json_dict['scan']:
-            r.scanner = json_dict['scan']['analyzer']
-        if 'analyzer-version' in json_dict['scan']:
-            r.scanner_version = json_dict['scan']['analyzer-version']
-    r.scan = scan
-    r.save()
-
-    #load all defects
-    if 'defects' in json_dict:
-        for defect in json_dict['defects']:
-            d = Defect()
-            d.checker = defect['checker']
-            d.annotation = defect['annotation']
-            d.result = r
-            d.save() 
-            # we have to aquire id for 'd' so it is correctly linked to events
-            key_event = defect['key_event_idx']
-
-            if 'events' in defect:
-                e_id = None
-                for event in defect['events']:
-                    e = Event()
-                    e.file_name = event['file_name']
-                    e.line = event['line']
-                    e.event = event['event']
-                    e.message = event['message']
-                    e.defect = d
-                    e.save()
-                    if e_id is None:
-                        if key_event == 0:
-                            e_id = e
-                        else:
-                            key_event -= 1
-
-                d.key_event = e_id
-            d.save()
-
-    # find out which are fixed or newly introduced
-    # fixed_diff_file = 'csdiff_fixed.out'
-    # diff_file = 'csdiff.out'
-
-    f.close()
