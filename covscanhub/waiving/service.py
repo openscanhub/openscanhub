@@ -6,9 +6,11 @@
 """
 
 import django.utils.simplejson as json
-from models import DEFECT_STATES, Defect, Event, Result
+from models import DEFECT_STATES, Defect, Event, Result, Checker, CheckerGroup
 import os
 from kobo.hub.models import Task
+from django.core.exceptions import ObjectDoesNotExist
+
 
 def load_defects_from_json(json_dict, result, 
                         defect_state=DEFECT_STATES['UNKNOWN']):
@@ -19,7 +21,15 @@ def load_defects_from_json(json_dict, result,
     if 'defects' in json_dict:
         for defect in json_dict['defects']:
             d = Defect()
-            d.checker = defect['checker']
+            json_checker_name = defect['checker']
+            try:
+                checker = Checker.objects.get(name=json_checker_name)
+            except ObjectDoesNotExist:
+                checker = Checker()
+                checker.name = json_checker_name
+                checker.group = CheckerGroup.objects.get(name='Default')
+                checker.save
+            d.checker = checker
             d.annotation = defect['annotation']
             d.result = result
             d.state = defect_state
