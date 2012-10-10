@@ -25,10 +25,13 @@ def load_defects_from_json(json_dict, result,
             try:
                 checker = Checker.objects.get(name=json_checker_name)
             except ObjectDoesNotExist:
+                print "%s does not exist, so I'll create it" % \
+                    json_checker_name
                 checker = Checker()
                 checker.name = json_checker_name
                 checker.group = CheckerGroup.objects.get(name='Default')
                 checker.save
+            print "defect's checker is %s" % checker
             d.checker = checker
             d.annotation = defect['annotation']
             d.result = result
