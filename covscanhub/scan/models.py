@@ -107,6 +107,6 @@ class Scan(models.Model):
         scan.tag = tag
         scan.task = Task.objects.get(id=task_id)
         scan.state = SCAN_STATES["QUEUED"]
-        scan.username = username
+        scan.username = User.objects.get(username=username)
         scan.save()
         return scan
