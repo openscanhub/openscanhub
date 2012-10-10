@@ -25,18 +25,15 @@ def load_defects_from_json(json_dict, result,
             try:
                 checker = Checker.objects.get(name=json_checker_name)
             except ObjectDoesNotExist:
-                print "%s does not exist, so I'll create it" % \
-                    json_checker_name
                 checker = Checker()
                 checker.name = json_checker_name
                 checker.group = CheckerGroup.objects.get(name='Default')
-                checker.save
-            print "defect's checker is %s" % checker
+                checker.save()
             d.checker = checker
             d.annotation = defect['annotation']
             d.result = result
             d.state = defect_state
-            d.save() 
+            d.save()
             # we have to aquire id for 'd' so it is correctly linked to events
             key_event = defect['key_event_idx']
 
@@ -105,6 +102,7 @@ def create_results(scan):
         return
     fixed_json_dict = json.load(fixed_file)
     load_defects_from_json(fixed_json_dict, r, DEFECT_STATES['FIXED'])
+    fixed_file.close()
     
     try:
         diff_file = open(diff_file_path, 'r')
@@ -113,4 +111,5 @@ def create_results(scan):
         return
     diff_json_dict = json.load(diff_file)
     load_defects_from_json(diff_json_dict, r, DEFECT_STATES['NEW'])
+    diff_file.close()
     
