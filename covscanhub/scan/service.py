@@ -3,17 +3,16 @@
     This module contains several services provided to XML-RPC calls mostly
 """
 
-from kobo.hub.models import Task
-from models import Scan, SCAN_STATES, MockConfig
-from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
-from kobo.shortcuts import run
 import os
 import pipes
 #import messaging.send_message
-#import django.conf.settings
-import brew
 import shutil
-from covscanhub.waiving.models import Result, Defect, Event
+import copy
+
+from kobo.hub.models import Task
+from models import Scan, SCAN_STATES
+from kobo.shortcuts import run
+from covscanhub.other.shortcuts import get_mock_by_name, check_brew_build
 
 ET_SCAN_PRIORITY = 20
 
@@ -167,7 +166,7 @@ def extract_logs_from_tarball(task_id, name=None):
                                 '-C ' + pipes.quote(task_dir)])
     elif tmp_tar_archive.endswith('gz'):
             command = ['tar', '-xzf', pipes.quote(tmp_tar_archive),
-                       '-C ' + pipes.quote(task_dir)]
+               '-C ' + pipes.quote(task_dir)]
     else:
         raise RuntimeError('Unsupported compression format (%s), task id: %s' %
                            (tmp_tar_archive, task_id))
@@ -194,6 +193,70 @@ I have used this command: %s' % (task_id, tar_archive, command))
 #    messaging.send_message(django.conf.settings.qpid_connection, message, key)
 
 
+def create_diff_base_scan(kwargs, parent_id):
+    """
+        create scan of a package and perform diff on results against specified
+        version
+        options of this scan are in dict 'kwargs'
+
+        kwargs
+         - scan_type - type of scan (SCAN_TYPES in covscanhub.scan.models)
+         - task_user - username from request.user.username
+         - username - name of user who is requesting scan
+         - nvr - name, version, release of scanned package
+         - base - nvr of previous version, the one to make diff against
+         - nvr_mock - mock config
+         - base_mock - mock config
+    """
+    options = {}
+
+    #from request.user
+    task_user = kwargs['task_user']
+
+    #supplied by scan initiator
+    #username = kwargs['username']
+    #scan_type = kwargs['scan_type']
+    nvr = kwargs['nvr']
+    #base = kwargs['base']
+
+    #Label, description or any reason for this task.
+    task_label = nvr
+
+    base_mock = kwargs['base_mock']
+    priority = kwargs.get('priority', 10)
+    comment = kwargs.get('comment', nvr)
+
+    options["mock_config"] = base_mock
+
+    task_id = Task.create_task(
+        owner_name=task_user,
+        label=task_label,
+        method='VersionDiffBuild',
+        args={},  # I want to add scan's id here, so I update it later
+        comment=comment,
+        state=SCAN_STATES["QUEUED"],
+        priority=priority,
+        parent_id=parent_id
+    )
+    task_dir = Task.get_task_dir(task_id)
+
+    if not os.path.isdir(task_dir):
+        try:
+            os.makedirs(task_dir, mode=0755)
+        except OSError, ex:
+            if ex.errno != 17:
+                raise
+    """
+    scan = Scan.create_scan(scan_type=scan_type, nvr=nvr, task_id=task_id,
+                            tag=None, base=base_obj, username=username)
+
+    options['scan_id'] = scan.id
+    task = Task.objects.get(id=task_id)
+    task.args = options
+    task.save()
+    """
+
+
 def create_diff_scan(kwargs):
     """
         create scan of a package and perform diff on results against specified
@@ -202,12 +265,12 @@ def create_diff_scan(kwargs):
 
         kwargs
          - scan_type - type of scan (SCAN_TYPES in covscanhub.scan.models)
-         - username - name of user who is requesting scan (from ET)
          - task_user - username from request.user.username
+         - username - name of user who is requesting scan
          - nvr - name, version, release of scanned package
-         - base - previous version of package, the one to make diff against
-         - id - errata ID
-         - tag - tag from brew
+         - base - nvr of previous version, the one to make diff against
+         - nvr_mock - mock config
+         - base_mock - mock config
     """
     options = {}
 
@@ -219,38 +282,24 @@ def create_diff_scan(kwargs):
     scan_type = kwargs['scan_type']
     nvr = kwargs['nvr']
     base = kwargs['base']
-    #TODO request two mock configs
 
     #Label, description or any reason for this task.
     task_label = nvr
 
-    mock = kwargs['mock']
+    nvr_mock = kwargs['nvr_mock']
+    base_mock = kwargs['base_mock']
     priority = kwargs.get('priority', 10)
-    comment = kwargs.get('comment', '')
+    comment = kwargs.get('comment', nvr)
 
     #does mock config exist?
-    try:
-        conf = MockConfig.objects.get(name=mock)
-    except:
-        raise ObjectDoesNotExist("Unknown mock config: %s" % mock)
-    if not conf.enabled:
-        raise RuntimeError("Mock config is disabled: %s" % conf)
-    options["mock_config"] = mock
+    get_mock_by_name(nvr_mock)
+    options["mock_config"] = nvr_mock
+    get_mock_by_name(base_mock)
 
     #Test if SRPM exists
-    if nvr.endswith(".src.rpm"):
-        srpm = nvr[:-8]
-    else:
-        srpm = nvr
-    # XXX: hardcoded
-    brew_proxy = brew.ClientSession("http://brewhub.devel.redhat.com/brewhub")
-    try:
-        brew_proxy.getBuild(srpm)
-        options['brew_build'] = srpm
-    except brew.GenericError:
-        raise RuntimeError("Brew build of package %s does not exist" % nvr)
+    options['brew_build'] = check_brew_build(nvr)
+    check_brew_build(base)
 
-    #TODO: which username? errata tool, or user?
     task_id = Task.create_task(
         owner_name=task_user,
         label=task_label,
@@ -269,26 +318,14 @@ def create_diff_scan(kwargs):
             if ex.errno != 17:
                 raise
 
-    if base:
-        try:
-            base_obj = Scan.objects.get(nvr=base)
-        except ObjectDoesNotExist:
-            import copy
-            o = copy.deepcopy(kwargs)
-            o['nvr'] = base
-            o['base'] = None
-            o['priority'] = o['priority'] + 1
-            if id in o:
-                o['id'] = None
-            #TODO shouldn't we change tag?
-            #TODO this scan /base/ has to be made earlier than outer scan /nvr/
-            create_diff_scan(o)
-        except MultipleObjectsReturned:
-            """
-            TODO what to do?
-            """
-    else:
-        base_obj = None
+    parent_task = Task.objects.get(id=task_id)
+    base_obj = None
+    create_diff_base_scan(copy.deepcopy(kwargs), task_id)
+
+    # wait has to be after creation of new subtask
+    # TODO wait should be executed in one transaction with creation of
+    # child
+    parent_task.wait()
 
     scan = Scan.create_scan(scan_type=scan_type, nvr=nvr, task_id=task_id,
                             tag=None, base=base_obj, username=username)

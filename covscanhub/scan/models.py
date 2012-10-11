@@ -18,8 +18,8 @@ SCAN_STATES = Enum(
 
 SCAN_TYPES = Enum(
     "ERRATA",           # this scan was submitted from ET
-    "ERRATA_BASE",      # base scan for ERRATA does not exist
-                        # (this is basicly just mock build)
+    # base scan for ERRATA does not exist (this is basicly just mock build)
+    "ERRATA_BASE",
     "USER",             # some user posted this scan
 )
 
@@ -94,6 +94,9 @@ class Scan(models.Model):
 
     def is_errata_scan(self):
         return self.scan_type == SCAN_TYPES['ERRATA']
+
+    def is_errata_base_scan(self):
+        return self.scan_type == SCAN_TYPES['ERRATA_BASE']
 
     def is_user_scan(self):
         return self.scan_type == SCAN_TYPES['USER']

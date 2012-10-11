@@ -130,10 +130,11 @@ def create_user_diff_scan(request, kwargs):
         version
 
         kwargs:
-         - username - name of user who is requesting scan (from ET)
+         - username - name of user who is requesting scan
          - nvr - name, version, release of scanned package
-         - base - previous version of package, the one to make diff against
-         - mock - mock config
+         - base - nvr of previous version, the one to make diff against
+         - nvr_mock - mock config
+         - base_mock - mock config
     """
     kwargs['scan_type'] = SCAN_TYPES['USER']
     kwargs['task_user'] = request.user.username

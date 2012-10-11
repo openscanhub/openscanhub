@@ -7,7 +7,7 @@ import os
 from django.conf import settings
 import brew
 from covscanhub.scan.service import run_diff
-from covscanhub.scan.models import Scan, SCAN_STATES, Tag
+from covscanhub.scan.models import Scan, SCAN_STATES, SCAN_TYPES, Tag
 from covscanhub.waiving.service import create_results
 from kobo.hub.models import Task
 import copy
@@ -17,7 +17,7 @@ def create_errata_base_scan(kwargs, task_id):
 
     task_user = kwargs['task_user']
     username = kwargs['username']
-    scan_type = SCAN_STATES['ERRATA_BASE']
+    scan_type = SCAN_TYPES['ERRATA_BASE']
     base_obj = None
     nvr = kwargs['base']
     task_label = nvr
@@ -163,7 +163,8 @@ def create_errata_scan(kwargs):
             parent_task.wait()
         except MultipleObjectsReturned:
             #return latest, but this shouldnt happened
-            base_obj = Task.objects.filter(base=base).order_by('-dt_created')[0]
+            base_obj = Scan.objects.filter(nvr=base).\
+                order_by('-task__dt_finished')[0]
 
     scan = Scan.create_scan(scan_type=scan_type, nvr=nvr, task_id=task_id,
                             tag=tag_obj, base=base_obj, username=username)
@@ -184,7 +185,7 @@ def finish_scanning(scan_id):
         size = run_diff(scan_id)
         # TODO insert found defects into database
 
-    if scan.is_errata_scan():
+    if not scan.is_user_scan():
         create_results(scan)
         if size is None or size == 0:
             scan.state = SCAN_STATES['PASSED']

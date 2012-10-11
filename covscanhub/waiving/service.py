@@ -93,23 +93,26 @@ def create_results(scan):
     r.scan = scan
     r.save()
     
-    f.close()    
+    f.close()
     
-    try:
-        fixed_file = open(fixed_file_path, 'r')
-    except IOError:
-        print 'Unable to open file %s' % fixed_file_path
-        return
-    fixed_json_dict = json.load(fixed_file)
-    load_defects_from_json(fixed_json_dict, r, DEFECT_STATES['FIXED'])
-    fixed_file.close()
-    
-    try:
-        diff_file = open(diff_file_path, 'r')
-    except IOError:
-        print 'Unable to open file %s' % diff_file_path
-        return
-    diff_json_dict = json.load(diff_file)
-    load_defects_from_json(diff_json_dict, r, DEFECT_STATES['NEW'])
-    diff_file.close()
+    if scan.is_errata_scan():
+        try:
+            fixed_file = open(fixed_file_path, 'r')
+        except IOError:
+            print 'Unable to open file %s' % fixed_file_path
+            return
+        fixed_json_dict = json.load(fixed_file)
+        load_defects_from_json(fixed_json_dict, r, DEFECT_STATES['FIXED'])
+        fixed_file.close()
+        
+        try:
+            diff_file = open(diff_file_path, 'r')
+        except IOError:
+            print 'Unable to open file %s' % diff_file_path
+            return
+        diff_json_dict = json.load(diff_file)
+        load_defects_from_json(diff_json_dict, r, DEFECT_STATES['NEW'])
+        diff_file.close()
+        
+        return os.path.getsize(diff_file_path)
     
