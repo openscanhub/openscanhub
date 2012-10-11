@@ -132,12 +132,7 @@ class VersionDiffBuild(TaskBase):
         if retcode:
             self.fail()
 
-        result = self.hub.worker.run_diff_on_scans(self.args['scan_id'])
-
-        if result is None or result == 0:
-            self.hub.worker.set_scan_to_finished(self.args['scan_id'])
-        else:
-            self.hub.worker.set_scan_to_needs_insp(self.args['scan_id'])
+        self.hub.worker.finish_scan(self.args['scan_id'])
 
     @classmethod
     def cleanup(cls, hub, conf, task_info):
