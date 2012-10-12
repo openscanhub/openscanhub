@@ -430,7 +430,7 @@ def create_diff_task(kwargs):
     check_and_create_dirs(task_dir)
 
     parent_task = Task.objects.get(id=task_id)
-    create_diff_base_scan(copy.deepcopy(kwargs), task_id)
+    create_base_diff_task(copy.deepcopy(kwargs), task_id)
 
     # wait has to be after creation of new subtask
     # TODO wait should be executed in one transaction with creation of
