@@ -24,6 +24,7 @@ def create_errata_base_scan(kwargs, task_id):
     base_obj = None
     nvr = kwargs['base']
     task_label = nvr
+    options['brew_build'] = nvr
     
     tag = kwargs['base_tag']
     
@@ -93,6 +94,7 @@ def create_errata_scan(kwargs):
     nvr = kwargs['nvr']
     base = kwargs['base']
     options['errata_id'] = kwargs['id']
+    options['brew_build'] = nvr
 
     #Label, description or any reason for this task.
     task_label = nvr
