@@ -6,7 +6,7 @@ import os
 #import messaging.send_message
 from django.conf import settings
 import brew
-from covscanhub.scan.service import run_diff
+from covscanhub.scan.service import prepare_and_execute_diff
 from covscanhub.scan.models import Scan, SCAN_STATES, SCAN_TYPES, Tag
 from covscanhub.waiving.service import create_results
 from kobo.hub.models import Task
@@ -173,24 +173,29 @@ def create_errata_scan(kwargs):
     task = Task.objects.get(id=task_id)
     task.args = options
     task.save()
-    
+
     return scan
 
 
-def finish_scanning(scan_id):
-    scan = Scan.objects.get(id=scan_id)
+def finish_scanning(scan_id=None, task_id=None):
+    if scan_id is not None:
+        scan = Scan.objects.get(id=scan_id)
 
-    size = None    
-    if scan.base:
-        size = run_diff(scan_id)
-        # TODO insert found defects into database
-
-    if not scan.is_user_scan():
+        size = None
+        if scan.base:
+            size = prepare_and_execute_diff(scan.task, scan.base.task,
+                                            scan.nvr, scan.base.nvr)
         create_results(scan)
         if size is None or size == 0:
             scan.state = SCAN_STATES['PASSED']
         else:
             scan.state = SCAN_STATES['NEEDS_INSPECTION']
-    elif scan.is_user_scan():
-        scan.state = SCAN_STATES['FINISHED']
-    scan.save()
+        scan.save()
+    elif task_id is not None:
+        task = Task.objects.get(id=task_id)
+        if task.subtask_count == 1:
+            child_task = task.subtasks()[0]
+            prepare_and_execute_diff(task, child_task, task.label,
+                                     child_task.label)
+        elif task.subtask_count > 1:
+            raise RuntimeError('Task %s contains too much subtasks' % task.id)

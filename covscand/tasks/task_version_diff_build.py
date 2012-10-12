@@ -39,10 +39,6 @@ class VersionDiffBuild(TaskBase):
             level=logging.DEBUG
         )
 
-        logging.debug("I'm about to set scan %s to state 'SCANNING'" %
-                      self.args['scan_id'])
-        self.hub.worker.set_scan_to_scanning(self.args['scan_id'])
-
         mock_config = self.args.pop("mock_config")
         #keep_covdata = self.args.pop("keep_covdata", False)
         #all_checks = self.args.pop("all", False)
