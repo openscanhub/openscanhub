@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from covscanhub.scan.models import MockConfig
+from covscanhub.scan.models import MockConfig, Tag
 from django.core.exceptions import ObjectDoesNotExist
 from django.conf import settings
 
@@ -30,7 +30,7 @@ def get_mock_by_tag_name(name):
     try:
         tag = Tag.objects.get(name=name)
     except:
-        raise ObjectDoesNotExist("Unknown mock config: %s" % name)
+        raise ObjectDoesNotExist("Unknown tag config: %s" % name)
     if not tag.mock.enabled:
         raise RuntimeError("Mock config is disabled: %s" % tag.mock)
     return tag.mock
@@ -41,7 +41,6 @@ def check_brew_build(name):
         srpm = name[:-8]
     else:
         srpm = name
-    # XXX: hardcoded
     brew_proxy = brew.ClientSession(settings.BREW_HUB)
     try:
         brew_proxy.getBuild(srpm)
