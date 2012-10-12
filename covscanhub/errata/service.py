@@ -10,8 +10,8 @@ from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from covscanhub.scan.service import prepare_and_execute_diff
 from covscanhub.scan.models import Scan, SCAN_STATES, SCAN_TYPES, Tag
 from covscanhub.waiving.service import create_results
-from covscanhub.other.shortcuts import get_mock_by_name, check_brew_build, \
-check_and_create_dirs
+from covscanhub.other.shortcuts import check_brew_build, check_and_create_dirs,\
+ get_mock_by_tag_name
 from kobo.hub.models import Task
 
             

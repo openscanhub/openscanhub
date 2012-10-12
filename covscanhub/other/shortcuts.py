@@ -12,6 +12,7 @@ __all__ = (
     'get_mock_by_name',
     'check_brew_build',
     'check_and_create_dirs',
+    'get_mock_by_tag_name',
 )
 
 
