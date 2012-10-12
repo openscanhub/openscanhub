@@ -23,6 +23,7 @@ __all__ = (
     "extract_logs_from_tarball",
     "create_diff_task",
     "finish_scanning",
+    'prepare_and_execute_diff',
 )
 
 

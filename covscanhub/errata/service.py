@@ -174,28 +174,4 @@ def create_errata_scan(kwargs):
     task.args = options
     task.save()
 
-    return scan
-
-
-def finish_scanning(scan_id=None, task_id=None):
-    if scan_id is not None:
-        scan = Scan.objects.get(id=scan_id)
-
-        size = None
-        if scan.base:
-            size = prepare_and_execute_diff(scan.task, scan.base.task,
-                                            scan.nvr, scan.base.nvr)
-        create_results(scan)
-        if size is None or size == 0:
-            scan.state = SCAN_STATES['PASSED']
-        else:
-            scan.state = SCAN_STATES['NEEDS_INSPECTION']
-        scan.save()
-    elif task_id is not None:
-        task = Task.objects.get(id=task_id)
-        if task.subtask_count == 1:
-            child_task = task.subtasks()[0]
-            prepare_and_execute_diff(task, child_task, task.label,
-                                     child_task.label)
-        elif task.subtask_count > 1:
-            raise RuntimeError('Task %s contains too much subtasks' % task.id)
+    return scan    
