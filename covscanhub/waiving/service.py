@@ -12,6 +12,11 @@ from kobo.hub.models import Task
 from django.core.exceptions import ObjectDoesNotExist
 
 
+__all__ = (
+    'create_results',
+)
+
+
 def load_defects_from_json(json_dict, result, 
                         defect_state=DEFECT_STATES['UNKNOWN']):
     """
