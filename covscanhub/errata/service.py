@@ -1,16 +1,19 @@
 # -*- coding: utf-8 -*-
 
-
-from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
+import copy
+import brew
 import os
+
 #import messaging.send_message
 from django.conf import settings
-import brew
+from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from covscanhub.scan.service import prepare_and_execute_diff
 from covscanhub.scan.models import Scan, SCAN_STATES, SCAN_TYPES, Tag
 from covscanhub.waiving.service import create_results
+from covscanhub.other.shortcuts import get_mock_by_name, check_brew_build, \
+check_and_create_dirs
 from kobo.hub.models import Task
-import copy
+
             
 def create_errata_base_scan(kwargs, task_id):
     options = {}
@@ -22,22 +25,18 @@ def create_errata_base_scan(kwargs, task_id):
     nvr = kwargs['base']
     task_label = nvr
     
-    #TODO change this
-    tag = kwargs['tag']
-    tag_obj = Tag.objects.get(name=tag)
-    options['mock_config'] = tag_obj.mock.name
+    tag = kwargs['base_tag']
     
     priority = kwargs.get('priority', settings.ET_SCAN_PRIORITY) + 1
     comment = 'Errata Tool Base scan of %s requested by %s' % \
         (nvr, kwargs['base'])
 
     # Test if SRPM exists
-    brew_proxy = brew.ClientSession(settings.BREW_HUB)
-    try:
-        brew_proxy.getBuild(nvr)
-        options['brew_build'] = nvr
-    except brew.GenericError:
-        raise RuntimeError("Brew build of package %s does not exist" % nvr)
+    check_brew_build(nvr)
+
+    #does tag exist?
+    options['mock_config'] = get_mock_by_tag_name(tag).name
+    tag_obj = Tag.objects.get(name=tag)
 
     task_id = Task.create_task(
         owner_name=task_user,
@@ -51,12 +50,7 @@ def create_errata_base_scan(kwargs, task_id):
     )
     task_dir = Task.get_task_dir(task_id)
 
-    if not os.path.isdir(task_dir):
-        try:
-            os.makedirs(task_dir, mode=0755)
-        except OSError, ex:
-            if ex.errno != 17:
-                raise
+    check_and_create_dirs(task_dir)
 
     # if base is specified, try to fetch it; if it doesn't exist, create
     # new task for it
@@ -103,33 +97,17 @@ def create_errata_scan(kwargs):
     #Label, description or any reason for this task.
     task_label = nvr
 
-    tag = kwargs['tag']
+    tag = kwargs['nvr_tag']
     priority = kwargs.get('priority', settings.ET_SCAN_PRIORITY)
 
     #if kwargs does not have 'id', it is base scan
     comment = 'Errata Tool Scan of %s' % nvr
 
     #does tag exist?
-    try:
-        tag_obj = Tag.objects.get(name=tag)
-    except ObjectDoesNotExist:
-        raise ObjectDoesNotExist("Unknown tag: %s" % tag)
-    if not tag_obj.mock.enabled:
-        raise RuntimeError("Mock config is disabled: %s" % tag_obj.mock)
-    options['mock_config'] = tag_obj.mock.name
-
-    if nvr.endswith(".src.rpm"):
-        srpm = nvr[:-8]
-    else:
-        srpm = nvr
+    options['mock_config'] = get_mock_by_tag_name(tag).name
 
     # Test if SRPM exists
-    brew_proxy = brew.ClientSession(settings.BREW_HUB)
-    try:
-        brew_proxy.getBuild(srpm)
-        options['brew_build'] = srpm
-    except brew.GenericError:
-        raise RuntimeError("Brew build of package %s does not exist" % nvr)
+    check_brew_build(nvr)
 
     task_id = Task.create_task(
         owner_name=task_user,
@@ -142,12 +120,7 @@ def create_errata_scan(kwargs):
     )
     task_dir = Task.get_task_dir(task_id)
 
-    if not os.path.isdir(task_dir):
-        try:
-            os.makedirs(task_dir, mode=0755)
-        except OSError, ex:
-            if ex.errno != 17:
-                raise
+    check_and_create_dirs(task_dir)
 
     # if base is specified, try to fetch it; if it doesn't exist, create
     # new task for it

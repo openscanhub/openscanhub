@@ -8,6 +8,13 @@ import brew
 import os
 
 
+__all__ = (
+    'get_mock_by_name',
+    'check_brew_build',
+    'check_and_create_dirs',
+)
+
+
 def get_mock_by_name(name):
     try:
         conf = MockConfig.objects.get(name=name)
@@ -15,6 +22,17 @@ def get_mock_by_name(name):
         raise ObjectDoesNotExist("Unknown mock config: %s" % name)
     if not conf.enabled:
         raise RuntimeError("Mock config is disabled: %s" % conf)
+    return conf
+
+
+def get_mock_by_tag_name(name):
+    try:
+        tag = Tag.objects.get(name=name)
+    except:
+        raise ObjectDoesNotExist("Unknown mock config: %s" % name)
+    if not tag.mock.enabled:
+        raise RuntimeError("Mock config is disabled: %s" % tag.mock)
+    return tag.mock
 
 
 def check_brew_build(name):
