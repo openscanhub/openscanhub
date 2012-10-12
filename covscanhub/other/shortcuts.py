@@ -12,7 +12,7 @@ __all__ = (
     'get_mock_by_name',
     'check_brew_build',
     'check_and_create_dirs',
-    'get_mock_by_tag_name',
+    'get_tag_by_name',
 )
 
 
@@ -26,14 +26,14 @@ def get_mock_by_name(name):
     return conf
 
 
-def get_mock_by_tag_name(name):
+def get_tag_by_name(name):
     try:
         tag = Tag.objects.get(name=name)
     except:
         raise ObjectDoesNotExist("Unknown tag config: %s" % name)
     if not tag.mock.enabled:
         raise RuntimeError("Mock config is disabled: %s" % tag.mock)
-    return tag.mock
+    return tag
 
 
 def check_brew_build(name):

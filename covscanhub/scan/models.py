@@ -91,7 +91,7 @@ class Scan(models.Model):
     #   - scan has finished
     #   - user opens waiving page
     #   - anytime user changes something (waive something, etc.)
-    last_access = models.DateTimeField(blank=True)
+    last_access = models.DateTimeField(blank=True, null=True)
     
     rhel_version = models.CharField("RHEL Version", max_length=16, blank=False,
                                     help_text="Version of RHEL in which will \

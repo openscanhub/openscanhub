@@ -11,7 +11,7 @@ from covscanhub.scan.service import prepare_and_execute_diff
 from covscanhub.scan.models import Scan, SCAN_STATES, SCAN_TYPES, Tag
 from covscanhub.waiving.service import create_results
 from covscanhub.other.shortcuts import check_brew_build, check_and_create_dirs,\
- get_mock_by_tag_name
+ get_tag_by_name
 from kobo.hub.models import Task
 
             
@@ -35,8 +35,8 @@ def create_errata_base_scan(kwargs, task_id):
     check_brew_build(nvr)
 
     #does tag exist?
-    options['mock_config'] = get_mock_by_tag_name(tag).name
-    tag_obj = Tag.objects.get(name=tag)
+    tag_obj = get_tag_by_name(tag)
+    options['mock_config'] = tag_obj.mock.name
 
     task_id = Task.create_task(
         owner_name=task_user,
@@ -104,7 +104,9 @@ def create_errata_scan(kwargs):
     comment = 'Errata Tool Scan of %s' % nvr
 
     #does tag exist?
-    options['mock_config'] = get_mock_by_tag_name(tag).name
+    tag_obj = get_tag_by_name(tag)
+    options['mock_config'] = tag_obj.mock.name
+    
 
     # Test if SRPM exists
     check_brew_build(nvr)
