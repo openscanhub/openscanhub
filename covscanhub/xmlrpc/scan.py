@@ -18,7 +18,7 @@ from covscanhub.scan.service import create_diff_task
 __all__ = (
     "diff_build",
     "mock_build",
-    "create_user_diff_scan",
+    "create_user_diff_task",
 )
 
 

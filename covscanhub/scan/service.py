@@ -21,7 +21,7 @@ __all__ = (
     "update_scans_state",
     "run_diff",
     "extract_logs_from_tarball",
-    "create_diff_scan",
+    "create_diff_task",
     "finish_scanning",
 )
 
