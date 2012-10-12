@@ -14,6 +14,7 @@ SCAN_STATES = Enum(
     "WAIVED",            # scan finished and everything is okay -- waived
     "PASSED",            # nothing new
     "FINISHED",          # scan finished -- USER scans only
+    "FAILED",          # scan failed -- this shouldn't happened
 )
 
 SCAN_TYPES = Enum(
@@ -83,8 +84,18 @@ class Scan(models.Model):
     state = models.PositiveIntegerField(default=SCAN_STATES["QUEUED"],
                                         choices=SCAN_STATES.get_mapping(),
                                         help_text="Current scan state")
-    # string containing user's name who is responsible for scan
     username = models.ForeignKey(User)
+    
+    #date when there was last access to scan
+    #should change when:
+    #   - scan has finished
+    #   - user opens waiving page
+    #   - anytime user changes something (waive something, etc.)
+    last_access = models.DateTimeField(blank=True)
+    
+    rhel_version = models.CharField("RHEL Version", max_length=16, blank=False,
+                                    help_text="Version of RHEL in which will \
+package appear")
 
     def __unicode__(self):
         if self.base is None:

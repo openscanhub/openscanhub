@@ -97,7 +97,7 @@ def finish_scan(request, scan_id):
         scan.state = SCAN_STATES['PASSED']
     else:
         scan.state = SCAN_STATES['NEEDS_INSPECTION']
-    scan.save()  
+    scan.save()
 
 
 @validate_worker

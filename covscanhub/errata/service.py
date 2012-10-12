@@ -73,18 +73,20 @@ def create_errata_base_scan(kwargs, task_id):
 
 def create_errata_scan(kwargs):
     """
-        create scan of a package and perform diff on results against specified
-        version
-        options of this scan are in dict 'kwargs'
+    create scan of a package and perform diff on results against specified
+    version
+    options of this scan are in dict 'kwargs'
 
-        kwargs
-         - scan_type - type of scan (SCAN_TYPES in covscanhub.scan.models)
-         - username - name of user who is requesting scan (from ET)
-         - task_user - username from request.user.username
-         - nvr - name, version, release of scanned package
-         - base - previous version of package, the one to make diff against
-         - id - errata ID
-         - tag - tag from brew
+    kwargs
+     - scan_type - type of scan (SCAN_TYPES in covscanhub.scan.models)
+     - username - name of user who is requesting scan (from ET)
+     - task_user - username from request.user.username
+     - nvr - name, version, release of scanned package
+     - base - previous version of package, the one to make diff against
+     - id - errata ID
+     - nvr_tag - tag of the package from brew
+     - base_tag - tag of the base package from brew
+     - rhel_version - version of enterprise linux in which will package appear
     """
     options = {}
 

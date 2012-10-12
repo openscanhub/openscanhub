@@ -6,7 +6,8 @@ import django.contrib.admin as admin
 from models import Tag, MockConfig, Scan
 
 class ScanAdmin(admin.ModelAdmin):
-    list_display = ("nvr", "scan_type", "base", "tag", "task", "state", 'username')
+    list_display = ("id", "nvr", "state", "scan_type", "base", "tag", "task",
+                    'username')
 
 
 admin.site.register(MockConfig)

@@ -128,7 +128,7 @@ class VersionDiffBuild(TaskBase):
         if retcode:
             self.fail()
 
-        self.hub.worker.finish_scan(self.task_id)
+        self.hub.worker.finish_task(self.task_id)
 
     @classmethod
     def cleanup(cls, hub, conf, task_info):

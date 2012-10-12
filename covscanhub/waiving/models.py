@@ -13,6 +13,12 @@ DEFECT_STATES = Enum(
     "UNKNOWN", # default value
 )
 
+WAIVER_TYPES = Enum(
+    "NOT_A_BUG", # defect is not a bug
+    "IS_A_BUG",  # defect is a bug and I'm going to fix it
+    "FIX_LATER", # defect is a bug and I'm going to fix it in next version
+)
+
 
 class Result(models.Model):
     """
@@ -105,7 +111,7 @@ checker belong")
 
 class Waiver(models.Model):
     """
-    User acknowledges that defect is not a bug -- false positive.
+    User acknowledges that he processed this defect and sorted it appropriatelly
     """
     date = models.DateTimeField()
     message = models.TextField("Message")
@@ -117,6 +123,10 @@ class Waiver(models.Model):
                               help_text="Waiver is associated with this \
 checker group")
     user = models.ForeignKey(User)
+    waiver_type = models.PositiveIntegerField(default=WAIVER_TYPES["IS_A_BUG"],
+                                        choices=WAIVER_TYPES.get_mapping(),
+                                        help_text="Type of waiver")
 
     def __unicode__(self):
-        return "%s - %s [%s]" % (self.result, self.group, self.message)
+        return "%s - %s [%s, %s]" % (self.message, self.waiver_type,
+                                     self.result, self.group)
