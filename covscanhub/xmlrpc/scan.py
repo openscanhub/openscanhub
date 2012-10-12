@@ -12,7 +12,7 @@ from kobo.django.upload.models import FileUpload
 from kobo.django.xmlrpc.decorators import login_required
 
 from covscanhub.scan.models import MockConfig, SCAN_TYPES
-from covscanhub.scan.service import create_diff_scan
+from covscanhub.scan.service import create_diff_task
 
 
 __all__ = (
@@ -124,18 +124,19 @@ def mock_build(*args, **kwargs):
 
 
 @login_required
-def create_user_diff_scan(request, kwargs):
+def create_user_diff_task(request, kwargs):
     """
         create scan of a package and perform diff on results against specified
         version
 
         kwargs:
-         - username - name of user who is requesting scan
+         - task_user - username from request.user.username
+         - brew_build - download build from brew (optional)
          - nvr - name, version, release of scanned package
          - base - nvr of previous version, the one to make diff against
          - nvr_mock - mock config
          - base_mock - mock config
     """
-    kwargs['scan_type'] = SCAN_TYPES['USER']
+    kwargs['brew_build'] = kwargs['nvr']
     kwargs['task_user'] = request.user.username
-    create_diff_scan(kwargs)
+    create_diff_task(kwargs)
