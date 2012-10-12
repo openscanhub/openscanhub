@@ -368,7 +368,7 @@ def create_base_diff_task(kwargs, parent_id):
         owner_name=task_user,
         label=task_label,
         method='VersionDiffBuild',
-        args={},  # I want to add scan's id here, so I update it later
+        args=options,
         comment=comment,
         state=SCAN_STATES["QUEUED"],
         priority=priority,
@@ -420,7 +420,7 @@ def create_diff_task(kwargs):
         owner_name=task_user,
         label=task_label,
         method='VersionDiffBuild',
-        args={},  # I want to add scan's id here, so I update it later
+        args=options,
         comment=comment,
         state=SCAN_STATES["QUEUED"],
         priority=priority
