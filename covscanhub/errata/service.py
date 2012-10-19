@@ -153,4 +153,4 @@ def create_errata_scan(kwargs):
     task.args = options
     task.save()
 
-    return scan    
+    return scan

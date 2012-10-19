@@ -34,7 +34,8 @@ class VersionDiffBuild(TaskBase):
     def run(self):
         DEBUG = True
         logging.basicConfig(
-            format='%(asctime)s %(levelname)8s %(message)s',
+            format='%(asctime)s %(levelname)8s %(filename)s %(lineno)s \
+%(message)s',
             filename='/tmp/covscand_task.log',
             level=logging.DEBUG
         )
@@ -107,14 +108,12 @@ class VersionDiffBuild(TaskBase):
             logging.debug('I am about to copy test tarball')
             shutil.copy2('/tmp/' + brew_build + '.tar.xz', tmp_dir)
 
-        logging.debug('I am about to upload tarball')
         xz_path = srpm_path[:-8] + ".tar.xz"
         if not os.path.exists(xz_path):
             xz_path = srpm_path[:-8] + ".tar.lzma"
         self.hub.upload_task_log(open(xz_path, "r"),
                                  self.task_id, os.path.basename(xz_path))
 
-        logging.debug('I am about to extract tarball')
         try:
             self.hub.worker.extract_tarball(self.task_id, '')
         except Exception, ex:

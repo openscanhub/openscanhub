@@ -10,7 +10,8 @@ import kobo.client
 import kobo.client.commands
 
 # assuming all commands are in covscan/commands/cmd_*.py modules
-import covscan.commands
+#import covscan.commands
+import commands
 
 
 # inherit container to make sure nobody will change plugins I registered
@@ -22,12 +23,13 @@ def main(args=None):
     # register generic kobo commands
     CovScanCommandContainer.register_module(kobo.client.commands, prefix="cmd_")
     # register project specific commands
-    CovScanCommandContainer.register_module(covscan.commands, prefix="cmd_")
+    CovScanCommandContainer.register_module(commands, prefix="cmd_")
 
     # configuration
     config_env = "COVSCAN_CONFIG_FILE"
     config_default = "/etc/covscan/covscan.conf"
     config_file = os.environ.get(config_env, config_default)
+    print config_file
     conf = kobo.conf.PyConfigParser()
     try:
         conf.load_from_file(config_file)

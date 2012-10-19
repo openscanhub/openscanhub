@@ -59,10 +59,9 @@ class Tag(models.Model):
 
 class Scan(models.Model):
     """
-    #This class stores information about differential scans
+    #This class stores information about submitted scans from Errata Tool
     """
     #yum-3.4.3-42.el7
-    #name-version-release of scanned package
     nvr = models.CharField("NVR", max_length=512,
                            blank=False, help_text="Name-Version-Release")
 
@@ -101,7 +100,7 @@ package appear")
         if self.base is None:
             return u"#%s [%s]" % (self.id, self.nvr)
         else:
-            return u"#%s [%s <-> %s]" % (self.id, self.nvr, self.base.nvr)
+            return u"#%s [%s, Base: %s]" % (self.id, self.nvr, self.base.nvr)
 
     def is_errata_scan(self):
         return self.scan_type == SCAN_TYPES['ERRATA']
@@ -124,3 +123,11 @@ package appear")
         scan.username = User.objects.get(username=username)
         scan.save()
         return scan
+
+    def get_errata_id(self):
+        if self.is_errata_scan():
+            try:
+                return self.task.args['errata_id']
+            except KeyError:
+                return None
+        return None

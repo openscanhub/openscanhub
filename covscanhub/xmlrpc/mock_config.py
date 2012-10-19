@@ -2,6 +2,7 @@
 
 
 from covscanhub.scan.models import MockConfig
+from django.core.exceptions import ObjectDoesNotExist
 
 
 __all__ = (
@@ -15,4 +16,7 @@ def all(request):
 
 
 def get(request, name):
-    return MockConfig.objects.get(name=name).export()
+    try:
+        return MockConfig.objects.get(name=name).export()
+    except ObjectDoesNotExist:
+        return None

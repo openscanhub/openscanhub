@@ -7,6 +7,7 @@ from kobo.django.xmlrpc.decorators import login_required
 
 __all__ = (
     "create_errata_diff_scan",
+    "get_scan_state",
 )
 
 
@@ -27,16 +28,35 @@ def create_errata_diff_scan(request, kwargs):
     """
     kwargs['scan_type'] = SCAN_TYPES['ERRATA']
     kwargs['task_user'] = request.user.username
-    create_errata_scan(kwargs)
+    #TODO: if there will be some error, inform ET
+    response = {}
+    try:
+        scan = create_errata_scan(kwargs)
+    except RuntimeError, ex:
+        response['status'] = 'ERROR'
+        response['message'] = 'Scan failed to complete, error: %s' % ex
+    else:
+        response['id'] = scan.id
+        response['status'] = 'OK'
+    return response
+
 
 def get_scan_state(request, scan_id):
     """
     Application returns actual state of specified scan
-    Returns: state of scan. It can be one of following values (description 
-     can be found in  part "Requirements"): 
+    Returns: state of scan. It can be one of following values (description
+     can be found in  part "Requirements"):
     {'QUEUED', 'SCANNING', 'NEEDS_INSPECTION', 'WAIVED', 'PASSED'}
 
-    type: string    
+    type: string
     """
-    
-    return SCAN_STATES.get_value(Scan.objects.get(id=scan_id).state)
+    response = {}
+    try:
+        state = SCAN_STATES.get_value(Scan.objects.get(id=scan_id).state)
+    except RuntimeError, ex:
+        response['status'] = 'ERROR'
+        response['message'] = "Unable to retrieve scan's state, error: %s" % ex
+    else:
+        response['state'] = state
+        response['status'] = 'OK'
+    return response

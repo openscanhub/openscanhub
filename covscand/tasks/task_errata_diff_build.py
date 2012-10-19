@@ -100,7 +100,7 @@ class ErrataDiffBuild(TaskBase):
         command = ["su", "-", "coverity", "-c", " ".join(cov_cmd)]
 
         if not DEBUG:
-            retcode, output = run(command, can_fail=True, stdout=True)
+            retcode, output = run(command, can_fail=False, stdout=True)
         else:
             command_str = ' '.join(command)
             logging.info("In production I would run this command: %s",
