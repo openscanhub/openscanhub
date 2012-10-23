@@ -24,7 +24,7 @@ def main(args=None):
     CovScanCommandContainer.register_module(kobo.client.commands, prefix="cmd_")
     # register project specific commands
     CovScanCommandContainer.register_module(commands, prefix="cmd_")
-
+   
     # configuration
     config_env = "COVSCAN_CONFIG_FILE"
     config_default = "/etc/covscan/covscan.conf"

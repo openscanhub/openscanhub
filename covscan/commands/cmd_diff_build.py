@@ -2,20 +2,23 @@
 
 
 import os
+import brew
 
 import covscan
 from kobo.shortcuts import random_string
 from kobo.client import HubProxy
+from shortcuts import verify_brew_build, verify_mock
 
 
 class Diff_Build(covscan.CovScanCommand):
     """analyze a SRPM without and with pathes, return diff"""
     enabled = True
-    admin = False # admin type account required
+    admin = False  # admin type account required
 
     def options(self):
         # specify command usage
-        # normalized name contains a lower-case class name with underscores converted to dashes
+        # normalized name contains a lower-case class name with underscores
+        # converted to dashes
         self.parser.usage = "%%prog %s [options] <args>" % self.normalized_name
 
         self.parser.add_option(
@@ -87,7 +90,6 @@ class Diff_Build(covscan.CovScanCommand):
 http://$hostname/covscan/xmlrpc"
         )
 
-
     def run(self, *args, **kwargs):
         # optparser output is passed via *args (args) and **kwargs (opts)
         username = kwargs.pop("username", None)
@@ -113,18 +115,9 @@ http://$hostname/covscan/xmlrpc"
             self.parser.error("provided file doesn't appear to be a SRPM")
 
         if brew_build:
-            import brew
-            srpm = os.path.basename(srpm) # strip path if any
-            if srpm.endswith(".src.rpm"):
-                srpm = srpm[:-8]
-            # XXX: hardcoded
-            brew_proxy = brew.ClientSession("http://brewhub.devel.redhat.com/brewhub")
-            try:
-                build_info = brew_proxy.getBuild(srpm)
-            except brew.GenericError:
-                build_info = None
-            if build_info is None:
-                self.parser.error("Build does not exist in brew: %s" % srpm)
+            result = verify_brew_build(srpm, self.conf['BREW_URL'])
+            if result is not None:
+                self.parser.error(result)
 
         if not config:
             self.parser.error("please specify a mock config")
@@ -133,13 +126,13 @@ http://$hostname/covscan/xmlrpc"
         if hub_url is None:
             self.set_hub(username, password)
         else:
-            self.hub = HubProxy(conf=self.conf, 
-                                AUTH_METHOD='krbv', 
+            self.hub = HubProxy(conf=self.conf,
+                                AUTH_METHOD='krbv',
                                 HUB_URL=hub_url)
 
-        mock_conf = self.hub.mock_config.get(config)
-        if not mock_conf["enabled"]:
-            self.parser.error("Mock config is not enabled: %s" % config)
+        result = verify_mock(config, self.hub)
+        if result is not None:
+            self.parser.error(result)
 
         # end of CLI options handling
 
@@ -161,7 +154,8 @@ http://$hostname/covscan/xmlrpc"
             options["srpm_name"] = srpm
         else:
             target_dir = random_string(32)
-            upload_id, err_code, err_msg = self.hub.upload_file(srpm, target_dir)
+            upload_id, err_code, err_msg = self.hub.upload_file(srpm,
+                                                                target_dir)
             options["upload_id"] = upload_id
 
         task_id = self.submit_task(config, comment, options)

@@ -51,8 +51,8 @@ def run_diff(task_dir, base_task_dir, nvr, base_nvr):
     fixed_diff_file_path = os.path.join(task_dir, fixed_diff_file)
 
     #<task_dir>/<nvr>/run1/<nvr>.err
-    old_err = os.path.join(base_task_dir, base_nvr, 'run1', base_nvr + '.err')
-    new_err = os.path.join(task_dir, nvr, 'run1', nvr + '.err')
+    old_err = os.path.join(base_task_dir, base_nvr, 'run1', base_nvr + '.js')
+    new_err = os.path.join(task_dir, nvr, 'run1', nvr + '.js')
 
     if not os.path.exists(old_err) or not os.path.exists(new_err):
         raise RuntimeError('Error output from coverity does not exist: \
@@ -437,6 +437,8 @@ def create_diff_task(kwargs):
     # TODO wait should be executed in one transaction with creation of
     # child
     parent_task.wait()
+
+    return task_id
 
 
 def prepare_and_execute_diff(task, base_task, nvr, base_nvr):

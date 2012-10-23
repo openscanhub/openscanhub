@@ -139,4 +139,4 @@ def create_user_diff_task(request, kwargs):
     """
     kwargs['brew_build'] = kwargs['nvr']
     kwargs['task_user'] = request.user.username
-    create_diff_task(kwargs)
+    return create_diff_task(kwargs)

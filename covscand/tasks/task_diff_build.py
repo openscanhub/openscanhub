@@ -53,9 +53,10 @@ class DiffBuild(TaskBase):
 
         try:
             get_rpm_header(srpm_path)
-        except:
+        except Exception, ex:
             import kobo.tback
-            print >> sys.stderr, "Invalid RPM file(%s): %s" % (srpm_name, kobo.tback.get_exception())
+            print >> sys.stderr, "Invalid RPM file(%s): %s" % (srpm_name, \
+kobo.tback.get_exception())
             self.fail()
 
         program = self.get_program()
@@ -75,7 +76,9 @@ class DiffBuild(TaskBase):
         if security_checks:
             cov_cmd.append("--security")
 
-        retcode, output = run(["su", "-", "coverity", "-c", " ".join(cov_cmd)], can_fail=True, stdout=True)
+        retcode, output = run(["su", "-", "coverity", 
+                               "-c", " ".join(cov_cmd)], can_fail=True, 
+                                                         stdout=True)
         if retcode:
             self.fail()
 
@@ -83,7 +86,16 @@ class DiffBuild(TaskBase):
         xz_path = srpm_path[:-8] + ".tar.xz"
         if not os.path.exists(xz_path):
             xz_path = srpm_path[:-8] + ".tar.lzma"
-        self.hub.upload_task_log(open(xz_path, "r"), self.task_id, os.path.basename(xz_path))
+        self.hub.upload_task_log(open(xz_path, "r"), self.task_id,
+                                 os.path.basename(xz_path))
+
+        try:
+            self.hub.worker.extract_tarball(self.task_id, '')
+        except Exception, ex:
+            import kobo.tback
+            print >> sys.stderr, "Exception while extracting tarball for task \
+%s" % (self.task_id)
+            self.fail()
 
         # remove temp files
         shutil.rmtree(tmp_dir)

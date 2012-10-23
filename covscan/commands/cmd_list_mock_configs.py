@@ -26,6 +26,7 @@ http://$hostname/covscan/xmlrpc"
         # optparser output is passed via *args (args) and **kwargs (opts)
         username = kwargs.pop("username", None)
         password = kwargs.pop("password", None)
+        hub_url = kwargs.pop('hub', None)
 
         # login to the hub
         if hub_url is None:

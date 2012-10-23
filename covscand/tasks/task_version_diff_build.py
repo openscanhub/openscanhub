@@ -32,7 +32,7 @@ class VersionDiffBuild(TaskBase):
     weight = 1.0
 
     def run(self):
-        DEBUG = True
+        DEBUG = False
         logging.basicConfig(
             format='%(asctime)s %(levelname)8s %(filename)s %(lineno)s \
 %(message)s',
