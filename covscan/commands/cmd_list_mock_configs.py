@@ -4,7 +4,7 @@
 import sys
 
 import covscan
-
+from kobo.client import HubProxy
 
 class List_Mock_Configs(covscan.CovScanCommand):
     """command description"""
@@ -15,6 +15,12 @@ class List_Mock_Configs(covscan.CovScanCommand):
         # specify command usage
         # normalized name contains a lower-case class name with underscores converted to dashes
         self.parser.usage = "%%prog %s [options] <args>" % self.normalized_name
+        
+        self.parser.add_option(
+            "--hub",
+            help="URL of XML-RPC interface on hub; something like \
+http://$hostname/covscan/xmlrpc"
+        )
 
     def run(self, *args, **kwargs):
         # optparser output is passed via *args (args) and **kwargs (opts)
@@ -22,7 +28,12 @@ class List_Mock_Configs(covscan.CovScanCommand):
         password = kwargs.pop("password", None)
 
         # login to the hub
-        self.set_hub(username, password)
+        if hub_url is None:
+            self.set_hub(username, password)
+        else:
+            self.hub = HubProxy(conf=self.conf, 
+                                AUTH_METHOD='krbv', 
+                                HUB_URL=hub_url)
 
         format = "%-50s %s"
         print >> sys.stderr, format % ("NAME", "ENABLED")

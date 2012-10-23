@@ -5,6 +5,7 @@ import os
 
 import covscan
 from kobo.shortcuts import random_string
+from kobo.client import HubProxy
 
 
 class Diff_Build(covscan.CovScanCommand):
@@ -80,6 +81,12 @@ class Diff_Build(covscan.CovScanCommand):
             help="turn security checkers on"
         )
 
+        self.parser.add_option(
+            "--hub",
+            help="URL of XML-RPC interface on hub; something like \
+http://$hostname/covscan/xmlrpc"
+        )
+
 
     def run(self, *args, **kwargs):
         # optparser output is passed via *args (args) and **kwargs (opts)
@@ -95,6 +102,8 @@ class Diff_Build(covscan.CovScanCommand):
         brew_build = kwargs.pop("brew_build")
         all = kwargs.pop("all")
         security = kwargs.pop("security")
+        #'http://uqtm.lab.eng.brq.redhat.com/covscan/xmlrpc'
+        hub_url = kwargs.pop('hub', None)
 
         if len(args) != 1:
             self.parser.error("please specify exactly one SRPM")
@@ -121,7 +130,12 @@ class Diff_Build(covscan.CovScanCommand):
             self.parser.error("please specify a mock config")
 
         # login to the hub
-        self.set_hub(username, password)
+        if hub_url is None:
+            self.set_hub(username, password)
+        else:
+            self.hub = HubProxy(conf=self.conf, 
+                                AUTH_METHOD='krbv', 
+                                HUB_URL=hub_url)
 
         mock_conf = self.hub.mock_config.get(config)
         if not mock_conf["enabled"]:
@@ -144,6 +158,7 @@ class Diff_Build(covscan.CovScanCommand):
 
         if brew_build:
             options["brew_build"] = srpm
+            options["srpm_name"] = srpm
         else:
             target_dir = random_string(32)
             upload_id, err_code, err_msg = self.hub.upload_file(srpm, target_dir)

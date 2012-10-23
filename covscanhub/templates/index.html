@@ -4,34 +4,16 @@
 <h2>Home page</h2>
 
 <p>
-Covscan is a tool that allows Red Hat users to run Coverity Scan on their packages<br />
-without logging on the Coverity server or installing their own Coverity server.<br />
-Users only need to download and install the covscan client and its requirements,<br />
-configure the client and acquire a valid Kerberos ticket (if not acquired already).<br />
-The usage of the covscan client is similar to brew/koji.<br />
-The client provides an easy to use command line interface.
+Welcome to staging server of covscan hub -- web interface. This server will contain latest development version of hub and worker (program that manages coverity scans). You may expect lots of outages, so be patient, please. I might alter database structure sometimes, so as soon as your scan is finished, download all data to your computer and don't expect them to persist here.
 </p>
 
 <p>
-Another benefit for covscan users in already included workarounds for Coverity bugs;<br />
-especially C++ packages are hard to scan with the default Coverity setup.
-</p>
-
-<p>
-Please remember that we have only one shared Coverity license<br />
-and that's why only one package can be analyzed at a time in the whole Red Hat.<br />
-Please don't abuse this tool with multiple scans of scan expensive packages.<br />
-If we experience overload of this kind, we will blacklist the individuals.
+Feel free to fill bugs or RFEs in <a href="https://engineering.redhat.com/trac/CoverityScan/newticket">Trac</a>, but don't forget to mention this instance.
 </p>
 
 <h3>Required setup before usage</h3>
 <ol>
-  <li>Make sure you have the latest version installed.
-    <ul>
-      <li>Install covscan-client and it's depenencies (kobo-client, python-krbV) from <a href="http://download.lab.bos.redhat.com/devel/dmach/covscan/">here</a> - only RHEL-5/RHEL-6 rpms available</li>
-      <li>On Fedora, use rpmbuild --rebuild on the latest covscan.src.rpm from RHEL-6 repo to build covscan yourself (we'll provide Fedora packages later)</li>
-    </ul>
-  </li>
+  <li>Install latest covscan-client and it's depenencies (kobo-client, python-krbV) from <a href="https://dell-per610-03.lab.eng.brq.redhat.com/coverity/install/covscan/">here</a></li>
   <li>Generate a kerberos ticket (kinit)</li>
 </ol>
 
@@ -41,7 +23,7 @@ If we experience overload of this kind, we will blacklist the individuals.
   <li>Check available mock configs by <strong><tt>covscan list-mock-configs</tt></strong>, choose the best fit for your package</li>
   <li><strong><tt>covscan mock-build --config=... [--security/--all] [--comment=...] /path/to/srpm</tt></strong></li>
   <li>Wait for results (email notification)</li>
-  <li>Download the results (.xz tarball) from the covscan <a href="http://releng-test1.englab.brq.redhat.com/covscan/">WebUI</a></li>
+  <li>Download the results (.xz tarball) from WebUI</li>
   <li>Extract .xz, check the results, fix the defects :), share them with upstream</li>
 </ul>
 

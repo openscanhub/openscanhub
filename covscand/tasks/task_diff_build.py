@@ -29,7 +29,7 @@ class DiffBuild(TaskBase):
 
     def run(self):
         mock_config = self.args.pop("mock_config")
-        srpm_name = self.args.pop("srpm_name")
+        srpm_name = self.args.pop("srpm_name", None)
         keep_covdata = self.args.pop("keep_covdata", False)
         all_checks = self.args.pop("all", False)
         security_checks = self.args.pop("security", False)

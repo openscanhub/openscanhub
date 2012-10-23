@@ -5,6 +5,7 @@ import os
 import brew
 import covscan
 from kobo.shortcuts import random_string
+from kobo.client import HubProxy
 
             
 class Version_Diff_Build(covscan.CovScanCommand):
@@ -119,6 +120,12 @@ local file"
             help="turn security checkers on"
         )
 
+        self.parser.add_option(
+            "--hub",
+            help="URL of XML-RPC interface on hub; something like \
+http://$hostname/covscan/xmlrpc"
+        )
+
 
     def run(self, *args, **kwargs):
 
@@ -188,7 +195,12 @@ not base_srpm:
             self.parser.error("please specify a mock config for target")
             
         # login to the hub
-        self.set_hub(username, password)
+        if hub_url is None:
+            self.set_hub(username, password)
+        else:
+            self.hub = HubProxy(conf=self.conf, 
+                                AUTH_METHOD='krbv', 
+                                HUB_URL=hub_url)
 
         self.verify_mock(base_mock_conf)
         self.verify_mock(nvr_mock_conf)

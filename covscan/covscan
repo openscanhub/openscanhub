@@ -29,7 +29,6 @@ def main(args=None):
     config_env = "COVSCAN_CONFIG_FILE"
     config_default = "/etc/covscan/covscan.conf"
     config_file = os.environ.get(config_env, config_default)
-    print config_file
     conf = kobo.conf.PyConfigParser()
     try:
         conf.load_from_file(config_file)
