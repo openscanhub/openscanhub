@@ -388,9 +388,12 @@ def create_diff_task(kwargs):
 
         kwargs
          - task_user - username from request.user.username
-         - brew_build - download build from brew (optional)
-         - nvr - name, version, release of scanned package
-         - base - nvr of previous version, the one to make diff against
+         - nvr_srpm - name, version, release of scanned package
+         - nvr_upload_id - upload id for target, so worker is able to download it
+         - nvr_brew_build - NVR of package to be downloaded from brew
+         - base_srpm - name, version, release of base package
+         - base_upload_id - upload id for base, so worker is able to download it
+         - base_brew_build - NVR of base package to be downloaded from brew
          - nvr_mock - mock config
          - base_mock - mock config
     """

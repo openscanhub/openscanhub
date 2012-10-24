@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block content %}
+<h2>Scan #{{ scan.id }}: {{ scan.state }}</h2>
+
+<h3>Details</h3>
+<table class="details">
+  <tr>
+    <th>{% trans "ID" %}</th>
+    <td>{{ scan.id }}</td>
+  </tr>
+  <tr>
+    <th>{% trans "State" %}</th>
+    <td>{{ scan.state }}</td>
+  </tr>
+  <tr>
+    <th>{% trans "Target" %}</th>
+    <td>{{ scan.nvr }}</td>
+  </tr>
+  <tr>
+    <th>{% trans "Base" %}</th>
+    <td>{{ scan.base }}</td>
+  </tr>
+  <tr>
+    <th>{% trans "Tag" %}</th>
+    <td>{{ scan.tag }}</td>
+  </tr>
+  <tr>
+    <th>{% trans "Owner" %}</th>
+    <td>{{ scan.username }}</td>
+  </tr>
+  <tr>
+    <th>{% trans "Task" %}</th>
+    <td><a href="{% url task/detail scan.task.id %}">{{ scan.task }}</a></td>
+  </tr>
+  <tr>
+    <th>{% trans "RHEL Version" %}</th>
+    <td>{{ scan.rhel_version }}</td>
+  </tr>
+
+
+  <tr>
+    <th>{% trans "Last access" %}</th>
+    <td>{% if scan.last_access %}{{ scan.last_access|date:"Y-m-d H:i:s" }}{% endif %}</td>
+  </tr>
+</table>
+
+{% endblock %}

@@ -149,7 +149,6 @@ XMLRPC_METHODS = {
         ('kobo.django.upload.xmlrpc', 'upload'),
         ('covscanhub.xmlrpc.mock_config', 'mock_config'),
         ('covscanhub.xmlrpc.scan', 'scan'),
-        ('covscanhub.xmlrpc.errata', 'errata'),
     ),
     'worker': (
         ('kobo.hub.xmlrpc.auth',      'auth'),
@@ -159,6 +158,10 @@ XMLRPC_METHODS = {
         ('kobo.hub.xmlrpc.client',    'client'),
         ('covscanhub.xmlrpc.worker',  'worker'),
     ),
+    'et': (
+        ('covscanhub.xmlrpc.errata', 'errata'),
+    ),
+    
 }
 
 if not DEBUG:

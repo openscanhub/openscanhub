@@ -1,12 +1,10 @@
 # -*- coding: utf-8 -*-
 
 
-import os
-import brew
 import covscan
 from kobo.shortcuts import random_string
 from kobo.client import HubProxy
-
+from shortcuts import verify_brew_build, verify_mock
 
 class Version_Diff_Build(covscan.CovScanCommand):
     """analyze 2 SRPMs and diff results"""
@@ -110,6 +108,7 @@ http://$hostname/covscan/xmlrpc"
 
     def run(self, *args, **kwargs):
         # optparser output is passed via *args (args) and **kwargs (opts)
+        options = {}        
         username = kwargs.pop("username", None)
         password = kwargs.pop("password", None)
         nvr_config = kwargs.pop("nvr_config", None)
@@ -127,10 +126,9 @@ http://$hostname/covscan/xmlrpc"
         all = kwargs.pop("all")
         security = kwargs.pop("security")
         hub_url = kwargs.pop('hub', None)
-
-        #print "args = %s" % args
-        #print "kwargs = %s" % kwargs
-
+        
+        options[comment] = comment        
+        
         #both bases are specified
         if base_brew_build and base_srpm:
             self.parser.error("Choose exactly one option (--base-brew-build, \
@@ -181,8 +179,10 @@ a SRPM")
                                 AUTH_METHOD='krbv',
                                 HUB_URL=hub_url)
 
-        self.verify_mock(base_config)
-        self.verify_mock(nvr_config)
+        verify_mock(base_config)
+        options['base_mock'] = base_config
+        verify_mock(nvr_config)
+        options['nvr_mock'] = nvr_config
 
         # end of CLI options handling
 
@@ -206,6 +206,7 @@ a SRPM")
             upload_id, err_code, err_msg = self.hub.upload_file(nvr_srpm,
                                                                 target_dir)
             options["nvr_upload_id"] = upload_id
+            options['nvr_srpm'] = nvr_srpm
 
         if base_brew_build:
             options["base_brew_build"] = base_brew_build
@@ -214,6 +215,7 @@ a SRPM")
             upload_id, err_code, err_msg = self.hub.upload_file(base_srpm,
                                                                 target_dir)
             options["base_upload_id"] = upload_id
+            options['base_srpm'] = base_srpm
 
         task_id = self.submit_task(options)
         self.write_task_id_file(task_id, task_id_file)

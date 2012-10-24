@@ -28,15 +28,15 @@ def mock_config_list(request):
 
     return object_list(request, **args)
 
-def errata_scan_list(request):
+def scan_list(request):
 
     args = {
-        "queryset": Scan.objects.all(),
+        "queryset": Scan.objects.all().exclude(base__isnull=True),
 #        "queryset": Scan.objects.exclude(base__isnull=True).\
 #            exclude(base__exact=''),
         "allow_empty": True,
         "paginate_by": 50,
-        "template_name": "errata/list.html",
+        "template_name": "scan/list.html",
         "template_object_name": "scan",
         "extra_context": {
             "title": "List errata scans",
@@ -44,3 +44,20 @@ def errata_scan_list(request):
     }
 
     return object_list(request, **args)
+    
+def scan_detail(request, id):
+    
+    scan = get_object_or_404(Scan, id=id)
+
+    args = {
+        "queryset": Task.objects.select_related(),
+        "object_id": id,
+        "template_object_name": "scan",
+        "template_name": "scan/detail.html",
+        "extra_context": {
+            "title": "Scan detail",
+        },
+    }
+
+    return object_detail(request, **args)    
+    

@@ -4,6 +4,12 @@ import brew
 import os
 
 
+__all__ = (
+    'verify_brew_build',
+    'verify_mock'.
+)
+
+
 def verify_brew_build(build, brew_url):
     srpm = os.path.basename(build)  # strip path if any
     if srpm.endswith(".src.rpm"):
