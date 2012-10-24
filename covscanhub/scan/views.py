@@ -47,10 +47,8 @@ def scan_list(request):
     
 def scan_detail(request, id):
     
-    scan = get_object_or_404(Scan, id=id)
-
     args = {
-        "queryset": Task.objects.select_related(),
+        "queryset": Scan.objects.select_related(),
         "object_id": id,
         "template_object_name": "scan",
         "template_name": "scan/detail.html",
