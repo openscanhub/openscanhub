@@ -32,8 +32,8 @@ from kobo.django.menu import MenuItem, include
 
 menu = (
     MenuItem("Home", "index"),
-    MenuItem("Scan", "scan/index", menu=(
-        MenuItem("Scan List", "scan/index"),
+    MenuItem("Scan", "scan/list", menu=(
+        MenuItem("Scan List", "scan/list"),
         MenuItem("Mock configs", "mock_config/index"),
     )),
     MenuItem("Tasks", "task/index", menu=(
