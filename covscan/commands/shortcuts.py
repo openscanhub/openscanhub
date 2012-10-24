@@ -6,7 +6,7 @@ import os
 
 __all__ = (
     'verify_brew_build',
-    'verify_mock'.
+    'verify_mock',
 )
 
 
