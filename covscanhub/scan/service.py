@@ -111,11 +111,6 @@ def extract_logs_from_tarball(task_id, name=None):
     task = Task.objects.get(id=task_id)
     task_dir = task.get_task_dir(task.id)
     
-    if task.label.endswith('.src.rpm'):
-        file_base = task.label[:-8]
-    else:
-        file_base = task.label
-
     tar_archive = None
 
     #name was specified
@@ -129,8 +124,8 @@ def extract_logs_from_tarball(task_id, name=None):
     else:
         #name wasn't specified, guess tarball name:
         #file_base (nvr without srcrpm) + tar.xz|tar.lzma
-        tarball_logs = os.path.join(task_dir, file_base + '.tar.xz')
-        tarball_logs2 = os.path.join(task_dir, file_base + '.tar.lzma')
+        tarball_logs = os.path.join(task_dir, task.label + '.tar.xz')
+        tarball_logs2 = os.path.join(task_dir, task.label + '.tar.lzma')
         if os.path.isfile(tarball_logs):
             tar_archive = tarball_logs
         elif os.path.isfile(tarball_logs2):
@@ -383,7 +378,8 @@ def create_base_diff_task(kwargs, parent_id):
     
         srpm_path = os.path.join(upload.target_dir, upload.name)
         options["srpm_name"] = upload.name
-        task_label = options["srpm_name"]
+        # cut .src.rpm suffix, because run_diff and extractTarball rely on this
+        task_label = options["srpm_name"][:-8]
     else:
         raise RuntimeError('Target build is not specified!')
 
@@ -464,7 +460,8 @@ def create_diff_task(kwargs):
     
         srpm_path = os.path.join(upload.target_dir, upload.name)
         options["srpm_name"] = upload.name
-        task_label = options["srpm_name"]
+        # cut .src.rpm suffix, because run_diff and extractTarball rely on this
+        task_label = options["srpm_name"][:-8]
     else:
         raise RuntimeError('Target build is not specified!')
 
