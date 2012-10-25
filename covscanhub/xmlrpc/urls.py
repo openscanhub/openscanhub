@@ -11,6 +11,6 @@ urlpatterns = patterns("",
         name="help/xmlrpc/client"),
     url(r"^worker/", "kobo.django.xmlrpc.views.worker_handler",
         name="help/xmlrpc/worker"),
-    url(r"^et/", "kobo.django.xmlrpc.views.et_handler",
-        name="help/xmlrpc/et"),
+    url(r"^kerbauth/", "kobo.django.xmlrpc.views.kerbauth_handler",
+        name="help/xmlrpc/kerbauth"),
 )

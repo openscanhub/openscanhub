@@ -17,14 +17,22 @@ Feel free to fill bugs or RFEs in <a href="https://engineering.redhat.com/trac/C
   <li>Generate a kerberos ticket (kinit)</li>
 </ol>
 
-<h3>How to use it ?</h3>
+<h3>How to use it?</h3>
 
 <ul>
   <li>Check available mock configs by <strong><tt>covscan list-mock-configs</tt></strong>, choose the best fit for your package</li>
   <li><strong><tt>covscan mock-build --config=... [--security/--all] [--comment=...] /path/to/srpm</tt></strong></li>
   <li>Wait for results (email notification)</li>
-  <li>Download the results (.xz tarball) from WebUI</li>
-  <li>Extract .xz, check the results, fix the defects :), share them with upstream</li>
+  <li>Check the results on WebUI</li>
+</ul>
+
+<h3>Updates in latest version</h3>
+
+<ul>
+  <li>New type of build: <strong><tt>version-diff-build</strong></tt>. You have to provide two builds, it will scan both SRPMs and diff results. For more information see <strong><tt>covscan version-diff-build --help</tt></strong> </li>
+  <li>New option: <strong><tt>--hub=http://uqtm.lab.eng.brq.redhat.com/covscan/xmlrpc</strong></tt>, this is very useful if you want to use this instance and don't want to mess covscan's config file</li>
+  <li>Tarballs are extracted on server, so you don't have to download</li>
+  <li>You may view other files, not just ones with .log suffix</li>
 </ul>
 
 <p>

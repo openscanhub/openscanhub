@@ -160,10 +160,10 @@ a SRPM")
             self.parser.error("provided base file doesn't appear to be a SRPM")
 
         if nvr_brew_build:
-            self.verify_brew_build(nvr_brew_build)
+            verify_brew_build(nvr_brew_build, self.conf['BREW_URL'])
 
         if base_brew_build:
-            self.verify_brew_build(nvr_brew_build)
+            verify_brew_build(base_brew_build, self.conf['BREW_URL'])
 
         if not base_config:
             self.parser.error("please specify a mock config for base")
@@ -179,9 +179,9 @@ a SRPM")
                                 AUTH_METHOD='krbv',
                                 HUB_URL=hub_url)
 
-        verify_mock(base_config)
+        verify_mock(base_config, self.hub)
         options['base_mock'] = base_config
-        verify_mock(nvr_config)
+        verify_mock(nvr_config, self.hub)
         options['nvr_mock'] = nvr_config
 
         # end of CLI options handling

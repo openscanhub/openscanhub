@@ -2,14 +2,16 @@
 
 import tempfile
 import os
-from kobo.shortcuts import run
 import pipes
 import sys
 import grp
 import shutil
+import logging
+
 from kobo.rpmlib import get_rpm_header
 from kobo.worker import TaskBase
-import logging
+from kobo.shortcuts import run
+
 import kobo.tback
 
 
@@ -41,10 +43,11 @@ class VersionDiffBuild(TaskBase):
         )
 
         mock_config = self.args.pop("mock_config")
-        #keep_covdata = self.args.pop("keep_covdata", False)
-        #all_checks = self.args.pop("all", False)
-        #security_checks = self.args.pop("security", False)
+        keep_covdata = self.args.pop("keep_covdata", False)
+        all_checks = self.args.pop("all", False)
+        security_checks = self.args.pop("security", False)
         brew_build = self.args.pop("brew_build", None)
+        srpm_name = self.args.pop("srpm_name", None)
 
         # create a temp dir, make it writable by 'coverity' user
         tmp_dir = tempfile.mkdtemp(prefix="covscan_")
@@ -52,20 +55,29 @@ class VersionDiffBuild(TaskBase):
         srpm_path = os.path.join(tmp_dir, "%s.src.rpm" % brew_build)
 
         if not DEBUG:
+            #change atributes of temp dir
             coverity_gid = grp.getgrnam("coverity").gr_gid
             os.chown(tmp_dir, -1, coverity_gid)
 
             #download srpm from brew
-            logging.debug('I am about to download %s', brew_build)
-            cmd = ["brew", "download-build", "--quiet",
-                   "--arch=src", brew_build]
-            run(cmd, workdir=tmp_dir)
+            if brew_build is not None:
+                logging.debug('I am about to download %s', brew_build)
+                cmd = ["brew", "download-build", "--quiet",
+                       "--arch=src", brew_build]
+                run(cmd, workdir=tmp_dir)
 
-            if not os.path.exists(srpm_path):
-                print >> sys.stderr, \
-                    "Invalid path %s to SRPM file (%s): %s" % \
-                    (srpm_path, brew_build, kobo.tback.get_exception())
-                self.fail()
+                if not os.path.exists(srpm_path):
+                    print >> sys.stderr, \
+                        "Invalid path %s to SRPM file (%s): %s" % \
+                        (srpm_path, brew_build, kobo.tback.get_exception())
+                    self.fail()
+            elif srpm_name is not None:
+                # download SRPM
+                task_url = self.hub.client.task_url(self.task_id).rstrip("/")
+                srpm_path = os.path.join(tmp_dir, srpm_name)
+                urllib.urlretrieve("%s/log/%s?format=raw" % (task_url, 
+                                                             srpm_name), 
+                                   srpm_path)
 
             #is srpm allright?
             try:

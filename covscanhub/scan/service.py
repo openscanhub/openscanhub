@@ -14,15 +14,15 @@ from models import Scan, SCAN_STATES
 from kobo.shortcuts import run
 from covscanhub.other.shortcuts import get_mock_by_name, check_brew_build,\
     check_and_create_dirs
+from kobo.django.upload.models import FileUpload
+from django.core.exceptions import ObjectDoesNotExist
 
-ET_SCAN_PRIORITY = 20
 
 __all__ = (
     "update_scans_state",
     "run_diff",
     "extract_logs_from_tarball",
     "create_diff_task",
-    "finish_scanning",
     'prepare_and_execute_diff',
 )
 
@@ -145,18 +145,18 @@ def extract_logs_from_tarball(task_id, name=None):
     # unxz file.tar.xz|lzma && tar xf file.tar -C /output/directory
     # tar xvf file.tar.gz -C /output/directory
     if tmp_tar_archive.endswith('xz'):
-            command = ' '.join(['unxz', pipes.quote(tmp_tar_archive),
-                                '&&', 'tar', '-xf',
-                                pipes.quote(tmp_tar_archive[:-3]),
-                                '-C ' + pipes.quote(task_dir)])
+        command = ' '.join(['unxz', pipes.quote(tmp_tar_archive),
+                            '&&', 'tar', '-xf',
+                            pipes.quote(tmp_tar_archive[:-3]),
+                            '-C ' + pipes.quote(task_dir)])
     elif tmp_tar_archive.endswith('lzma'):
-            command = ' '.join(['unxz', pipes.quote(tmp_tar_archive),
-                                '&&', 'tar', '-xf',
-                                pipes.quote(tmp_tar_archive[:-5]),
-                                '-C ' + pipes.quote(task_dir)])
+        command = ' '.join(['unxz', pipes.quote(tmp_tar_archive),
+                            '&&', 'tar', '-xf',
+                            pipes.quote(tmp_tar_archive[:-5]),
+                            '-C ' + pipes.quote(task_dir)])
     elif tmp_tar_archive.endswith('gz'):
-            command = ['tar', '-xzf', pipes.quote(tmp_tar_archive),
-                       '-C ' + pipes.quote(task_dir)]
+        command = ['tar', '-xzf', pipes.quote(tmp_tar_archive),
+                   '-C ' + pipes.quote(task_dir)]
     else:
         raise RuntimeError('Unsupported compression format (%s), task id: %s' %
                            (tmp_tar_archive, task_id))
@@ -338,32 +338,53 @@ def create_base_diff_task(kwargs, parent_id):
 
         kwargs
          - task_user - username from request.user.username
-         - brew_build - download build from brew (optional)
-         - nvr - name, version, release of scanned package
-         - base - nvr of previous version, the one to make diff against
+         - nvr_srpm - name, version, release of scanned package
+         - nvr_upload_id - upload id for target, so worker is able to download it
+         - nvr_brew_build - NVR of package to be downloaded from brew
+         - base_srpm - name, version, release of base package
+         - base_upload_id - upload id for base, so worker is able to download it
+         - base_brew_build - NVR of base package to be downloaded from brew
          - nvr_mock - mock config
          - base_mock - mock config
     """
     options = {}
 
+    base_srpm = kwargs.get('base_srpm', None)
+    base_brew_build = kwargs.get('base_brew_build', None)
+    base_upload_id = kwargs.get('base_upload_id', None)
+
     #from request.user
     task_user = kwargs['task_user']
 
-    nvr = kwargs['base']
-
     #Label, description or any reason for this task.
-    task_label = nvr
+    task_label = base_srpm or base_brew_build
 
     base_mock = kwargs['base_mock']
     priority = kwargs.get('priority', 10) + 1
-    comment = kwargs.get('comment', nvr)
+    comment = kwargs.get('comment', '')
+    
+    options['keep_covdata'] = kwargs.pop("keep_covdata", False)
+    options['all'] = kwargs.pop("all", False)
+    options['security'] = kwargs.pop("security", False)    
 
-    #does mock config exist?
     options["mock_config"] = base_mock
 
-    #Test if SRPM exists
-    if 'brew_build' in kwargs:
-        options['brew_build'] = check_brew_build(nvr)
+    if base_brew_build:
+        options['brew_build'] = check_brew_build(base_brew_build)
+    elif base_upload_id:
+        try:
+            upload = FileUpload.objects.get(id=base_upload_id)
+        except:
+            raise ObjectDoesNotExist("Can't find uploaded file with id: %s" % base_upload_id)
+    
+        if upload.owner.username != task_user:
+            raise RuntimeError("Can't process a file uploaded by a different user")
+    
+        srpm_path = os.path.join(upload.target_dir, upload.name)
+        options["srpm_name"] = upload.name
+        task_label = options["srpm_name"]
+    else:
+        raise RuntimeError('Target build is not specified!')
 
     task_id = Task.create_task(
         owner_name=task_user,
@@ -378,6 +399,11 @@ def create_base_diff_task(kwargs, parent_id):
     task_dir = Task.get_task_dir(task_id)
 
     check_and_create_dirs(task_dir)
+    
+    if base_upload_id:
+        # move file to task dir, remove upload record and make the task available
+        shutil.move(srpm_path, os.path.join(task_dir, os.path.basename(srpm_path)))
+        upload.delete()    
 
 
 def create_diff_task(kwargs):
@@ -401,24 +427,41 @@ def create_diff_task(kwargs):
 
     task_user = kwargs['task_user']
 
-    nvr = kwargs['nvr']
+    nvr_srpm = kwargs.get('nvr_srpm', None)
+    nvr_brew_build = kwargs.get('nvr_brew_build', None)
+    nvr_upload_id = kwargs.get('nvr_upload_id', None)
 
     #Label, description or any reason for this task.
-    task_label = nvr
+    task_label = nvr_srpm or nvr_brew_build
 
     nvr_mock = kwargs['nvr_mock']
     base_mock = kwargs['base_mock']
     priority = kwargs.get('priority', 10)
-    comment = kwargs.get('comment', nvr)
+    comment = kwargs.get('comment', '')
 
     #does mock config exist?
     get_mock_by_name(nvr_mock)
     options["mock_config"] = nvr_mock
+    #if base config is invalid target task isn't submited, is this alright?
     get_mock_by_name(base_mock)
 
     #Test if SRPM exists
-    if 'brew_build' in kwargs:
-        options['brew_build'] = check_brew_build(nvr)
+    if nvr_brew_build:
+        options['brew_build'] = check_brew_build(nvr_brew_build)
+    elif nvr_upload_id:
+        try:
+            upload = FileUpload.objects.get(id=nvr_upload_id)
+        except:
+            raise ObjectDoesNotExist("Can't find uploaded file with id: %s" % nvr_upload_id)
+    
+        if upload.owner.username != task_user:
+            raise RuntimeError("Can't process a file uploaded by a different user")
+    
+        srpm_path = os.path.join(upload.target_dir, upload.name)
+        options["srpm_name"] = upload.name
+        task_label = options["srpm_name"]
+    else:
+        raise RuntimeError('Target build is not specified!')
 
     task_id = Task.create_task(
         owner_name=task_user,
@@ -432,6 +475,11 @@ def create_diff_task(kwargs):
     task_dir = Task.get_task_dir(task_id)
 
     check_and_create_dirs(task_dir)
+    
+    if nvr_brew_build:
+        # move file to task dir, remove upload record and make the task available
+        shutil.move(srpm_path, os.path.join(task_dir, os.path.basename(srpm_path)))
+        upload.delete()
 
     parent_task = Task.objects.get(id=task_id)
     create_base_diff_task(copy.deepcopy(kwargs), task_id)
