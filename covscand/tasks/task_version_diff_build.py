@@ -7,6 +7,7 @@ import sys
 import grp
 import shutil
 import logging
+import urllib
 
 from kobo.rpmlib import get_rpm_header
 from kobo.worker import TaskBase
@@ -95,14 +96,14 @@ class VersionDiffBuild(TaskBase):
 
         # $program [-fit] MOCK_PROFILE my-package.src.rpm [COV_OPTS]
         cov_cmd.append('cov-mockbuild')
-        #if keep_covdata:
-        #    cov_cmd.append("-i")
+        if keep_covdata:
+            cov_cmd.append("-i")
         cov_cmd.append(pipes.quote(mock_config))
         cov_cmd.append(pipes.quote(srpm_path))
-        #if all_checks:
-        #    cov_cmd.append("--all")
-        #if security_checks:
-        #    cov_cmd.append("--security")
+        if all_checks:
+            cov_cmd.append("--all")
+        if security_checks:
+            cov_cmd.append("--security")
 
         command = ["su", "-", "coverity", "-c", " ".join(cov_cmd)]
 

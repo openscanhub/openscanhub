@@ -363,10 +363,6 @@ def create_base_diff_task(kwargs, parent_id):
     priority = kwargs.get('priority', 10) + 1
     comment = kwargs.get('comment', '')
     
-    options['keep_covdata'] = kwargs.pop("keep_covdata", False)
-    options['all'] = kwargs.pop("all", False)
-    options['security'] = kwargs.pop("security", False)    
-
     options["mock_config"] = base_mock
 
     if base_brew_build:
@@ -430,6 +426,10 @@ def create_diff_task(kwargs):
     nvr_srpm = kwargs.get('nvr_srpm', None)
     nvr_brew_build = kwargs.get('nvr_brew_build', None)
     nvr_upload_id = kwargs.get('nvr_upload_id', None)
+    
+    options['keep_covdata'] = kwargs.pop("keep_covdata", False)
+    options['all'] = kwargs.pop("all", False)
+    options['security'] = kwargs.pop("security", False)     
 
     #Label, description or any reason for this task.
     task_label = nvr_srpm or nvr_brew_build
