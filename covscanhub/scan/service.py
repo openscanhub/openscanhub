@@ -110,6 +110,11 @@ def extract_logs_from_tarball(task_id, name=None):
     """
     task = Task.objects.get(id=task_id)
     task_dir = task.get_task_dir(task.id)
+    
+    if task.label.endswith('.src.rpm'):
+        file_base = task.label[:-8]
+    else:
+        file_base = task.label
 
     tar_archive = None
 
@@ -123,9 +128,9 @@ def extract_logs_from_tarball(task_id, name=None):
                 % (name, task_id))
     else:
         #name wasn't specified, guess tarball name:
-        #label (nvr) + tar.xz|tar.lzma
-        tarball_logs = os.path.join(task_dir, task.label + '.tar.xz')
-        tarball_logs2 = os.path.join(task_dir, task.label + '.tar.lzma')
+        #file_base (nvr without srcrpm) + tar.xz|tar.lzma
+        tarball_logs = os.path.join(task_dir, file_base + '.tar.xz')
+        tarball_logs2 = os.path.join(task_dir, file_base + '.tar.lzma')
         if os.path.isfile(tarball_logs):
             tar_archive = tarball_logs
         elif os.path.isfile(tarball_logs2):
@@ -429,7 +434,7 @@ def create_diff_task(kwargs):
     
     options['keep_covdata'] = kwargs.pop("keep_covdata", False)
     options['all'] = kwargs.pop("all", False)
-    options['security'] = kwargs.pop("security", False)     
+    options['security'] = kwargs.pop("security", False)    
 
     #Label, description or any reason for this task.
     task_label = nvr_srpm or nvr_brew_build
