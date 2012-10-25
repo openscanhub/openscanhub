@@ -476,7 +476,7 @@ def create_diff_task(kwargs):
 
     check_and_create_dirs(task_dir)
     
-    if nvr_brew_build:
+    if nvr_upload_id:
         # move file to task dir, remove upload record and make the task available
         shutil.move(srpm_path, os.path.join(task_dir, os.path.basename(srpm_path)))
         upload.delete()

@@ -123,11 +123,12 @@ http://$hostname/covscan/xmlrpc"
         nvr_brew_build = kwargs.pop("nvr_brew_build", None)
         base_srpm = kwargs.pop("base_srpm", None)
         nvr_srpm = kwargs.pop("nvr_srpm", None)
-        all = kwargs.pop("all")
+        all_checker = kwargs.pop("all")
         security = kwargs.pop("security")
         hub_url = kwargs.pop('hub', None)
         
-        options[comment] = comment        
+        if comment:        
+            options['comment'] = comment        
         
         #both bases are specified
         if base_brew_build and base_srpm:
@@ -186,16 +187,15 @@ a SRPM")
 
         # end of CLI options handling
 
-        options = {
-            "keep_covdata": keep_covdata,
-        }
+        options["keep_covdata"] = keep_covdata
+
         if email_to:
             options["email_to"] = email_to
         if priority is not None:
             options["priority"] = priority
 
-        if all:
-            options["all"] = all
+        if all_checker:
+            options["all"] = all_checker
         if security:
             options["security"] = security
 
@@ -217,6 +217,8 @@ a SRPM")
             options["base_upload_id"] = upload_id
             options['base_srpm'] = base_srpm
 
+        print 'submitting task with options %s' % options
+            
         task_id = self.submit_task(options)
         self.write_task_id_file(task_id, task_id_file)
         print "Task info: %s" % self.hub.client.task_url(task_id)
