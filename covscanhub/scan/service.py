@@ -5,18 +5,21 @@
 
 import os
 import pipes
-#import messaging.send_message
 import shutil
 import copy
 
 from kobo.hub.models import Task
-from models import Scan, SCAN_STATES
 from kobo.shortcuts import run
+from kobo.django.upload.models import FileUpload
+
+from models import Scan, SCAN_STATES
 from covscanhub.other.shortcuts import get_mock_by_name, check_brew_build,\
     check_and_create_dirs
-from kobo.django.upload.models import FileUpload
-from django.core.exceptions import ObjectDoesNotExist
 
+from django.core.exceptions import ObjectDoesNotExist
+from django.conf import settings
+
+from messaging import send_message
 
 __all__ = (
     "update_scans_state",
@@ -499,3 +502,8 @@ def prepare_and_execute_diff(task, base_task, nvr, base_nvr):
     base_task_dir = Task.get_task_dir(base_task.id)
 
     return run_diff(task_dir, base_task_dir, nvr, base_nvr)
+
+def post_qpid_message(scan_id, scan_state):
+    send_message(settings.QPID_CONNECTION, 
+                 {'scan_id': scan_id, 'scan_state': scan_state},
+                 'finished')  

@@ -159,26 +159,26 @@ XMLRPC_METHODS = {
         ('kobo.hub.xmlrpc.client',    'client'),
         ('covscanhub.xmlrpc.worker',  'worker'),
     ),
-    'et': (
+    'kerbauth': (
         ('covscanhub.xmlrpc.errata', 'errata'),
     ),
     
 }
 
-if not DEBUG:
-    qpid_connection = {
-        'broker': "qpid-stage.app.eng.bos.redhat.com",
-        'address': "eso.topic",
-        'mechanism': "GSSAPI",
-    }
-else:
-    qpid_connection = {
-        'broker': "localhost:5672",
-        'address': "amq.topic",
-        'mechanism': 'ANONYMOUS',
-    }
+#if not DEBUG:
+QPID_CONNECTION = {
+    'broker': "qpid-stage.app.eng.bos.redhat.com",
+    'address': "eso.topic",
+    'mechanism': "GSSAPI",
+}
+#else:
+#    QPID_CONNECTION = {
+#        'broker': "localhost:5672",
+#        'address': "amq.topic",
+#        'mechanism': 'ANONYMOUS',
+#    }
 
-qpid_connection['routing_key'] = 'covscan.scan'
+QPID_CONNECTION['routing_key'] = 'covscan.scan'
 
 # override default values with custom ones from local settings
 try:

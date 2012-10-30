@@ -36,7 +36,7 @@ def load_defects_from_json(json_dict, result,
                 checker.group = CheckerGroup.objects.get(name='Default')
                 checker.save()
             d.checker = checker
-            d.annotation = defect['annotation']
+            d.annotation = defect.get('annotation', None)
             d.result = result
             d.state = defect_state
             d.save()

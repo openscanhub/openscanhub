@@ -97,6 +97,8 @@ def finish_scan(request, scan_id):
         scan.state = SCAN_STATES['PASSED']
     else:
         scan.state = SCAN_STATES['NEEDS_INSPECTION']
+        
+    post_qpid_message(scan_id, SCAN_STATES.get_value(scan.state))
     scan.save()
 
 
