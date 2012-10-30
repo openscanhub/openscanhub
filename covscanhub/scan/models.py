@@ -14,7 +14,7 @@ SCAN_STATES = Enum(
     "WAIVED",            # scan finished and everything is okay -- waived
     "PASSED",            # nothing new
     "FINISHED",          # scan finished -- USER scans only
-    "FAILED",          # scan failed -- this shouldn't happened
+    "FAILED",            # scan failed -- this shouldn't happened
 )
 
 SCAN_TYPES = Enum(

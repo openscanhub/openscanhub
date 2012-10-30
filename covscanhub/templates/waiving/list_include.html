@@ -1,0 +1,21 @@
+{% load i18n %}
+<table class="list" width="100%">
+  <tr>
+    <th>{% trans "ID" %}</th>
+    <th>{% trans "NVR" %}</th>
+    <th>{% trans "Base" %}</th>
+    <th>{% trans "State" %}</th>
+    <th>{% trans "Date accessed" %}</th>
+    <th>{% trans "Owner" %}</th>
+  </tr>
+{% for result in result_list %}
+  <tr>
+    <td><a href="{% url waiving/result result.id %}">{{ result.id }}</a></td>
+    <td>{{ result.scan.nvr }}</td>
+    <td>{{ result.scan.base.nvr }}</td>
+    <td>{{ result.scan.get_state_display }}</td>
+    <td>{{ result.scan.last_access|date:"Y-m-d H:i:s" }}</td>
+    <td>{{ result.scan.username }}</td>
+  </tr>
+{% endfor %}
+</table>

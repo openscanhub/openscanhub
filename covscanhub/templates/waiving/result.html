@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block content %}
+<h2>{% trans result.scan.nvr %}</h2>
+
+<div>
+Unwaived groups are: 
+{% for g in unwaived_groups %} 
+<ul>
+<li>{{ g.name }}</li>
+</ul>
+{% endfor %}
+</div>
+
+<table class="summary">
+{% for five in output %}
+  <tr>
+{% for group, count in five.items %}
+    {% if count > 0 %}
+    <td bgcolor="#FF0000"><a href="{% url waiving/waiver result.id group.id %}">{{ group.name }} ({{ count }})</a></td>
+    {% else %}
+    <td bgcolor="#00FF00">{{ group.name }}</td>
+    {% endif %}
+{% endfor %}
+  </tr>
+{% endfor %}
+</table>
+
+{% block waiver %}
+{% endblock waiver %}
+
+{% endblock content %}

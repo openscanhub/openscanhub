@@ -25,6 +25,7 @@ urlpatterns = patterns('',
     url(r"^info/channel/", include("kobo.hub.urls.channel")),
     url(r"^info/user/", include("kobo.hub.urls.user")),
     url(r"^info/worker/", include("kobo.hub.urls.worker")),
+    url(r"^waiving/", include("covscanhub.waiving.urls")),
 
     url(r"^scan/", include("covscanhub.scan.urls")),
 

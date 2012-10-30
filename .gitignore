@@ -1,8 +1,10 @@
 *.py[co]
 *.sqlite
 *.db
+*.swp
 build/*
 dist/*
 MANIFEST
+settings.py
 settings_local.py
 .spyderproject

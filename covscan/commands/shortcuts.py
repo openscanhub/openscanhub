@@ -16,9 +16,11 @@ def verify_brew_build(build, brew_url):
         srpm = srpm[:-8]
     brew_proxy = brew.ClientSession(brew_url)
     try:
-        brew_proxy.getBuild(srpm)
+        build = brew_proxy.getBuild(srpm)
     except brew.GenericError:
         return "Build does not exist in brew: %s" % srpm
+    if build is None:
+        raise RuntimeError('Brew build %s does not exist' % srpm)
     return None
 
 

@@ -53,7 +53,8 @@ USE_I18N = True
 USE_L10N = True
 
 # Absolute path to task logs and other files
-FILES_PATH = '/var/lib/covscanhub'
+FILES_PATH = '/tmp/covscanhub'
+#FILES_PATH = '/var/lib/covscanhub'
 
 # Files for kobo tasks with predefined structure
 TASK_DIR = os.path.join(FILES_PATH, 'tasks')
@@ -63,17 +64,17 @@ UPLOAD_DIR = os.path.join(FILES_PATH, 'upload')
 
 # Absolute path to the directory that holds media.
 # Example: "/home/media/media.lawrence.com/"
-MEDIA_ROOT = os.path.join(PROJECT_DIR, "media/")
-
+#MEDIA_ROOT = os.path.join(PROJECT_DIR, "media/")
+MEDIA_ROOT = '/tmp/covscanhub/media/'
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash if there is a path component (optional in other cases).
 # Examples: "http://media.lawrence.com", "http://example.com/media/"
-MEDIA_URL = '/covscan/media/'
+MEDIA_URL = '/media/'
 
 # URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
 # trailing slash.
 # Examples: "http://foo.com/media/", "/media/".
-ADMIN_MEDIA_PREFIX = '/covscan/admin/media/'
+ADMIN_MEDIA_PREFIX = '/admin/media/'
 
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = '$e9r6h6n@@zw)g@_6vkiug_ys0pv)tn(2x4e@zgkaany8qau8@'

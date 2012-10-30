@@ -6,7 +6,8 @@
 """
 
 import django.utils.simplejson as json
-from models import DEFECT_STATES, Defect, Event, Result, Checker, CheckerGroup
+from models import DEFECT_STATES, Defect, Event, Result, \
+    Checker, CheckerGroup, Waiver
 import os
 from kobo.hub.models import Task
 from django.core.exceptions import ObjectDoesNotExist
@@ -120,4 +121,23 @@ def create_results(scan):
         diff_file.close()
         
         return os.path.getsize(diff_file_path)
+
+
+def get_groups_by_result(result):
+    groups = set()
     
+    for defect in Defect.objects.filter(result=result):
+        groups.add(defect.checker.group)
+
+    return groups
+
+
+def get_waiving_status(result):
+    result_waivers = Waiver.objects.filter(result=result)
+    status = {}
+    for group in get_groups_by_result(result):
+        status[group] = result_waivers.filter(group=group)
+    return status
+
+def get_missing_waivers(result):
+    return [group for group, query in get_waiving_status(result).iteritems() if not query]    

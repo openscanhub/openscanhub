@@ -1,17 +1,13 @@
 # -*- coding: utf-8 -*-
 
 import copy
-import brew
-import os
 
 #import messaging.send_message
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
-from covscanhub.scan.service import prepare_and_execute_diff
-from covscanhub.scan.models import Scan, SCAN_STATES, SCAN_TYPES, Tag
-from covscanhub.waiving.service import create_results
-from covscanhub.other.shortcuts import check_brew_build, check_and_create_dirs,\
- get_tag_by_name
+from covscanhub.scan.models import Scan, SCAN_STATES, SCAN_TYPES
+from covscanhub.other.shortcuts import check_brew_build, \
+    check_and_create_dirs, get_tag_by_name
 from kobo.hub.models import Task
 
             
@@ -63,8 +59,9 @@ def create_errata_base_scan(kwargs, task_id):
     task = Task.objects.get(id=task_id)
     task.args = options
     task.save()
-    
+
     return scan
+
 
 def create_errata_scan(kwargs):
     """
@@ -108,9 +105,10 @@ def create_errata_scan(kwargs):
     #does tag exist?
     tag_obj = get_tag_by_name(tag)
     options['mock_config'] = tag_obj.mock.name
-    
 
-    # Test if SRPM exists
+    # Test if build exists
+    # TODO: add check if SRPM exist:
+    #    GET /brewroot/.../package/version-release/...src.rpm
     check_brew_build(nvr)
 
     task_id = Task.create_task(

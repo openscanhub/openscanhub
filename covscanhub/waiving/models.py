@@ -2,21 +2,24 @@
 
 import django.db.models as models
 from covscanhub.scan.models import Scan
-from kobo.types import Enum
+from kobo.types import Enum, EnumItem
 from django.contrib.auth.models import User
 
 
 DEFECT_STATES = Enum(
-    "NEW",     # newly introduced defect
-    "OLD",     # this one was present in base scan -- nothing new
-    "FIXED",   # present in base, but no longer in actual version; good job
-    "UNKNOWN", # default value
+    "NEW",      # newly introduced defect
+    "OLD",      # this one was present in base scan -- nothing new
+    "FIXED",    # present in base, but no longer in actual version; good job
+    "UNKNOWN",  # default value
 )
 
 WAIVER_TYPES = Enum(
-    "NOT_A_BUG", # defect is not a bug
-    "IS_A_BUG",  # defect is a bug and I'm going to fix it
-    "FIX_LATER", # defect is a bug and I'm going to fix it in next version
+    # defect is not a bug
+    EnumItem("NOT_A_BUG", help_text="Not a bug"),
+    # defect is a bug and I'm going to fix it
+    EnumItem("IS_A_BUG", help_text="Is a bug"),
+    # defect is a bug and I'm going to fix it in next version
+    EnumItem("FIX_LATER", help_text="Fix later"),
 )
 
 
@@ -30,14 +33,14 @@ class Result(models.Model):
                                        max_length=32, blank=True, null=True)
     scan = models.ForeignKey(Scan, verbose_name="Scan",
                              blank=True, null=True,)
- 
+
     def __unicode__(self):
-        return "%s %s" % (self.scanner, self.scanner_version)
+        return ("%s %s" % (self.scanner, self.scanner_version))[:70]
 
 
 class Event(models.Model):
     """
-    Each Event is associated with some Defect. Event represents error in 
+    Each Event is associated with some Defect. Event represents error in
     specified file on exact line with appropriate message.
     """
     file_name = models.CharField("Filename", max_length=128,
@@ -123,7 +126,7 @@ class Waiver(models.Model):
                               help_text="Waiver is associated with this \
 checker group")
     user = models.ForeignKey(User)
-    waiver_type = models.PositiveIntegerField(default=WAIVER_TYPES["IS_A_BUG"],
+    state = models.PositiveIntegerField(default=WAIVER_TYPES["IS_A_BUG"],
                                         choices=WAIVER_TYPES.get_mapping(),
                                         help_text="Type of waiver")
 

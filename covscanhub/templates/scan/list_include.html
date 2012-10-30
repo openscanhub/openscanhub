@@ -11,7 +11,7 @@
     <td><a href="{% url scan/detail scan.id %}">{{ scan.id }}</a></td>
     <td>{{ scan.nvr }}</td>
     <td>{{ scan.base }}</td>
-    <td>{{ scan.state }}</td>
+    <td>{{ scan.get_state_display }}</td>
   </tr>
 {% endfor %}
 </table>

@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from covscanhub.scan.models import MockConfig, Tag
+from covscanhub.other.exceptions import BrewException
 from django.core.exceptions import ObjectDoesNotExist
 from django.conf import settings
 
@@ -42,10 +43,9 @@ def check_brew_build(name):
     else:
         srpm = name
     brew_proxy = brew.ClientSession(settings.BREW_HUB)
-    try:
-        brew_proxy.getBuild(srpm)
-    except brew.GenericError:
-        raise RuntimeError("Brew build of package %s does not exist" % name)
+    build = brew_proxy.getBuild(srpm)
+    if build is None:
+        raise BrewException('Brew build %s does not exist' % srpm)
     return srpm
 
 

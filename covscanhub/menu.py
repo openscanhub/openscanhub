@@ -44,6 +44,9 @@ menu = (
     MenuItem("Info", "worker/list", menu=(
         include("kobo.hub.menu"),
     )),
+    MenuItem("Waiving", "waiving/list", menu=(
+        MenuItem('List','waiving/list'),
+    )),
 )
 
 

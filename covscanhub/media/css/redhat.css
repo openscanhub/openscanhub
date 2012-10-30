@@ -7,3 +7,16 @@
 #menu a.active {
     color: #9e292b;
 }
+
+label { 
+    vertical-align:top; 
+}
+
+table.summary {
+    border: none;
+}
+
+table.summary td, table.result summary {
+    padding: 0.3em 0.7em 0.3em 0.7em;
+    border: 2px solid #ffffff;
+}

@@ -8,7 +8,7 @@ Uncoment and use whatever is needed.
 """
 
 
-DEBUG = False
+DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
 #ADMINS = (
@@ -19,7 +19,8 @@ TEMPLATE_DEBUG = DEBUG
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': '/var/lib/covscanhub/db.sqlite',                      # Or path to database file if using sqlite3.
+        'NAME': '/tmp/covscanhub/db.sqlite',                      # Or path to database file if using sqlite3.
+#        'NAME': '/var/lib/covscanhub/db.sqlite',                      # Or path to database file if using sqlite3.
         'USER': '',                      # Not used with sqlite3.
         'PASSWORD': '',                  # Not used with sqlite3.
         'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.

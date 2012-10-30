@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 
+import brew
+
 from covscanhub.errata.service import create_errata_scan
+from covscanhub.other.exceptions import BrewException
 from covscanhub.scan.models import SCAN_TYPES, SCAN_STATES, Scan
 from kobo.django.xmlrpc.decorators import login_required
 
@@ -15,7 +18,7 @@ __all__ = (
 def create_errata_diff_scan(request, kwargs):
     """
     create_errata_diff_scan(kwargs)
-    
+
         submits 'differential scan' task, this procedure should be used
         from errata tool
 
@@ -36,10 +39,16 @@ def create_errata_diff_scan(request, kwargs):
     """
     kwargs['scan_type'] = SCAN_TYPES['ERRATA']
     kwargs['task_user'] = request.user.username
-    #TODO: if there will be some error, inform ET
+
     response = {}
     try:
         scan = create_errata_scan(kwargs)
+    except brew.GenericError, ex:
+        response['status'] = 'ERROR'
+        response['message'] = 'Requested build does not exist in brew: %s' % ex
+    except BrewException, ex:
+        response['status'] = 'ERROR'
+        response['message'] = '%s' % ex        
     except RuntimeError, ex:
         response['status'] = 'ERROR'
         response['message'] = 'Scan failed to complete, error: %s' % ex
@@ -52,14 +61,14 @@ def create_errata_diff_scan(request, kwargs):
 def get_scan_state(request, scan_id):
     """
     get_scan_state(scan_id)
-    
+
         Function that informs requestor about actual state of specified scan
-    
+
     @param scan_id: ID of requested scan
     @type scan_id: string or int
 
     @rtype: dictionary
-    @return: 
+    @return:
      - status: status message: { 'OK', 'ERROR' }
      - message: in case of error, here is detailed message
      - state: state of scan. It can be one of following values (description

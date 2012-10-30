@@ -12,7 +12,7 @@
   </tr>
   <tr>
     <th>{% trans "State" %}</th>
-    <td>{{ scan.state }}</td>
+    <td>{{ scan.get_state_display }}</td>
   </tr>
   <tr>
     <th>{% trans "Target" %}</th>
@@ -38,8 +38,6 @@
     <th>{% trans "RHEL Version" %}</th>
     <td>{{ scan.rhel_version }}</td>
   </tr>
-
-
   <tr>
     <th>{% trans "Last access" %}</th>
     <td>{% if scan.last_access %}{{ scan.last_access|date:"Y-m-d H:i:s" }}{% endif %}</td>

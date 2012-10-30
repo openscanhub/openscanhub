@@ -29,7 +29,7 @@ def email_task_notification(request, task_id):
     task = Task.objects.get(id=task_id)
     recipient = task.owner.username
     if "@" not in recipient:
-        if recipient == "admin":
+        if recipient == "admin" or recipient == "test":
             recipient = None
         else:
             # XXX: hardcoded
