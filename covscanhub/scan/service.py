@@ -27,6 +27,7 @@ __all__ = (
     "extract_logs_from_tarball",
     "create_diff_task",
     'prepare_and_execute_diff',
+    'post_qpid_message',
 )
 
 
@@ -503,7 +504,8 @@ def prepare_and_execute_diff(task, base_task, nvr, base_nvr):
 
     return run_diff(task_dir, base_task_dir, nvr, base_nvr)
 
+
 def post_qpid_message(scan_id, scan_state):
-    send_message(settings.QPID_CONNECTION, 
+    send_message(settings.QPID_CONNECTION,
                  {'scan_id': scan_id, 'scan_state': scan_state},
-                 'finished')  
+                 'finished')

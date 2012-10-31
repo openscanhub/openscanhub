@@ -7,7 +7,7 @@ from kobo.client.constants import TASK_STATES
 from kobo.hub.decorators import validate_worker
 from kobo.hub.models import Task
 from covscanhub.scan.service import extract_logs_from_tarball, \
-    update_scans_state, prepare_and_execute_diff
+    update_scans_state, prepare_and_execute_diff, post_qpid_message
 from covscanhub.waiving.service import create_results
 from covscanhub.scan.models import SCAN_STATES, Scan
 
@@ -97,7 +97,6 @@ def finish_scan(request, scan_id):
         scan.state = SCAN_STATES['PASSED']
     else:
         scan.state = SCAN_STATES['NEEDS_INSPECTION']
-        
     post_qpid_message(scan_id, SCAN_STATES.get_value(scan.state))
     scan.save()
 
