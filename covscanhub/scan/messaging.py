@@ -67,6 +67,8 @@ class SenderThread(threading.Thread):
                 retry -= 1
                 connection.open()
             except AuthenticationFailure, ex:
+                if connection.opened():
+                    connection.close()
                 print "Retries left: %d, Connection opened? %s Exception: \
 %s" % (retry, connection.opened(), ex)
                 self.krb_init()
