@@ -34,6 +34,6 @@ in SCAN_STATES.get_mapping()])
             'scan_state': scan_state,
         },
         'comment': 'The message provided has been sent to broker, for more \
-info see documentation on .../xmlrpc/kerbauth'.
+info see documentation on .../xmlrpc/kerbauth'
     }
     return result
