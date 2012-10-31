@@ -161,6 +161,7 @@ XMLRPC_METHODS = {
     ),
     'kerbauth': (
         ('covscanhub.xmlrpc.errata', 'errata'),
+        ('covscanhub.xmlrpc.test', 'test'),
     ),
     
 }

@@ -11,7 +11,7 @@ from kobo.hub.models import Task, TASK_STATES
 from kobo.django.upload.models import FileUpload
 from kobo.django.xmlrpc.decorators import login_required
 
-from covscanhub.scan.models import MockConfig, SCAN_TYPES
+from covscanhub.scan.models import MockConfig
 from covscanhub.scan.service import create_diff_task
 
 

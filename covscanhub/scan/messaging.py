@@ -62,20 +62,22 @@ class SenderThread(threading.Thread):
         while retry and not is_live:
             try:
                 retry -= 1
+                #create connection and try to open it
                 connection = Connection(
                     url=url,
                     sasl_mechanisms=self.configuration['mechanism'],
                 )
                 connection.open()
                 is_live = True
-            except AuthenticationFailure, ex:
+            except AuthenticationFailure:
                 if connection.opened():
                     connection.close()
-                print "Retries left: %d, Connection opened? %s Exception: \
-%s" % (retry, connection.opened(), ex)
-                self.krb_init()
                 if not retry:
+                    #kerb init didn't help, raise again
                     raise
+                else:
+                    #initialize kerberos -- using principal and keytab
+                    self.krb_init()
 
         session = connection.session()
 
