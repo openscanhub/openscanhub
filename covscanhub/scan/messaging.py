@@ -40,14 +40,16 @@ class SenderThread(threading.Thread):
             sasl_mechanisms=self.configuration['mechanism'],
         )
 
+        print 'Opening connection'
         connection.open()
+        print 'Getting session'
         session = connection.session()
 
         return session, connection
 
     def send(self):
+        session, connection = self.connect()
         try:
-            session, connection = self.connect()
             sender = session.sender(self.configuration['address'])
 
             final_key = self.configuration['routing_key'] + '.' + self.key
