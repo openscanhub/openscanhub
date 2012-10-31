@@ -506,6 +506,7 @@ def prepare_and_execute_diff(task, base_task, nvr, base_nvr):
 
 
 def post_qpid_message(scan_id, scan_state):
-    send_message(settings.QPID_CONNECTION,
-                 {'scan_id': scan_id, 'scan_state': scan_state},
-                 'finished')
+    s = copy.deepcopy(settings.QPID_CONNECTION)
+    s['KRB_PRINCIPAL'] = settings.KRB_AUTH_PRINCIPAL
+    s['KRB_KEYTAB'] = settings.KRB_AUTH_KEYTAB
+    send_message(s, {'scan_id': scan_id, 'scan_state': scan_state}, 'finished')
