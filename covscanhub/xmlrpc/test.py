@@ -6,6 +6,9 @@ from kobo.django.xmlrpc.decorators import login_required
 
 import random
 
+__all__ = (
+    'send_message',
+)
 
 @login_required
 def send_message():
