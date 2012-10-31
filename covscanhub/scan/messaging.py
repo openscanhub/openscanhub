@@ -57,15 +57,17 @@ class SenderThread(threading.Thread):
         #fedora misses python-saslwrapper; so install it
         url = URL(self.configuration['broker'])
 
-        connection = Connection(
-            url=url,
-            sasl_mechanisms=self.configuration['mechanism'],
-        )
         retry = 2
-        while retry and not connection.opened():
+        is_live = False
+        while retry and not is_live:
             try:
                 retry -= 1
+                connection = Connection(
+                    url=url,
+                    sasl_mechanisms=self.configuration['mechanism'],
+                )
                 connection.open()
+                is_live = True
             except AuthenticationFailure, ex:
                 if connection.opened():
                     connection.close()
