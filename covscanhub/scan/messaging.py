@@ -62,7 +62,7 @@ class SenderThread(threading.Thread):
             sasl_mechanisms=self.configuration['mechanism'],
         )
         retry = 2
-        while retry:
+        while retry and not connection.opened():
             try:
                 retry -= 1
                 connection.open()
