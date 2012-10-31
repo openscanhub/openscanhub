@@ -11,7 +11,7 @@ __all__ = (
 )
 
 @login_required
-def send_message():
+def send_message(request):
     """
     send_message()
 
