@@ -92,10 +92,12 @@ kobo.tback.get_exception())
         try:
             self.hub.worker.extract_tarball(self.task_id, '')
         except Exception, ex:
-            import kobo.tback
-            print >> sys.stderr, "Exception while extracting tarball for task \
-%s" % (self.task_id)
-            self.fail()
+            # extract_tarball might not be supported on hub, never mind
+            pass
+            #import kobo.tback
+            #print >> sys.stderr, "Exception while extracting tarball for task \
+            #%s" % (self.task_id)
+            #self.fail()
 
         # remove temp files
         shutil.rmtree(tmp_dir)

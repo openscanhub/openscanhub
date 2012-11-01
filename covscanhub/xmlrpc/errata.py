@@ -38,16 +38,13 @@ def create_errata_diff_scan(request, kwargs):
      - message: in case of error, here is detailed message
      - id: ID of submitted scan
     """
-    if request.method == 'GET':
-        print 'Got GET on create_errata_diff_scan'
-    elif request.method == 'POST':
-        if not request.user.has_perm('scan.errata_xmlrpc_scan'):
-            response = {}
-            response['status'] = 'ERROR'
-            response['message'] = 'You are not authorized to execute this \
+    if not request.user.has_perm('scan.errata_xmlrpc_scan'):
+        response = {}
+        response['status'] = 'ERROR'
+        response['message'] = 'You are not authorized to execute this \
 function.'
-            # TODO log this suspicous activity
-            return response
+        # TODO log this suspicous activity
+        return response
     
     kwargs['scan_type'] = SCAN_TYPES['ERRATA']
     kwargs['task_user'] = request.user.username
