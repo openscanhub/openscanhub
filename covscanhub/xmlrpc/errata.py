@@ -8,8 +8,6 @@ from covscanhub.scan.models import SCAN_TYPES, SCAN_STATES, Scan
 
 from kobo.django.xmlrpc.decorators import login_required
 
-from django.contrib.auth.decorators import user_passes_test
-
 
 __all__ = (
     "create_errata_diff_scan",
@@ -18,7 +16,6 @@ __all__ = (
 
 
 @login_required
-@user_passes_test(lambda u: u.has_perm('scan.errata_xmlrpc_scan'))
 def create_errata_diff_scan(request, kwargs):
     """
     create_errata_diff_scan(kwargs)
@@ -41,6 +38,17 @@ def create_errata_diff_scan(request, kwargs):
      - message: in case of error, here is detailed message
      - id: ID of submitted scan
     """
+    if request.method == 'GET':
+        print 'Got GET on create_errata_diff_scan'
+    elif request.method == 'POST':
+        if not request.user.has_perm('scan.errata_xmlrpc_scan'):
+            response = {}
+            response['status'] = 'ERROR'
+            response['message'] = 'You are not authorized to execute this \
+function.'
+            # TODO log this suspicous activity
+            return response
+    
     kwargs['scan_type'] = SCAN_TYPES['ERRATA']
     kwargs['task_user'] = request.user.username
 
