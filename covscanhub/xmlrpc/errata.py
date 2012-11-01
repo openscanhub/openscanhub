@@ -5,7 +5,10 @@ import brew
 from covscanhub.errata.service import create_errata_scan
 from covscanhub.other.exceptions import BrewException
 from covscanhub.scan.models import SCAN_TYPES, SCAN_STATES, Scan
+
 from kobo.django.xmlrpc.decorators import login_required
+
+from django.contrib.auth.decorators import user_passes_test
 
 
 __all__ = (
