@@ -15,6 +15,7 @@ __all__ = (
 
 
 @login_required
+@user_passes_test(lambda u: u.has_perm('scan.errata_xmlrpc_scan'))
 def create_errata_diff_scan(request, kwargs):
     """
     create_errata_diff_scan(kwargs)

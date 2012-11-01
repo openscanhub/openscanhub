@@ -25,6 +25,14 @@ SCAN_TYPES = Enum(
 )
 
 
+class Permissions(models.Model):
+    class Meta:
+        permissions = (
+            ('errata_xmlrpc_scan', 
+             'Enables user to submit scans via XML-RPC for Errata Tool'),        
+        )
+
+
 class MockConfig(models.Model):
     name        = models.CharField(max_length=256, unique=True)
     enabled     = models.BooleanField(default=True)

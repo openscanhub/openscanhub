@@ -15,7 +15,9 @@ def send_message(request):
     """
     send_message()
 
-    Posts message on qpid broker. It is using currently this configuration:
+    Posts message on qpid broker. It is generating random IDs and states.
+    
+    It is using currently this configuration:
         'broker': "qpid-stage.app.eng.bos.redhat.com"
         'address': "eso.topic"
         'mechanism': "GSSAPI"
@@ -37,6 +39,7 @@ in SCAN_STATES.get_mapping()])
             'scan_state': scan_state,
         },
         'comment': 'The message provided has been sent to broker, for more \
-info see documentation on .../xmlrpc/kerbauth'
+info see documentation on \
+http://uqtm.lab.eng.brq.redhat.com/covscan/xmlrpc/kerbauth/'
     }
     return result
