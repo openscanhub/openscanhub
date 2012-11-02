@@ -30,8 +30,8 @@ Unwaived groups are:
 {% if logs %}
 <div>
 <ul>
-{% for log in logs %}
-  <li><a href="{% url task/log result.scan.task.id log %}">{{ log }}</a> [<a href="{% url task/log result.scan.task.id log %}?format=raw">download</a>]</li>
+{% for log, log_label in logs.iteritems %}
+  <li><a href="{% url task/log result.scan.task.id log %}">{{ log_label }}</a> [<a href="{% url task/log result.scan.task.id log %}?format=raw">download</a>]</li>
 {% endfor %}
 </ul>
 </div>

@@ -46,15 +46,20 @@ def run_diff(task_dir, base_task_dir, nvr, base_nvr):
     """
         Runs 'csdiff' and 'csdiff -x' command for results of scan with id
         'scan_id' against its base scan
+        Also executes command cshtml so users are able to browse files
         Returns size of output file
     """
-    fixed_diff_file = 'csdiff_fixed.out'
-    diff_file = 'csdiff.out'
+    fixed_diff_file = 'csdiff_fixed.js'
+    diff_file = 'csdiff.js'
+    fixed_html_file = 'csdiff_fixed.html'
+    html_file = 'csdiff.html'
 
     diff_file_path = os.path.join(task_dir, diff_file)
     fixed_diff_file_path = os.path.join(task_dir, fixed_diff_file)
+    html_file_path = os.path.join(task_dir, html_file)
+    fixed_html_file_path = os.path.join(task_dir, fixed_html_file)
 
-    #<task_dir>/<nvr>/run1/<nvr>.err
+    #<task_dir>/<nvr>/run1/<nvr>.js
     old_err = os.path.join(base_task_dir, base_nvr, 'run1', base_nvr + '.js')
     new_err = os.path.join(task_dir, nvr, 'run1', nvr + '.js')
 
@@ -83,24 +88,28 @@ old: %s new: %s' % (old_err, new_err))
                           workdir=task_dir,
                           stdout=False,
                           can_fail=False,
-                          logfile='err_diff.log',
+                          logfile='csdiff.log',
                           return_stdout=False,
                           show_cmd=False)
     #command wasn't successfull -- handle this somehow
     if retcode != 0:
-        print "'%s' wasn't successfull; path: %s, code: %s" % \
-            (diff_cmd, task_dir, retcode)
+        raise RuntimeError("'%s' wasn't successfull; path: %s, code: %s" %
+                           (diff_cmd, task_dir, retcode))
     else:
         retcode, output = run(fixed_diff_cmd,
                               workdir=task_dir,
                               stdout=False,
                               can_fail=False,
-                              logfile='err_diff.log',
+                              logfile='csdiff_fixed.log',
                               return_stdout=False,
                               show_cmd=False)
         if retcode != 0:
-            print "'%s' wasn't successfull; path: %s, code: %s" % \
-                (diff_cmd, task_dir, retcode)
+            raise RuntimeError("'%s' wasn't successfull; path: %s, code: %s" %
+                               (diff_cmd, task_dir, retcode))
+        run('cshtml %s > %s' % (diff_file_path, html_file_path),
+            workdir=task_dir, can_fail=True)
+        run('cshtml %s > %s' % (fixed_diff_file_path, fixed_html_file_path),
+            workdir=task_dir, can_fail=True)
     return os.path.getsize(diff_file_path)
 
 
@@ -114,7 +123,7 @@ def extract_logs_from_tarball(task_id, name=None):
     """
     task = Task.objects.get(id=task_id)
     task_dir = task.get_task_dir(task.id)
-    
+
     tar_archive = None
 
     #name was specified
@@ -170,7 +179,7 @@ def extract_logs_from_tarball(task_id, name=None):
     except RuntimeError:
         raise RuntimeError('[%s] Unable to extract tarball archive %s \
 I have used this command: %s' % (task_id, tar_archive, command))
-    
+
     #clean temporary file tmp_<nvr>.tar
     if os.path.exists(tmp_tar_archive):
         os.remove(tmp_tar_archive)
@@ -189,8 +198,8 @@ I have used this command: %s' % (task_id, tar_archive, command))
 
 def create_diff_base_scan(kwargs, parent_id):
     """
-        DEPRECATED    
-    
+        DEPRECATED
+
         create scan of a package and perform diff on results against specified
         version
         options of this scan are in dict 'kwargs'
@@ -255,8 +264,8 @@ def create_diff_base_scan(kwargs, parent_id):
 
 def create_diff_scan(kwargs):
     """
-        DEPRECATED    
-    
+        DEPRECATED
+
         create scan of a package and perform diff on results against specified
         version
         options of this scan are in dict 'kwargs'
@@ -366,7 +375,7 @@ def create_base_diff_task(kwargs, parent_id):
     base_mock = kwargs['base_mock']
     priority = kwargs.get('priority', 10) + 1
     comment = kwargs.get('comment', '')
-    
+
     options["mock_config"] = base_mock
 
     if base_brew_build:
@@ -376,10 +385,10 @@ def create_base_diff_task(kwargs, parent_id):
             upload = FileUpload.objects.get(id=base_upload_id)
         except:
             raise ObjectDoesNotExist("Can't find uploaded file with id: %s" % base_upload_id)
-    
+
         if upload.owner.username != task_user:
             raise RuntimeError("Can't process a file uploaded by a different user")
-    
+
         srpm_path = os.path.join(upload.target_dir, upload.name)
         options["srpm_name"] = upload.name
         # cut .src.rpm suffix, because run_diff and extractTarball rely on this
@@ -400,11 +409,11 @@ def create_base_diff_task(kwargs, parent_id):
     task_dir = Task.get_task_dir(task_id)
 
     check_and_create_dirs(task_dir)
-    
+
     if base_upload_id:
         # move file to task dir, remove upload record and make the task available
         shutil.move(srpm_path, os.path.join(task_dir, os.path.basename(srpm_path)))
-        upload.delete()    
+        upload.delete()
 
 
 def create_diff_task(kwargs):
@@ -431,10 +440,10 @@ def create_diff_task(kwargs):
     nvr_srpm = kwargs.get('nvr_srpm', None)
     nvr_brew_build = kwargs.get('nvr_brew_build', None)
     nvr_upload_id = kwargs.get('nvr_upload_id', None)
-    
+
     options['keep_covdata'] = kwargs.pop("keep_covdata", False)
     options['all'] = kwargs.pop("all", False)
-    options['security'] = kwargs.pop("security", False)    
+    options['security'] = kwargs.pop("security", False)
 
     #Label, description or any reason for this task.
     task_label = nvr_srpm or nvr_brew_build
@@ -458,10 +467,10 @@ def create_diff_task(kwargs):
             upload = FileUpload.objects.get(id=nvr_upload_id)
         except:
             raise ObjectDoesNotExist("Can't find uploaded file with id: %s" % nvr_upload_id)
-    
+
         if upload.owner.username != task_user:
             raise RuntimeError("Can't process a file uploaded by a different user")
-    
+
         srpm_path = os.path.join(upload.target_dir, upload.name)
         options["srpm_name"] = upload.name
         # cut .src.rpm suffix, because run_diff and extractTarball rely on this
@@ -481,7 +490,7 @@ def create_diff_task(kwargs):
     task_dir = Task.get_task_dir(task_id)
 
     check_and_create_dirs(task_dir)
-    
+
     if nvr_upload_id:
         # move file to task dir, remove upload record and make the task available
         shutil.move(srpm_path, os.path.join(task_dir, os.path.basename(srpm_path)))
