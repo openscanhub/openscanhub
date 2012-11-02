@@ -145,6 +145,6 @@ def result(request, result_id):
     """
     return render_to_response(
         "waiving/result.html",
-        context=get_result_context(request, Result.objects.get(id=result_id)),
+        get_result_context(request, Result.objects.get(id=result_id)),
         context_instance=RequestContext(request)
     )
