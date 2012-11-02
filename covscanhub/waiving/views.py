@@ -15,7 +15,7 @@ from covscanhub.scan.models import Scan
 
 from models import CheckerGroup, Result, Defect, Event, Waiver, WAIVER_TYPES
 from forms import WaiverForm
-from service import get_waiving_status, get_missing_waivers
+from service import get_missing_waivers
 
 def get_waiving_data(result_id):
     defects = Defect.objects.filter(result=result_id)
