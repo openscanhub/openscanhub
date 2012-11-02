@@ -31,7 +31,7 @@ Unwaived groups are:
 <div>
 <ul>
 {% for log in logs %}
-  <li><a href="{% url task/log result.scan.task.id log %}">{{ log }}</a> [<a href="{% url task/log task.id log %}?format=raw">download</a>]</li>
+  <li><a href="{% url task/log result.scan.task.id log %}">{{ log }}</a> [<a href="{% url task/log result.scan.task.id log %}?format=raw">download</a>]</li>
 {% endfor %}
 </ul>
 </div>
