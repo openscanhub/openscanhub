@@ -29,9 +29,10 @@ def get_result_context(request, result_object):
         '.err': 'Complete defects output',
     }    
     for i in result_object.scan.task.logs.list:
-        if os.path.basename(i).endswith(file_labels.keys()):
-            logs[i] = [label for (name, label) in file_labels.iteritems() if
-                os.path.basename(i).endswith(name)][0]
+        basename = os.path.basename(i)
+        for path, label in file_labels.iteritems():
+            if basename.endswith(path):
+                logs[i] = label
     #logs.sort(lambda x, y: cmp(os.path.split(x), os.path.split(y)))
 
     context['output'] = get_five_tuple(get_waiving_data(result_object.id))
