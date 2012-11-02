@@ -2,7 +2,7 @@
 {% load i18n %}
 
 {% block content %}
-<h2>{% trans result.scan.nvr %}</h2>
+<h2>{{ result.scan.nvr }} {% trans "compared to" %} {{ result.scan.base }} </h2>
 
 <div>
 Unwaived groups are: 
@@ -26,6 +26,16 @@ Unwaived groups are:
   </tr>
 {% endfor %}
 </table>
+
+{% if logs %}
+<div>
+<ul>
+{% for log in logs %}
+  <li><a href="{% url task/log task.id log %}">{{ log }}</a> [<a href="{% url task/log task.id log %}?format=raw">download</a>]</li>
+{% endfor %}
+</ul>
+</div>
+{% endif %}
 
 {% block waiver %}
 {% endblock waiver %}

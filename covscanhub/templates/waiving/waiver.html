@@ -13,7 +13,7 @@
         {% if event.id == defect.key_event.id %}
         <b>{{ event.file_name }}:{{ event.line }} {{ event.event }} -- {{ event.message }}</b>
         {% else %}
-        {{ event.file_name }}:{{ event.line }} {{ event.event }} -- {{ event.message }}
+        {{ event.file_name }}:{{ event.line }}:{{ event.event }} -- {{ event.message }}
         {% endif %}
     </li>
 {% endfor %}

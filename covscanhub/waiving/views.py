@@ -2,6 +2,7 @@
 
 
 import datetime
+import os
 
 from django.template import RequestContext
 from django.shortcuts import render_to_response
@@ -102,11 +103,11 @@ def waiver(request, result_id, checker_group_id):
 
     context['output'] = get_five_tuple(get_waiving_data(result_id))
     context['result'] = result_object
+    context['unwaived_groups'] = get_missing_waivers(result_object)    
     context['group'] = checker_group
     context['defects'] = defects
     context['waivers'] = Waiver.objects.filter(group=checker_group).\
         filter(result=result_object)
-    context['unwaived_groups'] = get_missing_waivers(result_object)
 
     return render_to_response("waiving/waiver.html",
                               context,
@@ -118,10 +119,21 @@ def result(request, result_id):
     Display all the tests for specified scan
     """
     result_object = Result.objects.get(id=result_id)
+
+    logs = []
+    for i in result_object.scan.task.logs.list:
+        if request.user.is_superuser:
+            logs.append(i)
+            continue
+        if not os.path.basename(i).startswith("traceback"):
+            logs.append(i)
+    logs.sort(lambda x, y: cmp(os.path.split(x), os.path.split(y)))        
+
     context = {
         'output': get_five_tuple(get_waiving_data(result_id)),
         'result': Result.objects.get(id=result_id),
         'unwaived_groups': get_missing_waivers(result_object),
+        'logs': logs,
     }
 
     return render_to_response("waiving/result.html",

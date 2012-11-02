@@ -5,21 +5,28 @@
     database with defects from scan
 """
 
+import os
+import re
+
 import django.utils.simplejson as json
+from django.core.exceptions import ObjectDoesNotExist
+
 from models import DEFECT_STATES, Defect, Event, Result, \
     Checker, CheckerGroup, Waiver
-import os
+
 from kobo.hub.models import Task
-from django.core.exceptions import ObjectDoesNotExist
 
 
 __all__ = (
     'create_results',
+    'get_groups_by_result',
+    'get_waiving_status',
+    'get_missing_waivers',
 )
 
 
-def load_defects_from_json(json_dict, result, 
-                        defect_state=DEFECT_STATES['UNKNOWN']):
+def load_defects_from_json(json_dict, result,
+                           defect_state=DEFECT_STATES['UNKNOWN']):
     """
     this function loads defects from provided json dictionary and writes them
     into provided result model object
@@ -61,7 +68,8 @@ def load_defects_from_json(json_dict, result,
                 #e_id could be None
                 d.key_event = e_id
             d.save()
-            
+
+
 def update_analyzer(result, json_dict):
     """
     fills object result with information about which analyzer performed scan
@@ -70,8 +78,15 @@ def update_analyzer(result, json_dict):
         if 'analyzer' in json_dict['scan']:
             result.scanner = json_dict['scan']['analyzer']
         if 'analyzer-version' in json_dict['scan']:
-            result.scanner_version = json_dict['scan']['analyzer-version']
+            version = json_dict['scan']['analyzer-version']
+            pattern = r'version (?P<version>\d{1,2}\.\d{1,2}\.\d{1,2})'
+            p_version = re.search(pattern, version)
+            if p_version:
+                result.scanner_version = p_version.group('version')
+            else:
+                result.scanner_version = version
     result.save()
+
 
 def create_results(scan):
     """
@@ -84,7 +99,7 @@ def create_results(scan):
     defects_path = os.path.join(task_dir, scan.nvr, 'run1', scan.nvr + '.js')
     fixed_file_path = os.path.join(task_dir, 'csdiff_fixed.out')
     diff_file_path = os.path.join(task_dir, 'csdiff.out')
-    
+
     try:
         f = open(defects_path, 'r')
     except IOError:
@@ -95,12 +110,12 @@ def create_results(scan):
     r = Result()
 
     update_analyzer(r, json_dict)
-    
+
     r.scan = scan
     r.save()
-    
+
     f.close()
-    
+
     if scan.is_errata_scan():
         try:
             fixed_file = open(fixed_file_path, 'r')
@@ -110,7 +125,7 @@ def create_results(scan):
         fixed_json_dict = json.load(fixed_file)
         load_defects_from_json(fixed_json_dict, r, DEFECT_STATES['FIXED'])
         fixed_file.close()
-        
+
         try:
             diff_file = open(diff_file_path, 'r')
         except IOError:
@@ -119,13 +134,13 @@ def create_results(scan):
         diff_json_dict = json.load(diff_file)
         load_defects_from_json(diff_json_dict, r, DEFECT_STATES['NEW'])
         diff_file.close()
-        
+
         return os.path.getsize(diff_file_path)
 
 
 def get_groups_by_result(result):
     groups = set()
-    
+
     for defect in Defect.objects.filter(result=result):
         groups.add(defect.checker.group)
 
@@ -140,4 +155,4 @@ def get_waiving_status(result):
     return status
 
 def get_missing_waivers(result):
-    return [group for group, query in get_waiving_status(result).iteritems() if not query]    
+    return [group for group, query in get_waiving_status(result).iteritems() if not query]
