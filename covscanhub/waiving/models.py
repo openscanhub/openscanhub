@@ -46,8 +46,10 @@ class Event(models.Model):
     """
     file_name = models.CharField("Filename", max_length=128,
                                  blank=True, null=True)
-    line = models.CharField("Line", max_length=16,
+    line = models.CharField("Line", max_length=8,
                             blank=True, null=True)
+    column = models.CharField("Column", max_length=8,
+                              blank=True, null=True)
     #check_return | example_assign | unterminated_case | fallthrough
     event = models.CharField("Event", max_length=16,
                              blank=True, null=True)
@@ -79,6 +81,12 @@ class Defect(models.Model):
     result = models.ForeignKey(Result, verbose_name="Result",
                                blank=True, null=True,
                                help_text="Result of scan")
+    function = models.CharField("Function", max_length=128,
+                                help_text="Name of function that contains \
+current defect",
+                                blank=True, null=True)
+    defect_identifier = models.CharField("Defect Identifier", max_length=16,
+                                         blank=True, null=True)
 
     state = models.PositiveIntegerField(default=DEFECT_STATES["UNKNOWN"],
                                         choices=DEFECT_STATES.get_mapping(),

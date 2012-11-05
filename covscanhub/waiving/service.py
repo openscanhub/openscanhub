@@ -7,6 +7,7 @@
 
 import os
 import re
+import logging
 
 import django.utils.simplejson as json
 from django.core.exceptions import ObjectDoesNotExist
@@ -16,6 +17,9 @@ from models import DEFECT_STATES, Defect, Event, Result, \
     Checker, CheckerGroup, Waiver
 
 from kobo.hub.models import Task
+
+
+logger = logging.getLogger(__name__)
 
 
 __all__ = (
@@ -45,6 +49,8 @@ def load_defects_from_json(json_dict, result,
                 checker.save()
             d.checker = checker
             d.annotation = defect.get('annotation', None)
+            d.defect_identifier = defect.get('defect_id', None)
+            d.function = defect.get('function', None)
             d.result = result
             d.state = defect_state
             d.save()
@@ -57,6 +63,7 @@ def load_defects_from_json(json_dict, result,
                     e = Event()
                     e.file_name = event['file_name']
                     e.line = event['line']
+                    e.column = event.get('column', None)
                     e.event = event['event']
                     e.message = event['message']
                     e.defect = d
@@ -93,7 +100,7 @@ def create_results(scan):
     """
     Task finished, so this method should update results
     """
-
+    logger.debug('Creating results for scan %s', scan)
     task_dir = Task.get_task_dir(scan.task.id)
 
     #json's path is <TASK_DIR>/<NVR>/run1/<NVR>.js

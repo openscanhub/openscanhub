@@ -43,7 +43,7 @@ def get_result_context(request, result_object):
     context['result'] = result_object
     context['unwaived_groups'] = get_missing_waivers(result_object)
     context['logs'] = logs
-    
+
     return context
 
 
@@ -60,6 +60,7 @@ def get_waiving_data(result_id):
     for group in groups:
         output[group] = defects.filter(checker__group=group).count()
     return output
+
 
 def get_five_tuple(output):
     result_five_tuples = []
@@ -120,7 +121,7 @@ def waiver(request, result_id, checker_group_id):
             s.last_access = datetime.datetime.now()
             s.save()
             logger.info('Waiver submitted for result %s, checker-group %s',
-                        (result_object, checker_group))
+                        result_object, checker_group)
             return HttpResponseRedirect(reverse('waiving/result',
                                                 args=(result_id,)))
     else:
@@ -142,7 +143,7 @@ def waiver(request, result_id, checker_group_id):
         filter(result=result_object)
 
     logger.debug('Displaying waiver for result %s, checker-group %s',
-                (result_object, checker_group))
+                 result_object, checker_group)
 
     return render_to_response("waiving/waiver.html",
                               context,
