@@ -15,6 +15,8 @@ from kobo.django.upload.models import FileUpload
 from models import Scan, SCAN_STATES
 from covscanhub.other.shortcuts import get_mock_by_name, check_brew_build,\
     check_and_create_dirs
+from covscanhub.other.constants import ERROR_DIFF_FILE, FIXED_DIFF_FILE,\
+    ERROR_HTML_FILE, FIXED_HTML_FILE
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.conf import settings
@@ -49,15 +51,10 @@ def run_diff(task_dir, base_task_dir, nvr, base_nvr):
         Also executes command cshtml so users are able to browse files
         Returns size of output file
     """
-    fixed_diff_file = 'csdiff_fixed.js'
-    diff_file = 'csdiff.js'
-    fixed_html_file = 'csdiff_fixed.html'
-    html_file = 'csdiff.html'
-
-    diff_file_path = os.path.join(task_dir, diff_file)
-    fixed_diff_file_path = os.path.join(task_dir, fixed_diff_file)
-    html_file_path = os.path.join(task_dir, html_file)
-    fixed_html_file_path = os.path.join(task_dir, fixed_html_file)
+    diff_file_path = os.path.join(task_dir, ERROR_DIFF_FILE)
+    fixed_diff_file_path = os.path.join(task_dir, FIXED_DIFF_FILE)
+    html_file_path = os.path.join(task_dir, ERROR_HTML_FILE)
+    fixed_html_file_path = os.path.join(task_dir, FIXED_HTML_FILE)
 
     #<task_dir>/<nvr>/run1/<nvr>.js
     old_err = os.path.join(base_task_dir, base_nvr, 'run1', base_nvr + '.js')
@@ -110,7 +107,6 @@ old: %s new: %s' % (old_err, new_err))
             workdir=task_dir, can_fail=True)
         run('cshtml %s > %s' % (fixed_diff_file_path, fixed_html_file_path),
             workdir=task_dir, can_fail=True)
-    return os.path.getsize(diff_file_path)
 
 
 def extract_logs_from_tarball(task_id, name=None):

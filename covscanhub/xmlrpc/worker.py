@@ -8,7 +8,7 @@ from kobo.hub.decorators import validate_worker
 from kobo.hub.models import Task
 from covscanhub.scan.service import extract_logs_from_tarball, \
     update_scans_state, prepare_and_execute_diff, post_qpid_message
-from covscanhub.waiving.service import create_results
+from covscanhub.waiving.service import create_results, get_missing_waivers
 from covscanhub.scan.models import SCAN_STATES, Scan
 
 __all__ = (
@@ -88,16 +88,22 @@ def extract_tarball(request, task_id, name):
 def finish_scan(request, scan_id):
     scan = Scan.objects.get(id=scan_id)
 
-    size = None
-    if scan.base:
-        size = prepare_and_execute_diff(scan.task, scan.base.task,
-                                        scan.nvr, scan.base.nvr)
-    create_results(scan)
-    if size is None or size == 0:
-        scan.state = SCAN_STATES['PASSED']
-    else:
-        scan.state = SCAN_STATES['NEEDS_INSPECTION']
-    post_qpid_message(scan_id, SCAN_STATES.get_value(scan.state))
+    if scan.is_errata_scan() and scan.base:
+        prepare_and_execute_diff(scan.task, scan.base.task,
+                                 scan.nvr, scan.base.nvr)
+    result = create_results(scan)
+
+    if scan.is_errata_scan():
+        # if there are no missing waivers = there some newly added unwaived
+        # defects
+        if not get_missing_waivers(result):
+            scan.state = SCAN_STATES['PASSED']
+        else:
+            scan.state = SCAN_STATES['NEEDS_INSPECTION']
+
+        post_qpid_message(scan_id, SCAN_STATES.get_value(scan.state))
+    elif scan.is_errata_base_scan():
+        scan.state = SCAN_STATES['FINISHED']
     scan.save()
 
 

@@ -15,7 +15,7 @@ SCAN_STATES = Enum(
     "NEEDS_INSPECTION",  # scan finished and there are some unwaived things
     "WAIVED",            # scan finished and everything is okay -- waived
     "PASSED",            # nothing new
-    "FINISHED",          # scan finished -- USER scans only
+    "FINISHED",          # scan finished -- USER/ERRATA_BASE scans only
     "FAILED",            # scan failed -- this shouldn't happened
 )
 

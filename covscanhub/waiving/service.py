@@ -11,6 +11,7 @@ import re
 import django.utils.simplejson as json
 from django.core.exceptions import ObjectDoesNotExist
 
+from covscanhub.other.constants import ERROR_DIFF_FILE, FIXED_DIFF_FILE
 from models import DEFECT_STATES, Defect, Event, Result, \
     Checker, CheckerGroup, Waiver
 
@@ -97,8 +98,8 @@ def create_results(scan):
 
     #json's path is <TASK_DIR>/<NVR>/run1/<NVR>.js
     defects_path = os.path.join(task_dir, scan.nvr, 'run1', scan.nvr + '.js')
-    fixed_file_path = os.path.join(task_dir, 'csdiff_fixed.out')
-    diff_file_path = os.path.join(task_dir, 'csdiff.out')
+    fixed_file_path = os.path.join(task_dir, FIXED_DIFF_FILE)
+    diff_file_path = os.path.join(task_dir, ERROR_DIFF_FILE)
 
     try:
         f = open(defects_path, 'r')
@@ -134,13 +135,13 @@ def create_results(scan):
         diff_json_dict = json.load(diff_file)
         load_defects_from_json(diff_json_dict, r, DEFECT_STATES['NEW'])
         diff_file.close()
-
-        return os.path.getsize(diff_file_path)
+    return r
 
 
 def get_groups_by_result(result):
     groups = set()
 
+    #filter only newly added bugs
     for defect in Defect.objects.filter(result=result):
         groups.add(defect.checker.group)
 
@@ -154,5 +155,7 @@ def get_waiving_status(result):
         status[group] = result_waivers.filter(group=group)
     return status
 
+
 def get_missing_waivers(result):
-    return [group for group, query in get_waiving_status(result).iteritems() if not query]
+    return [group for group, query in get_waiving_status(result).iteritems()
+            if not query]
