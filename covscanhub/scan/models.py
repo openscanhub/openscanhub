@@ -133,11 +133,11 @@ package appear")
     @classmethod
     def create_scan(cls, scan_type, nvr, tag, task_id, username, base=None):
         # validation of nvr, creating appropriate package object
-        pattern = '(.*)-(.*)-(.*)'        
+        pattern = '(.*)-(.*)-(.*)'
         m = re.match(pattern, nvr)
         if m is not None:
             package_name = m.group(1)
-            package = Package.objects.get_or_create(name=package_name)
+            package, created = Package.objects.get_or_create(name=package_name)
 
         else:
             raise RuntimeError('%s is not a correct N-V-R (does not match "%s"\
