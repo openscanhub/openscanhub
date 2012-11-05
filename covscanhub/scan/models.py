@@ -2,6 +2,7 @@
 
 
 import datetime
+import re
 
 from django.db import models
 from kobo.hub.models import Task
@@ -131,6 +132,16 @@ package appear")
 
     @classmethod
     def create_scan(cls, scan_type, nvr, tag, task_id, username, base=None):
+        # validation of nvr, creating appropriate package object
+        pattern = '(.*)-(.*)-(.*)'        
+        m = re.match(pattern, nvr)
+        if m is not None:
+            package_name = m.group(1)
+            package = Package.objects.get_or_create(name=package_name)
+
+        else:
+            raise RuntimeError('%s is not a correct N-V-R (does not match "%s"\
+)' % (nvr, pattern))
         scan = cls()
         scan.scan_type = scan_type
         scan.nvr = nvr
@@ -140,6 +151,7 @@ package appear")
         scan.state = SCAN_STATES["QUEUED"]
         scan.username = User.objects.get(username=username)
         scan.last_access = datetime.datetime.now()
+        scan.package = package
         scan.save()
         return scan
 
