@@ -35,7 +35,8 @@ class Result(models.Model):
                              blank=True, null=True,)
 
     def __unicode__(self):
-        return ("%s %s" % (self.scanner, self.scanner_version))[:70]
+        return "%s (%s %s)" % (self.scan.nvr, self.scanner,
+                               self.scanner_version)
 
 
 class Event(models.Model):
@@ -132,5 +133,5 @@ checker group")
                                         help_text="Type of waiver")
 
     def __unicode__(self):
-        return "%s - %s [%s, %s]" % (self.message, self.waiver_type,
+        return "%s - %s [%s, %s]" % (self.message, self.get_state_display(),
                                      self.result, self.group)
