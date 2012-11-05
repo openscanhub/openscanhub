@@ -28,6 +28,36 @@ DATABASES = {
     }
 }
 
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '%(levelname)s %(asctime)s %(module)s %(message)s'
+        },
+        'simple': {
+            'format': '%(levelname)s %(message)s'
+        },
+    },
+    'handlers': {
+        'file': {
+            'level': 'DEBUG',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'formatter': 'verbose',
+            'filename': '/var/log/covscanhub.log',
+            'maxBytes': 10 * (1024 ** 2),
+            'backupCount': 7,
+        },
+    },
+    'loggers': {
+        'covscanhub': {
+            'handlers': ['file'],
+            'level': 'DEBUG',
+            'propagate': True,
+        }
+    }
+}
+
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
 #TIME_ZONE = 'America/New_York'
 #LANGUAGE_CODE = 'en-us'

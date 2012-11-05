@@ -3,6 +3,7 @@
 
 import datetime
 import os
+import logging
 
 from django.template import RequestContext
 from django.shortcuts import render_to_response
@@ -18,6 +19,9 @@ from forms import WaiverForm
 from service import get_missing_waivers
 
 
+logger = logging.getLogger(__name__)
+
+
 def get_result_context(request, result_object):
     logs = {}
     context = {}
@@ -27,7 +31,7 @@ def get_result_context(request, result_object):
         'csdiff.html': 'Defects diff',
         'csdiff_fixed.html': 'Fixed defects diff',
         '.err': 'Complete defects output',
-    }    
+    }
     for i in result_object.scan.task.logs.list:
         basename = os.path.basename(i)
         for path, label in file_labels.iteritems():
@@ -115,6 +119,8 @@ def waiver(request, result_id, checker_group_id):
 
             s.last_access = datetime.datetime.now()
             s.save()
+            logger.info('Waiver submitted for result %s, checker-group %s',
+                        (result_object, checker_group))
             return HttpResponseRedirect(reverse('waiving/result',
                                                 args=(result_id,)))
     else:
@@ -133,6 +139,9 @@ def waiver(request, result_id, checker_group_id):
     context['defects'] = defects
     context['waivers'] = Waiver.objects.filter(group=checker_group).\
         filter(result=result_object)
+
+    logger.debug('Displaying waiver for result %s, checker-group %s',
+                (result_object, checker_group))
 
     return render_to_response("waiving/waiver.html",
                               context,
