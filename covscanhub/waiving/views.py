@@ -133,7 +133,8 @@ def waiver(request, result_id, checker_group_id):
             filter(result=result_id):
         defects[defect] = Event.objects.filter(defect=defect)
 
-    context += get_result_context(request, result_object)
+    context = dict(context.items() + get_result_context(request,
+                   result_object).items())
 
     context['group'] = checker_group
     context['defects'] = defects
