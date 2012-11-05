@@ -5,13 +5,17 @@
     <th>{% trans "NVR" %}</th>
     <th>{% trans "Base" %}</th>
     <th>{% trans "State" %}</th>
+    <th>{% trans "Owner" %}</th>
+    <th>{% trans "Last Access" %}</th>
   </tr>
 {% for scan in scan_list %}
   <tr>
     <td><a href="{% url scan/detail scan.id %}">{{ scan.id }}</a></td>
     <td>{{ scan.nvr }}</td>
-    <td>{{ scan.base }}</td>
+    <td>{{ scan.base.nvr }}</td>
     <td>{{ scan.get_state_display }}</td>
+    <td>{{ scan.username }}</td>
+    <td>{{ scan.last_access|date:"Y-m-d H:i:s" }}</td>
   </tr>
 {% endfor %}
 </table>

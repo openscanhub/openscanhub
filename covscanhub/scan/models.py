@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 
 
+import datetime
+
 from django.db import models
 from kobo.hub.models import Task
 from kobo.types import Enum
@@ -53,8 +55,7 @@ class MockConfig(models.Model):
 
 class Tag(models.Model):
     """
-    This class stores information about tags from brew and mapping between
-    these tags and mock configs
+    Mapping between brew tags and mock configs
     """
 
     name = models.CharField("Brew Tag", max_length=64, blank=False)
@@ -65,9 +66,17 @@ class Tag(models.Model):
         return "%s <-> %s" % (self.name, str(self.mock))
 
 
+class Package(models.Model):
+    """
+    Package name -- for statistics purposes mainly
+    """
+    name = models.CharField("Package name", max_length=64,
+                            blank=False, null=False)
+
+
 class Scan(models.Model):
     """
-    #This class stores information about submitted scans from Errata Tool
+    Stores information about submitted scans from Errata Tool
     """
     #yum-3.4.3-42.el7
     nvr = models.CharField("NVR", max_length=512,
@@ -103,6 +112,7 @@ class Scan(models.Model):
     rhel_version = models.CharField("RHEL Version", max_length=16, blank=False,
                                     help_text="Version of RHEL in which will \
 package appear")
+    package = models.ForeignKey(Package)
 
     def __unicode__(self):
         if self.base is None:
@@ -129,6 +139,7 @@ package appear")
         scan.task = Task.objects.get(id=task_id)
         scan.state = SCAN_STATES["QUEUED"]
         scan.username = User.objects.get(username=username)
+        scan.last_access = datetime.datetime.now()
         scan.save()
         return scan
 

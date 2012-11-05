@@ -112,9 +112,10 @@ checker belong")
     def __unicode__(self):
         return "%s: %s" % (self.name, self.group)
 
+
 class Waiver(models.Model):
     """
-    User acknowledges that he processed this defect and sorted it appropriatelly
+    User acknowledges that he processed this defect
     """
     date = models.DateTimeField()
     message = models.TextField("Message")

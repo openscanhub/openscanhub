@@ -26,7 +26,7 @@ def create_errata_base_scan(kwargs, task_id):
     
     priority = kwargs.get('priority', settings.ET_SCAN_PRIORITY) + 1
     comment = 'Errata Tool Base scan of %s requested by %s' % \
-        (nvr, kwargs['base'])
+        (nvr, kwargs['nvr'])
 
     # Test if SRPM exists
     check_brew_build(nvr)
