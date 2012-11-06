@@ -3,31 +3,36 @@
 
 {% block waiver %}
 
-<h3>{{ group.name }}</h3>
+<h2>{{ group.name }}</h2>
 
 {% for defect, events in defects.items %}
-<b>Defect {{ defect.checker }}: {{ checker.annotation }}</b>
-<ul>
-{% for event in events %}
-    <li>
-        {% if event.id == defect.key_event.id %}
-        <b>{{ event.file_name }}:{{ event.line }}:{{ event.event }} -- {{ event.message }}</b>
-        {% else %}
-        {{ event.file_name }}:{{ event.line }}:{{ event.event }} -- {{ event.message }}
-        {% endif %}
-    </li>
-{% endfor %}
-</ul>
-{% endfor %}
-
-{% for waiver in waivers %}
-<div style="border: 1px solid #888;">
-User: {{ waiver.user }} </br>
-Date: {{ waiver.date|date:"Y-m-d H:i:s" }} </br>
-Status: {{ waiver.get_state_display }} </br>
-Message: {{ waiver.message }} </br>
+<div>
+    <h3>Defect {{ defect.checker }}</h3>
+    {{ checker.annotation }} [{{ defect.get_state_display }}]
+    <ul>
+    {% for event in events %}
+        <li>
+            {% if event.id == defect.key_event.id %}
+            <b>{{ event.file_name }}:{{ event.line_and_column }}:{{ event.event }} -- {{ event.message }}</b>
+            {% else %}
+            {{ event.file_name }}:{{ event.line_and_column }}:{{ event.event }} -- {{ event.message }}
+            {% endif %}
+        </li>
+    {% endfor %}
+    </ul>
 </div>
 {% endfor %}
+
+<div id="waivers">
+{% for waiver in waivers %}
+    <div style="border: 1px solid #888; margin: 10px; padding: 10px; width: 50%;">
+        User: {{ waiver.user }} </br>
+        Date: {{ waiver.date|date:"Y-m-d H:i:s" }} </br>
+        Status: {{ waiver.get_state_display }} </br>
+        Message: {{ waiver.message }} </br>
+    </div>
+{% endfor %}
+</div>
 
 <form action="{% url waiving/waiver result.id group.id %}" method="post">{% csrf_token %}
 {{ form.as_p }}

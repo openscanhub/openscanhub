@@ -58,6 +58,9 @@ class Event(models.Model):
     defect = models.ForeignKey('Defect', verbose_name="Defect",
                                blank=True, null=True,)
 
+    def line_and_column(self):
+        return '%s:%s' % (self.line, self.column) if self.column else self.line
+
     def __unicode__(self):
         return "%s:%s, %s" % (self.file_name, self.line, self.event)
 
@@ -91,6 +94,7 @@ current defect",
     state = models.PositiveIntegerField(default=DEFECT_STATES["UNKNOWN"],
                                         choices=DEFECT_STATES.get_mapping(),
                                         help_text="Defect state")
+
     def __unicode__(self):
         return "%s, %s" % (self.checker, self.annotation)
 

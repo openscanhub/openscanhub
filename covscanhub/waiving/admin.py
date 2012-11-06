@@ -5,16 +5,28 @@ import django.contrib.admin as admin
 
 from models import Result, Event, Defect, Checker, CheckerGroup, Waiver
 
+
 class ResultAdmin(admin.ModelAdmin):
     list_display = ("scanner", "scanner_version", "scan")
+
+
 class EventAdmin(admin.ModelAdmin):
     list_display = ("file_name", "line", "event", "message", "defect")
+
+
 class DefectAdmin(admin.ModelAdmin):
-    list_display = ("checker", "annotation", "key_event", "result")
+    list_display = ("checker", "annotation", "key_event", "result",
+                    'get_state_display')
+
+
 class CheckerAdmin(admin.ModelAdmin):
     list_display = ("id", "name", "group")
+
+
 class CheckerGroupAdmin(admin.ModelAdmin):
     list_display = ("id", "name")
+
+
 class WaiverAdmin(admin.ModelAdmin):
     list_display = ("id", "state", 'date', 'user', 'message',
                     'result', 'group')

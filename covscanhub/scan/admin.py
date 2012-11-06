@@ -11,7 +11,11 @@ class ScanAdmin(admin.ModelAdmin):
                     'username', 'package')
 
 
+class PackageAdmin(admin.ModelAdmin):
+    list_display = ("id", "name")
+
+
 admin.site.register(MockConfig)
 admin.site.register(Tag)
-admin.site.register(Package)
+admin.site.register(Package, PackageAdmin)
 admin.site.register(Scan, ScanAdmin)
