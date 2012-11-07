@@ -129,7 +129,7 @@ def waiver(request, result_id, result_group_id):
 
     defects = {}
 
-    for defect in Defect.objects.filter(result_group=result_group_id)
+    for defect in Defect.objects.filter(result_group=result_group_id):
         defects[defect] = Event.objects.filter(defect=defect)
 
     context = dict(context.items() + get_result_context(result_object).items())
