@@ -56,11 +56,8 @@ def set_checker_groups():
 provided invalid file.")
     chgrp_file.close()
     for group, checkers in data.iteritems():
-        try:
-            ch = CheckerGroup.objects.get(name=group)
-        except ObjectDoesNotExist:
-            ch = CheckerGroup()
-            ch.name = group
+        ch, created = CheckerGroup.objects.get_or_create(name=group)
+        if created:
             ch.enabled = True
             ch.save()
         for checker in checkers:
