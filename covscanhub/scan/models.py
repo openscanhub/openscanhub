@@ -29,6 +29,9 @@ SCAN_TYPES = Enum(
 
 
 class Permissions(models.Model):
+    """
+    Custom permissions
+    """
     class Meta:
         permissions = (
             ('errata_xmlrpc_scan',

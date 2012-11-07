@@ -139,6 +139,10 @@ class ResultGroup(models.Model):
                                       verbose_name="Group of checkers")
 
     def display_in_waiver(self):
+        """
+        return HTML formatted representation of result group displayed in 
+        waiver
+        """
         response = '<td class="%s"><a href="%s">%s' % (
             self.get_state_display(), 
             reverse('waiving/waiver', args=(self.result.id, 
