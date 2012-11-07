@@ -61,13 +61,10 @@ provided invalid file.")
         except ObjectDoesNotExist:
             ch = CheckerGroup()
             ch.name = group
+            ch.enabled = True
             ch.save()
         for checker in checkers:
-            try:
-                che = Checker.objects.get(name=checker)
-            except ObjectDoesNotExist:
-                che = Checker()
-                che.name = checker
+            che, created = Checker.objects.get_or_create(name=checker)
             che.group = ch
             che.save()
 

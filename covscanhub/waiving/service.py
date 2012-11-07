@@ -10,11 +10,10 @@ import re
 import logging
 
 import django.utils.simplejson as json
-from django.core.exceptions import ObjectDoesNotExist
 
 from covscanhub.other.constants import ERROR_DIFF_FILE, FIXED_DIFF_FILE
-from models import DEFECT_STATES, Defect, Event, Result, \
-    Checker, CheckerGroup, Waiver
+from models import DEFECT_STATES, RESULT_GROUP_STATES, Defect, Event, Result, \
+    Checker, CheckerGroup, Waiver, ResultGroup
 
 from kobo.hub.models import Task
 
@@ -26,7 +25,7 @@ __all__ = (
     'create_results',
     'get_groups_by_result',
     'get_waiving_status',
-    'get_missing_waivers',
+    'get_unwaived_rgs',
 )
 
 
@@ -40,14 +39,27 @@ def load_defects_from_json(json_dict, result,
         for defect in json_dict['defects']:
             d = Defect()
             json_checker_name = defect['checker']
-            try:
-                checker = Checker.objects.get(name=json_checker_name)
-            except ObjectDoesNotExist:
-                checker = Checker()
-                checker.name = json_checker_name
+            checker, created = Checker.objects.get_or_create(
+                name=json_checker_name)
+            if created:
                 checker.group = CheckerGroup.objects.get(name='Default')
                 checker.save()
+
+            rg, created = ResultGroup.objects.get_or_create(
+                checker_group=checker.group,
+                result=result)
+            if rg.state is None:
+                if defect_state == DEFECT_STATES['NEW']:
+                    rg.state = RESULT_GROUP_STATES['NEEDS_INSPECTION']
+                elif defect_state == DEFECT_STATES['FIXED']:
+                    rg.state = RESULT_GROUP_STATES['INFO']
+            elif rg.state == RESULT_GROUP_STATES['INFO'] and \
+                    defect_state == DEFECT_STATES['NEW']:
+                rg.state = RESULT_GROUP_STATES['NEEDS_INSPECTION']
+            rg.save()
+
             d.checker = checker
+            d.result_group = rg
             d.annotation = defect.get('annotation', None)
             d.defect_identifier = defect.get('defect_id', None)
             d.function = defect.get('function', None)
@@ -93,6 +105,8 @@ def update_analyzer(result, json_dict):
                 result.scanner_version = p_version.group('version')
             else:
                 result.scanner_version = version
+        if 'lines_processed' in json_dict['scan']:
+            result.lines = int(json_dict['scan']['lines_processed'])
     result.save()
 
 
@@ -111,7 +125,7 @@ def create_results(scan):
     try:
         f = open(defects_path, 'r')
     except IOError:
-        print 'Unable to open file %s' % defects_path
+        logger.critical('Unable to open defects file %s', defects_path)
         return
     json_dict = json.load(f)
 
@@ -148,9 +162,10 @@ def create_results(scan):
 def get_groups_by_result(result):
     groups = set()
 
-    #filter only newly added bugs
-    for defect in Defect.objects.filter(result=result):
-        groups.add(defect.checker.group)
+    # return defects for specific result that are newly added
+    for d in Defect.objects.filter(result_group__result=result,
+                                   state=DEFECT_STATES['NEW']):
+        groups.add(d.checker.group)
 
     return groups
 
@@ -163,6 +178,10 @@ def get_waiving_status(result):
     return status
 
 
-def get_missing_waivers(result):
-    return [group for group, query in get_waiving_status(result).iteritems()
-            if not query]
+def get_unwaived_rgs(result):
+    """
+        Return ResultGroups that are not waived for specific Result
+    """
+    result_waivers = Waiver.objects.filter(result=result)
+    return [rg for rg in ResultGroup.objects.filter(result=result)
+            if not result_waivers.filter(result_group=rg)]

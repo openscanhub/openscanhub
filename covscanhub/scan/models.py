@@ -31,8 +31,8 @@ SCAN_TYPES = Enum(
 class Permissions(models.Model):
     class Meta:
         permissions = (
-            ('errata_xmlrpc_scan', 
-             'Enables user to submit scans via XML-RPC for Errata Tool'),        
+            ('errata_xmlrpc_scan',
+             'Enables user to submit scans via XML-RPC for Errata Tool'),
         )
 
 
@@ -73,6 +73,8 @@ class Package(models.Model):
     """
     name = models.CharField("Package name", max_length=64,
                             blank=False, null=False)
+    blocked = models.BooleanField(default=False, help_text="If this is set to \
+True, this package will be blacklisted -- not accepted for scanning.")
 
 
 class Scan(models.Model):

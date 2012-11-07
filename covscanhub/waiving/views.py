@@ -9,20 +9,22 @@ from django.template import RequestContext
 from django.shortcuts import render_to_response
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
+from django.core.exceptions import ObjectDoesNotExist
 
 from kobo.django.views.generic import object_list
 
 from covscanhub.scan.models import Scan
 
-from models import CheckerGroup, Result, Defect, Event, Waiver, WAIVER_TYPES
+from models import CheckerGroup, Result, ResultGroup, Defect, Event, Waiver,\
+    WAIVER_TYPES
 from forms import WaiverForm
-from service import get_missing_waivers
+from service import get_unwaived_rgs
 
 
 logger = logging.getLogger(__name__)
 
 
-def get_result_context(request, result_object):
+def get_result_context(result_object):
     logs = {}
     context = {}
     # fixed_html_file = 'csdiff_fixed.html'
@@ -41,24 +43,22 @@ def get_result_context(request, result_object):
 
     context['output'] = get_five_tuple(get_waiving_data(result_object.id))
     context['result'] = result_object
-    context['unwaived_groups'] = get_missing_waivers(result_object)
+    context['unwaived_groups'] = get_unwaived_rgs(result_object)
     context['logs'] = logs
 
     return context
 
 
 def get_waiving_data(result_id):
-    defects = Defect.objects.filter(result=result_id)
-
-    # TODO filter only "active" groups -- there might be some experimental/etc.
-    groups = CheckerGroup.objects.all()
-
     output = {}
 
-    # {group: number of defects}
-    # TODO change value to (count, state={i, have, no, idea})
-    for group in groups:
-        output[group] = defects.filter(checker__group=group).count()
+    # checker_group: result_group
+    for group in CheckerGroup.objects.filter(enabled=True):
+        try:
+            output[group] = ResultGroup.objects.get(checker_group=group,
+                                                    result=result_id)
+        except ObjectDoesNotExist:
+            output[group] = None
     return output
 
 
@@ -95,14 +95,14 @@ def results_list(request):
     return object_list(request, **args)
 
 
-def waiver(request, result_id, checker_group_id):
+def waiver(request, result_id, result_group_id):
     """
     Display waiver for specified scan and test
     """
     context = {}
 
     result_object = Result.objects.get(id=result_id)
-    checker_group = CheckerGroup.objects.get(id=checker_group_id)
+    result_group_object = ResultGroup.objects.get(id=result_group_id)
 
     if request.method == "POST":
         form = WaiverForm(request.POST)
@@ -110,8 +110,7 @@ def waiver(request, result_id, checker_group_id):
             w = Waiver()
             w.date = datetime.datetime.now()
             w.message = form.cleaned_data['message']
-            w.result = result_object
-            w.group = checker_group
+            w.result_group = result_group_object
             w.user = request.user
             w.state = WAIVER_TYPES[form.cleaned_data['waiver_type']]
             w.save()
@@ -120,8 +119,8 @@ def waiver(request, result_id, checker_group_id):
 
             s.last_access = datetime.datetime.now()
             s.save()
-            logger.info('Waiver submitted for result %s, checker-group %s',
-                        result_object, checker_group)
+            logger.info('Waiver submitted for resultgroup %s',
+                        result_group_object)
             return HttpResponseRedirect(reverse('waiving/result',
                                                 args=(result_id,)))
     else:
@@ -130,20 +129,17 @@ def waiver(request, result_id, checker_group_id):
 
     defects = {}
 
-    for defect in Defect.objects.filter(checker__group__id=checker_group_id).\
-            filter(result=result_id):
+    for defect in Defect.objects.filter(result_group=result_group_id)
         defects[defect] = Event.objects.filter(defect=defect)
 
-    context = dict(context.items() + get_result_context(request,
-                   result_object).items())
+    context = dict(context.items() + get_result_context(result_object).items())
 
-    context['group'] = checker_group
+    context['group'] = result_group_object
     context['defects'] = defects
-    context['waivers'] = Waiver.objects.filter(group=checker_group).\
-        filter(result=result_object)
+    context['waivers'] = Waiver.objects.filter(result_group=result_group_id)
 
-    logger.debug('Displaying waiver for result %s, checker-group %s',
-                 result_object, checker_group)
+    logger.debug('Displaying waiver for result %s, result-group %s',
+                 result_object, result_group_object)
 
     return render_to_response("waiving/waiver.html",
                               context,
@@ -156,6 +152,6 @@ def result(request, result_id):
     """
     return render_to_response(
         "waiving/result.html",
-        get_result_context(request, Result.objects.get(id=result_id)),
+        get_result_context(Result.objects.get(id=result_id)),
         context_instance=RequestContext(request)
     )

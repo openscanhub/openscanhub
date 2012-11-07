@@ -4,28 +4,21 @@
 {% block content %}
 <h2>{{ result.scan.nvr }} {% trans "compared to" %} {{ result.scan.base.nvr }} </h2>
 
-<div>
-Unwaived groups are: 
-{% for g in unwaived_groups %} 
-<ul>
-<li>{{ g.name }}</li>
-</ul>
-{% endfor %}
-</div>
-
+{% if output %}
 <table class="summary">
 {% for five in output %}
   <tr>
-{% for group, count in five.items %}
-    {% if count > 0 %}
-    <td bgcolor="#FF0000"><a href="{% url waiving/waiver result.id group.id %}">{{ group.name }} ({{ count }})</a></td>
+{% for group, result_group in five.items %}
+    {% if result_group %}
+        {{ result_group.display_in_waiver }}
     {% else %}
-    <td bgcolor="#00FF00">{{ group.name }}</td>
+        <td class="PASSED">{{ group.name }}</td>
     {% endif %}
 {% endfor %}
   </tr>
 {% endfor %}
 </table>
+{% endif %}
 
 {% if logs %}
 <div>
