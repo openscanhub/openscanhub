@@ -8,7 +8,7 @@ from kobo.hub.decorators import validate_worker
 from kobo.hub.models import Task
 from covscanhub.scan.service import extract_logs_from_tarball, \
     update_scans_state, prepare_and_execute_diff, post_qpid_message
-from covscanhub.waiving.service import create_results, get_missing_waivers
+from covscanhub.waiving.service import create_results, get_unwaived_rgs
 from covscanhub.scan.models import SCAN_STATES, Scan
 
 __all__ = (
@@ -96,7 +96,7 @@ def finish_scan(request, scan_id):
     if scan.is_errata_scan():
         # if there are no missing waivers = there some newly added unwaived
         # defects
-        if not get_missing_waivers(result):
+        if not get_unwaived_rgs(result):
             scan.state = SCAN_STATES['PASSED']
         else:
             scan.state = SCAN_STATES['NEEDS_INSPECTION']
