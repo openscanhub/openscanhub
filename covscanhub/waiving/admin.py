@@ -15,7 +15,7 @@ class EventAdmin(admin.ModelAdmin):
 
 
 class DefectAdmin(admin.ModelAdmin):
-    list_display = ("checker", "annotation", "key_event", "result",
+    list_display = ("checker", "annotation", "key_event", "result_group",
                     'get_state_display')
 
 
@@ -24,12 +24,11 @@ class CheckerAdmin(admin.ModelAdmin):
 
 
 class CheckerGroupAdmin(admin.ModelAdmin):
-    list_display = ("id", "name")
+    list_display = ("id", "name", "enabled")
 
 
 class WaiverAdmin(admin.ModelAdmin):
-    list_display = ("id", "state", 'date', 'user', 'message',
-                    'result', 'group')
+    list_display = ("id", "state", 'date', 'user', 'message', 'result_group')
 
 admin.site.register(Result, ResultAdmin)
 admin.site.register(Event, EventAdmin)

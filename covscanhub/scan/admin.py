@@ -12,7 +12,7 @@ class ScanAdmin(admin.ModelAdmin):
 
 
 class PackageAdmin(admin.ModelAdmin):
-    list_display = ("id", "name")
+    list_display = ("id", "name", "blocked")
 
 
 admin.site.register(MockConfig)
