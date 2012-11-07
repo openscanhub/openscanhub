@@ -3,11 +3,16 @@
 
 import django.contrib.admin as admin
 
-from models import Result, Event, Defect, Checker, CheckerGroup, Waiver
+from models import Result, Event, Defect, Checker, CheckerGroup, Waiver,\
+    ResultGroup
 
 
 class ResultAdmin(admin.ModelAdmin):
     list_display = ("scanner", "scanner_version", "scan")
+
+
+class ResultGroupAdmin(admin.ModelAdmin):
+    list_display = ("id", "result", "get_state_display", "checker_group")
 
 
 class EventAdmin(admin.ModelAdmin):
@@ -36,3 +41,4 @@ admin.site.register(Defect, DefectAdmin)
 admin.site.register(Checker, CheckerAdmin)
 admin.site.register(CheckerGroup, CheckerGroupAdmin)
 admin.site.register(Waiver, WaiverAdmin)
+admin.site.register(ResultGroup, ResultGroupAdmin)

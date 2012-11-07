@@ -56,19 +56,16 @@ def set_checker_groups():
 provided invalid file.")
     chgrp_file.close()
     for group, checkers in data.iteritems():
-        ch, created = CheckerGroup.objects.get_or_create(name=group)
-        if created:
-            ch.enabled = True
-            ch.save()
+        ch, created = CheckerGroup.objects.get_or_create(name=group,
+                                                         enabled=True)
         for checker in checkers:
-            che, created = Checker.objects.get_or_create(name=checker)
-            che.group = ch
-            che.save()
+            che, created = Checker.objects.get_or_create(name=checker,
+                                                         group=ch)
 
 
 def configure_hub():
     c = Channel()
-    c.name = "Default"
+    c.name = "default"
     c.save()
 
     a = Arch()
@@ -83,7 +80,7 @@ for the worker.\n"
 
 def main():
     print 'You are running covscanhub configure script.\nThis may take a \
-of couple of seconds, please be patient.'
+couple of seconds, please be patient.'
     #configure_hub()
     set_checker_groups()
 

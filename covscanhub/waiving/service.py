@@ -171,7 +171,7 @@ def get_groups_by_result(result):
 
 
 def get_waiving_status(result):
-    result_waivers = Waiver.objects.filter(result=result)
+    result_waivers = Waiver.objects.filter(result_group__result=result)
     status = {}
     for group in get_groups_by_result(result):
         status[group] = result_waivers.filter(group=group)
@@ -182,6 +182,6 @@ def get_unwaived_rgs(result):
     """
         Return ResultGroups that are not waived for specific Result
     """
-    result_waivers = Waiver.objects.filter(result=result)
+    result_waivers = Waiver.objects.filter(result_group__result=result)
     return [rg for rg in ResultGroup.objects.filter(result=result)
             if not result_waivers.filter(result_group=rg)]
