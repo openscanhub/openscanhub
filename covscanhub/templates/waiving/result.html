@@ -8,13 +8,13 @@
 <table class="summary">
 {% for five in output %}
   <tr>
-{% for group, result_group in five.items %}
-    {% if result_group %}
-        {{ result_group.display_in_waiver }}
-    {% else %}
+    {% for group, result_group in five.items %}
+        {% if result_group %}
+            {{ result_group.display_in_waiver|safe }}
+        {% else %}
         <td class="PASSED">{{ group.name }}</td>
-    {% endif %}
-{% endfor %}
+        {% endif %}
+    {% endfor %}
   </tr>
 {% endfor %}
 </table>
