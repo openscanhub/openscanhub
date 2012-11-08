@@ -10,8 +10,10 @@ import re
 import logging
 
 import django.utils.simplejson as json
+from django.core.exceptions import ObjectDoesNotExist
 
-from covscanhub.other.constants import ERROR_DIFF_FILE, FIXED_DIFF_FILE
+from covscanhub.other.constants import ERROR_DIFF_FILE, FIXED_DIFF_FILE,\
+    DEFAULT_CHECKER_GROUP
 from models import DEFECT_STATES, RESULT_GROUP_STATES, Defect, Event, Result, \
     Checker, CheckerGroup, Waiver, ResultGroup
 
@@ -39,8 +41,13 @@ def load_defects_from_json(json_dict, result,
         for defect in json_dict['defects']:
             d = Defect()
             json_checker_name = defect['checker']
-            checker, created = Checker.objects.get_or_create(
-                name=json_checker_name, group__name="Default")
+            try:
+                checker = Checker.objects.get_or_create(name=json_checker_name)
+            except ObjectDoesNotExist:
+                checker = Checker()
+                checker.group = CheckerGroup.objects.get(name=DEFAULT_CHECKER_GROUP)
+                checker.name = json_checker_name
+                checker.save()
 
             rg, created = ResultGroup.objects.get_or_create(
                 checker_group=checker.group,

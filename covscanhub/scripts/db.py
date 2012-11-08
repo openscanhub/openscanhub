@@ -16,7 +16,10 @@ if PROJECT_DIR not in sys.path:
 os.environ['DJANGO_SETTINGS_MODULE'] = 'covscanhub.settings'
 
 from kobo.hub.models import Arch, Channel
+
 from covscanhub.waiving.models import Checker, CheckerGroup
+from covscanhub.other.constants import DEFAULT_CHECKER_GROUP
+
 from django.core.exceptions import ObjectDoesNotExist
 from django.conf import settings
 
@@ -55,7 +58,7 @@ def set_checker_groups():
                     raise RuntimeError("Line wasn't matched. You have \
 provided invalid file.")
     chgrp_file.close()
-    CheckerGroup.objects.get_or_create(name="Default")
+    CheckerGroup.objects.get_or_create(name=DEFAULT_CHECKER_GROUP)
     for group, checkers in data.iteritems():
         ch, created = CheckerGroup.objects.get_or_create(name=group,
                                                          enabled=True)
