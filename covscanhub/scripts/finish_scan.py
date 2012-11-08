@@ -28,4 +28,4 @@ class FakeRequest(object):
         self.META = {}
         self.META['REMOTE_ADDR'] = 'uqtm.lab.eng.brq.redhat.com'
 
-print finish_scan(FakeRequest(), 2)
+finish_scan(FakeRequest(), 2)
