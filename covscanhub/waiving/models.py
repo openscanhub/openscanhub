@@ -133,9 +133,10 @@ class ResultGroup(models.Model):
     """
     result = models.ForeignKey(Result, verbose_name="Result",
                                help_text="Result of scan")
-    state = models.PositiveIntegerField(default=WAIVER_TYPES["IS_A_BUG"],
-                                        choices=WAIVER_TYPES.get_mapping(),
-                                        help_text="Type of waiver")
+    state = models.PositiveIntegerField(
+        default=RESULT_GROUP_STATES["NEEDS_INSPECTION"],
+        choices=RESULT_GROUP_STATES.get_mapping(),
+        help_text="Type of waiver")
     checker_group = models.ForeignKey(CheckerGroup,
                                       verbose_name="Group of checkers")
 
