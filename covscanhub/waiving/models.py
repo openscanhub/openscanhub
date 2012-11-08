@@ -35,6 +35,8 @@ RESULT_GROUP_STATES = Enum(
     EnumItem("INFO", help_text="Fix later"),
     # there are no defects associated with this checker group
     EnumItem("PASSED", help_text="Fix later"),
+    # this is default state and should be changes ASAP
+    EnumItem("UNKNOWN", help_text="Unknown state"),
 )
 
 
@@ -134,7 +136,7 @@ class ResultGroup(models.Model):
     result = models.ForeignKey(Result, verbose_name="Result",
                                help_text="Result of scan")
     state = models.PositiveIntegerField(
-        #default=RESULT_GROUP_STATES["NEEDS_INSPECTION"],
+        default=RESULT_GROUP_STATES["UNKNOWN"],
         choices=RESULT_GROUP_STATES.get_mapping(),
         help_text="Type of waiver")
     checker_group = models.ForeignKey(CheckerGroup,

@@ -48,7 +48,7 @@ def load_defects_from_json(json_dict, result,
             rg, created = ResultGroup.objects.get_or_create(
                 checker_group=checker.group,
                 result=result)
-            if rg.state is None:
+            if rg.state is RESULT_GROUP_STATES['UNKNOWN']:
                 if defect_state == DEFECT_STATES['NEW']:
                     rg.state = RESULT_GROUP_STATES['NEEDS_INSPECTION']
                 elif defect_state == DEFECT_STATES['FIXED']:
@@ -87,7 +87,7 @@ def load_defects_from_json(json_dict, result,
                             key_event -= 1
                 #e_id could be None
                 d.key_event = e_id
-            d.save()
+                d.save()
 
 
 def update_analyzer(result, json_dict):
