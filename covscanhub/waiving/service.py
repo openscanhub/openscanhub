@@ -180,8 +180,10 @@ def get_waiving_status(result):
 
 def get_unwaived_rgs(result):
     """
-        Return ResultGroups that are not waived for specific Result
+        Return ResultGroups that are not waived (and should be waived)
+        for specific Result
     """
     result_waivers = Waiver.objects.filter(result_group__result=result)
-    return [rg for rg in ResultGroup.objects.filter(result=result)
+    return [rg for rg in ResultGroup.objects.filter(result=result,
+                state=RESULT_GROUP_STATES['NEEDS_INSPECTION'])
             if not result_waivers.filter(result_group=rg)]

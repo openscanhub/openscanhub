@@ -4,6 +4,23 @@
 {% block content %}
 <h2>{{ result.scan.nvr }} {% trans "compared to" %} {{ result.scan.base.nvr }} </h2>
 
+<table class="summary">
+    <tr>
+        <td class="NEEDS_INSPECTION">
+            Needs Inspection
+        </td>
+        <td class="INFO">
+            Info
+        </td>
+        <td class="WAIVED">
+            Waived
+        </td>
+        <td class="PASSED">
+            Passed
+        </td>
+    </tr>
+</table>
+
 {% if output %}
 <table class="summary">
 {% for five in output %}

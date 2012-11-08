@@ -25,19 +25,19 @@ table.summary td {
 }
 
 table.summary td.PASSED {
-    background-color: #88ff88;
+    background-color: #99ff99;
 }
 
 table.summary td.WAIVED {
-    background-color: #55ff55;
+    background-color: #66ff44;
 }
 
 table.summary td.NEEDS_INSPECTION {
-    background-color: #ff7777;
+    background-color: #ff9999;
 }
 
 table.summary td.INFO {
-    background-color: #8888ff;
+    background-color: #90aaff;
 }
 
 /**/
