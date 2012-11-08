@@ -69,8 +69,8 @@ UPLOAD_DIR = os.path.join(FILES_PATH, 'upload')
 
 # Absolute path to the directory that holds media.
 # Example: "/home/media/media.lawrence.com/"
-#MEDIA_ROOT = os.path.join(PROJECT_DIR, "media/")
-MEDIA_ROOT = '/tmp/covscanhub/media/'
+MEDIA_ROOT = os.path.join(PROJECT_DIR, "media/")
+
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash if there is a path component (optional in other cases).
 # Examples: "http://media.lawrence.com", "http://example.com/media/"
