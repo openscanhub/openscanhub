@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from covscanhub.other.shortcuts import add_link_field
 
 import django.contrib.admin as admin
 
@@ -7,33 +8,49 @@ from models import Result, Event, Defect, Checker, CheckerGroup, Waiver,\
     ResultGroup
 
 
+@add_link_field('scan','scan', 'scan')
 class ResultAdmin(admin.ModelAdmin):
-    list_display = ("scanner", "scanner_version", "scan")
+    list_display = ("id", "scanner", "scanner_version", "link")
 
 
+@add_link_field('checkergroup','checker_group',field_name='link2')
+@add_link_field('result','result')
 class ResultGroupAdmin(admin.ModelAdmin):
-    list_display = ("id", "result", "get_state_display", "checker_group")
+    list_display = ("id", "state_display", 'link', 'link2')
+    
+    def state_display(self, instance):
+        return instance.get_state_display()
+    state_display.short_description = 'State'
 
 
+@add_link_field('defect','defect')
 class EventAdmin(admin.ModelAdmin):
-    list_display = ("file_name", "line", "event", "message", "defect")
+    list_display = ("id", "file_name", "line", "event", "message", "link")
 
 
+@add_link_field('resultgroup','result_group')
 class DefectAdmin(admin.ModelAdmin):
-    list_display = ("checker", "annotation", "key_event", "result_group",
-                    'get_state_display')
+    list_display = ("id", "checker", "annotation", "key_event", "link",
+                    'state_display')
+    
+    def state_display(self, instance):
+        return instance.get_state_display()
+    state_display.short_description = 'State'
 
 
+@add_link_field('resultgroup','group')
 class CheckerAdmin(admin.ModelAdmin):
-    list_display = ("id", "name", "group")
+    list_display = ("id", "name", "link")
 
 
 class CheckerGroupAdmin(admin.ModelAdmin):
     list_display = ("id", "name", "enabled")
 
 
+@add_link_field('resultgroup','result_group')
 class WaiverAdmin(admin.ModelAdmin):
-    list_display = ("id", "state", 'date', 'user', 'message', 'result_group')
+    list_display = ("id", "state", 'date', 'user', 'message', 'link')
+
 
 admin.site.register(Result, ResultAdmin)
 admin.site.register(Event, EventAdmin)

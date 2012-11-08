@@ -24,4 +24,8 @@ table.summary td {
     font-weight: bold;
 }
 
+table.summary td.PASSED {
+    background-color: #55ff55;
+}
+
 /**/

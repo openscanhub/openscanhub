@@ -51,7 +51,7 @@ class Result(models.Model):
     lines = models.IntegerField(help_text='Lines of code scanned', blank=True,
                                 null=True)
     def __unicode__(self):
-        return "%s (%s %s)" % (self.scan.nvr, self.scanner,
+        return "#%d %s (%s %s)" % (self.id, self.scan.nvr, self.scanner,
                                self.scanner_version)
 
 
@@ -78,7 +78,8 @@ class Event(models.Model):
         return '%s:%s' % (self.line, self.column) if self.column else self.line
 
     def __unicode__(self):
-        return "%s:%s, %s" % (self.file_name, self.line, self.event)
+        return "#%d %s:%s, %s" % (self.id, self.file_name,
+                                  self.line, self.event)
 
 
 class Defect(models.Model):
@@ -108,7 +109,7 @@ current defect",
     result_group = models.ForeignKey('ResultGroup', blank=False, null=False)
 
     def __unicode__(self):
-        return "%s, %s" % (self.checker, self.annotation)
+        return "#%d %s, %s" % (self.id, self.checker, self.annotation)
 
 
 class CheckerGroup(models.Model):
@@ -122,7 +123,7 @@ class CheckerGroup(models.Model):
 only ResultGroups which belong to enabled CheckerGroups")
 
     def __unicode__(self):
-        return "%s" % (self.name)
+        return "#%d %s" % (self.id, self.name)
 
 
 class ResultGroup(models.Model):
@@ -146,23 +147,24 @@ class ResultGroup(models.Model):
         response = '<td class="%s"><a href="%s">%s' % (
             self.get_state_display(), 
             reverse('waiving/waiver', args=(self.result.id, 
-                                            self.checker_group.id)),
+                                            self.id)),
             self.checker_group.name)
-        new_defects = Defect.objects.filter(result_group=self, 
+        new_defects = Defect.objects.filter(result_group=self.id, 
                                             state=DEFECT_STATES['NEW'])
         if new_defects.count() > 0:
             response += ' (<span class="NEW">%s</span>)' % new_defects.count()
-        fixed_defects = Defect.objects.filter(result_group=self, 
+
+        fixed_defects = Defect.objects.filter(result_group=self.id, 
                                               state=DEFECT_STATES['FIXED'])
         if fixed_defects.count() > 0:
             response += ' (<span class="FIXED">%s</span>)' %\
-                new_defects.count()            
+                fixed_defects.count()            
         response += '</a></td>'
         return response
     
     def __unicode__(self):
-        return "[%s - %s], %s" % (self.checker_group.name, 
-                                  self.get_state_display, self.result)
+        return "#%d [%s - %s], %s" % (self.id, self.checker_group.name, 
+                                      self.get_state_display(), self.result)
 
 class Checker(models.Model):
     """
@@ -170,13 +172,14 @@ class Checker(models.Model):
     """
     name = models.CharField("Checker's name", max_length=32,
                             blank=False, null=False)
+    # if you use get_or_create, it will save it
     group = models.ForeignKey(CheckerGroup, verbose_name="Checker group",
-                              blank=False, null=False,
+                              blank=True, null=True,
                               help_text="Name of group where does this \
 checker belong")
 
     def __unicode__(self):
-        return "%s: %s" % (self.name, self.group)
+        return "#%d %s: %s" % (self.id, self.name, self.group)
 
 
 class Waiver(models.Model):
@@ -194,5 +197,6 @@ waived for specific Result")
                                         help_text="Type of waiver")
 
     def __unicode__(self):
-        return "%s - %s [%s, %s]" % (self.message, self.get_state_display(),
+        return "#%d %s - %s [%s]" % (self.id, self.message,
+                                     self.get_state_display(),
                                      self.result_group)
