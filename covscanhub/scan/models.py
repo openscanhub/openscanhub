@@ -57,7 +57,7 @@ class MockConfig(models.Model):
         return result
 
 
-class SystemRelease(models.Model)
+class SystemRelease(models.Model):
     """
     
     """
@@ -77,7 +77,7 @@ class Tag(models.Model):
                              blank=False, null=False)
     release = models.ForeignKey(SystemRelease)
     def __unicode__(self):
-        return "Tag: %s --> Mock: %s (%s)" % (self.name, str(self.mock))
+        return "Tag: %s --> Mock: %s (%s)" % (self.name, self.mock, self.release)
 
 
 class Package(models.Model):
