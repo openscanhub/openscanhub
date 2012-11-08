@@ -33,6 +33,10 @@ table.summary td.WAIVED {
 }
 
 table.summary td.NEEDS_INSPECTION {
+    background-color: #ffff66;
+}
+
+table.summary td.IS_A_BUG {
     background-color: #ff9999;
 }
 
@@ -43,5 +47,17 @@ table.summary td.INFO {
 /**/
 
 /*defects presentation*/
+
+#content div.FIXED {
+    background-color: #DDFFCC;
+    margin: 0.5em;
+    padding: 0.5em;
+}
+
+#content div.NEW {
+    background-color: #DDFFCC;
+    margin: 0.5em;
+    padding: 0.5em;
+}
 
 /**/

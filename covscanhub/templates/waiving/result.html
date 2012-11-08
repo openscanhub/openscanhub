@@ -2,10 +2,14 @@
 {% load i18n %}
 
 {% block content %}
+<h1>{{ result.scan.tag.release.description }}</h1>
 <h2>{{ result.scan.nvr }} {% trans "compared to" %} {{ result.scan.base.nvr }} </h2>
 
 <table class="summary">
     <tr>
+        <td class="IS_A_BUG">
+            Is a bug
+        </td>
         <td class="NEEDS_INSPECTION">
             Needs Inspection
         </td>
@@ -21,13 +25,31 @@
     </tr>
 </table>
 
+{# NEW defects table #}
 {% if output %}
 <table class="summary">
 {% for five in output %}
   <tr>
     {% for group, result_group in five.items %}
         {% if result_group %}
-            {{ result_group.display_in_waiver|safe }}
+            {{ result_group.display_in_waiver 'NEW'|safe }}
+        {% else %}
+        <td class="PASSED">{{ group.name }}</td>
+        {% endif %}
+    {% endfor %}
+  </tr>
+{% endfor %}
+</table>
+{% endif %}
+
+{# FIXED defects table #}
+{% if output %}
+<table class="summary">
+{% for five in output %}
+  <tr>
+    {% for group, result_group in five.items %}
+        {% if result_group %}
+            {{ result_group.display_in_waiver 'FIXED'|safe }}
         {% else %}
         <td class="PASSED">{{ group.name }}</td>
         {% endif %}

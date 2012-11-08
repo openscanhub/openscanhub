@@ -57,6 +57,16 @@ class MockConfig(models.Model):
         return result
 
 
+class SystemRelease(models.Model)
+    """
+    
+    """
+    # rhel-6.4 | rhel-7 etc.
+    tag = models.CharField("Short tag", max_length=16, blank=False)
+    
+    #Red Hat Enterprise Linux 6 release 4 etc.
+    description = models.CharField("Description", max_length=128, blank=False)
+
 class Tag(models.Model):
     """
     Mapping between brew tags and mock configs
@@ -65,9 +75,9 @@ class Tag(models.Model):
     name = models.CharField("Brew Tag", max_length=64, blank=False)
     mock = models.ForeignKey(MockConfig, verbose_name="Mock Config",
                              blank=False, null=False)
-
+    release = models.ForeignKey(SystemRelease)
     def __unicode__(self):
-        return "%s <-> %s" % (self.name, str(self.mock))
+        return "Tag: %s --> Mock: %s (%s)" % (self.name, str(self.mock))
 
 
 class Package(models.Model):
@@ -115,9 +125,6 @@ class Scan(models.Model):
     #   - anytime user changes something (waive something, etc.)
     last_access = models.DateTimeField(blank=True, null=True)
     
-    rhel_version = models.CharField("RHEL Version", max_length=16, blank=False,
-                                    help_text="Version of RHEL in which will \
-package appear")
     package = models.ForeignKey(Package)
 
     def __unicode__(self):
@@ -167,3 +174,4 @@ package appear")
             except KeyError:
                 return None
         return None
+        

@@ -103,9 +103,9 @@ old: %s new: %s' % (old_err, new_err))
         if retcode != 0:
             raise RuntimeError("'%s' wasn't successfull; path: %s, code: %s" %
                                (diff_cmd, task_dir, retcode))
-        run('cshtml %s > %s' % (diff_file_path, html_file_path),
+        run('cshtml --scan-props-placement bottom %s > %s' % (diff_file_path, html_file_path),
             workdir=task_dir, can_fail=True)
-        run('cshtml %s > %s' % (fixed_diff_file_path, fixed_html_file_path),
+        run('cshtml --scan-props-placement bottom %s > %s' % (fixed_diff_file_path, fixed_html_file_path),
             workdir=task_dir, can_fail=True)
 
 

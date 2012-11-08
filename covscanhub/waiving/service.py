@@ -42,7 +42,7 @@ def load_defects_from_json(json_dict, result,
             d = Defect()
             json_checker_name = defect['checker']
             try:
-                checker = Checker.objects.get_or_create(name=json_checker_name)
+                checker = Checker.objects.get(name=json_checker_name)
             except ObjectDoesNotExist:
                 checker = Checker()
                 checker.group = CheckerGroup.objects.get(name=DEFAULT_CHECKER_GROUP)

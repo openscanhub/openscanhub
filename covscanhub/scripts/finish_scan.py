@@ -38,4 +38,4 @@ class FakeRequest(object):
         self.META['REMOTE_ADDR'] = 'uqtm.lab.eng.brq.redhat.com'
 
 print 'Finishing scan %s' % scan_id
-#finish_scan(FakeRequest(), 2)
+finish_scan(FakeRequest(), scan_id)

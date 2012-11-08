@@ -142,10 +142,11 @@ class ResultGroup(models.Model):
     checker_group = models.ForeignKey(CheckerGroup,
                                       verbose_name="Group of checkers")
 
-    def display_in_waiver(self):
+    def display_in_waiver(self, state):
         """
         return HTML formatted representation of result group displayed in 
         waiver
+        @param state: 'NEW' | 'FIXED'
         """
         response = '<td class="%s"><a href="%s">%s' % (
             self.get_state_display(), 
@@ -153,15 +154,10 @@ class ResultGroup(models.Model):
                                             self.id)),
             self.checker_group.name)
         new_defects = Defect.objects.filter(result_group=self.id, 
-                                            state=DEFECT_STATES['NEW'])
+                                            state=DEFECT_STATES[state])
         if new_defects.count() > 0:
-            response += ' (<span class="NEW">%s</span>)' % new_defects.count()
-
-        fixed_defects = Defect.objects.filter(result_group=self.id, 
-                                              state=DEFECT_STATES['FIXED'])
-        if fixed_defects.count() > 0:
-            response += ' (<span class="FIXED">%s</span>)' %\
-                fixed_defects.count()            
+            response += ' (<span class="%s">%s</span>)' % (state,
+                new_defects.count())
         response += '</a></td>'
         return response
     
