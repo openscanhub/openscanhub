@@ -5,23 +5,27 @@
 
 <h2>{{ group.checker_group.name }}</h2>
 
+<div id="defects">
+
 {% for defect, events in defects.items %}
-<div>
-    <h3>Defect {{ defect.checker.name }}</h3>
+    <div class="{{ defect.get_state_display }}" id="{{ defect.id }}">
+        <h3>Defect {{ defect.checker.name }}</h3>
     {{ checker.annotation }} [{{ defect.get_state_display }}]
-    <ul>
+        <ul>
     {% for event in events %}
-        <li>
+            <li>
             {% if event.id == defect.key_event.id %}
-            <b>{{ event.file_name }}:{{ event.line_and_column }}:{{ event.event }} -- {{ event.message }}</b>
+                <b>{{ event.file_name }}:{{ event.line_and_column }}:{{ event.event }} -- {{ event.message }}</b>
             {% else %}
-            {{ event.file_name }}:{{ event.line_and_column }}:{{ event.event }} -- {{ event.message }}
+                {{ event.file_name }}:{{ event.line_and_column }}:{{ event.event }} -- {{ event.message }}
             {% endif %}
-        </li>
+            </li>
     {% endfor %}
-    </ul>
-</div>
+        </ul>
+    </div>
 {% endfor %}
+
+</div>
 
 {% if waivers %}
 <div id="waivers">

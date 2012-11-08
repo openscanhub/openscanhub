@@ -40,10 +40,7 @@ def load_defects_from_json(json_dict, result,
             d = Defect()
             json_checker_name = defect['checker']
             checker, created = Checker.objects.get_or_create(
-                name=json_checker_name)
-            if created:
-                checker.group = CheckerGroup.objects.get(name='Default')
-                checker.save()
+                name=json_checker_name, group__name="Default")
 
             rg, created = ResultGroup.objects.get_or_create(
                 checker_group=checker.group,
@@ -53,9 +50,6 @@ def load_defects_from_json(json_dict, result,
                     rg.state = RESULT_GROUP_STATES['NEEDS_INSPECTION']
                 elif defect_state == DEFECT_STATES['FIXED']:
                     rg.state = RESULT_GROUP_STATES['INFO']
-            elif rg.state == RESULT_GROUP_STATES['INFO'] and \
-                    defect_state == DEFECT_STATES['NEW']:
-                rg.state = RESULT_GROUP_STATES['NEEDS_INSPECTION']
             rg.save()
 
             d.checker = checker

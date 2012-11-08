@@ -55,6 +55,7 @@ def set_checker_groups():
                     raise RuntimeError("Line wasn't matched. You have \
 provided invalid file.")
     chgrp_file.close()
+    CheckerGroup.objects.get_or_create(name="Default")
     for group, checkers in data.iteritems():
         ch, created = CheckerGroup.objects.get_or_create(name=group,
                                                          enabled=True)

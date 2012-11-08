@@ -3,6 +3,15 @@
 import os
 import sys
 
+try:
+    scan_id = int(sys.argv[1])
+except ValueError:
+    print 'Invalid ID.'
+    sys.exit(1)
+except IndexError:
+    print "You haven't provided ID of scan."
+    sys.exit(2)
+
 PROJECT_DIR = '/var/'
 
 if PROJECT_DIR not in sys.path:
@@ -28,4 +37,5 @@ class FakeRequest(object):
         self.META = {}
         self.META['REMOTE_ADDR'] = 'uqtm.lab.eng.brq.redhat.com'
 
-finish_scan(FakeRequest(), 2)
+print 'Finishing scan %s' % scan_id
+#finish_scan(FakeRequest(), 2)
