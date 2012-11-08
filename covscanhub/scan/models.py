@@ -74,8 +74,8 @@ class Tag(models.Model):
 
     name = models.CharField("Brew Tag", max_length=64, blank=False)
     mock = models.ForeignKey(MockConfig, verbose_name="Mock Config",
-                             blank=False, null=False)
-    release = models.ForeignKey(SystemRelease)
+                             blank=False, null=False, related_name='mock_profile')
+    release = models.ForeignKey(SystemRelease, related_name='system_release')
     def __unicode__(self):
         return "Tag: %s --> Mock: %s (%s)" % (self.name, self.mock, self.release)
 
