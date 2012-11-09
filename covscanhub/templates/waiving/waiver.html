@@ -30,7 +30,7 @@
 {% if waivers %}
 <div id="waivers">
 {% for waiver in waivers %}
-    <div style="border: 1px solid #888; margin: 10px; padding: 10px; width: 50%;">
+    <div class="waiver">
         User: {{ waiver.user }} </br>
         Date: {{ waiver.date|date:"Y-m-d H:i:s" }} </br>
         Status: {{ waiver.get_state_display }} </br>

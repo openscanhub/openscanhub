@@ -21,16 +21,18 @@ __all__ = (
 )
 
 
-def add_link_field(target_model = None, field = '', app='', field_name='link',
+def add_link_field(target_model=None, field='', app='', field_name='link',
                    link_text=unicode):
     def add_link(cls):
         reverse_name = target_model or cls.model.__name__.lower()
+
         def link(self, instance):
             app_name = app or instance._meta.app_label
             reverse_path = "admin:%s_%s_change" % (app_name, reverse_name)
             link_obj = getattr(instance, field, None) or instance
-            url = reverse(reverse_path, args = (link_obj.id,))
-            return mark_safe("<a href='%s'>%s</a>" % (url, link_text(link_obj)))
+            url = reverse(reverse_path, args=(link_obj.id,))
+            return mark_safe("<a href='%s'>%s</a>" %
+                             (url, link_text(link_obj)))
         link.allow_tags = True
         link.short_description = reverse_name + ' link'
         setattr(cls, field_name, link)

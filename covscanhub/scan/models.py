@@ -2,7 +2,6 @@
 
 
 import datetime
-import re
 
 from django.db import models
 from kobo.hub.models import Task
@@ -40,8 +39,8 @@ class Permissions(models.Model):
 
 
 class MockConfig(models.Model):
-    name        = models.CharField(max_length=256, unique=True)
-    enabled     = models.BooleanField(default=True)
+    name = models.CharField(max_length=256, unique=True)
+    enabled = models.BooleanField(default=True)
 
     class Meta:
         ordering = ("name", )
@@ -59,13 +58,14 @@ class MockConfig(models.Model):
 
 class SystemRelease(models.Model):
     """
-    
+    Represents release for which are scans submitted
     """
     # rhel-6.4 | rhel-7 etc.
     tag = models.CharField("Short tag", max_length=16, blank=False)
-    
+
     #Red Hat Enterprise Linux 6 release 4 etc.
     description = models.CharField("Description", max_length=128, blank=False)
+
 
 class Tag(models.Model):
     """
@@ -74,10 +74,13 @@ class Tag(models.Model):
 
     name = models.CharField("Brew Tag", max_length=64, blank=False)
     mock = models.ForeignKey(MockConfig, verbose_name="Mock Config",
-                             blank=False, null=False, related_name='mock_profile')
+                             blank=False, null=False,
+                             related_name='mock_profile')
     release = models.ForeignKey(SystemRelease, related_name='system_release')
+
     def __unicode__(self):
-        return "Tag: %s --> Mock: %s (%s)" % (self.name, self.mock, self.release)
+        return "Tag: %s --> Mock: %s (%s)" % \
+            (self.name, self.mock, self.release)
 
 
 class Package(models.Model):
@@ -117,15 +120,23 @@ class Scan(models.Model):
                                         choices=SCAN_STATES.get_mapping(),
                                         help_text="Current scan state")
     username = models.ForeignKey(User)
-    
+
     #date when there was last access to scan
     #should change when:
     #   - scan has finished
     #   - user opens waiving page
     #   - anytime user changes something (waive something, etc.)
     last_access = models.DateTimeField(blank=True, null=True)
-    
+
+    date_submitted = models.DateTimeField(default=datetime.datetime.now())
+
+    enabled = models.BooleanField(default=True, help_text="This scan is \
+counted in statistics.")
+
     package = models.ForeignKey(Package)
+
+    parent = models.ForeignKey('self', verbose_name="Parent Scan", blank=True,
+                               null=True)
 
     def __unicode__(self):
         if self.base is None:
@@ -143,17 +154,8 @@ class Scan(models.Model):
         return self.scan_type == SCAN_TYPES['USER']
 
     @classmethod
-    def create_scan(cls, scan_type, nvr, tag, task_id, username, base=None):
-        # validation of nvr, creating appropriate package object
-        pattern = '(.*)-(.*)-(.*)'
-        m = re.match(pattern, nvr)
-        if m is not None:
-            package_name = m.group(1)
-            package, created = Package.objects.get_or_create(name=package_name)
-
-        else:
-            raise RuntimeError('%s is not a correct N-V-R (does not match "%s"\
-)' % (nvr, pattern))
+    def create_scan(cls, scan_type, nvr, tag, task_id, username, package,
+                    base=None):
         scan = cls()
         scan.scan_type = scan_type
         scan.nvr = nvr
@@ -174,4 +176,3 @@ class Scan(models.Model):
             except KeyError:
                 return None
         return None
-        

@@ -46,15 +46,26 @@ table.summary td.INFO {
 
 /**/
 
+/*waivers presentation*/
+
+/**/
+
+#content#waivers#waiver {
+    border: 1px solid #aaa;
+    margin: 0.5em;
+    padding: 0.5em;
+    width: 50%;
+}
+
 /*defects presentation*/
 
-#content div.FIXED {
+#content#defects.FIXED {
     background-color: #DDFFCC;
     margin: 0.5em;
     padding: 0.5em;
 }
 
-#content div.NEW {
+#content#defects.NEW {
     background-color: #DDFFCC;
     margin: 0.5em;
     padding: 0.5em;

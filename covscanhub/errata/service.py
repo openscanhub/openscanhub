@@ -1,17 +1,18 @@
 # -*- coding: utf-8 -*-
 
 import copy
+import re
 
-#import messaging.send_message
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
-from covscanhub.scan.models import Scan, SCAN_STATES, SCAN_TYPES
+from covscanhub.scan.models import Scan, SCAN_STATES, SCAN_TYPES, Package
+from covscanhub.scna.service import get_latest_scan_by_package
 from covscanhub.other.shortcuts import check_brew_build, \
     check_and_create_dirs, get_tag_by_name
 from kobo.hub.models import Task
 
-            
-def create_errata_base_scan(kwargs, task_id):
+
+def create_errata_base_scan(kwargs, task_id, package):
     options = {}
 
     task_user = kwargs['task_user']
@@ -21,9 +22,9 @@ def create_errata_base_scan(kwargs, task_id):
     nvr = kwargs['base']
     task_label = nvr
     options['brew_build'] = nvr
-    
+
     tag = kwargs['base_tag']
-    
+
     priority = kwargs.get('priority', settings.ET_SCAN_PRIORITY) + 1
     comment = 'Errata Tool Base scan of %s requested by %s' % \
         (nvr, kwargs['nvr'])
@@ -52,7 +53,8 @@ def create_errata_base_scan(kwargs, task_id):
     # if base is specified, try to fetch it; if it doesn't exist, create
     # new task for it
     scan = Scan.create_scan(scan_type=scan_type, nvr=nvr, task_id=task_id,
-                            tag=tag_obj, base=base_obj, username=username)
+                            tag=tag_obj, package=package, base=base_obj,
+                            username=username)
     scan.save()
 
     options['scan_id'] = scan.id
@@ -124,6 +126,17 @@ def create_errata_scan(kwargs):
 
     check_and_create_dirs(task_dir)
 
+    # validation of nvr, creating appropriate package object
+    pattern = '(.*)-(.*)-(.*)'
+    m = re.match(pattern, nvr)
+    if m is not None:
+        package_name = m.group(1)
+        package, created = Package.objects.get_or_create(name=package_name)
+
+    else:
+        raise RuntimeError('%s is not a correct N-V-R (does not match "%s"\
+)' % (nvr, pattern))
+
     # if base is specified, try to fetch it; if it doesn't exist, create
     # new task for it
     base_obj = None
@@ -131,8 +144,9 @@ def create_errata_scan(kwargs):
         try:
             base_obj = Scan.objects.get(nvr=base)
         except ObjectDoesNotExist:
-            parent_task = Task.objects.get(id=task_id)            
-            base_obj = create_errata_base_scan(copy.deepcopy(kwargs), task_id)
+            parent_task = Task.objects.get(id=task_id)
+            base_obj = create_errata_base_scan(copy.deepcopy(kwargs), task_id,
+                                               package)
 
             # wait has to be after creation of new subtask
             # TODO wait should be executed in one transaction with creation of
@@ -143,8 +157,14 @@ def create_errata_scan(kwargs):
             base_obj = Scan.objects.filter(nvr=base).\
                 order_by('-task__dt_finished')[0]
 
+    child = get_latest_scan_by_package(tag, package)
+
     scan = Scan.create_scan(scan_type=scan_type, nvr=nvr, task_id=task_id,
-                            tag=tag_obj, base=base_obj, username=username)
+                            tag=tag_obj, package=package, base=base_obj,
+                            username=username)
+
+    if child is not None:
+        child.parent = scan
 
     options['scan_id'] = scan.id
     task = Task.objects.get(id=task_id)

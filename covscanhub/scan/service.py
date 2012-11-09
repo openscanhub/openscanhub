@@ -103,9 +103,11 @@ old: %s new: %s' % (old_err, new_err))
         if retcode != 0:
             raise RuntimeError("'%s' wasn't successfull; path: %s, code: %s" %
                                (diff_cmd, task_dir, retcode))
-        run('cshtml --scan-props-placement bottom %s > %s' % (diff_file_path, html_file_path),
+        run('cshtml --scan-props-placement bottom %s > %s' %
+            (diff_file_path, html_file_path),
             workdir=task_dir, can_fail=True)
-        run('cshtml --scan-props-placement bottom %s > %s' % (fixed_diff_file_path, fixed_html_file_path),
+        run('cshtml --scan-props-placement bottom %s > %s' %
+            (fixed_diff_file_path, fixed_html_file_path),
             workdir=task_dir, can_fail=True)
 
 
@@ -488,8 +490,10 @@ def create_diff_task(kwargs):
     check_and_create_dirs(task_dir)
 
     if nvr_upload_id:
-        # move file to task dir, remove upload record and make the task available
-        shutil.move(srpm_path, os.path.join(task_dir, os.path.basename(srpm_path)))
+        # move file to task dir, remove upload record and make the task
+        # available
+        shutil.move(srpm_path, os.path.join(task_dir,
+                                            os.path.basename(srpm_path)))
         upload.delete()
 
     parent_task = Task.objects.get(id=task_id)
@@ -515,3 +519,14 @@ def post_qpid_message(scan_id, scan_state):
     s['KRB_PRINCIPAL'] = settings.KRB_AUTH_PRINCIPAL
     s['KRB_KEYTAB'] = settings.KRB_AUTH_KEYTAB
     send_message(s, {'scan_id': scan_id, 'scan_state': scan_state}, 'finished')
+
+
+def get_latest_scan_by_package(tag, package):
+    """
+    return latest scan for specified package and tag. This function should be
+    called when creating new scan and setting this one as a child
+    """
+    try:
+        return Scan.objects.get(package=package, tag=tag, parent=None)
+    except ObjectDoesNotExist:
+        return None

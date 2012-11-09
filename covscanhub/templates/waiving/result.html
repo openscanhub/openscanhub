@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load i18n %}
+{% load capture %}
 
 {% block content %}
 <h1>{{ result.scan.tag.release.description }}</h1>
@@ -32,7 +33,7 @@
   <tr>
     {% for group, result_group in five.items %}
         {% if result_group %}
-            {{ result_group.display_in_waiver 'NEW'|safe }}
+            {{ result_group|result_group_display:"NEW" }}
         {% else %}
         <td class="PASSED">{{ group.name }}</td>
         {% endif %}
@@ -49,7 +50,7 @@
   <tr>
     {% for group, result_group in five.items %}
         {% if result_group %}
-            {{ result_group.display_in_waiver 'FIXED'|safe }}
+            {{ result_group|result_group_display:"FIXED" }}
         {% else %}
         <td class="PASSED">{{ group.name }}</td>
         {% endif %}

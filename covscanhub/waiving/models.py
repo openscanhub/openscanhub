@@ -144,26 +144,27 @@ class ResultGroup(models.Model):
 
     def display_in_waiver(self, state):
         """
-        return HTML formatted representation of result group displayed in 
+        return HTML formatted representation of result group displayed in
         waiver
         @param state: 'NEW' | 'FIXED'
         """
         response = '<td class="%s"><a href="%s">%s' % (
-            self.get_state_display(), 
-            reverse('waiving/waiver', args=(self.result.id, 
+            self.get_state_display(),
+            reverse('waiving/waiver', args=(self.result.id,
                                             self.id)),
             self.checker_group.name)
-        new_defects = Defect.objects.filter(result_group=self.id, 
-                                            state=DEFECT_STATES[state])
-        if new_defects.count() > 0:
+        defects = Defect.objects.filter(result_group=self.id,
+                                        state=DEFECT_STATES[state])
+        if defects.count() > 0:
             response += ' (<span class="%s">%s</span>)' % (state,
-                new_defects.count())
+                                                           defects.count())
         response += '</a></td>'
         return response
-    
+
     def __unicode__(self):
-        return "#%d [%s - %s], %s" % (self.id, self.checker_group.name, 
+        return "#%d [%s - %s], %s" % (self.id, self.checker_group.name,
                                       self.get_state_display(), self.result)
+
 
 class Checker(models.Model):
     """
