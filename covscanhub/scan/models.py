@@ -109,7 +109,8 @@ class Scan(models.Model):
     #diffing to
     base = models.ForeignKey('self', verbose_name="Base Scan",
                              blank=True, null=True,
-                             help_text="NVR of package to diff against")
+                             help_text="NVR of package to diff against",
+                             related_name="base_scan")
     #user scans dont have to specify this option -- allow None
     tag = models.ForeignKey(Tag, verbose_name="Tag",
                             blank=True, null=True,
@@ -136,7 +137,7 @@ counted in statistics.")
     package = models.ForeignKey(Package)
 
     parent = models.ForeignKey('self', verbose_name="Parent Scan", blank=True,
-                               null=True)
+                               null=True, related_name="parent_scan")
 
     def __unicode__(self):
         if self.base is None:
