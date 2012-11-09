@@ -66,6 +66,10 @@ class SystemRelease(models.Model):
     #Red Hat Enterprise Linux 6 release 4 etc.
     description = models.CharField("Description", max_length=128, blank=False)
 
+    def __unicode__(self):
+        return "%s -- %s" % \
+            (self.tag, self.description)
+
 
 class Tag(models.Model):
     """
@@ -129,7 +133,7 @@ class Scan(models.Model):
     #   - anytime user changes something (waive something, etc.)
     last_access = models.DateTimeField(blank=True, null=True)
 
-    date_submitted = models.DateTimeField(default=datetime.datetime.now())
+    date_submitted = models.DateTimeField(auto_now_add=True)
 
     enabled = models.BooleanField(default=True, help_text="This scan is \
 counted in statistics.")
