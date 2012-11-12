@@ -145,20 +145,23 @@ class ResultGroup(models.Model):
     def display_in_waiver(self, state):
         """
         return HTML formatted representation of result group displayed in
-        waiver
+         waiver, if there are some defects related to this group, create link
+         and display number of defects
         @param state: 'NEW' | 'FIXED'
         """
-        response = '<td class="%s"><a href="%s">%s' % (
-            self.get_state_display(),
-            reverse('waiving/waiver', args=(self.result.id,
-                                            self.id)),
-            self.checker_group.name)
         defects = Defect.objects.filter(result_group=self.id,
                                         state=DEFECT_STATES[state])
+        group_state = self.get_state_display()
+        checker_group = self.checker_group.name
+        response = '<td class="%s">' % group_state
         if defects.count() > 0:
-            response += ' (<span class="%s">%s</span>)' % (state,
-                                                           defects.count())
-        response += '</a></td>'
+            url = reverse('waiving/waiver', args=(self.result.id, self.id))
+            response += '<a href="%s">' % url
+        response += checker_group
+        if defects.count() > 0:
+            response += ' (<span class="%s">%s</span>)</a>' % (state,
+                                                               defects.count())
+        response += '</td>'
         return response
 
     def __unicode__(self):

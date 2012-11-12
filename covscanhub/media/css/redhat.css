@@ -50,7 +50,7 @@ table.summary td.INFO {
 
 /**/
 
-#content#waivers#waiver {
+#content #waivers div.waiver {
     border: 1px solid #aaa;
     margin: 0.5em;
     padding: 0.5em;
@@ -59,13 +59,13 @@ table.summary td.INFO {
 
 /*defects presentation*/
 
-#content#defects.FIXED {
+#content div#defects div.FIXED {
     background-color: #DDFFCC;
     margin: 0.5em;
     padding: 0.5em;
 }
 
-#content#defects.NEW {
+#content div#defects div.NEW {
     background-color: #DDFFCC;
     margin: 0.5em;
     padding: 0.5em;

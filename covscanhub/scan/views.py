@@ -5,7 +5,7 @@ from django.views.generic.list_detail import object_detail
 
 from kobo.django.views.generic import object_list
 
-from models import MockConfig, Scan
+from models import MockConfig, Scan, Package, SCAN_TYPES
 
 
 def mock_config_list(request):
@@ -55,3 +55,23 @@ def scan_detail(request, id):
     }
 
     return object_detail(request, **args)
+
+
+def package_list(request, id):
+    queryset = {}
+
+    for p in Package.objects.all():
+        queryset[p] = Scan.objects.filter(package=p,
+                                          scan_type=SCAN_TYPES['ERRATA_SCAN'])
+    args = {
+        "queryset": queryset,
+        "allow_empty": True,
+        "paginate_by": 50,
+        "template_name": "scan/package_list.html",
+        "template_object_name": "package",
+        "extra_context": {
+            "title": "Package list",
+        }
+    }
+
+    return object_list(request, **args)

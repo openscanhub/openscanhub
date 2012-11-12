@@ -6,7 +6,7 @@ import re
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from covscanhub.scan.models import Scan, SCAN_STATES, SCAN_TYPES, Package
-from covscanhub.scna.service import get_latest_scan_by_package
+from covscanhub.scan.service import get_latest_scan_by_package
 from covscanhub.other.shortcuts import check_brew_build, \
     check_and_create_dirs, get_tag_by_name
 from kobo.hub.models import Task
@@ -157,7 +157,7 @@ def create_errata_scan(kwargs):
             base_obj = Scan.objects.filter(nvr=base).\
                 order_by('-task__dt_finished')[0]
 
-    child = get_latest_scan_by_package(tag, package)
+    child = get_latest_scan_by_package(tag_obj, package)
 
     scan = Scan.create_scan(scan_type=scan_type, nvr=nvr, task_id=task_id,
                             tag=tag_obj, package=package, base=base_obj,

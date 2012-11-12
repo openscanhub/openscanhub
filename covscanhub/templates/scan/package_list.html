@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block content %}
+<h2>{% trans "Package list" %}</h2>
+
+{% include "pagination.html" %}
+
+<table class="list" width="100%">
+  <tr>
+    <th>{% trans "ID" %}</th>
+    <th>{% trans "Name" %}</th>
+    <th>{% trans "Count" %}</th>
+  </tr>
+{% for package, count in package_list.iteritems %}
+  <tr>
+    <td><a href="{% url package/detail package.id %}">{{ package.id }}</a></td>
+    <td>{{ package.name }}</td>
+    <td>{{ count }}</td>
+  </tr>
+{% endfor %}
+</table>
+
+{% include "pagination.html" %}
+
+{% endblock %}

@@ -4,9 +4,10 @@
 import datetime
 
 from django.db import models
+from django.contrib.auth.models import User
+
 from kobo.hub.models import Task
 from kobo.types import Enum
-from django.contrib.auth.models import User
 
 
 SCAN_STATES = Enum(
