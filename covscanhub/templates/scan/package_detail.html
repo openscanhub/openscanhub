@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block content %}
+<h2>Package {{ package.name }}</h2>
+
+{{ package.displayScanTree }}
+
+{% endblock %}
