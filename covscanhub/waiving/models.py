@@ -56,7 +56,8 @@ class Result(models.Model):
                                blank=True, null=True)
     scanner_version = models.CharField("Analyser's Version",
                                        max_length=32, blank=True, null=True)
-    scan = models.ForeignKey("covscanhub.scan.models.Scan", verbose_name="Scan",
+    scan = models.ForeignKey("scan.Scan",
+                             verbose_name="Scan",
                              blank=True, null=True,)
     lines = models.IntegerField(help_text='Lines of code scanned', blank=True,
                                 null=True)
@@ -66,8 +67,11 @@ class Result(models.Model):
         get_latest_by = "date_submitted"
     
     def __unicode__(self):
-        return "#%d %s (%s %s)" % (self.id, self.scan.nvr, self.scanner,
+        if self.scan:
+            return "#%d %s (%s %s)" % (self.id, self.scan, self.scanner,
                                self.scanner_version)
+        else:
+            return "#%d %s %s" % (self.id, self.scanner, self.scanner_version)
 
 
 class Event(models.Model):
@@ -200,13 +204,13 @@ class ResultGroup(models.Model):
         defects = Defect.objects.filter(result_group=self.id,
                                         state=DEFECT_STATES[state])
         
-        
         if self.state == RESULT_GROUP_STATES['INFO'] and state == "NEW":
             group_state = 'PASSED'
         elif state == "FIXED" and (self.state == RESULT_GROUP_STATES['WAIVED']
-            or self.state == RESULT_GROUP_STATES['NEEDS_INSPECTION']):
+                or self.state == RESULT_GROUP_STATES['NEEDS_INSPECTION']):
+            group_state = 'PASSED'
         else:
-        group_state = self.get_state_display()
+            group_state = self.get_state_display()
         
         checker_group = self.checker_group.name
         response = '<td class="%s">' % group_state
