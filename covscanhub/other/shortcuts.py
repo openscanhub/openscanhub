@@ -29,7 +29,9 @@ def add_link_field(target_model=None, field='', app='', field_name='link',
         def link(self, instance):
             app_name = app or instance._meta.app_label
             reverse_path = "admin:%s_%s_change" % (app_name, reverse_name)
-            link_obj = getattr(instance, field, None) or instance
+            link_obj = getattr(instance, field, None)
+            if not link_obj:
+                return mark_safe('None')
             url = reverse(reverse_path, args=(link_obj.id,))
             return mark_safe("<a href='%s'>%s</a>" %
                              (url, link_text(link_obj)))

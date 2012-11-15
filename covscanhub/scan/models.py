@@ -112,12 +112,13 @@ True, this package will be blacklisted -- not accepted for scanning.")
         # TODO add urls for scans/results        
         scan = parent_scan.get_child_scan()
         if scan is not None:
-            response += "%s-%s\n" % (" " * indent_level * 4, scan.nvr)
+            response += "%s-%s<br/ >" % ("&nbsp;" * indent_level * 4, scan.nvr)
             return self.display_graph(scan, response, indent_level+1)
         else:
-            response += "%s%s\n" % (
-                '.' * (40-(indent_level*4 + len(parent_scan.base.nvr)),
-                       parent_scan.base.nvr))
+            response += "%s%s<br/ >" % (
+                '.' * (40-(indent_level*4 + len(parent_scan.base.nvr))),
+                       parent_scan.base.nvr
+            )
             return response
 
     def display_scan_tree(self):
@@ -127,12 +128,13 @@ True, this package will be blacklisted -- not accepted for scanning.")
         response = ""
         
         for tag in tags:
-            parent_scan = scans.get(tag=tag, parent=None)
+            parent_scan = scans.get(tag=tag['tag'], parent=None,
+                                    scan_type=SCAN_TYPES['ERRATA'])
             response += "<div>\n<h3>%s</h3>\n" % \
                 parent_scan.tag.release.description
-            response += "<b>%s</b>\n" % parent_scan.nvr
+            response += "<b>%s</b><br/ >\n" % parent_scan.nvr
             response = self.display_graph(parent_scan, response)
-            response += "<hr\ ></div>\n"
+            response += "<hr/ ></div>\n"
         return mark_safe(response)
 
 
