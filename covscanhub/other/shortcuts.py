@@ -22,7 +22,7 @@ __all__ = (
 
 
 def add_link_field(target_model=None, field='', app='', field_name='link',
-                   link_text=unicode):
+                   link_text=unicode, field_label=''):
     def add_link(cls):
         reverse_name = target_model or cls.model.__name__.lower()
 
@@ -34,7 +34,7 @@ def add_link_field(target_model=None, field='', app='', field_name='link',
             return mark_safe("<a href='%s'>%s</a>" %
                              (url, link_text(link_obj)))
         link.allow_tags = True
-        link.short_description = reverse_name + ' link'
+        link.short_description = field_label or (reverse_name + ' link')
         setattr(cls, field_name, link)
         #cls.link = link
         cls.readonly_fields = list(getattr(cls, 'readonly_fields', [])) + \

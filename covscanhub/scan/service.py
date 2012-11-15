@@ -12,7 +12,7 @@ from kobo.hub.models import Task
 from kobo.shortcuts import run
 from kobo.django.upload.models import FileUpload
 
-from models import Scan, SCAN_STATES
+from models import Scan, SCAN_STATES, SCAN_TYPES
 from covscanhub.other.shortcuts import get_mock_by_name, check_brew_build,\
     check_and_create_dirs
 from covscanhub.other.constants import ERROR_DIFF_FILE, FIXED_DIFF_FILE,\
@@ -389,6 +389,7 @@ def get_latest_scan_by_package(tag, package):
     called when creating new scan and setting this one as a child
     """
     try:
-        return Scan.objects.get(package=package, tag=tag, parent=None)
+        return Scan.objects.get(package=package, tag=tag, parent=None,
+                                scan_type=SCAN_TYPES['ERRATA'])
     except ObjectDoesNotExist:
         return None
