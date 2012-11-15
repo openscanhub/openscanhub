@@ -73,13 +73,13 @@ def package_list(request):
 
 
 def package_detail(request, id):
-    package = Package.objects.get(id=id)
     args = {
-        "queryset": package,
+        "queryset": Package.objects.select_related(),
+        "object_id": id,
         "template_name": "scan/package_detail.html",
         "template_object_name": "package",
         "extra_context": {
-            "title": "Detail of package %s" % package.name,
+            "title": "Detail of package %s" % Package.objects.get(id=id).name,
         }
     }
 

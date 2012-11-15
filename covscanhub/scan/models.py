@@ -120,7 +120,7 @@ True, this package will be blacklisted -- not accepted for scanning.")
                        parent_scan.base.nvr))
             return response
 
-    def displayScanTree(self):
+    def display_scan_tree(self):
         scans = Scan.objects.filter(package=self)
         #TODO merge it with system release somehow
         tags = scans.values('tag').distinct()
