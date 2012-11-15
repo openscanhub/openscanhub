@@ -3,10 +3,13 @@
 
 import datetime
 
+from covscanhub.waiving.models import Result
+
 from django.db import models
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils.safestring import mark_safe
+from django.core.urlresolvers import reverse
 
 from kobo.hub.models import Task
 from kobo.types import Enum
@@ -112,10 +115,15 @@ True, this package will be blacklisted -- not accepted for scanning.")
         # TODO add urls for scans/results        
         scan = parent_scan.get_child_scan()
         if scan is not None:
-            response += "%s-%s<br/ >" % ("&nbsp;" * indent_level * 4, scan.nvr)
+            response += '%s<a href="%s">%s</a><br/ >' % (
+                "&nbsp;" * indent_level * 4,
+                reverse("scan/detail", args=(scan.id,)),
+                scan.nvr)
             return self.display_graph(scan, response, indent_level+1)
         else:
-            response += "%s%s<br/ >" % (
+            if response.endswith('<br/ >'):
+                response = response[:-6]
+            response += "%s Base: %s<br/ >" % (
                 '.' * (40-(indent_level*4 + len(parent_scan.base.nvr))),
                        parent_scan.base.nvr
             )
