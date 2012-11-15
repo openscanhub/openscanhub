@@ -31,7 +31,6 @@ class CaptureasNode(template.Node):
 
 @register.filter
 def result_group_display_new(obj):
-    args = arg.strip().split('|')
     return mark_safe(obj.display_in_result('NEW', 'waiving/waiver'))
 
 

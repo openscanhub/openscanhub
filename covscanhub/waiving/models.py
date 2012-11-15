@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 
-from covscanhub.scan.models import Scan
-
 from kobo.types import Enum, EnumItem
 
 from django.contrib.auth.models import User
@@ -58,7 +56,7 @@ class Result(models.Model):
                                blank=True, null=True)
     scanner_version = models.CharField("Analyser's Version",
                                        max_length=32, blank=True, null=True)
-    scan = models.ForeignKey(Scan, verbose_name="Scan",
+    scan = models.ForeignKey("covscanhub.scan.models.Scan", verbose_name="Scan",
                              blank=True, null=True,)
     lines = models.IntegerField(help_text='Lines of code scanned', blank=True,
                                 null=True)
@@ -201,7 +199,15 @@ class ResultGroup(models.Model):
         """
         defects = Defect.objects.filter(result_group=self.id,
                                         state=DEFECT_STATES[state])
+        
+        
+        if self.state == RESULT_GROUP_STATES['INFO'] and state == "NEW":
+            group_state = 'PASSED'
+        elif state == "FIXED" and (self.state == RESULT_GROUP_STATES['WAIVED']
+            or self.state == RESULT_GROUP_STATES['NEEDS_INSPECTION']):
+        else:
         group_state = self.get_state_display()
+        
         checker_group = self.checker_group.name
         response = '<td class="%s">' % group_state
         if defects.count() > 0:
@@ -209,7 +215,7 @@ class ResultGroup(models.Model):
             response += '<a href="%s">' % url
         response += checker_group
         if defects.count() > 0:
-            response += '</a> (<span class="%s">%s</span>)' % (state,
+            response += '</a> <span class="%s">%s</span>' % (state,
                                                                defects.count())
         if state == 'NEW':
             defects_diff = self.get_new_defects_diff()                                                       
