@@ -6,6 +6,7 @@ from kobo.types import Enum, EnumItem
 
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
+from django.core.exceptions import ObjectDoesNotExist
 import django.db.models as models
 
 
@@ -40,6 +41,15 @@ RESULT_GROUP_STATES = Enum(
 )
 
 
+RESULT_GROUP_STATES = Enum(
+    EnumItem("NEEDS_INSPECTION", help_text="Needs inspection"),
+    EnumItem("WAIVED", help_text="Is a bug"),
+    EnumItem("INFO", help_text="Fix later"),
+    EnumItem("PASSED", help_text="Fix later"),
+    EnumItem("UNKNOWN", help_text="Unknown state"),
+)
+
+
 class Result(models.Model):
     """
     Result of submited scan is held by this method.
@@ -52,6 +62,11 @@ class Result(models.Model):
                              blank=True, null=True,)
     lines = models.IntegerField(help_text='Lines of code scanned', blank=True,
                                 null=True)
+    date_submitted = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        get_latest_by = "date_submitted"
+    
     def __unicode__(self):
         return "#%d %s (%s %s)" % (self.id, self.scan.nvr, self.scanner,
                                self.scanner_version)
@@ -77,7 +92,10 @@ class Event(models.Model):
                                blank=True, null=True,)
 
     def line_and_column(self):
-        return '%s:%s' % (self.line, self.column) if self.column else self.line
+        if not self.column:
+            return self.line
+        else:
+            return '%s:%s' % (self.line, self.column)
 
     def __unicode__(self):
         return "#%d %s:%s, %s" % (self.id, self.file_name,
@@ -141,8 +159,40 @@ class ResultGroup(models.Model):
         help_text="Type of waiver")
     checker_group = models.ForeignKey(CheckerGroup,
                                       verbose_name="Group of checkers")
+    new_defects = models.PositiveSmallIntegerField(
+        default=0, blank=True, null=True, verbose_name="New defects count")
+    fixed_defects = models.PositiveSmallIntegerField(
+        default=0, blank=True, null=True, verbose_name="Fixed defects count")
 
-    def display_in_waiver(self, state):
+    def get_previous_result_group(self):
+        """
+        Return result group for same checker group, which is associated with
+         previous scan (previous build of specified package)
+        """
+        try:        
+            return ResultGroup.objects.get(checker_group=self.checker_group,
+                result=self.result.scan.get_latest_result())
+        except ObjectDoesNotExist:
+            return None        
+
+    def get_new_defects_diff(self):
+        """
+        diff between number of new defects from this scan and previous
+        return None, if previous scan does not exist
+
+        @rtype: None or int
+        @return:
+            -1: one new defect fixed
+            +2: there are two newly added defects
+        """
+        prev_rg = self.get_previous_result_group()
+        
+        if prev_rg is None:
+            return None
+        else:
+            return self.new_defects - prev_rg.new_defects
+
+    def display_in_result(self, state, url_name):
         """
         return HTML formatted representation of result group displayed in
          waiver, if there are some defects related to this group, create link
@@ -155,12 +205,22 @@ class ResultGroup(models.Model):
         checker_group = self.checker_group.name
         response = '<td class="%s">' % group_state
         if defects.count() > 0:
-            url = reverse('waiving/waiver', args=(self.result.id, self.id))
+            url = reverse(url_name, args=(self.result.id, self.id))
             response += '<a href="%s">' % url
         response += checker_group
         if defects.count() > 0:
-            response += ' (<span class="%s">%s</span>)</a>' % (state,
+            response += '</a> (<span class="%s">%s</span>)' % (state,
                                                                defects.count())
+        if state == 'NEW':
+            defects_diff = self.get_new_defects_diff()                                                       
+            if defects_diff: # not None & != 0
+                diff_html += '<span class="%s">%s%d</span>'
+                if defects_diff > 0:
+                    response += diff_html % ('defects_increased', '+',
+                                             defects_diff)
+                elif defects_diff < 0:
+                    response += diff_html % ('defects_decreased', '-',
+                                             defects_diff)
         response += '</td>'
         return response
 
@@ -189,7 +249,7 @@ class Waiver(models.Model):
     """
     User acknowledges that he processed this defect
     """
-    date = models.DateTimeField()
+    date = models.DateTimeField()  # date submitted
     message = models.TextField("Message")
     result_group = models.ForeignKey(ResultGroup, blank=False, null=False,
                                      help_text="Group of defects which is \

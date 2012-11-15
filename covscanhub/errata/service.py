@@ -132,13 +132,12 @@ def create_errata_scan(kwargs):
     if m is not None:
         package_name = m.group(1)
         package, created = Package.objects.get_or_create(name=package_name)
-
     else:
         raise RuntimeError('%s is not a correct N-V-R (does not match "%s"\
 )' % (nvr, pattern))
 
     # if base is specified, try to fetch it; if it doesn't exist, create
-    # new task for it
+    # new scan for it
     base_obj = None
     if base:
         try:

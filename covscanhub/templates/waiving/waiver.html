@@ -27,23 +27,27 @@
 
 </div>
 
-{% if waivers %}
+{% if display_waiver %}
+
+    {% if waivers %}
 <div id="waivers">
-{% for waiver in waivers %}
+        {% for waiver in waivers %}
     <div class="waiver">
         User: {{ waiver.user }} </br>
         Date: {{ waiver.date|date:"Y-m-d H:i:s" }} </br>
         Status: {{ waiver.get_state_display }} </br>
         Message: {{ waiver.message }} </br>
     </div>
-{% endfor %}
+        {% endfor %}
 </div>
-{% endif %}
+    {% endif %}
 
 <form action="{% url waiving/waiver result.id group.id %}" method="post">{% csrf_token %}
 {{ form.as_p }}
 <input type="submit" value="Submit" />
 </form>
+
+{% endif %}
 
 {% endblock %}
     

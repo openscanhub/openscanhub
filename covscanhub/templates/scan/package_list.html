@@ -12,11 +12,11 @@
     <th>{% trans "Name" %}</th>
     <th>{% trans "Count" %}</th>
   </tr>
-{% for package, count in package_list.iteritems %}
+{% for package in package_list %}
   <tr>
     <td><a href="{% url package/detail package.id %}">{{ package.id }}</a></td>
     <td>{{ package.name }}</td>
-    <td>{{ count }}</td>
+    <td>{{ package.scans_number }}</td>
   </tr>
 {% endfor %}
 </table>

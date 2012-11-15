@@ -42,21 +42,32 @@ def load_defects_from_json(json_dict, result,
             d = Defect()
             json_checker_name = defect['checker']
             try:
+                # get_or_create fails here, because there will integrity
+                # error on group atribute
                 checker = Checker.objects.get(name=json_checker_name)
             except ObjectDoesNotExist:
                 checker = Checker()
-                checker.group = CheckerGroup.objects.get(name=DEFAULT_CHECKER_GROUP)
+                checker.group = CheckerGroup.objects.get(
+                    name=DEFAULT_CHECKER_GROUP)
                 checker.name = json_checker_name
                 checker.save()
 
             rg, created = ResultGroup.objects.get_or_create(
                 checker_group=checker.group,
                 result=result)
-            if rg.state is RESULT_GROUP_STATES['UNKNOWN']:
+                
+            if rg.state == RESULT_GROUP_STATES['UNKNOWN']:
                 if defect_state == DEFECT_STATES['NEW']:
                     rg.state = RESULT_GROUP_STATES['NEEDS_INSPECTION']
                 elif defect_state == DEFECT_STATES['FIXED']:
                     rg.state = RESULT_GROUP_STATES['INFO']
+            elif defect_state == DEFECT_STATES['NEW'] and\
+                    rg.state == RESULT_GROUP_STATES['INFO']:
+                rg.state = RESULT_GROUP_STATES['NEEDS_INSPECTION']
+            if defect_state == DEFECT_STATES['NEW']:
+                rg.new_defects += 1
+            elif defect_state == DEFECT_STATES['FIXED']:
+                rg.fixed_defects += 1
             rg.save()
 
             d.checker = checker
@@ -186,5 +197,5 @@ def get_unwaived_rgs(result):
     """
     result_waivers = Waiver.objects.filter(result_group__result=result)
     return [rg for rg in ResultGroup.objects.filter(result=result,
-                state=RESULT_GROUP_STATES['NEEDS_INSPECTION'])
+            state=RESULT_GROUP_STATES['NEEDS_INSPECTION'])
             if not result_waivers.filter(result_group=rg)]

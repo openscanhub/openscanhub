@@ -16,7 +16,7 @@ from kobo.django.views.generic import object_list
 from covscanhub.scan.models import Scan
 
 from models import CheckerGroup, Result, ResultGroup, Defect, Event, Waiver,\
-    WAIVER_TYPES
+    WAIVER_TYPES, DEFECT_STATES
 from forms import WaiverForm
 from service import get_unwaived_rgs
 
@@ -97,7 +97,7 @@ def results_list(request):
 
 def waiver(request, result_id, result_group_id):
     """
-    Display waiver for specified scan and test
+    Display waiver (for new defects) for specified result & group
     """
     context = {}
 
@@ -129,7 +129,8 @@ def waiver(request, result_id, result_group_id):
 
     defects = {}
 
-    for defect in Defect.objects.filter(result_group=result_group_id):
+    for defect in Defect.objects.filter(result_group=result_group_id,
+                                        state=DEFECT_STATES['NEW']):
         defects[defect] = Event.objects.filter(defect=defect)
 
     context = dict(context.items() + get_result_context(result_object).items())
@@ -137,9 +138,30 @@ def waiver(request, result_id, result_group_id):
     context['group'] = result_group_object
     context['defects'] = defects
     context['waivers'] = Waiver.objects.filter(result_group=result_group_id)
+    context['display_waiver'] = True
 
     logger.debug('Displaying waiver for result %s, result-group %s',
                  result_object, result_group_object)
+
+    return render_to_response("waiving/waiver.html",
+                              context,
+                              context_instance=RequestContext(request))
+
+
+def fixed_defects(request, result_id, result_group_id):
+    """
+    Display fixed defects
+    """
+    defects = {}
+    context = get_result_context(Result.objects.get(id=result_id))
+
+    for defect in Defect.objects.filter(result_group=result_group_id,
+                                        state=DEFECT_STATES['FIXED']):
+        defects[defect] = Event.objects.filter(defect=defect)
+
+    context['group'] = ResultGroup.objects.get(id=result_group_id)
+    context['defects'] = defects
+    context['display_waiver'] = False
 
     return render_to_response("waiving/waiver.html",
                               context,

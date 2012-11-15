@@ -12,7 +12,7 @@ urlpatterns = patterns("",
     url(r"^(?P<id>\d+)/$", "covscanhub.scan.views.scan_detail",
         name="scan/detail"),
 
-    url(r"^packages/(?P<id>\d+)/$", "covscanhub.scan.views.package_list",
+    url(r"^packages/$", "covscanhub.scan.views.package_list",
         name="package/list"),
     url(r"^packages/(?P<id>\d+)/detail/$",
         "covscanhub.scan.views.package_detail",

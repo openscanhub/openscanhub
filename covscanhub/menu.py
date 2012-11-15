@@ -35,6 +35,7 @@ menu = (
     MenuItem("Scan", "scan/list", menu=(
         MenuItem("Scan List", "scan/list"),
         MenuItem("Mock configs", "mock_config/index"),
+        MenuItem("Packages", "package/list"),
     )),
     MenuItem("Tasks", "task/index", menu=(
         MenuItem("All", "task/index"),
@@ -45,9 +46,8 @@ menu = (
         include("kobo.hub.menu"),
     )),
     MenuItem("Waiving", "waiving/list", menu=(
-        MenuItem('List','waiving/list'),
+        MenuItem('List', 'waiving/list'),
     )),
 )
-
 
 css_active_class = "active"

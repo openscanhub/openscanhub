@@ -30,5 +30,11 @@ class CaptureasNode(template.Node):
 
 
 @register.filter
-def result_group_display(obj, arg):
-    return mark_safe(obj.display_in_waiver(arg))
+def result_group_display_new(obj):
+    args = arg.strip().split('|')
+    return mark_safe(obj.display_in_result('NEW', 'waiving/waiver'))
+
+
+@register.filter
+def result_group_display_fixed(obj):
+    return mark_safe(obj.display_in_result('FIXED', 'waiving/fixed_defects'))

@@ -18,6 +18,7 @@ from covscanhub.other.shortcuts import get_mock_by_name, check_brew_build,\
 from covscanhub.other.constants import ERROR_DIFF_FILE, FIXED_DIFF_FILE,\
     ERROR_HTML_FILE, FIXED_HTML_FILE
 
+import django.utils.simplejson as json
 from django.core.exceptions import ObjectDoesNotExist
 from django.conf import settings
 
@@ -43,6 +44,15 @@ def update_scans_state(scan_id, state):
     scan.state = state
     scan.save()
 
+
+def add_title_to_json(path, title):
+    fd = open(path, "r+")
+    loaded_json = json.load(fd)
+    loaded_json['scan']['title'] = title
+    fd.seek(0)
+    fd.truncate()
+    json.dump(loaded_json, fd, indent=4)
+    fd.close()
 
 def run_diff(task_dir, base_task_dir, nvr, base_nvr):
     """
@@ -103,6 +113,10 @@ old: %s new: %s' % (old_err, new_err))
         if retcode != 0:
             raise RuntimeError("'%s' wasn't successfull; path: %s, code: %s" %
                                (diff_cmd, task_dir, retcode))
+
+        add_title_to_json(diff_file_path, 'Newly introduced defects')        
+        add_title_to_json(fixed_diff_file_path, 'Fixed defects')        
+
         run('cshtml --scan-props-placement bottom %s > %s' %
             (diff_file_path, html_file_path),
             workdir=task_dir, can_fail=True)
@@ -187,158 +201,6 @@ I have used this command: %s' % (task_id, tar_archive, command))
     if os.path.exists(tmp_tar_archive[:-3]) and \
             tmp_tar_archive[:-3].endswith('.tar'):
         os.remove(tmp_tar_archive[:-3])
-#def send_qpid_message(message, key):
-#    """
-#        sends specified message to predefined broker, topic
-#    """
-#    messaging.send_message(django.conf.settings.qpid_connection, message, key)
-
-
-def create_diff_base_scan(kwargs, parent_id):
-    """
-        DEPRECATED
-
-        create scan of a package and perform diff on results against specified
-        version
-        options of this scan are in dict 'kwargs'
-
-        kwargs
-         - scan_type - type of scan (SCAN_TYPES in covscanhub.scan.models)
-         - task_user - username from request.user.username
-         - username - name of user who is requesting scan
-         - nvr - name, version, release of scanned package
-         - base - nvr of previous version, the one to make diff against
-         - nvr_mock - mock config
-         - base_mock - mock config
-    """
-    options = {}
-
-    #from request.user
-    task_user = kwargs['task_user']
-
-    #supplied by scan initiator
-    #username = kwargs['username']
-    #scan_type = kwargs['scan_type']
-    nvr = kwargs['nvr']
-    #base = kwargs['base']
-
-    #Label, description or any reason for this task.
-    task_label = nvr
-
-    base_mock = kwargs['base_mock']
-    priority = kwargs.get('priority', 10)
-    comment = kwargs.get('comment', nvr)
-
-    options["mock_config"] = base_mock
-
-    task_id = Task.create_task(
-        owner_name=task_user,
-        label=task_label,
-        method='VersionDiffBuild',
-        args={},  # I want to add scan's id here, so I update it later
-        comment=comment,
-        state=SCAN_STATES["QUEUED"],
-        priority=priority,
-        parent_id=parent_id
-    )
-    task_dir = Task.get_task_dir(task_id)
-
-    if not os.path.isdir(task_dir):
-        try:
-            os.makedirs(task_dir, mode=0755)
-        except OSError, ex:
-            if ex.errno != 17:
-                raise
-    """
-    scan = Scan.create_scan(scan_type=scan_type, nvr=nvr, task_id=task_id,
-                            tag=None, base=base_obj, username=username)
-
-    options['scan_id'] = scan.id
-    task = Task.objects.get(id=task_id)
-    task.args = options
-    task.save()
-    """
-
-
-def create_diff_scan(kwargs):
-    """
-        DEPRECATED
-
-        create scan of a package and perform diff on results against specified
-        version
-        options of this scan are in dict 'kwargs'
-
-        kwargs
-         - scan_type - type of scan (SCAN_TYPES in covscanhub.scan.models)
-         - task_user - username from request.user.username
-         - username - name of user who is requesting scan
-         - nvr - name, version, release of scanned package
-         - base - nvr of previous version, the one to make diff against
-         - nvr_mock - mock config
-         - base_mock - mock config
-    """
-    options = {}
-
-    #from request.user
-    task_user = kwargs['task_user']
-
-    #supplied by scan initiator
-    username = kwargs['username']
-    scan_type = kwargs['scan_type']
-    nvr = kwargs['nvr']
-    base = kwargs['base']
-
-    #Label, description or any reason for this task.
-    task_label = nvr
-
-    nvr_mock = kwargs['nvr_mock']
-    base_mock = kwargs['base_mock']
-    priority = kwargs.get('priority', 10)
-    comment = kwargs.get('comment', nvr)
-
-    #does mock config exist?
-    get_mock_by_name(nvr_mock)
-    options["mock_config"] = nvr_mock
-    get_mock_by_name(base_mock)
-
-    #Test if SRPM exists
-    options['brew_build'] = check_brew_build(nvr)
-    check_brew_build(base)
-
-    task_id = Task.create_task(
-        owner_name=task_user,
-        label=task_label,
-        method='VersionDiffBuild',
-        args={},  # I want to add scan's id here, so I update it later
-        comment=comment,
-        state=SCAN_STATES["QUEUED"],
-        priority=priority
-    )
-    task_dir = Task.get_task_dir(task_id)
-
-    if not os.path.isdir(task_dir):
-        try:
-            os.makedirs(task_dir, mode=0755)
-        except OSError, ex:
-            if ex.errno != 17:
-                raise
-
-    parent_task = Task.objects.get(id=task_id)
-    base_obj = None
-    create_diff_base_scan(copy.deepcopy(kwargs), task_id)
-
-    # wait has to be after creation of new subtask
-    # TODO wait should be executed in one transaction with creation of
-    # child
-    parent_task.wait()
-
-    scan = Scan.create_scan(scan_type=scan_type, nvr=nvr, task_id=task_id,
-                            tag=None, base=base_obj, username=username)
-
-    options['scan_id'] = scan.id
-    task = Task.objects.get(id=task_id)
-    task.args = options
-    task.save()
 
 
 def create_base_diff_task(kwargs, parent_id):

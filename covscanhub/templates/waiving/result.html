@@ -26,14 +26,14 @@
     </tr>
 </table>
 
-{# NEW defects table #}
+<h3>Newly introduced defects</h3>
 {% if output %}
 <table class="summary">
 {% for five in output %}
   <tr>
     {% for group, result_group in five.items %}
         {% if result_group %}
-            {{ result_group|result_group_display:"NEW" }}
+            {{ result_group|result_group_display_new }}
         {% else %}
         <td class="PASSED">{{ group.name }}</td>
         {% endif %}
@@ -43,14 +43,14 @@
 </table>
 {% endif %}
 
-{# FIXED defects table #}
+<h3>Fixed defects</h3>
 {% if output %}
 <table class="summary">
 {% for five in output %}
   <tr>
     {% for group, result_group in five.items %}
         {% if result_group %}
-            {{ result_group|result_group_display:"FIXED" }}
+            {{ result_group|result_group_display_fixed }}
         {% else %}
         <td class="PASSED">{{ group.name }}</td>
         {% endif %}

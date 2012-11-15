@@ -5,6 +5,8 @@ import datetime
 
 from django.db import models
 from django.contrib.auth.models import User
+from django.core.exceptions import ObjectDoesNotExist
+from django.utils.safestring import mark_safe
 
 from kobo.hub.models import Task
 from kobo.types import Enum
@@ -97,6 +99,42 @@ class Package(models.Model):
     blocked = models.BooleanField(default=False, help_text="If this is set to \
 True, this package will be blacklisted -- not accepted for scanning.")
 
+    def __unicode__(self):
+        return "#%s %s" % \
+            (self.id, self.name)
+
+    def calculateScanNumbers(self):
+        return Scan.objects.filter(package=self).count()
+
+    scans_number = property(calculateScanNumbers)
+
+    def display_graph(self, parent_scan, response, indent_level=1):
+        # TODO add urls for scans/results        
+        scan = parent_scan.get_child_scan()
+        if scan is not None:
+            response += "%s-%s\n" % (" " * indent_level * 4, scan.nvr)
+            return self.display_graph(scan, response, indent_level+1)
+        else:
+            response += "%s%s\n" % (
+                '.' * (40-(indent_level*4 + len(parent_scan.base.nvr)),
+                       parent_scan.base.nvr))
+            return response
+
+    def displayScanTree(self):
+        scans = Scan.objects.filter(package=self)
+        #TODO merge it with system release somehow
+        tags = scans.values('tag').distinct()
+        response = ""
+        
+        for tag in tags:
+            parent_scan = scans.get(tag=tag, parent=None)
+            response += "<div>\n<h3>%s</h3>\n" % \
+                parent_scan.tag.release.description
+            response += "<b>%s</b>\n" % parent_scan.nvr
+            response = self.display_graph(parent_scan, response)
+            response += "<hr\ ></div>\n"
+        return mark_safe(response)
+
 
 class Scan(models.Model):
     """
@@ -182,3 +220,15 @@ counted in statistics.")
             except KeyError:
                 return None
         return None
+    
+    def get_child_scan(self):
+        try:
+            return Scan.objects.get(parent=self)
+        except ObjectDoesNotExist:
+            return None
+
+    def get_latest_result(self):
+        try:
+            return Result.objects.filter(scan=self).latest()
+        except ObjectDoesNotExist:
+            return None

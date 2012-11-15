@@ -57,7 +57,22 @@ def scan_detail(request, id):
     return object_detail(request, **args)
 
 
-def package_list(request, id):
+def package_list(request):
+    args = {
+        "queryset": Package.objects.all(),
+        "allow_empty": True,
+        "paginate_by": 50,
+        "template_name": "scan/package_list.html",
+        "template_object_name": "package",
+        "extra_context": {
+            "title": "Package list",
+        }
+    }
+
+    return object_list(request, **args)
+
+
+def package_detail(request, id):
     queryset = {}
 
     for p in Package.objects.all():

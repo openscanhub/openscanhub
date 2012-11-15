@@ -22,6 +22,7 @@ table.summary td {
     padding: 0.7em;
     border: 4px solid #ffffff;
     font-weight: bold;
+    width: 20%;
 }
 
 table.summary td.PASSED {
@@ -42,6 +43,28 @@ table.summary td.IS_A_BUG {
 
 table.summary td.INFO {
     background-color: #90aaff;
+}
+
+table.summary span.FIXED {
+    color: #00ff00;
+}
+
+table.summary span.NEW {
+    color: #ff0000;
+}
+
+table.summary span.defects_increased {
+    background-color: #FF5533;
+    left: 7px;
+    position: relative;
+    top: -7px;
+}
+
+table.summary span.defects_decreased {
+    background-color: #55FF33;
+    left: 7px;
+    position: relative;
+    top: -7px;
 }
 
 /**/
