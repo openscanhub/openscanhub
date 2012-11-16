@@ -34,19 +34,10 @@ RESULT_GROUP_STATES = Enum(
     EnumItem("INFO", help_text="Fix later"),
     # there are no defects associated with this checker group
     EnumItem("PASSED", help_text="Fix later"),
-    # this is default state and should be changes ASAP
+    # this is default state and should be changed ASAP
     EnumItem("UNKNOWN", help_text="Unknown state"),
-    # this is default state and should be changes ASAP
+    # this rg was waived in one of the previous runs
     EnumItem("PREVIOUSLY_WAIVED", help_text="Waived in one of previous runs"),
-)
-
-
-RESULT_GROUP_STATES = Enum(
-    EnumItem("NEEDS_INSPECTION", help_text="Needs inspection"),
-    EnumItem("WAIVED", help_text="Is a bug"),
-    EnumItem("INFO", help_text="Fix later"),
-    EnumItem("PASSED", help_text="Fix later"),
-    EnumItem("UNKNOWN", help_text="Unknown state"),
 )
 
 
@@ -191,7 +182,7 @@ class ResultGroup(models.Model):
         return Defect.objects.filter(result_group=self.id,
                                      state=DEFECT_STATES['NEW'])
 
-    def get_new_defects_diff(self):
+    def get_defects_diff(self, state):
         """
         diff between number of new defects from this scan and previous
          return None, if previous scan does not exist
@@ -203,10 +194,39 @@ class ResultGroup(models.Model):
         """
         prev_rg = self.get_previous_result_group()
 
-        if prev_rg is None or prev_rg.new_defects == 0:
+        if prev_rg is None:
             return None
         else:
-            return self.new_defects - prev_rg.new_defects
+            if state == 'NEW':
+                if prev_rg.new_defects == 0:
+                    return None
+                else:
+                    return self.new_defects - prev_rg.new_defects
+            elif state == 'FIXED':
+                if prev_rg.fixed_defects == 0:
+                    return None
+                else:
+                    return self.fixed_defects - prev_rg.fixed_defects
+
+    def get_defects_diff_display(self, state, response):
+        defects_diff = self.get_defects_diff(state)
+        if defects_diff:  # not None & != 0
+            diff_html = '<span class="%s">%s%d</span>'
+            if state == 'NEW':
+                if defects_diff > 0:
+                    response += diff_html % ('defects_increased', '+',
+                                             defects_diff)
+                elif defects_diff < 0:
+                    response += diff_html % ('defects_decreased', '-',
+                                             defects_diff)
+            elif state == 'FIXED':
+                if defects_diff > 0:
+                    response += diff_html % ('defects_decreased', '+',
+                                             defects_diff)
+                elif defects_diff < 0:
+                    response += diff_html % ('defects_increased', '-',
+                                             defects_diff)
+        return response
 
     def get_state_to_display(self, state, defects_count):
         """
@@ -242,16 +262,7 @@ class ResultGroup(models.Model):
         if defects.count() > 0:
             response += '</a> <span class="%s">%s</span>' % (state,
                                                              defects.count())
-        if state == 'NEW':
-            defects_diff = self.get_new_defects_diff()
-            if defects_diff:  # not None & != 0
-                diff_html = '<span class="%s">%s%d</span>'
-                if defects_diff > 0:
-                    response += diff_html % ('defects_increased', '+',
-                                             defects_diff)
-                elif defects_diff < 0:
-                    response += diff_html % ('defects_decreased', '-',
-                                             defects_diff)
+        self.get_defects_diff_display(state, response)
         response += '</td>'
         return response
 
