@@ -46,7 +46,7 @@
 
 
 {% if waivers_place %}
-This group has been waived in run: <a href="{% url waiving/waiver waivers_result group.id %}">{{ waivers_place }}</a> </br>
+This group has been waived in run: <a href="{% url waiving/waiver waivers_result waivers_group %}">{{ waivers_place }}</a> </br>
 {% endif %}
 
 

@@ -140,6 +140,7 @@ def waiver(request, result_id, result_group_id):
         )
         context['waivers_place'] = place_string
         context['waivers_result'] = w.result_group.result.id
+        context['waivers_group'] = w.result_group.id
         context['display_form'] = False
         context['display_waivers'] = True
     else:
