@@ -34,6 +34,10 @@ table.summary td.WAIVED {
     background-color: #66ff44;
 }
 
+table.summary td.PREVIOUSLY_WAIVED {
+    background-color: #88ff77;
+}
+
 table.summary td.NEEDS_INSPECTION {
     background-color: #ffff66;
 }

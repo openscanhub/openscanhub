@@ -25,9 +25,9 @@ logger = logging.getLogger(__name__)
 
 __all__ = (
     'create_results',
-    'get_groups_by_result',
-    'get_waiving_status',
     'get_unwaived_rgs',
+    'compare_result_groups'
+    'get_last_waiver',
 )
 
 
@@ -168,26 +168,16 @@ def create_results(scan):
         diff_json_dict = json.load(diff_file)
         load_defects_from_json(diff_json_dict, r, DEFECT_STATES['NEW'])
         diff_file.close()
+
+        for rg in get_unwaived_rgs(r):
+            w = get_last_waiver(
+                rg.checker_group,
+                rg.result.scan.package,
+                rg.result.scan.tag.release,
+            )
+            if w and compare_result_groups():
+                rg.state = RESULT_GROUP_STATES['ALREADY_WAIVED']
     return r
-
-
-def get_groups_by_result(result):
-    groups = set()
-
-    # return defects for specific result that are newly added
-    for d in Defect.objects.filter(result_group__result=result,
-                                   state=DEFECT_STATES['NEW']):
-        groups.add(d.checker.group)
-
-    return groups
-
-
-def get_waiving_status(result):
-    result_waivers = Waiver.objects.filter(result_group__result=result)
-    status = {}
-    for group in get_groups_by_result(result):
-        status[group] = result_waivers.filter(group=group)
-    return status
 
 
 def get_unwaived_rgs(result):
@@ -199,3 +189,38 @@ def get_unwaived_rgs(result):
     return [rg for rg in ResultGroup.objects.filter(result=result,
             state=RESULT_GROUP_STATES['NEEDS_INSPECTION'])
             if not result_waivers.filter(result_group=rg)]
+
+
+def compare_result_groups(rg1, rg2):
+    """
+        Compare defects on two distinct result groups
+    """
+    if rg1.new_defects != rg2.new_defects:
+        return False
+    rg1_defects = rg1.get_new_defects()
+    rg2_defects = rg2.get_new_defects()
+
+    for rg1_defect in rg1_defects:
+        try:
+            rg2_defect = rg2_defects.get(checker=rg1_defect.checker)
+        except ObjectDoesNotExist:
+            return False
+        if Event.objects.filter(defect=rg1_defect).count() != \
+                Event.objects.filter(defect=rg2_defect).count():
+            return False
+    return True
+
+
+def get_last_waiver(checker_group, package, release):
+    """
+    Try to get base waiver for specific checkergroup, package, release
+    """
+    waivers = Waiver.objects.filter(
+        result_group__checker_group=checker_group,
+        result_group__result__scan__package=package,
+        result_group__result__scan__tag__release=release,
+    )
+    if waivers:
+        return waivers.latest()
+    else:
+        return None

@@ -9,7 +9,7 @@
 
 {% for defect, events in defects.items %}
     <div class="{{ defect.get_state_display }}">
-        <h3>Defect {{ defect.checker.name }}</h3>
+        <h3>{{ forloop.counter }}. Defect {{ defect.checker.name }}</h3>
     {{ checker.annotation }} [{{ defect.get_state_display }}]
         <ul>
     {% for event in events %}
@@ -27,7 +27,7 @@
 
 </div>
 
-{% if display_waiver %}
+{% if display_waivers %}
 
     {% if waivers %}
 <div id="waivers">
@@ -36,11 +36,18 @@
         User: {{ waiver.user }} </br>
         Date: {{ waiver.date|date:"Y-m-d H:i:s" }} </br>
         Status: {{ waiver.get_state_display }} </br>
-        Message: {{ waiver.message }} </br>
+        Message: <b>{{ waiver.message }}</b> </br>
+            {% if waivers_place %}
+        Waived in: <a href="{% url waiving/waiver waivers_result group.id %}">{{ waivers_place }}</a> </br>
+            {% endif %}
     </div>
         {% endfor %}
 </div>
     {% endif %}
+
+{% endif %} {# display_waivers #}
+
+{% if display_form %}
 
 <form action="{% url waiving/waiver result.id group.id %}" method="post">{% csrf_token %}
 {{ form.as_p }}

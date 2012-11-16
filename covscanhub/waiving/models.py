@@ -36,6 +36,8 @@ RESULT_GROUP_STATES = Enum(
     EnumItem("PASSED", help_text="Fix later"),
     # this is default state and should be changes ASAP
     EnumItem("UNKNOWN", help_text="Unknown state"),
+    # this is default state and should be changes ASAP
+    EnumItem("PREVIOUSLY_WAIVED", help_text="Waived in one of previous runs"),
 )
 
 
@@ -68,8 +70,9 @@ class Result(models.Model):
 
     def __unicode__(self):
         if self.scan:
-            return "#%d %s (%s %s)" % (self.id, self.scan, self.scanner,
-                                       self.scanner_version)
+            return "#%d Scan: (%s) (%s %s)" % (self.id, self.scan,
+                                               self.scanner,
+                                               self.scanner_version)
         else:
             return "#%d %s %s" % (self.id, self.scanner, self.scanner_version)
 
@@ -131,7 +134,7 @@ current defect",
     result_group = models.ForeignKey('ResultGroup', blank=False, null=False)
 
     def __unicode__(self):
-        return "#%d %s, %s" % (self.id, self.checker, self.annotation)
+        return "#%d Checker: (%s), %s" % (self.id, self.checker, self.annotation)
 
 
 class CheckerGroup(models.Model):
@@ -181,10 +184,17 @@ class ResultGroup(models.Model):
             except ObjectDoesNotExist:
                 return None
 
+    def is_previously_waived(self):
+        return self.state == RESULT_GROUP_STATES['PREVIOUSLY_WAIVED']
+
+    def get_new_defects(self):
+        return Defect.objects.filter(result_group=self.id,
+                                     state=DEFECT_STATES['NEW'])
+
     def get_new_defects_diff(self):
         """
         diff between number of new defects from this scan and previous
-        return None, if previous scan does not exist
+         return None, if previous scan does not exist
 
         @rtype: None or int
         @return:
@@ -193,7 +203,7 @@ class ResultGroup(models.Model):
         """
         prev_rg = self.get_previous_result_group()
 
-        if prev_rg is None:
+        if prev_rg is None or prev_rg.new_defects == 0:
             return None
         else:
             return self.new_defects - prev_rg.new_defects
@@ -246,8 +256,10 @@ class ResultGroup(models.Model):
         return response
 
     def __unicode__(self):
-        return "#%d [%s - %s], %s" % (self.id, self.checker_group.name,
-                                      self.get_state_display(), self.result)
+        return "#%d [%s - %s], Result: (%s)" % (
+            self.id, self.checker_group.name, self.get_state_display(),
+            self.result
+        )
 
 
 class Checker(models.Model):
@@ -263,7 +275,7 @@ class Checker(models.Model):
 checker belong")
 
     def __unicode__(self):
-        return "#%d %s: %s" % (self.id, self.name, self.group)
+        return "#%d %s, CheckerGroup: (%s)" % (self.id, self.name, self.group)
 
 
 class Waiver(models.Model):
@@ -280,7 +292,10 @@ waived for specific Result")
                                         choices=WAIVER_TYPES.get_mapping(),
                                         help_text="Type of waiver")
 
+    class Meta:
+        get_latest_by = "date"
+
     def __unicode__(self):
-        return "#%d %s - %s [%s]" % (self.id, self.message,
-                                     self.get_state_display(),
-                                     self.result_group)
+        return "#%d %s - %s, ResultGroup: (%s)" % (self.id, self.message,
+                                                   self.get_state_display(),
+                                                   self.result_group)

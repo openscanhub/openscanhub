@@ -13,13 +13,12 @@ from django.core.exceptions import ObjectDoesNotExist
 
 from kobo.django.views.generic import object_list
 
-from covscanhub.scan.models import Scan
+from covscanhub.scan.models import Scan, SCAN_STATES
 
 from models import CheckerGroup, Result, ResultGroup, Defect, Event, Waiver,\
     WAIVER_TYPES, DEFECT_STATES, RESULT_GROUP_STATES
 from forms import WaiverForm
-from service import get_unwaived_rgs
-
+from service import get_unwaived_rgs, get_last_waiver
 
 logger = logging.getLogger(__name__)
 
@@ -43,7 +42,6 @@ def get_result_context(result_object):
 
     context['output'] = get_five_tuple(get_waiving_data(result_object.id))
     context['result'] = result_object
-    context['unwaived_groups'] = get_unwaived_rgs(result_object)
     context['logs'] = logs
 
     return context
@@ -119,15 +117,36 @@ def waiver(request, result_id, result_group_id):
 
             s.last_access = datetime.datetime.now()
             s.save()
+
             result_group_object.state = RESULT_GROUP_STATES['WAIVED']
             result_group_object.save()
+
+            if not get_unwaived_rgs(result_object):
+                result_object.scan.state = SCAN_STATES['WAIVED']
+
             logger.info('Waiver submitted for resultgroup %s',
                         result_group_object)
             return HttpResponseRedirect(reverse('waiving/result',
                                                 args=(result_id,)))
+
+    if result_group_object.is_previously_waived():
+        w = get_last_waiver(result_group_object.checker_group,
+                            result_group_object.result.scan.package,
+                            result_group_object.result.scan.tag.release)
+
+        place_string = "Scan: target = %s, base = %s" % (
+            w.result_group.result.scan.nvr,
+            w.result_group.result.scan.base.nvr,
+        )
+        context['waivers_place'] = place_string
+        context['waivers_result'] = w.result_group.result.id
+        context['display_form'] = False
+        context['display_waivers'] = True
     else:
         form = WaiverForm()
         context['form'] = form
+        context['display_form'] = True
+        context['display_waivers'] = True
 
     defects = {}
 
@@ -135,12 +154,12 @@ def waiver(request, result_id, result_group_id):
                                         state=DEFECT_STATES['NEW']):
         defects[defect] = Event.objects.filter(defect=defect)
 
+    # merge already created context with result context
     context = dict(context.items() + get_result_context(result_object).items())
 
     context['group'] = result_group_object
     context['defects'] = defects
     context['waivers'] = Waiver.objects.filter(result_group=result_group_id)
-    context['display_waiver'] = True
 
     logger.debug('Displaying waiver for result %s, result-group %s',
                  result_object, result_group_object)
@@ -163,7 +182,8 @@ def fixed_defects(request, result_id, result_group_id):
 
     context['group'] = ResultGroup.objects.get(id=result_group_id)
     context['defects'] = defects
-    context['display_waiver'] = False
+    context['display_form'] = False
+    context['display_waivers'] = False
 
     return render_to_response("waiving/waiver.html",
                               context,
