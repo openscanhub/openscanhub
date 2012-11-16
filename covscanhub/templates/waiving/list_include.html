@@ -13,7 +13,7 @@
     <td><a href="{% url waiving/result result.id %}">{{ result.id }}</a></td>
     <td>{{ result.scan.nvr }}</td>
     <td>{{ result.scan.base.nvr }}</td>
-    <td>{{ result.scan.get_state_display }}</td>
+    <td><span class="{{ result.scan.get_state_display }}">{{ result.scan.get_state_display }}</span></td>
     <td>{{ result.scan.last_access|date:"Y-m-d H:i:s" }}</td>
     <td>{{ result.scan.username }}</td>
   </tr>

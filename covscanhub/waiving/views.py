@@ -116,13 +116,13 @@ def waiver(request, result_id, result_group_id):
             s = Scan.objects.get(id=result_object.scan.id)
 
             s.last_access = datetime.datetime.now()
-            s.save()
 
             result_group_object.state = RESULT_GROUP_STATES['WAIVED']
             result_group_object.save()
 
             if not get_unwaived_rgs(result_object):
-                result_object.scan.state = SCAN_STATES['WAIVED']
+                s.state = SCAN_STATES['WAIVED']
+            s.save()
 
             logger.info('Waiver submitted for resultgroup %s',
                         result_group_object)
