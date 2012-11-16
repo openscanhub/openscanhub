@@ -134,7 +134,7 @@ def waiver(request, result_id, result_group_id):
                             result_group_object.result.scan.package,
                             result_group_object.result.scan.tag.release)
 
-        place_string = "Scan: target = %s, base = %s" % (
+        place_string = "target = %s, base = %s" % (
             w.result_group.result.scan.nvr,
             w.result_group.result.scan.base.nvr,
         )

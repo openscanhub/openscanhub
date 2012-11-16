@@ -195,18 +195,18 @@ class ResultGroup(models.Model):
         prev_rg = self.get_previous_result_group()
 
         if prev_rg is None:
-            return None
+            if self.result.scan.get_child_scan():
+                if state == 'NEW':
+                    return self.new_defects
+                elif state == 'FIXED':
+                    return self.fixed_defects
+            else:
+                return None
         else:
             if state == 'NEW':
-                if prev_rg.new_defects == 0:
-                    return None
-                else:
-                    return self.new_defects - prev_rg.new_defects
+                return self.new_defects - prev_rg.new_defects
             elif state == 'FIXED':
-                if prev_rg.fixed_defects == 0:
-                    return None
-                else:
-                    return self.fixed_defects - prev_rg.fixed_defects
+                return self.fixed_defects - prev_rg.fixed_defects
 
     def get_defects_diff_display(self, state, response):
         defects_diff = self.get_defects_diff(state)
@@ -262,7 +262,7 @@ class ResultGroup(models.Model):
         if defects.count() > 0:
             response += '</a> <span class="%s">%s</span>' % (state,
                                                              defects.count())
-        self.get_defects_diff_display(state, response)
+        response = self.get_defects_diff_display(state, response)
         response += '</td>'
         return response
 

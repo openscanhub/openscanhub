@@ -37,15 +37,18 @@
         Date: {{ waiver.date|date:"Y-m-d H:i:s" }} </br>
         Status: {{ waiver.get_state_display }} </br>
         Message: <b>{{ waiver.message }}</b> </br>
-            {% if waivers_place %}
-        Waived in: <a href="{% url waiving/waiver waivers_result group.id %}">{{ waivers_place }}</a> </br>
-            {% endif %}
     </div>
         {% endfor %}
 </div>
     {% endif %}
 
 {% endif %} {# display_waivers #}
+
+
+{% if waivers_place %}
+This group has been waived in run: <a href="{% url waiving/waiver waivers_result group.id %}">{{ waivers_place }}</a> </br>
+{% endif %}
+
 
 {% if display_form %}
 
