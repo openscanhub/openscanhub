@@ -16,7 +16,7 @@ from kobo.django.views.generic import object_list
 from covscanhub.scan.models import Scan
 
 from models import CheckerGroup, Result, ResultGroup, Defect, Event, Waiver,\
-    WAIVER_TYPES, DEFECT_STATES
+    WAIVER_TYPES, DEFECT_STATES, RESULT_GROUP_STATES
 from forms import WaiverForm
 from service import get_unwaived_rgs
 
@@ -119,6 +119,8 @@ def waiver(request, result_id, result_group_id):
 
             s.last_access = datetime.datetime.now()
             s.save()
+            result_group_object.state = RESULT_GROUP_STATES['WAIVED']
+            result_group_object.save()
             logger.info('Waiver submitted for resultgroup %s',
                         result_group_object)
             return HttpResponseRedirect(reverse('waiving/result',

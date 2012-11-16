@@ -8,7 +8,7 @@
 <div id="defects">
 
 {% for defect, events in defects.items %}
-    <div class="{{ defect.get_state_display }}" id="{{ defect.id }}">
+    <div class="{{ defect.get_state_display }}">
         <h3>Defect {{ defect.checker.name }}</h3>
     {{ checker.annotation }} [{{ defect.get_state_display }}]
         <ul>
