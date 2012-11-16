@@ -108,3 +108,27 @@ table.summary span.defects_decreased {
 }
 
 /**/
+
+/* TABLE list */
+
+#content table.list span.QUEUED {
+    font-color: #3366ff;
+}
+
+#content table.list span.SCANNING {
+    font-color: #66ffff;
+}
+
+#content table.list span.NEEDS_INSPECTION {
+    font-color: #ffff66;
+}
+
+#content table.list span.PASSED {
+    font-color: #99ff99;
+}
+
+#content table.list span.WAIVED {
+    font-color: #66ff44;
+}
+
+/**/
