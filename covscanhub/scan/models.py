@@ -112,35 +112,40 @@ True, this package will be blacklisted -- not accepted for scanning.")
     scans_number = property(calculateScanNumbers)
 
     def display_graph(self, parent_scan, response, indent_level=1):
-        # TODO add urls for scans/results        
         scan = parent_scan.get_child_scan()
         if scan is not None:
             response += '%s<a href="%s">%s</a><br/ >' % (
                 "&nbsp;" * indent_level * 4,
-                reverse("scan/detail", args=(scan.id,)),
+                reverse("waiving/result",
+                        args=(Result.objects.get(scan=scan),)),
                 scan.nvr)
-            return self.display_graph(scan, response, indent_level+1)
+            return self.display_graph(scan, response, indent_level + 1)
         else:
             if response.endswith('<br/ >'):
                 response = response[:-6]
             response += "%s Base: %s<br/ >" % (
-                '.' * (40-(indent_level*4 + len(parent_scan.base.nvr))),
-                       parent_scan.base.nvr
+                '.' * (40 - (indent_level * 4 + len(parent_scan.base.nvr))),
+                parent_scan.base.nvr
             )
             return response
 
     def display_scan_tree(self):
         scans = Scan.objects.filter(package=self)
         #TODO merge it with system release somehow
-        tags = scans.values('tag').distinct()
+        releases = scans.values('tag__release').distinct()
         response = ""
-        
-        for tag in tags:
-            parent_scan = scans.get(tag=tag['tag'], parent=None,
+
+        for release in releases:
+            parent_scan = scans.get(tag__release__id=release['tag__release'],
+                                    parent=None,
                                     scan_type=SCAN_TYPES['ERRATA'])
             response += "<div>\n<h3>%s</h3>\n" % \
                 parent_scan.tag.release.description
-            response += "<b>%s</b><br/ >\n" % parent_scan.nvr
+            response += '<a href="%s">%s</a><br/ >\n' % (
+                reverse("waiving/result",
+                        args=(Result.objects.get(scan=parent_scan),)),
+                parent_scan.nvr
+            )
             response = self.display_graph(parent_scan, response)
             response += "<hr/ ></div>\n"
         return mark_safe(response)

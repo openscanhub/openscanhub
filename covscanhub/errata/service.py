@@ -164,6 +164,7 @@ def create_errata_scan(kwargs):
 
     if child is not None:
         child.parent = scan
+        child.enabled = False
         child.save()
 
     options['scan_id'] = scan.id
