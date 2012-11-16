@@ -200,3 +200,21 @@ def result(request, result_id):
         get_result_context(Result.objects.get(id=result_id)),
         context_instance=RequestContext(request)
     )
+
+
+def newest_result(request, package_name, release_tag):
+    """
+    Display latest result for specified package
+    """
+    #TODO display message when scan is not finished:
+    # scan is not finished -- you may watch logs <a>here</a>
+    return render_to_response(
+        "waiving/result.html",
+        get_result_context(
+            Result.objects.filter(
+                scan__package__name=package_name,
+                scan__tag__release__tag=release_tag,
+            ).latest()
+        ),
+        context_instance=RequestContext(request)
+    )

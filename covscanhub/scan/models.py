@@ -107,7 +107,8 @@ True, this package will be blacklisted -- not accepted for scanning.")
             (self.id, self.name)
 
     def calculateScanNumbers(self):
-        return Scan.objects.filter(package=self).count()
+        return Scan.objects.filter(package=self,
+                                   scan_type=SCAN_TYPES['ERRATA']).count()
 
     scans_number = property(calculateScanNumbers)
 
@@ -123,8 +124,10 @@ True, this package will be blacklisted -- not accepted for scanning.")
         else:
             if response.endswith('<br/ >'):
                 response = response[:-6]
-            response += "%s Base: %s<br/ >" % (
-                '.' * (40 - (indent_level * 4 + len(parent_scan.base.nvr))),
+            response += '%s<a href="%s">%s</a><br/ >' % (
+                '.' * (80 - (indent_level * 4 + len(parent_scan.base.nvr))),
+                reverse("waiving/result",
+                        args=(Result.objects.get(scan=parent_scan.base).id,)),
                 parent_scan.base.nvr
             )
             return response
@@ -143,7 +146,7 @@ True, this package will be blacklisted -- not accepted for scanning.")
                 parent_scan.tag.release.description
             response += '<a href="%s">%s</a><br/ >\n' % (
                 reverse("waiving/result",
-                        args=(Result.objects.get(scan=parent_scan),)),
+                        args=(Result.objects.get(scan=parent_scan).id,)),
                 parent_scan.nvr
             )
             response = self.display_graph(parent_scan, response)

@@ -16,4 +16,7 @@ urlpatterns = patterns("",
 
     url(r"^(?P<result_id>\d+)/$",
         "covscanhub.waiving.views.result", name="waiving/result"),
+    url(r"^(?P<package_name>.+)/(?P<release_tag>.+)/newest/$",
+        "covscanhub.waiving.views.newest_result",
+        name="waiving/result/newest"),
 )
