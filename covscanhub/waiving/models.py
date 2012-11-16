@@ -62,10 +62,10 @@ class Result(models.Model):
     lines = models.IntegerField(help_text='Lines of code scanned', blank=True,
                                 null=True)
     date_submitted = models.DateTimeField(auto_now_add=True)
-    
+
     class Meta:
         get_latest_by = "date_submitted"
-    
+
     def __unicode__(self):
         if self.scan:
             return "#%d %s (%s %s)" % (self.id, self.scan, self.scanner,
@@ -171,11 +171,11 @@ class ResultGroup(models.Model):
         Return result group for same checker group, which is associated with
          previous scan (previous build of specified package)
         """
-        try:        
+        try:
             return ResultGroup.objects.get(checker_group=self.checker_group,
                 result=self.result.scan.get_latest_result())
         except ObjectDoesNotExist:
-            return None        
+            return None
 
     def get_new_defects_diff(self):
         """
@@ -188,11 +188,26 @@ class ResultGroup(models.Model):
             +2: there are two newly added defects
         """
         prev_rg = self.get_previous_result_group()
-        
+
         if prev_rg is None:
             return None
         else:
             return self.new_defects - prev_rg.new_defects
+
+    def get_state_to_display(self, state, defects_count):
+        """
+        return state for CSS class
+        """
+        if state == 'FIXED':
+            if defects_count > 0:
+                return 'INFO'
+            else:
+                return 'PASSED'
+        elif state == "NEW":
+            if defects_count > 0:
+                return self.get_state_display()
+            else:
+                return 'PASSED'
 
     def display_in_result(self, state, url_name):
         """
@@ -203,7 +218,7 @@ class ResultGroup(models.Model):
         """
         defects = Defect.objects.filter(result_group=self.id,
                                         state=DEFECT_STATES[state])
-        
+        group_state = self.get_state_to_display()
         if self.state == RESULT_GROUP_STATES['INFO'] and state == "NEW":
             group_state = 'PASSED'
         elif state == "FIXED" and (self.state == RESULT_GROUP_STATES['WAIVED']
@@ -211,7 +226,7 @@ class ResultGroup(models.Model):
             group_state = 'PASSED'
         else:
             group_state = self.get_state_display()
-        
+
         checker_group = self.checker_group.name
         response = '<td class="%s">' % group_state
         if defects.count() > 0:
@@ -222,7 +237,7 @@ class ResultGroup(models.Model):
             response += '</a> <span class="%s">%s</span>' % (state,
                                                                defects.count())
         if state == 'NEW':
-            defects_diff = self.get_new_defects_diff()                                                       
+            defects_diff = self.get_new_defects_diff()
             if defects_diff: # not None & != 0
                 diff_html += '<span class="%s">%s%d</span>'
                 if defects_diff > 0:
