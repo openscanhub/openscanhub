@@ -114,20 +114,18 @@ True, this package will be blacklisted -- not accepted for scanning.")
 
     def display_graph(self, parent_scan, response, indent_level=1):
         scan = parent_scan.get_child_scan()
-        if scan is not None:
+        if scan is not None:  #TARGET
             response += '%s<a href="%s">%s</a><br/ >' % (
                 "&nbsp;" * indent_level * 4,
                 reverse("waiving/result",
-                        args=(Result.objects.get(scan=scan),)),
+                        args=(Result.objects.get(scan=scan).id,)),
                 scan.nvr)
             return self.display_graph(scan, response, indent_level + 1)
-        else:
+        else:  #BASE
             if response.endswith('<br/ >'):
                 response = response[:-6]
-            response += '%s<a href="%s">%s</a><br/ >' % (
+            response += '%s%s<br/ >' % (
                 '.' * (80 - (indent_level * 4 + len(parent_scan.base.nvr))),
-                reverse("waiving/result",
-                        args=(Result.objects.get(scan=parent_scan.base).id,)),
                 parent_scan.base.nvr
             )
             return response

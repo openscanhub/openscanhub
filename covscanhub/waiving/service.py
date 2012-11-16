@@ -26,7 +26,7 @@ logger = logging.getLogger(__name__)
 __all__ = (
     'create_results',
     'get_unwaived_rgs',
-    'compare_result_groups'
+    'compare_result_groups',
     'get_last_waiver',
 )
 
