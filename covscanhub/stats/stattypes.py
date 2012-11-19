@@ -36,7 +36,7 @@ def get_scans_by_release():
     result = {}
     for s in releases:
         result[s.id] = Scan.objects.filter(state=SCAN_TYPES['ERRATA'],
-                                          tag__release=s.id).count()
+                                           tag__release=s.id).count()
     return result
 
 #####

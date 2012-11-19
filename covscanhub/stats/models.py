@@ -27,7 +27,6 @@ class StatResults(models.Model):
     class Meta:
         get_latest_by = "date"        
 
-
     def display_value(self):
         if isinstance(self.value, types.NoneType):
             return ''
@@ -38,9 +37,11 @@ class StatResults(models.Model):
             for i in enumerate(self.value):
                 try:
                     response += "%s = %s, " % (
-                        SystemRelease.objects.get(id=i[0]).tag, i[1])
-                except IndexError:
-                    response += "%s, " % (i[0])
+                        SystemRelease.objects.get(id=i[1]).tag,
+                        self.value[i[1]],
+                    )
+                except IndexError, KeyError:
+                    response += "%s, " % (i[1])
             if len(response) > 50:
                 return response[:50] + '...'
             else:
