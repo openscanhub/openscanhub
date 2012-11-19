@@ -25,7 +25,7 @@ def get_total_scans():
     """
         Number of all scans.
     """
-    return Scan.objects.filter(state=SCAN_TYPES['ERRATA']).count()
+    return Scan.objects.filter(scan_type=SCAN_TYPES['ERRATA']).count()
 
 
 def get_scans_by_release():
@@ -35,7 +35,7 @@ def get_scans_by_release():
     releases = SystemRelease.objects.all()
     result = {}
     for s in releases:
-        result[s.id] = Scan.objects.filter(state=SCAN_TYPES['ERRATA'],
+        result[s.id] = Scan.objects.filter(scan_type=SCAN_TYPES['ERRATA'],
                                            tag__release=s.id).count()
     return result
 
