@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block content %}
+<h2>{% trans "Statistics" %}</h2>
+
+<table class="list" width="100%">
+  <tr>
+    <th>{% trans "Name" %}</th>
+    <th>{% trans "Last Value" %}</th>
+  </tr>
+{% for result, value in results.iteritems %}
+  <tr>
+    <td><a href="{% url stat/detail result.stat.id %}">{{ result.stat.key }}</a></td>
+    <td>{{ value }}</td>
+  </tr>
+{% endfor %}
+</table>
+
+{% endblock %}

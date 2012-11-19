@@ -138,6 +138,7 @@ INSTALLED_APPS = (
     # covscan
     'covscanhub.scan',
     'covscanhub.waiving',
+    'covscanhub.stats',
 )
 
 BREW_HUB = 'http://brewhub.devel.redhat.com/brewhub'
@@ -148,7 +149,8 @@ ET_SCAN_PRIORITY = 20
 XMLRPC_METHODS = {
     # 'handler':
     'client': (
-        # module with rpc methods     prefix which is added to all methods from the module
+        # module with rpc methods     prefix which is added to all methods from
+        #                             the module
         ('kobo.hub.xmlrpc.auth',      'auth'),
         ('kobo.hub.xmlrpc.client',    'client'),
         ('kobo.hub.xmlrpc.system',    'system'),
@@ -168,7 +170,7 @@ XMLRPC_METHODS = {
         ('covscanhub.xmlrpc.errata', 'errata'),
         ('covscanhub.xmlrpc.test', 'test'),
     ),
-    
+
 }
 
 #if not DEBUG:

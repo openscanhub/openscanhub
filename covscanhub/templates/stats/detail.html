@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block content %}
+<h2>Statistics for: {{ type.key }}</h2>
+<div>{{ type.comment }}</div>
+
+<table>
+    <tr>
+        <th>Date</th>
+        <th>Value</th>
+    </tr>
+{% for result, value in results.iteritems %}
+  <tr>
+    <td>{{ result.date|date:"Y-m-d H:i:s" }}</td>
+    <td>{{ value }}</td>
+  </tr>
+{% endfor %}
+</table>
+
+{% endblock %}

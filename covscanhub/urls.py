@@ -28,6 +28,8 @@ urlpatterns = patterns('',
     url(r"^waiving/", include("covscanhub.waiving.urls")),
 
     url(r"^scan/", include("covscanhub.scan.urls")),
+    
+    url(r"^stats/", include("covscanhub.stats.urls")),
 
     url(r'^admin/', include(admin.site.urls)),
 

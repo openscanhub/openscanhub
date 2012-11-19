@@ -114,25 +114,27 @@ True, this package will be blacklisted -- not accepted for scanning.")
 
     def display_graph(self, parent_scan, response, indent_level=1):
         scan = parent_scan.get_child_scan()
-        if scan is not None:  #TARGET
-            response += '%s<a href="%s">%s</a><br/ >' % (
+        if scan is not None:  # TARGET
+            response += '%s<a href="%s">%s</a> New defects: %d, fixed \
+defects: %d<br/ >' % (
                 "&nbsp;" * indent_level * 4,
                 reverse("waiving/result",
                         args=(Result.objects.get(scan=scan).id,)),
-                scan.nvr)
+                scan.nvr,
+                Result.objects.get(scan=scan).new_defects_count(),
+                Result.objects.get(scan=scan).fixed_defects_count(),)
             return self.display_graph(scan, response, indent_level + 1)
-        else:  #BASE
+        else:  # BASE
             if response.endswith('<br/ >'):
                 response = response[:-6]
-            response += '%s%s<br/ >' % (
-                '.' * (80 - (indent_level * 4 + len(parent_scan.base.nvr))),
+            response += '%sBase: %s<br/ >' % (
+                '.' * (160 - (indent_level * 4 + len(parent_scan.base.nvr))),
                 parent_scan.base.nvr
             )
             return response
 
     def display_scan_tree(self):
         scans = Scan.objects.filter(package=self)
-        #TODO merge it with system release somehow
         releases = scans.values('tag__release').distinct()
         response = ""
 
@@ -236,7 +238,7 @@ counted in statistics.")
             except KeyError:
                 return None
         return None
-    
+
     def get_child_scan(self):
         try:
             return Scan.objects.get(parent=self)

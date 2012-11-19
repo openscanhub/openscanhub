@@ -18,10 +18,31 @@ os.environ['DJANGO_SETTINGS_MODULE'] = 'covscanhub.settings'
 from kobo.hub.models import Arch, Channel
 
 from covscanhub.waiving.models import Checker, CheckerGroup
+from covscanhub.stats.models import StatType
+from covscanhub.stats.service import get_mapping
 from covscanhub.other.constants import DEFAULT_CHECKER_GROUP
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.conf import settings
+
+from optparse import OptionParser
+
+
+def set_options():
+    parser = OptionParser()
+    parser.add_option("-H", "--hub", help="configure hub", 
+                      action="store_true", dest="hub", default=False)
+    parser.add_option("-c", "--checkergroups",
+                      action="store_true", dest="cgroups", default=False,
+                      help="fill database with checker groups specified in \
+'file checker_groups.txt'")
+    parser.add_option("-s", "--statistics",
+                      action="store_true", dest="stats", default=False,
+                      help="write statistics definition into database",)
+    
+    (options, args) = parser.parse_args()
+    
+    return parser, options, args
 
 
 def set_checker_groups():
@@ -82,12 +103,27 @@ for the worker.\n"
     print "Don't forget to set up mock configs and tags!"
 
 
+def set_statistics():
+    # function = (key, description)
+    for desc in get_mapping().itervalues():
+        s, created = StatType.objects.get_or_create(key=desc[0],
+                                                    comment=desc[1])
+        if created:
+            s.save()
+
+
 def main():
-    print 'You are running covscanhub configure script.\nThis may take a \
+    parser, options, args = set_options()
+    print 'You are running covscanhub configuration script.\nThis may take a \
 couple of seconds, please be patient.'
-    #configure_hub()
-    set_checker_groups()
+    if options.hub:
+        configure_hub()
+    elif options.cgroups:
+        set_checker_groups()
+    elif options.stats:
+        set_statistics()
 
 if __name__ == '__main__':
     main()
     sys.exit(0)
+    

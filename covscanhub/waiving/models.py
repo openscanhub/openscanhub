@@ -59,6 +59,20 @@ class Result(models.Model):
     class Meta:
         get_latest_by = "date_submitted"
 
+    def new_defects_count(self):
+        rgs = ResultGroup.objects.filter(result=self)
+        count = 0
+        for rg in rgs:
+            count += rg.new_defects
+        return count
+
+    def fixed_defects_count(self):
+        rgs = ResultGroup.objects.filter(result=self)
+        count = 0
+        for rg in rgs:
+            count += rg.fixed_defects
+        return count
+
     def __unicode__(self):
         if self.scan:
             return "#%d Scan: (%s) (%s %s)" % (self.id, self.scan,
