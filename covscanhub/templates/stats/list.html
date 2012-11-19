@@ -9,9 +9,9 @@
     <th>{% trans "Name" %}</th>
     <th>{% trans "Last Value" %}</th>
   </tr>
-{% for result, value in results.iteritems %}
+{% for stat_type, value in results.iteritems %}
   <tr>
-    <td><a href="{% url stat/detail result.stat.id %}">{{ result.stat.key }}</a></td>
+    <td><a href="{% url stats/detail stat_type.id %}">{{ stat_type.key }}</a></td>
     <td>{{ value }}</td>
   </tr>
 {% endfor %}

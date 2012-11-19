@@ -1,8 +1,13 @@
 # -*- coding: utf-8 -*-
 
+import types
+
 import django.db.models as models
 
 import kobo.django.fields
+
+from covscanhub.scan.models import SystemRelease
+
 
 class StatType(models.Model):
     key = models.CharField("Key", max_length="32", help_text="Short tag that \
@@ -10,7 +15,7 @@ describes value of this stat.")
     comment = models.CharField("Value", max_length="512")
 
     def __unicode__(self):
-        return u"%s (%s)" % (self.key, self.value)
+        return u"%s (%s)" % (self.key, self.comment)
 
 
 class StatResults(models.Model):
@@ -24,13 +29,16 @@ class StatResults(models.Model):
 
 
     def display_value(self):
-        if isinstance(self.value, int):
+        if isinstance(self.value, types.NoneType):
+            return ''
+        elif isinstance(self.value, int):
             return self.value
         else:
             response = ""
             for i in enumerate(self.value):
                 try:
-                    response += "%s = %s, " % (i[0], i[1])
+                    response += "%s = %s, " % (
+                        SystemRelease.objects.get(id=i[0]).tag, i[1])
                 except IndexError:
                     response += "%s, " % (i[0])
             if len(response) > 50:

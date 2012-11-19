@@ -47,6 +47,7 @@ menu = (
     )),
     MenuItem("Waiving", "waiving/list", menu=(
         MenuItem('List', 'waiving/list'),
+        MenuItem('Stats', 'stats/list'),
     )),
 )
 

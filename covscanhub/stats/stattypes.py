@@ -13,6 +13,8 @@
 from covscanhub.scan.models import Scan, Package, SystemRelease, SCAN_TYPES
 from covscanhub.waiving.models import Result
 
+from django.db.models import Sum
+
 
 #######
 # SCANS
@@ -33,9 +35,9 @@ def get_scans_by_release():
     releases = SystemRelease.objects.all()
     result = {}
     for s in releases:
-        result[s] = Scan.objects.filter(state=SCAN_TYPES['ERRATA'],
-                                        tag__release=s.id).count()
-    return s
+        result[s.id] = Scan.objects.filter(state=SCAN_TYPES['ERRATA'],
+                                          tag__release=s.id).count()
+    return result
 
 #####
 # LOC
@@ -56,9 +58,9 @@ def get_lines_by_release():
     releases = SystemRelease.objects.all()
     result = {}
     for s in releases:
-        result[s] = Result.objects.filter(scan__tag__release=s.id)\
+        result[s.id] = Result.objects.filter(scan__tag__release=s.id)\
                         .aggregate(Sum('lines'))['lines__sum']
-    return s
+    return result
 
 #########
 # DEFECTS

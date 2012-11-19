@@ -3,6 +3,7 @@
 from models import StatResults, StatType
 
 from django.shortcuts import render_to_response
+from django.template import RequestContext
 
 
 def stats_list(request):
@@ -10,7 +11,7 @@ def stats_list(request):
     context = {}
     context['results'] = {}
     for s in st:
-        context['results'][s] = StatResults.objects.filter(stat=s)
+        context['results'][s] = StatResults.objects.filter(stat=s)\
             .latest().display_value()
 
     return render_to_response("stats/list.html",
