@@ -18,7 +18,7 @@ from models import Tag, MockConfig, Scan, Package, SystemRelease
 class ScanAdmin(admin.ModelAdmin):
     list_display = ("id", "nvr", "state", "scan_type", 'link_base',
                     'link_parent', "link_tag",
-                    'username', 'link_package', 'link')
+                    'username', 'link_package', 'link', 'enabled')
 
 
 class PackageAdmin(admin.ModelAdmin):

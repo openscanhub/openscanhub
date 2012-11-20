@@ -58,9 +58,7 @@ def create_errata_base_scan(kwargs, task_id, package):
     scan.save()
 
     options['scan_id'] = scan.id
-    task = Task.objects.get(id=task_id)
-    task.args = options
-    task.save()
+    task = Task.objects.filter(id=task_id).update(args=options)
 
     return scan
 
@@ -168,8 +166,6 @@ def create_errata_scan(kwargs):
         child.save()
 
     options['scan_id'] = scan.id
-    task = Task.objects.get(id=task_id)
-    task.args = options
-    task.save()
+    task = Task.objects.filter(id=task_id).update(args=options)
 
     return scan

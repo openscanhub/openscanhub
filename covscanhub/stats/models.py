@@ -22,7 +22,7 @@ class StatResults(models.Model):
     stat = models.ForeignKey(StatType)
     value = kobo.django.fields.JSONField(blank=True, null=True, default={},
         help_text="Statistical data for specified stat type.")
-    date = models.DateField(auto_now_add=True, verbose_name="Date created")
+    date = models.DateTimeField(auto_now_add=True, verbose_name="Date created")
 
     class Meta:
         get_latest_by = "date"        

@@ -31,6 +31,7 @@ __all__ = (
     "create_diff_task",
     'prepare_and_execute_diff',
     'post_qpid_message',
+    'diff_fixed_defects_in_package',
 )
 
 
@@ -393,3 +394,9 @@ def get_latest_scan_by_package(tag, package):
                                 scan_type=SCAN_TYPES['ERRATA'])
     except ObjectDoesNotExist:
         return None
+
+def diff_fixed_defects_in_package(scan):
+    first_scan = Scan.objects.filter(base=scan.base)\
+        .order_by("date_submitted")[0]
+    return Result.objects.get(scan=scan).fixed_defects_count() - \
+        Result.objects.get(scan=first_scan).fixed_defects_count()
