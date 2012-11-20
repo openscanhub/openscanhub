@@ -10,7 +10,7 @@
         <th>Date</th>
         <th>Value</th>
     </tr>
-{% for result, value in results.iteritems %}
+{% for result in results %}
     <tr>
         <td>{{ result.date|date:"Y-m-d H:i:s" }}</td>
         <td>{{ result.value.display_value }}</td>

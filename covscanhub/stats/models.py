@@ -3,6 +3,7 @@
 import types
 
 import django.db.models as models
+from django.utils.safestring import mark_safe
 
 import kobo.django.fields
 
@@ -20,49 +21,14 @@ describes value of this stat.")
 
 class StatResults(models.Model):
     stat = models.ForeignKey(StatType)
-    value = kobo.django.fields.JSONField(blank=True, null=True, default={},
-        help_text="Statistical data for specified stat type.")
+    value = models.IntegerField(
+        help_text="Statistical data for specified stat type."
+    )
     date = models.DateTimeField(auto_now_add=True, verbose_name="Date created")
+    release = models.ForeignKey(SystemRelease, blank=True, null=True)
 
     class Meta:
         get_latest_by = "date"        
-
-    def display_value_inline(self):
-        if isinstance(self.value, types.NoneType):
-            return ''
-        elif isinstance(self.value, int):
-            return self.value
-        else:
-            response = ""
-            for i in enumerate(self.value):
-                try:
-                    response += "%s = %s, " % (
-                        SystemRelease.objects.get(id=i[1]).tag,
-                        self.value[i[1]],
-                    )
-                except IndexError, KeyError:
-                    response += "%s, " % (i[1])
-            if len(response) > 50:
-                return response[:50] + '...'
-            else:
-                return response[:len(response) - 2]
-
-    def display_value(self):
-        if isinstance(self.value, types.NoneType):
-            return ''
-        elif isinstance(self.value, int):
-            return self.value
-        else:
-            response = ""
-            for i in enumerate(self.value):
-                try:
-                    response += "<b>%s</b> = %s<br/ >\n" % (
-                        SystemRelease.objects.get(id=i[1]).tag,
-                        self.value[i[1]],
-                    )
-                except IndexError, KeyError:
-                    response += "%s<br/ >\n" % (i[1])
-            return response
 
     def __unicode__(self):
         return u"%s = %s" % (self.stat.key, self.value)                

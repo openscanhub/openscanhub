@@ -34,7 +34,7 @@ def get_scans_by_release():
     """
         Number of scans by release.
     """
-    releases = SystemRelease.objects.all()
+    releases = SystemRelease.objects.filter(active=True)
     result = {}
     for r in releases:
         result[r.id] = Scan.objects.filter(scan_type=SCAN_TYPES['ERRATA'],
@@ -57,7 +57,7 @@ def get_lines_by_release():
     """
         Number of LoC scanned by RHEL release.
     """
-    releases = SystemRelease.objects.all()
+    releases = SystemRelease.objects.filter(active=True)
     result = {}
     for r in releases:
         result[r.id] = Result.objects.filter(scan__tag__release=r.id)\
@@ -82,7 +82,7 @@ def get_fixed_defects_by_release():
     """
         Number of fixed defects found by release.
     """
-    releases = SystemRelease.objects.all()
+    releases = SystemRelease.objects.filter(active=True)
     result = {}
     for r in releases:
         result[r.id] = Defect.objects.filter(
@@ -106,7 +106,7 @@ def get_new_defects_by_release():
     """
         Number of newly introduced defects by release.
     """
-    releases = SystemRelease.objects.all()
+    releases = SystemRelease.objects.filter(active=True)
     result = {}
     for r in releases:
         result[r.id] = Defect.objects.filter(
@@ -121,7 +121,7 @@ def get_fixed_defects_between_releases():
     """
         Number of defects that were fixed between first scan and final one
     """
-    releases = SystemRelease.objects.all()
+    releases = SystemRelease.objects.filter(active=True)
     result = {}
     for r in releases:
         result[r.id] = 0
@@ -145,7 +145,7 @@ def get_waivers_submitted_by_release():
     """
         Number of waivers submitted by release.
     """
-    releases = SystemRelease.objects.all()
+    releases = SystemRelease.objects.filter(active=True)
     result = {}
     for r in releases:
         result[r.id] = Waiver.objects.filter(
@@ -166,7 +166,7 @@ def get_total_missing_waivers_by_release():
     """
         Number of tests that were not waived by release.
     """
-    releases = SystemRelease.objects.all()
+    releases = SystemRelease.objects.filter(active=True)
     result = {}
     for r in releases:
         result[r.id] = ResultGroup.objects.filter(
@@ -187,7 +187,7 @@ def get_is_a_bug_waivers_by_release():
     """
         Number of waivers with type IS_A_BUG by release.
     """
-    releases = SystemRelease.objects.all()
+    releases = SystemRelease.objects.filter(active=True)
     result = {}
     for r in releases:
         result[r.id] = Waiver.objects.filter(
@@ -208,7 +208,7 @@ def get_not_a_bug_waivers_by_release():
     """
         Number of waivers with type NOT_A_BUG by release.
     """
-    releases = SystemRelease.objects.all()
+    releases = SystemRelease.objects.filter(active=True)
     result = {}
     for r in releases:
         result[r.id] = Waiver.objects.filter(
@@ -229,7 +229,7 @@ def get_fix_later_waivers_by_release():
     """
         Number of waivers with type FIX_LATER by release.
     """
-    releases = SystemRelease.objects.all()
+    releases = SystemRelease.objects.filter(active=True)
     result = {}
     for r in releases:
         result[r.id] = Waiver.objects.filter(

@@ -71,6 +71,9 @@ class SystemRelease(models.Model):
 
     #Red Hat Enterprise Linux 6 release 4 etc.
     description = models.CharField("Description", max_length=128, blank=False)
+    
+    active = models.BooleanField(default=True, help_text="If set to True,\
+statistical data will be harvested for this system release.")
 
     def __unicode__(self):
         return "%s -- %s" % \
