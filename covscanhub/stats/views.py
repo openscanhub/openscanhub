@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from models import StatResults, StatType
+from covscanhub.scan.models import SystemRelease
 
 from django.shortcuts import render_to_response
 from django.template import RequestContext
@@ -40,19 +41,19 @@ def stats_detail_graph(request, stat_id):
     sr = StatResults.objects.filter(stat=stat_id)
     data = {}
     data['title_text'] = st.tag
-    data['x_axis'] = 
+    data['x_axis'] = []
     data['y_axis_title'] = 'Count'
     data['data'] = []
 
     if 'RELEASE' in st.key:
         tmp = {}        
-        for s in SystemRelease.objects.all()
+        for s in SystemRelease.objects.all():
             tmp[s.tag] = []
             for result in sr.filter(release=s).order_by('-date'):
                 tmp[s.tag].append(result.value)
                 if result.date not in data['x_axis']:
                     data['x_axis'].append(result.date)
-                if len(tmp[s.tag]) => 12: break
+                if len(tmp[s.tag]) >= 12: break
         for rel in tmp:
             data['data'].append({'name': rel, 'data': tmp[rel]})
     else:
@@ -63,7 +64,7 @@ def stats_detail_graph(request, stat_id):
             data['data'][0]['data'].append(result.value)
             if result.date not in data['x_axis']:
                 data['x_axis'].append(result.date)
-            if len(data['data'][0]['data']) => 12: break
+            if len(data['data'][0]['data']) >= 12: break
 
     return HttpResponse(json.dumps(data),
                         content_type='application/javascript; charset=utf8')

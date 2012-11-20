@@ -1,10 +1,13 @@
 # -*- coding: utf-8 -*-
 
+import types
 
 import stattypes
-import types
 from models import StatType, StatResults
 from covscanhub.scan.models import SystemRelease
+
+from django.utils.safestring import mark_safe
+
 
 def get_mapping():
     mapping = {}
@@ -47,10 +50,10 @@ def display_values_inline(stat_type):
     results = StatResults.objects.filter(stat=stat_type)
     response = ''    
     if 'RELEASE' in stat_type.key:
-        for s in SystemRelease.objects.all()
+        for s in SystemRelease.objects.all():
             response += "%s = %s, " % (
                 s.tag,
-                result.filter(release=s).latest().value,
+                results.filter(release=s).latest().value,
             )
     else:
         response = results.latest()
@@ -64,10 +67,10 @@ def display_values(stat_type):
     results = StatResults.objects.filter(stat=stat_type)
     response = ''    
     if 'RELEASE' in stat_type.key:
-        for s in SystemRelease.objects.all()
+        for s in SystemRelease.objects.all():
             response += "<b>%s</b> = %s<br/ >\n" % (
                 s.tag,
-                result.filter(release=s).latest().value,
+                results.filter(release=s).latest().value,
             )
     else:
         response = results.latest()
