@@ -23,6 +23,8 @@ def update():
     """
     for func, desc in get_mapping().iteritems():
         s = StatResults()
-        s.stat = StatType.objects.get(key=desc[0])
+        st, created = StatType.objects.get_or_create(key=desc[0],
+                                                     comment=desc[1])
+        s.stat = st
         s.value = func()
         s.save()            

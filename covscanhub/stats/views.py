@@ -12,7 +12,7 @@ def stats_list(request):
     context['results'] = {}
     for s in st:
         context['results'][s] = StatResults.objects.filter(stat=s)\
-            .latest().display_value()
+            .latest().display_value_inline()
 
     return render_to_response("stats/list.html",
                               context,

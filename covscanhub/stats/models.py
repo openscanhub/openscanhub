@@ -27,7 +27,7 @@ class StatResults(models.Model):
     class Meta:
         get_latest_by = "date"        
 
-    def display_value(self):
+    def display_value_inline(self):
         if isinstance(self.value, types.NoneType):
             return ''
         elif isinstance(self.value, int):
@@ -46,6 +46,23 @@ class StatResults(models.Model):
                 return response[:50] + '...'
             else:
                 return response[:len(response) - 2]
+
+    def display_value(self):
+        if isinstance(self.value, types.NoneType):
+            return ''
+        elif isinstance(self.value, int):
+            return self.value
+        else:
+            response = ""
+            for i in enumerate(self.value):
+                try:
+                    response += "<b>%s</b> = %s<br/ >\n" % (
+                        SystemRelease.objects.get(id=i[1]).tag,
+                        self.value[i[1]],
+                    )
+                except IndexError, KeyError:
+                    response += "%s<br/ >\n" % (i[1])
+            return response
 
     def __unicode__(self):
         return u"%s = %s" % (self.stat.key, self.value)                

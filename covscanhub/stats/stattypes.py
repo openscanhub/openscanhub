@@ -159,7 +159,7 @@ def get_total_missing_waivers():
         Number of tests that were not waived, but should have been.
     """
     return ResultGroup.objects.filter(
-        state=RESULT_GROUP_STATES['NEEDS_INSPECTION']).count
+        state=RESULT_GROUP_STATES['NEEDS_INSPECTION']).count()
 
 
 def get_total_missing_waivers_by_release():

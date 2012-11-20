@@ -11,10 +11,10 @@
         <th>Value</th>
     </tr>
 {% for result, value in results.iteritems %}
-  <tr>
-    <td>{{ result.date|date:"Y-m-d H:i:s" }}</td>
-    <td>{{ value }}</td>
-  </tr>
+    <tr>
+        <td>{{ result.date|date:"Y-m-d H:i:s" }}</td>
+        <td>{{ result.value.display_value }}</td>
+    </tr>
 {% endfor %}
 </table>
 

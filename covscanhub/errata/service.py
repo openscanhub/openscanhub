@@ -55,6 +55,7 @@ def create_errata_base_scan(kwargs, task_id, package):
     scan = Scan.create_scan(scan_type=scan_type, nvr=nvr, task_id=task_id,
                             tag=tag_obj, package=package, base=base_obj,
                             username=username)
+    scan.enabled = False
     scan.save()
 
     options['scan_id'] = scan.id

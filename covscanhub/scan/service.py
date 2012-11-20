@@ -13,6 +13,7 @@ from kobo.shortcuts import run
 from kobo.django.upload.models import FileUpload
 
 from models import Scan, SCAN_STATES, SCAN_TYPES
+from covscanhub.waiving.models import Result
 from covscanhub.other.shortcuts import get_mock_by_name, check_brew_build,\
     check_and_create_dirs
 from covscanhub.other.constants import ERROR_DIFF_FILE, FIXED_DIFF_FILE,\
