@@ -10,9 +10,10 @@
     }
 """
 
-from covscanhub.scan.models import Scan, Package, SystemRelease, SCAN_TYPES
+from covscanhub.scan.models import Scan, SystemRelease, SCAN_TYPES
 from covscanhub.scan.service import diff_fixed_defects_in_package
-from covscanhub.waiving.models import Result, Defect, DEFECT_STATES
+from covscanhub.waiving.models import Result, Defect, DEFECT_STATES, Waiver, \
+    WAIVER_TYPES, ResultGroup, RESULT_GROUP_STATES
 
 from django.db.models import Sum
 
