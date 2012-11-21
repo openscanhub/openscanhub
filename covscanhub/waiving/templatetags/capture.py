@@ -2,6 +2,7 @@
 
 from django import template
 from django.utils.safestring import mark_safe
+from django.utils.datastructures import SortedDict
 
 register = template.Library()
 
@@ -37,3 +38,15 @@ def result_group_display_new(obj):
 @register.filter
 def result_group_display_fixed(obj):
     return mark_safe(obj.display_in_result('FIXED', 'waiving/fixed_defects'))
+
+
+@register.filter(name='sort')
+def listsort(value):
+    if isinstance(value, dict):
+        new_dict = SortedDict()
+        key_list = value.keys()
+        key_list.sort()
+        for key in key_list:
+            new_dict[key] = value[key]
+        return new_dict
+listsort.is_safe = True

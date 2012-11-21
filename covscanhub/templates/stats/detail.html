@@ -67,7 +67,7 @@ $(function () {
         <th>Date</th>
         <th>Value</th>
     </tr>
-{% for date, value in results.iteritems %}
+{% for date, value in results|sort %}
     <tr>
         <td>{{ date|date:"Y-m-d H:i:s" }}</td>
         <td>{{ value }}</td>
