@@ -23,6 +23,7 @@ SCAN_STATES = Enum(
     "PASSED",            # nothing new
     "FINISHED",          # scan finished -- USER/ERRATA_BASE scans only
     "FAILED",            # scan failed -- this shouldn't happened
+    "BASE_SCANNING",     # child scan is in scanning process right now
 )
 
 SCAN_TYPES = Enum(

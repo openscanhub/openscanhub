@@ -121,6 +121,10 @@ def finish_task(request, task_id):
 @validate_worker
 def set_scan_to_scanning(request, scan_id):
     update_scans_state(scan_id, SCAN_STATES['SCANNING'])
+    scan = Scan.objects.get(id=scan_id)
+    if scan.parent:
+        Scan.objects.filter(id=scan.parent.id)\
+            .update(state=SCAN_STATES['BASE_SCANNING'])
 
 
 #@validate_worker

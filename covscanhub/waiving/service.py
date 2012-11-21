@@ -12,6 +12,7 @@ import logging
 import django.utils.simplejson as json
 from django.core.exceptions import ObjectDoesNotExist
 
+from covscanhub.scan.models import SCAN_STATES, Scan
 from covscanhub.other.constants import ERROR_DIFF_FILE, FIXED_DIFF_FILE,\
     DEFAULT_CHECKER_GROUP
 from models import DEFECT_STATES, RESULT_GROUP_STATES, Defect, Event, Result, \
@@ -177,6 +178,7 @@ def create_results(scan):
             )
             if w and compare_result_groups():
                 rg.state = RESULT_GROUP_STATES['ALREADY_WAIVED']
+                rg.save()
     return r
 
 
