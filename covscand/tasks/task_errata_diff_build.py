@@ -9,7 +9,6 @@ import grp
 import shutil
 from kobo.rpmlib import get_rpm_header
 from kobo.worker import TaskBase
-import logging
 import kobo.tback
 
 
@@ -33,15 +32,6 @@ class ErrataDiffBuild(TaskBase):
     weight = 1.0
 
     def run(self):
-        DEBUG = True
-        logging.basicConfig(
-            format='%(asctime)s %(levelname)8s %(message)s',
-            filename='/tmp/covscand_task.log',
-            level=logging.DEBUG
-        )
-
-        logging.debug("I'm about to set scan %s to state 'SCANNING'" %
-                      self.args['scan_id'])
         self.hub.worker.set_scan_to_scanning(self.args['scan_id'])
 
         mock_config = self.args.pop("mock_config")
@@ -55,30 +45,29 @@ class ErrataDiffBuild(TaskBase):
         os.chmod(tmp_dir, 0775)
         srpm_path = os.path.join(tmp_dir, "%s.src.rpm" % brew_build)
 
-        if not DEBUG:
-            # make the dir writable by 'coverity' user
-            coverity_gid = grp.getgrnam("coverity").gr_gid
-            os.chown(tmp_dir, -1, coverity_gid)
 
-            #download srpm from brew
-            logging.debug('I am about to download %s', brew_build)
-            cmd = ["brew", "download-build", "--quiet",
-                   "--arch=src", brew_build]
-            run(cmd, workdir=tmp_dir)
+        # make the dir writable by 'coverity' user
+        coverity_gid = grp.getgrnam("coverity").gr_gid
+        os.chown(tmp_dir, -1, coverity_gid)
 
-            if not os.path.exists(srpm_path):
-                print >> sys.stderr, \
-                    "Invalid path %s to SRPM file (%s): %s" % \
-                    (srpm_path, brew_build, kobo.tback.get_exception())
-                self.fail()
+        #download srpm from brew
+        cmd = ["brew", "download-build", "--quiet",
+               "--arch=src", brew_build]
+        run(cmd, workdir=tmp_dir)
 
-            #is srpm allright?
-            try:
-                get_rpm_header(srpm_path)
-            except Exception:
-                print >> sys.stderr, "Invalid RPM file(%s): %s" % \
-                    (brew_build, kobo.tback.get_exception())
-                self.fail()
+        if not os.path.exists(srpm_path):
+            print >> sys.stderr, \
+                "Invalid path %s to SRPM file (%s): %s" % \
+                (srpm_path, brew_build, kobo.tback.get_exception())
+            self.fail()
+
+        #is srpm allright?
+        try:
+            get_rpm_header(srpm_path)
+        except Exception:
+            print >> sys.stderr, "Invalid RPM file(%s): %s" % \
+                (brew_build, kobo.tback.get_exception())
+            self.fail()
 
         #execute mockbuild of this package
         cov_cmd = []
@@ -99,33 +88,18 @@ class ErrataDiffBuild(TaskBase):
 
         command = ["su", "-", "coverity", "-c", " ".join(cov_cmd)]
 
-        if not DEBUG:
-            retcode, output = run(command, can_fail=False, stdout=True)
-        else:
-            command_str = ' '.join(command)
-            logging.info("In production I would run this command: %s",
-                         command_str)
-            retcode = 0
+        retcode, output = run(command, can_fail=False, stdout=True)
 
         # upload results back to hub
-
-        if DEBUG:
-            logging.debug('I am about to copy test tarball')
-            shutil.copy2('/tmp/' + brew_build + '.tar.xz', tmp_dir)
-
-        logging.debug('I am about to upload tarball')
         xz_path = srpm_path[:-8] + ".tar.xz"
         if not os.path.exists(xz_path):
             xz_path = srpm_path[:-8] + ".tar.lzma"
         self.hub.upload_task_log(open(xz_path, "r"),
                                  self.task_id, os.path.basename(xz_path))
 
-        logging.debug('I am about to extract tarball')
         try:
             self.hub.worker.extract_tarball(self.task_id, '')
         except Exception, ex:
-            logging.error("got exception %s, trace:\n%s", str(ex),
-                          kobo.tback.get_exception())
             self.fail()
 
         # remove temp files
