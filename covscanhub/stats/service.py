@@ -26,9 +26,12 @@ def create_stat_result(key, comment, value, release_tag=None):
                                                  comment=comment)
     s.stat = st
 
-    s.value = value
+    if value is None:
+        s.value = 0
+    else:
+        s.value = value
     if release_tag is not None:
-        s.release = SystemRelease.objects.get(tag=release_tag)
+        s.release = SystemRelease.objects.get(id=release_tag)
     s.save()
 
 
@@ -55,23 +58,31 @@ def display_values_inline(stat_type):
                 s.tag,
                 results.filter(release=s).latest().value,
             )
+        if len(response) > 50:
+            response = response[:50] + '...'
+        else:
+            response =response[:len(response) - 2]
     else:
-        response = results.latest()
-    if len(response) > 50:
-        return mark_safe(response[:50] + '...')
-    else:
-        return mark_safe(response[:len(response) - 2])
+        response = str(results.latest().value)
+
+    return mark_safe(response)
 
 
 def display_values(stat_type):
     results = StatResults.objects.filter(stat=stat_type)
-    response = ''    
+    tmp = {}
+ 
     if 'RELEASE' in stat_type.key:
         for s in SystemRelease.objects.all():
-            response += "<b>%s</b> = %s<br/ >\n" % (
-                s.tag,
-                results.filter(release=s).latest().value,
-            )
+            for result in results.filter(release=s).order_by('-date'):
+                if result.date not in tmp:
+                    tmp[result.date] = ''
+                tmp[result.date] += "<b>%s</b> = %s<br/ >\n" % (s.tag,
+                    results.filter(release=s).latest().value)
+        for t in tmp:
+            tmp[t] = mark_safe(tmp[t])
     else:
-        response = results.latest()
-    return mark_safe(response)
+        for result in results.order_by('-date'):
+                tmp[result.date] = result.value
+        response = str(results.latest().value)
+    return tmp

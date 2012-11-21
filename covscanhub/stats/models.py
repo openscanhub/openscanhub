@@ -3,7 +3,6 @@
 import types
 
 import django.db.models as models
-from django.utils.safestring import mark_safe
 
 import kobo.django.fields
 
@@ -13,7 +12,7 @@ from covscanhub.scan.models import SystemRelease
 class StatType(models.Model):
     key = models.CharField("Key", max_length="32", help_text="Short tag that \
 describes value of this stat.")
-    comment = models.CharField("Value", max_length="512")
+    comment = models.CharField("Description", max_length="512")
 
     def __unicode__(self):
         return u"%s (%s)" % (self.key, self.comment)
