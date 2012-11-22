@@ -41,8 +41,8 @@ def stats_detail_graph(request, stat_id):
     st = StatType.objects.get(id=stat_id)
     sr = StatResults.objects.filter(stat=stat_id)
     data = {}
-    data['title_text'] = st.key
-    data['subtitle_text'] = st.comment
+    data['title'] = st.key
+    data['subtitle'] = st.comment
     data['data'] = []
 
     time_format = "%Y-%m-%d"
@@ -76,17 +76,6 @@ def stats_detail_graph(request, stat_id):
             data['data'].append(
                 {'x': result.date.strftime(time_format), 'a': result.value}
             )
-            """
-            data['data'].append(
-                {'x': (result.date+datetime.timedelta(days=+1)).strftime(time_format), 'a': result.value+50}
-            )
-            data['data'].append(
-                {'x': (result.date+datetime.timedelta(days=+2)).strftime(time_format), 'a': result.value-20}
-            ) 
-            data['data'].append(
-                {'x': (result.date+datetime.timedelta(days=+3)).strftime(time_format), 'a': result.value+250}
-            )
-            """
             if len(data['data']) >= 12: break
 
     return HttpResponse(json.dumps(data),
