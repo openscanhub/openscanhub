@@ -27,9 +27,8 @@ def mock_config_list(request):
 def scan_list(request):
 
     args = {
-        "queryset": Scan.objects.all().exclude(base__isnull=True),
-#        "queryset": Scan.objects.exclude(base__isnull=True).
-#            exclude(base__exact=''),
+        "queryset": Scan.objects.exclude(base__isnull=True).\
+            order_by('-date_submitted'),
         "allow_empty": True,
         "paginate_by": 50,
         "template_name": "scan/list.html",

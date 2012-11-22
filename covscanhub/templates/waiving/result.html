@@ -73,6 +73,18 @@
 </div>
 {% endif %}
 
+{% if previous_result or next_result %}
+<div id="result_links">
+    {% if previous_result %}
+    <span><a href="{% url waiving/result previous_result.id %}">Previous result</a></span>
+    {% endif %}
+    {% if previous_result and next_result %} | {% endif %}
+    {% if next_result %}
+    <span><a href="{% url waiving/result next_result.id %}">Next result</a></span>
+    {% endif %}
+</div>
+{% endif %}
+
 {% block waiver %}
 {% endblock waiver %}
 

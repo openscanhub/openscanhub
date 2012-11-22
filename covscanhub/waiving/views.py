@@ -26,8 +26,7 @@ logger = logging.getLogger(__name__)
 def get_result_context(result_object):
     logs = {}
     context = {}
-    # fixed_html_file = 'csdiff_fixed.html'
-    # html_file = 'csdiff.html'
+
     file_labels = {
         'csdiff.html': 'Defects diff',
         'csdiff_fixed.html': 'Fixed defects diff',
@@ -43,6 +42,17 @@ def get_result_context(result_object):
     context['output'] = get_five_tuple(get_waiving_data(result_object.id))
     context['result'] = result_object
     context['logs'] = logs
+    try:
+        context['previous_result'] = Result.objects.get(
+            scan=result_object.scan.get_child_scan())
+    except ObjectDoesNotExist:
+        context['previous_result'] = None
+    try:
+        context['next_result'] = Result.objects.get(
+            scan=result_object.scan.parent)
+    except ObjectDoesNotExist:
+        context['next_result'] = None        
+    
 
     return context
 
@@ -81,7 +91,8 @@ def results_list(request):
     Display list of all target results
     """
     args = {
-        "queryset": Result.objects.all().exclude(scan__base__isnull=True),
+        "queryset": Result.objects.exclude(scan__base__isnull=True).\
+            order_by('-date_submitted'),
         "allow_empty": True,
         "paginate_by": 50,
         "template_name": "waiving/list.html",

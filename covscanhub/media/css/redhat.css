@@ -132,3 +132,21 @@ table.summary span.defects_decreased {
 }
 
 /**/
+
+/* CHART */
+
+#chart {
+    width: 75%;
+    height: 450px;
+    margin: auto;
+}
+
+#chart_title {
+    text-align: center;
+}
+
+#chart_container {
+    border: 1px solid #777;
+}
+
+/**/
