@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 
-import time
-
 from models import StatResults, StatType
 from covscanhub.scan.models import SystemRelease
 
@@ -9,6 +7,7 @@ from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.http import HttpResponse
 from django.utils import simplejson as json
+from django.utils.datastructures import SortedDict
 
 from service import display_values_inline, display_values
 
@@ -44,32 +43,51 @@ def stats_detail_graph(request, stat_id):
     data = {}
     data['title_text'] = st.key
     data['subtitle_text'] = st.comment
-    data['x_axis'] = []
-    data['y_axis_title'] = 'Count'
     data['data'] = []
 
-    time_format = "%b %e"
+    time_format = "%Y-%m-%d"
 
     if 'RELEASE' in st.key:
-        tmp = {}        
+        tmp = {} 
+        tmp_labels = {}
         for s in SystemRelease.objects.all():
-            tmp[s.tag] = []
-            for result in sr.filter(release=s).order_by('-date'):
-                tmp[s.tag].append(result.value)
-                if result.date.strftime(time_format) not in data['x_axis']:
-                    data['x_axis'].append(result.date.strftime(time_format))
-                if len(tmp[s.tag]) >= 12: break
+            # tmp = { date: { release: value } }
+            tmp_labels[s.tag] = chr(ord('a') + len(tmp_labels.keys()))
+            for result in sr.filter(release=s).order_by('date'):
+                if result.date not in tmp:
+                    tmp[result.date] = {}
+                tmp[result.date][s.tag] = result.value
+
+                if len(tmp.keys()) >= 12: break
+            
         for rel in tmp:
-            data['data'].append({'name': rel, 'data': tmp[rel]})
+            # data['data'] = [{x: date, a: 1, b: 2,...}]
+            # data['labels'] = ['rhel-7.0','rhel-6.4',...]
+            date_record = SortedDict({'x': rel.strftime(time_format)})
+            for rel_tag in tmp[rel]:
+                date_record[tmp_labels[rel_tag]] = tmp[rel][rel_tag]
+            data['data'].append(date_record)
+        data['ykeys'] = tmp_labels.values()
+        data['labels'] = tmp_labels.keys()
     else:
-        data['data'].insert(0, {})
-        data['data'][0]['name'] = 'Global'
-        data['data'][0]['data'] = []
-        for result in sr.order_by('-date'):
-            data['data'][0]['data'].append(result.value)
-            if result.date.strftime(time_format) not in data['x_axis']:
-                data['x_axis'].append(result.date.strftime(time_format))
-            if len(data['data'][0]['data']) >= 12: break
+        data['labels'] = ['Global']
+        data['ykeys'] = ['a']
+        for result in sr.order_by('date'):
+            data['data'].append(
+                {'x': result.date.strftime(time_format), 'a': result.value}
+            )
+            """
+            data['data'].append(
+                {'x': (result.date+datetime.timedelta(days=+1)).strftime(time_format), 'a': result.value+50}
+            )
+            data['data'].append(
+                {'x': (result.date+datetime.timedelta(days=+2)).strftime(time_format), 'a': result.value-20}
+            ) 
+            data['data'].append(
+                {'x': (result.date+datetime.timedelta(days=+3)).strftime(time_format), 'a': result.value+250}
+            )
+            """
+            if len(data['data']) >= 12: break
 
     return HttpResponse(json.dumps(data),
                         content_type='application/javascript; charset=utf8')

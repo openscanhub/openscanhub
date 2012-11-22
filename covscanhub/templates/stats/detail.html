@@ -1,59 +1,92 @@
 {% extends "base.html" %}
 {% load i18n %}
+{% load filters %}
 
 {% block head %}
+<!--<link rel="stylesheet" href="{{ MEDIA_URL }}css/rickshaw.min.css">-->
 <script type="text/javascript" src="{{ MEDIA_URL }}js/jquery-1.8.3.min.js"></script>
-<script type="text/javascript" charset="ISO-8859-1" src="{{ MEDIA_URL }}js/highcharts.js"></script>
+<!--<script type="text/javascript" src="{{ MEDIA_URL }}js/d3.v2.min.js"></script>-->
+<!--<script type="text/javascript" src="{{ MEDIA_URL }}js/rickshaw.min.js"></script>-->
+<script type="text/javascript" src="{{ MEDIA_URL }}js/morris.min.js"></script>
+<script type="text/javascript" src="{{ MEDIA_URL }}js/raphael-min.js"></script>
+<!--
+<style>
+#chart_container {
+        position: relative;
+        display: inline-block;
+        font-family: Arial, Helvetica, sans-serif;
+}
+#chart {
+        display: inline-block;
+        margin-left: 40px;
+}
+#y_axis {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        width: 40px;
+}
+#legend {
+        display: inline-block;
+        vertical-align: top;
+        margin: 0 0 0 10px;
+}
+</style>
+
 <script type="text/javascript" language="javascript">
-$(function () {
-    var chart;
+$.getJSON("{% url stats/detail/graph type.id %}",function(data)
+{
+    console.log(data);
+
+    var graph = new Rickshaw.Graph( {
+        element: document.querySelector("#chart"),
+        width: 700,
+        height: 450,
+        renderer: 'scatterplot',
+        series: data.data
+    } );
+    var axes = new Rickshaw.Graph.Axis.Time( {
+        graph: graph,
+    } );
+    var y_axis = new Rickshaw.Graph.Axis.Y( {
+        graph: graph,
+        orientation: 'left',
+        tickFormat: Rickshaw.Fixtures.Number.formatKMBT,
+        element: document.querySelector("#y_axis"),
+    } );
+    var legend = new Rickshaw.Graph.Legend( {
+        element: document.querySelector("#legend"),
+        graph: graph
+    } );
+    var hoverDetail = new Rickshaw.Graph.HoverDetail( {
+        graph: graph
+    } );
+    graph.render();    
+})
+</script>
+-->
+<script type="text/javascript" language="javascript">
+function formatDate(x)
+{
+    monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 
+        'Sep', 'Oct', 'Nov', 'Dec'];
+    return monthNames[x.getMonth()] + ' ' + x.getDate();
+}
+
+$(document).ready(function() {
     $.getJSON("{% url stats/detail/graph type.id %}",function(data)
     {
-        chart = new Highcharts.Chart({
-            chart: {
-                renderTo: 'chart_container',
-                type: 'line',
-                marginRight: 130,
-                marginBottom: 25
-            },
-            title: {
-                text: data.title_text,
-                x: -20 //center
-            },
-            subtitle: {
-                text: data.subtitle_text,
-                x: -20
-            },
-            xAxis: {
-                categories: data.x_axis
-            },
-            yAxis: {
-                title: {
-                    text: data.y_axis_title
-                },
-                plotLines: [{
-                    value: 0,
-                    width: 1,
-                    color: '#808080'
-                }]
-            },
-            tooltip: {
-                formatter: function() {
-                        return '<b>'+ this.series.name +'</b><br/>'+
-                        this.x +': '+ this.y;
-                }
-            },
-            legend: {
-                layout: 'vertical',
-                align: 'right',
-                verticalAlign: 'top',
-                x: -10,
-                y: 100,
-                borderWidth: 0
-            },
-            series: data.data
+        console.log(data)
+        Morris.Line({
+            element: 'chart',
+            data: data.data,
+            xkey: 'x',
+            ykeys: data.ykeys,
+            xLabels: 'day',
+            xLabelFormat: function (x) { return formatDate(x); },
+            labels: data.labels
         });
-    })  
+    })
 });
 </script>
 {% endblock %}
@@ -74,6 +107,13 @@ $(function () {
     </tr>
 {% endfor %}
 </table>
-<div id="chart_container" style="min-width: 400px; height: 400px; margin: 0 auto">
+<!--
+<div id="chart_container">
+        <div id="y_axis"></div>
+        <div id="chart"></div>
 </div>
+<div id="legend"></div>
+-->
+<div id="chart" style="width: 600px; height: 450px;"></div>
 {% endblock %}
+

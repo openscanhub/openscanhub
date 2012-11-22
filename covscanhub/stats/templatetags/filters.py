@@ -12,8 +12,8 @@ def listsort(value):
     if isinstance(value, dict):
         new_dict = SortedDict()
         key_list = value.keys()
-        key_list.sort()
+        key_list.sort(reverse=True)
         for key in key_list:
             new_dict[key] = value[key]
-        return new_dict
+        return new_dict.iteritems()
 listsort.is_safe = True
