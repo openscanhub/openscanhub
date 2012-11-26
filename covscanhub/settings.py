@@ -144,6 +144,8 @@ INSTALLED_APPS = (
 BREW_HUB = 'http://brewhub.devel.redhat.com/brewhub'
 ET_SCAN_PRIORITY = 20
 
+ACTUAL_SCANNER = ('coverity', '6.5.0')
+
 # kobo XML-RPC API calls
 # If you define additional methods, you have to list them there.
 XMLRPC_METHODS = {
@@ -169,6 +171,7 @@ XMLRPC_METHODS = {
     'kerbauth': (
         ('covscanhub.xmlrpc.errata', 'errata'),
         ('covscanhub.xmlrpc.test', 'test'),
+        ('kobo.hub.xmlrpc.auth',      'auth'),
     ),
 
 }

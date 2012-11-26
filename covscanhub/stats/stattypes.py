@@ -41,6 +41,11 @@ def get_scans_by_release():
                                            tag__release=r.id).count()
     return result
 
+get_total_scans.group = "SCANS"
+get_total_scans.order = 1
+get_scans_by_release.group = "SCANS"
+get_scans_by_release.order = 2
+
 #####
 # LOC
 #####
@@ -63,6 +68,11 @@ def get_lines_by_release():
         result[r.id] = Result.objects.filter(scan__tag__release=r.id)\
                         .aggregate(Sum('lines'))['lines__sum']
     return result
+
+get_total_lines.group = "LOC"
+get_total_lines.order = 1
+get_lines_by_release.group = "LOC"
+get_lines_by_release.order = 2
 
 #########
 # DEFECTS
@@ -129,6 +139,17 @@ def get_fixed_defects_between_releases():
             result[r.id] += diff_fixed_defects_in_package(s)
     return result    
 
+get_total_fixed_defects.group = "DEFECTS"
+get_fixed_defects_by_release.group = "DEFECTS"
+get_total_new_defects.group = "DEFECTS"
+get_new_defects_by_release.group = "DEFECTS"
+get_fixed_defects_between_releases.group = "DEFECTS"
+get_total_fixed_defects.order = 1
+get_fixed_defects_by_release.order = 2
+get_total_new_defects.order = 3
+get_new_defects_by_release.order = 4
+get_fixed_defects_between_releases.order = 5
+
 #########
 # WAIVERS
 #########
@@ -162,7 +183,7 @@ def get_total_missing_waivers():
         state=RESULT_GROUP_STATES['NEEDS_INSPECTION']).count()
 
 
-def get_total_missing_waivers_by_release():
+def get_missing_waivers_by_release():
     """
         Number of tests that were not waived by release.
     """
@@ -237,3 +258,50 @@ def get_fix_later_waivers_by_release():
             result_group__result__scan__tag__release=r.id,
         ).count()
     return result
+
+get_total_waivers_submitted.group = "WAIVERS"
+get_waivers_submitted_by_release.group = "WAIVERS"
+get_total_missing_waivers.group = "WAIVERS"
+get_missing_waivers_by_release.group = "WAIVERS"
+get_total_is_a_bug_waivers.group = "WAIVERS"
+get_is_a_bug_waivers_by_release.group = "WAIVERS"
+get_total_not_a_bug_waivers.group = "WAIVERS"
+get_not_a_bug_waivers_by_release.group = "WAIVERS"
+get_total_fix_later_waivers.group = "WAIVERS"
+get_fix_later_waivers_by_release.group = "WAIVERS"
+
+get_total_waivers_submitted.order = 1
+get_waivers_submitted_by_release.order = 2
+get_total_missing_waivers.order = 3
+get_missing_waivers_by_release.order = 4
+get_total_is_a_bug_waivers.order = 5
+get_is_a_bug_waivers_by_release.order = 6
+get_total_not_a_bug_waivers.order = 7
+get_not_a_bug_waivers_by_release.order = 8
+get_total_fix_later_waivers.order = 9
+get_fix_later_waivers_by_release.order = 10
+
+######
+# TIME
+######
+
+
+def get_busy_minutes():
+    """
+        Number of minutes during the system was busy.
+    """
+    result = datetime.timedelta()
+    for t in Task.objects.all():
+        result += t.time
+    return t.seconds / 60
+
+
+def get_minutes_spent_scanning():
+    """
+        Number of minutes that system spent running coverity.
+    """
+
+get_busy_minutes.group = "TIME"
+get_minutes_spent_scanning.group = "TIME"
+get_busy_minutes.order = 1
+get_minutes_spent_scanning.order = 2

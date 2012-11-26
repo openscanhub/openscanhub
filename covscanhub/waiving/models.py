@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from kobo.types import Enum, EnumItem
+from kobo.django.fields import JSONField
 
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
@@ -120,13 +121,14 @@ class Defect(models.Model):
     #ARRAY_VS_SINGLETON | BUFFER_SIZE_WARNING
     checker = models.ForeignKey("Checker", verbose_name="Checker",
                                 blank=False, null=False)
+
+    order = models.IntegerField(help_text="Defects in view have fixed order.")
+
     #CWE-xxx
     annotation = models.CharField("Annotation", max_length=32,
                                   blank=True, null=True)
-    key_event = models.OneToOneField(Event, verbose_name="Key event",
-                                     blank=True, null=True,
-                                     help_text="Event that resulted in defect",
-                                     related_name='defect_key_event')
+    key_event = models.IntegerField(verbose_name="Key event",
+                                    help_text="Event that resulted in defect")
     function = models.CharField("Function", max_length=128,
                                 help_text="Name of function that contains \
 current defect",
@@ -138,8 +140,10 @@ current defect",
                                         help_text="Defect state")
     result_group = models.ForeignKey('ResultGroup', blank=False, null=False)
 
+    events = JSONField(help_text="List of defect related events.")
+
     def __unicode__(self):
-        return "#%d Checker: (%s), %s" % (self.id, self.checker, self.annotation)
+        return "#%d Checker: (%s)" % (self.id, self.checker)
 
 
 class CheckerGroup(models.Model):
@@ -174,12 +178,12 @@ class ResultGroup(models.Model):
     fixed_defects = models.PositiveSmallIntegerField(
         default=0, blank=True, null=True, verbose_name="Fixed defects count")
 
-    def get_previous_result_group(self):
+    def get_first_result_group(self):
         """
         Return result group for same checker group, which is associated with
          previous scan (previous build of specified package)
         """
-        child_scan = self.result.scan.get_child_scan()
+        child_scan = self.result.scan.get_first_scan()
         if child_scan:
             try:
                 return ResultGroup.objects.get(
@@ -198,7 +202,7 @@ class ResultGroup(models.Model):
 
     def get_defects_diff(self, state):
         """
-        diff between number of new defects from this scan and previous
+        diff between number of new defects from this scan and first
          return None, if previous scan does not exist
 
         @rtype: None or int
@@ -206,7 +210,7 @@ class ResultGroup(models.Model):
             -1: one new defect fixed
             +2: there are two newly added defects
         """
-        prev_rg = self.get_previous_result_group()
+        prev_rg = self.get_first_result_group()
 
         if prev_rg is None:
             if self.result.scan.get_child_scan():

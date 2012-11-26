@@ -6,13 +6,14 @@ import re
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from covscanhub.scan.models import Scan, SCAN_STATES, SCAN_TYPES, Package
+from covscanhub.waiving.models import Result
 from covscanhub.scan.service import get_latest_scan_by_package
 from covscanhub.other.shortcuts import check_brew_build, \
     check_and_create_dirs, get_tag_by_name
 from kobo.hub.models import Task
 
 
-def create_errata_base_scan(kwargs, task_id, package):
+def create_errata_base_scan(kwargs, parent_task_id, package):
     options = {}
 
     task_user = kwargs['task_user']
@@ -40,11 +41,11 @@ def create_errata_base_scan(kwargs, task_id, package):
         owner_name=task_user,
         label=task_label,
         method='ErrataDiffBuild',
-        args={}, # I want to add scan's id here, so I update it later
+        args={},  # I want to add scan's id here, so I update it later
         comment=comment,
         state=SCAN_STATES["QUEUED"],
         priority=priority,
-        parent_id=task_id,
+        parent_id=parent_task_id,
     )
     task_dir = Task.get_task_dir(task_id)
 
@@ -59,10 +60,53 @@ def create_errata_base_scan(kwargs, task_id, package):
     scan.save()
 
     options['scan_id'] = scan.id
-    task = Task.objects.filter(id=task_id).update(args=options)
+    Task.objects.filter(id=task_id).update(args=options)
 
     return scan
 
+
+def obtain_base(base, task_id, kwargs, package):
+    found = True
+    try:
+        base_obj = Scan.objects.get(nvr=base)
+    except ObjectDoesNotExist:
+        found = False
+    except MultipleObjectsReturned:
+        #return latest, but this shouldnt happened
+        base_obj = Scan.objects.filter(nvr=base).\
+            order_by('-task__dt_finished')[0]
+    if found:
+        try:
+            result = Result.objects.get(scan__nvr=base)
+        except ObjectDoesNotExist:
+            found = False
+        else:
+            if result.scanner_version != settings.ACTUAL_SCANNER[1] or \
+                    result.scanner != settings.ACTUAL_SCANNER[0]:
+                found = False
+    if not found:
+        parent_task = Task.objects.get(id=task_id)
+        base_obj = create_errata_base_scan(copy.deepcopy(kwargs), task_id,
+                                           package)
+
+        # wait has to be after creation of new subtask
+        # TODO wait should be executed in one transaction with creation of
+        # child
+        parent_task.wait()
+    return base_obj
+
+
+def check_obsolete_scan(nvr):
+    try:
+        scan = Scan.objects.get(nvr=nvr)
+    except ObjectDoesNotExist:
+        return None
+    """
+    if (scan.state == SCAN_STATES['QUEUED'] or 
+        scan.state == SCAN_STATES['BASE_SCANNING']) and \
+        scan.task.state # TODO: cancel running task?
+        scan.task.cancel()
+    """
 
 def create_errata_scan(kwargs):
     """
@@ -112,6 +156,8 @@ def create_errata_scan(kwargs):
     #    GET /brewroot/.../package/version-release/...src.rpm
     check_brew_build(nvr)
 
+    check_obsolete_scan(nvr)
+
     task_id = Task.create_task(
         owner_name=task_user,
         label=task_label,
@@ -137,23 +183,7 @@ def create_errata_scan(kwargs):
 
     # if base is specified, try to fetch it; if it doesn't exist, create
     # new scan for it
-    base_obj = None
-    if base:
-        try:
-            base_obj = Scan.objects.get(nvr=base)
-        except ObjectDoesNotExist:
-            parent_task = Task.objects.get(id=task_id)
-            base_obj = create_errata_base_scan(copy.deepcopy(kwargs), task_id,
-                                               package)
-
-            # wait has to be after creation of new subtask
-            # TODO wait should be executed in one transaction with creation of
-            # child
-            parent_task.wait()
-        except MultipleObjectsReturned:
-            #return latest, but this shouldnt happened
-            base_obj = Scan.objects.filter(nvr=base).\
-                order_by('-task__dt_finished')[0]
+    base_obj = obtain_base(base, task_id, kwargs, package)
 
     child = get_latest_scan_by_package(tag_obj, package)
 
@@ -167,6 +197,6 @@ def create_errata_scan(kwargs):
         child.save()
 
     options['scan_id'] = scan.id
-    task = Task.objects.filter(id=task_id).update(args=options)
+    Task.objects.filter(id=task_id).update(args=options)
 
     return scan

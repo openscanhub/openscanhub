@@ -37,3 +37,13 @@ def result_group_display_new(obj):
 @register.filter
 def result_group_display_fixed(obj):
     return mark_safe(obj.display_in_result('FIXED', 'waiving/fixed_defects'))
+
+
+@register.filter
+def line_and_column(obj):
+    response = ""
+    if "line" in obj:
+        response += obj['line']
+    if "column" in obj:
+        response += ':' + obj['column']
+    return response

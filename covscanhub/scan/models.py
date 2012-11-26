@@ -24,6 +24,7 @@ SCAN_STATES = Enum(
     "FINISHED",          # scan finished -- USER/ERRATA_BASE scans only
     "FAILED",            # scan failed -- this shouldn't happened
     "BASE_SCANNING",     # child scan is in scanning process right now
+    "CANCELED",          # there is new build of package, this one is obsolete
 )
 
 SCAN_TYPES = Enum(
@@ -72,7 +73,7 @@ class SystemRelease(models.Model):
 
     #Red Hat Enterprise Linux 6 release 4 etc.
     description = models.CharField("Description", max_length=128, blank=False)
-    
+
     active = models.BooleanField(default=True, help_text="If set to True,\
 statistical data will be harvested for this system release.")
 
@@ -247,6 +248,16 @@ counted in statistics.")
         try:
             return Scan.objects.get(parent=self)
         except ObjectDoesNotExist:
+            return None
+
+    def get_first_scan(self):
+        related_scans = Scan.objects.filter(package=self.package,
+                                            tag__release=self.tag.release,
+                                            scan_type=SCAN_TYPES['ERRATA']).\
+            order_by('date_submitted')
+        if related_scans:
+            return related_scans[0]
+        else:
             return None
 
     def get_latest_result(self):

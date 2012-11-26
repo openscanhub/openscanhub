@@ -2,6 +2,7 @@
 
 from covscanhub.scan.service import post_qpid_message
 from covscanhub.scan.models import SCAN_STATES
+
 from kobo.django.xmlrpc.decorators import login_required
 
 import random

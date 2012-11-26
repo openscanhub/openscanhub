@@ -7,18 +7,18 @@
 
 <div id="defects">
 
-{% for defect, events in defects.items %}
+{% for defect in defects %}
     <div class="{{ defect.get_state_display }}">
-        <h3>{{ forloop.counter }}. Defect {{ defect.checker.name }}</h3>
+        <h3>{{ defect.order }}. Defect {{ defect.checker.name }}</h3>
     {{ checker.annotation }} [{{ defect.get_state_display }}]
         <ul>
-    {% for event in events %}
+    {% for event in defect.events %}
             <li>
-            {% if event.id == defect.key_event.id %}
-                <b>{{ event.file_name }}:{{ event.line_and_column }}:{{ event.event }} -- {{ event.message }}</b>
-            {% else %}
-                {{ event.file_name }}:{{ event.line_and_column }}:{{ event.event }} -- {{ event.message }}
-            {% endif %}
+        {% if defect.key_event == forloop.counter %}
+            <b>{{ event.file_name }}:{{ event|line_and_column }}:{{ event.event }} -- {{ event.message }}</b>
+        {% else %}
+            {{ event.file_name }}:{{ event|line_and_column }}:{{ event.event }} -- {{ event.message }}
+        {% endif %}
             </li>
     {% endfor %}
         </ul>

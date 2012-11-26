@@ -43,7 +43,7 @@ def load_defects_from_json(json_dict, result,
             d = Defect()
             json_checker_name = defect['checker']
             try:
-                # get_or_create fails here, because there will integrity
+                # get_or_create fails here, because there will be integrity
                 # error on group atribute
                 checker = Checker.objects.get(name=json_checker_name)
             except ObjectDoesNotExist:
@@ -56,7 +56,7 @@ def load_defects_from_json(json_dict, result,
             rg, created = ResultGroup.objects.get_or_create(
                 checker_group=checker.group,
                 result=result)
-                
+
             if rg.state == RESULT_GROUP_STATES['UNKNOWN']:
                 if defect_state == DEFECT_STATES['NEW']:
                     rg.state = RESULT_GROUP_STATES['NEEDS_INSPECTION']
@@ -65,6 +65,7 @@ def load_defects_from_json(json_dict, result,
             elif defect_state == DEFECT_STATES['NEW'] and\
                     rg.state == RESULT_GROUP_STATES['INFO']:
                 rg.state = RESULT_GROUP_STATES['NEEDS_INSPECTION']
+
             if defect_state == DEFECT_STATES['NEW']:
                 rg.new_defects += 1
             elif defect_state == DEFECT_STATES['FIXED']:
@@ -78,29 +79,9 @@ def load_defects_from_json(json_dict, result,
             d.function = defect.get('function', None)
             d.result = result
             d.state = defect_state
+            d.key_event = defect['key_event_idx']
+            d.events = defect['events']
             d.save()
-            # we have to aquire id for 'd' so it is correctly linked to events
-            key_event = defect['key_event_idx']
-
-            if 'events' in defect:
-                e_id = None
-                for event in defect['events']:
-                    e = Event()
-                    e.file_name = event['file_name']
-                    e.line = event['line']
-                    e.column = event.get('column', None)
-                    e.event = event['event']
-                    e.message = event['message']
-                    e.defect = d
-                    e.save()
-                    if e_id is None:
-                        if key_event == 0:
-                            e_id = e
-                        else:
-                            key_event -= 1
-                #e_id could be None
-                d.key_event = e_id
-                d.save()
 
 
 def update_analyzer(result, json_dict):
@@ -117,7 +98,12 @@ def update_analyzer(result, json_dict):
             if p_version:
                 result.scanner_version = p_version.group('version')
             else:
-                result.scanner_version = version
+                pattern2 = r'^(?P<version>\d{1,2}\.\d{1,2}\.\d{1,2})'
+                p2_version = re.search(pattern2, version)
+                if p2_version:
+                    result.scanner_version = p2_version.group('version')
+                else:
+                    result.scanner_version = version
         if 'lines_processed' in json_dict['scan']:
             result.lines = int(json_dict['scan']['lines_processed'])
     result.save()
@@ -170,13 +156,20 @@ def create_results(scan):
         load_defects_from_json(diff_json_dict, r, DEFECT_STATES['NEW'])
         diff_file.close()
 
+        for rg in ResultGroup.objects.filter(result=r):
+            counter = 1
+            for defect in Defect.objects.filter(result_group=rg):
+                defect.order = counter
+                defect.save()
+                counter += 1
+
         for rg in get_unwaived_rgs(r):
             w = get_last_waiver(
                 rg.checker_group,
                 rg.result.scan.package,
                 rg.result.scan.tag.release,
             )
-            if w and compare_result_groups():
+            if w and compare_result_groups(rg, w.result_group):
                 rg.state = RESULT_GROUP_STATES['ALREADY_WAIVED']
                 rg.save()
     return r

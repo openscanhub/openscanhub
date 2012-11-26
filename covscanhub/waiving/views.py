@@ -14,8 +14,9 @@ from django.core.exceptions import ObjectDoesNotExist
 from kobo.django.views.generic import object_list
 
 from covscanhub.scan.models import Scan, SCAN_STATES
+from covscanhub.other.shortcuts import get_or_none
 
-from models import CheckerGroup, Result, ResultGroup, Defect, Event, Waiver,\
+from models import CheckerGroup, Result, ResultGroup, Defect, Waiver,\
     WAIVER_TYPES, DEFECT_STATES, RESULT_GROUP_STATES
 from forms import WaiverForm
 from service import get_unwaived_rgs, get_last_waiver
@@ -42,18 +43,10 @@ def get_result_context(result_object):
     context['output'] = get_five_tuple(get_waiving_data(result_object.id))
     context['result'] = result_object
     context['logs'] = logs
-    try:
-        context['previous_result'] = Result.objects.get(
-            scan=result_object.scan.get_child_scan())
-    except ObjectDoesNotExist:
-        context['previous_result'] = None
-    try:
-        context['next_result'] = Result.objects.get(
-            scan=result_object.scan.parent)
-    except ObjectDoesNotExist:
-        context['next_result'] = None        
-    
-
+    context['previous_result'] = get_or_none(Result,
+        scan=result_object.scan.get_child_scan())
+    context['next_result'] = get_or_none(Result,
+        scan=result_object.scan.parent)
     return context
 
 
@@ -160,17 +153,13 @@ def waiver(request, result_id, result_group_id):
         context['display_form'] = True
         context['display_waivers'] = True
 
-    defects = {}
-
-    for defect in Defect.objects.filter(result_group=result_group_id,
-                                        state=DEFECT_STATES['NEW']):
-        defects[defect] = Event.objects.filter(defect=defect)
-
     # merge already created context with result context
     context = dict(context.items() + get_result_context(result_object).items())
 
     context['group'] = result_group_object
-    context['defects'] = defects
+    context['defects'] = Defect.objects.filter(result_group=result_group_id,
+                                               state=DEFECT_STATES['NEW']).\
+                                               order_by("order")
     context['waivers'] = Waiver.objects.filter(result_group=result_group_id)
 
     logger.debug('Displaying waiver for result %s, result-group %s',
@@ -185,15 +174,12 @@ def fixed_defects(request, result_id, result_group_id):
     """
     Display fixed defects
     """
-    defects = {}
     context = get_result_context(Result.objects.get(id=result_id))
 
-    for defect in Defect.objects.filter(result_group=result_group_id,
-                                        state=DEFECT_STATES['FIXED']):
-        defects[defect] = Event.objects.filter(defect=defect)
-
     context['group'] = ResultGroup.objects.get(id=result_group_id)
-    context['defects'] = defects
+    context['defects'] = Defect.objects.filter(result_group=result_group_id,
+                                               state=DEFECT_STATES['FIXED']).\
+                                               order_by("order")
     context['display_form'] = False
     context['display_waivers'] = False
 

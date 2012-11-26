@@ -127,19 +127,10 @@ def set_scan_to_scanning(request, scan_id):
             .update(state=SCAN_STATES['BASE_SCANNING'])
 
 
-#@validate_worker
-#def set_scan_to_finished(request, scan_id):
-#    update_scans_state(scan_id, SCAN_STATES['WAIVED'])
-#
-#
-#@validate_worker
-#def set_scan_to_needs_insp(request, scan_id):
-#    update_scans_state(scan_id, SCAN_STATES['NEEDS_INSPECTION'])
-#
-#
-#@validate_worker
-#def run_diff_on_scans(request, scan_id):
-#    """
-#        XML-RPC
-#    """
-#    run_diff(scan_id)
+@validate_worker
+def fail_scan(request, scan_id, reason):
+    update_scans_state(scan_id, SCAN_STATES['FAILED'])
+    if reason:
+        scan = Scan.objects.get(id=scan_id)
+        Task.objects.filter(id=scan.task.id).update(
+            result="Scan failed due to: %s" % reason)

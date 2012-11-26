@@ -84,3 +84,10 @@ def check_and_create_dirs(directory):
         except OSError, ex:
             if ex.errno != 17:
                 raise
+
+
+def get_or_none(model, **kwargs):
+    try:
+        return model.objects.get(**kwargs)
+    except ObjectDoesNotExist:
+        return None

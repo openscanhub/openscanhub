@@ -45,7 +45,6 @@ class ErrataDiffBuild(TaskBase):
         os.chmod(tmp_dir, 0775)
         srpm_path = os.path.join(tmp_dir, "%s.src.rpm" % brew_build)
 
-
         # make the dir writable by 'coverity' user
         coverity_gid = grp.getgrnam("coverity").gr_gid
         os.chown(tmp_dir, -1, coverity_gid)
@@ -59,14 +58,18 @@ class ErrataDiffBuild(TaskBase):
             print >> sys.stderr, \
                 "Invalid path %s to SRPM file (%s): %s" % \
                 (srpm_path, brew_build, kobo.tback.get_exception())
+            self.hub.worker.fail_scan(self.args['scan_id'],
+                'Invalid path %s to SRPM file.' % srpm_path)
             self.fail()
 
         #is srpm allright?
         try:
             get_rpm_header(srpm_path)
         except Exception:
-            print >> sys.stderr, "Invalid RPM file(%s): %s" % \
+            print >> sys.stderr, "Invalid RPM file (%s): %s" % \
                 (brew_build, kobo.tback.get_exception())
+            self.hub.worker.fail_scan(self.args['scan_id'],
+                                      'Invalid RPM file.')
             self.fail()
 
         #execute mockbuild of this package
@@ -99,13 +102,21 @@ class ErrataDiffBuild(TaskBase):
 
         try:
             self.hub.worker.extract_tarball(self.task_id, '')
-        except Exception, ex:
+        except Exception:
+            print >> sys.stderr, "Tarball extraction failed (%s): %s" % \
+                (brew_build, kobo.tback.get_exception())
+            self.hub.worker.fail_scan(self.args['scan_id'],
+                                      'Tarball extraction failed.')
             self.fail()
 
         # remove temp files
         shutil.rmtree(tmp_dir)
 
         if retcode:
+            print >> sys.stderr, "Scanning have not completed successfully \
+(%s): %s" % (brew_build, kobo.tback.get_exception())
+            self.hub.worker.fail_scan(self.args['scan_id'],
+                'Scanning have not completed successfully.')
             self.fail()
 
         self.hub.worker.finish_scan(self.args['scan_id'])
@@ -117,5 +128,4 @@ class ErrataDiffBuild(TaskBase):
 
     @classmethod
     def notification(cls, hub, conf, task_info):
-        pass
-        #hub.worker.email_task_notification(task_info["id"])
+        hub.worker.email_task_notification(task_info["id"])
