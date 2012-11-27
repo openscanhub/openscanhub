@@ -15,7 +15,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from covscanhub.scan.models import SCAN_STATES, Scan
 from covscanhub.other.constants import ERROR_DIFF_FILE, FIXED_DIFF_FILE,\
     DEFAULT_CHECKER_GROUP
-from models import DEFECT_STATES, RESULT_GROUP_STATES, Defect, Event, Result, \
+from models import DEFECT_STATES, RESULT_GROUP_STATES, Defect, Result, \
     Checker, CheckerGroup, Waiver, ResultGroup
 
 from kobo.hub.models import Task
@@ -55,16 +55,14 @@ def load_defects_from_json(json_dict, result,
 
             rg, created = ResultGroup.objects.get_or_create(
                 checker_group=checker.group,
-                result=result)
+                result=result,
+                defect_type=defect_state)
 
             if rg.state == RESULT_GROUP_STATES['UNKNOWN']:
                 if defect_state == DEFECT_STATES['NEW']:
                     rg.state = RESULT_GROUP_STATES['NEEDS_INSPECTION']
                 elif defect_state == DEFECT_STATES['FIXED']:
                     rg.state = RESULT_GROUP_STATES['INFO']
-            elif defect_state == DEFECT_STATES['NEW'] and\
-                    rg.state == RESULT_GROUP_STATES['INFO']:
-                rg.state = RESULT_GROUP_STATES['NEEDS_INSPECTION']
 
             if defect_state == DEFECT_STATES['NEW']:
                 rg.new_defects += 1
@@ -200,8 +198,7 @@ def compare_result_groups(rg1, rg2):
             rg2_defect = rg2_defects.get(checker=rg1_defect.checker)
         except ObjectDoesNotExist:
             return False
-        if Event.objects.filter(defect=rg1_defect).count() != \
-                Event.objects.filter(defect=rg2_defect).count():
+        if len(rg1.events) != len(rg2.events):
             return False
     return True
 

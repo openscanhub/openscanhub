@@ -17,6 +17,11 @@ PROJECT_DIR = '/var/'
 if PROJECT_DIR not in sys.path:
     sys.path.append(PROJECT_DIR)
 
+PROJECT_DIR2 = '/home/ttomecek/dev/covscan/'
+
+if PROJECT_DIR2 not in sys.path:
+    sys.path.append(PROJECT_DIR2)
+
 KOBO_DIR = '/home/brq/ttomecek/dev/kobo'
 
 if KOBO_DIR not in sys.path:

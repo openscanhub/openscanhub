@@ -13,6 +13,7 @@ from django.core.urlresolvers import reverse
 
 from kobo.hub.models import Task
 from kobo.types import Enum
+from kobo.client.constants import TASK_STATES
 
 
 SCAN_STATES = Enum(
@@ -120,18 +121,24 @@ True, this package will be blacklisted -- not accepted for scanning.")
     def display_graph(self, parent_scan, response, indent_level=1):
         scan = parent_scan.get_child_scan()
         if scan is not None:  # TARGET
-            response += '%s<a href="%s">%s</a> New defects: %d, fixed \
-defects: %d<br/ >' % (
-                "&nbsp;" * indent_level * 4,
-                reverse("waiving/result",
-                        args=(Result.objects.get(scan=scan).id,)),
-                scan.nvr,
-                Result.objects.get(scan=scan).new_defects_count(),
-                Result.objects.get(scan=scan).fixed_defects_count(),)
+            try:
+                response += '%s<a href="%s">%s</a> New defects: %d, fixed \
+defects: %d<br/ >\n' % (
+                    "&nbsp;" * indent_level * 4,
+                    reverse("waiving/result",
+                            args=(Result.objects.get(scan=scan).id,)),
+                    scan.nvr,
+                    Result.objects.get(scan=scan).new_defects_count(),
+                    Result.objects.get(scan=scan).fixed_defects_count(),)
+            except ObjectDoesNotExist:
+                response += "%s%s<br/ >\n" % (
+                    "&nbsp;" * indent_level * 4,
+                    scan.nvr,
+                )
             return self.display_graph(scan, response, indent_level + 1)
         else:  # BASE
-            if response.endswith('<br/ >'):
-                response = response[:-6]
+            if response.endswith('<br/ >\n'):
+                response = response[:-7]
             response += '%sBase: %s<br/ >' % (
                 '.' * (160 - (indent_level * 4 + len(parent_scan.base.nvr))),
                 parent_scan.base.nvr
@@ -140,20 +147,30 @@ defects: %d<br/ >' % (
 
     def display_scan_tree(self):
         scans = Scan.objects.filter(package=self)
+        if not scans:
+            return mark_safe('There are no scans submitted related to this \
+package')
         releases = scans.values('tag__release').distinct()
         response = ""
 
         for release in releases:
-            parent_scan = scans.get(tag__release__id=release['tag__release'],
-                                    parent=None,
-                                    scan_type=SCAN_TYPES['ERRATA'])
+            scans_package = scans.filter(
+                tag__release__id=release['tag__release'],
+                scan_type=SCAN_TYPES['ERRATA'])
+            if not scans_package:
+                response += "No scans in this release.<hr/ >\n"
+                continue
+            parent_scan = scans_package.order_by('-date_submitted')[0]
             response += "<div>\n<h3>%s</h3>\n" % \
                 parent_scan.tag.release.description
-            response += '<a href="%s">%s</a><br/ >\n' % (
-                reverse("waiving/result",
-                        args=(Result.objects.get(scan=parent_scan).id,)),
-                parent_scan.nvr
-            )
+            try:
+                response += '<a href="%s">%s</a><br/ >\n' % (
+                    reverse("waiving/result",
+                            args=(Result.objects.get(scan=parent_scan).id,)),
+                    parent_scan.nvr
+                )
+            except ObjectDoesNotExist:
+                response += "%s<br/ >\n" % parent_scan.nvr
             response = self.display_graph(parent_scan, response)
             response += "<hr/ ></div>\n"
         return mark_safe(response)
@@ -205,6 +222,9 @@ counted in statistics.")
     parent = models.ForeignKey('self', verbose_name="Parent Scan", blank=True,
                                null=True, related_name="parent_scan")
 
+    class Meta:
+        get_latest_by = "task__dt_finished"
+
     def __unicode__(self):
         if self.base is None:
             return u"#%s [%s]" % (self.id, self.nvr)
@@ -253,6 +273,7 @@ counted in statistics.")
     def get_first_scan(self):
         related_scans = Scan.objects.filter(package=self.package,
                                             tag__release=self.tag.release,
+                                            task__state=TASK_STATES['CLOSED'],
                                             scan_type=SCAN_TYPES['ERRATA']).\
             order_by('date_submitted')
         if related_scans:

@@ -6,6 +6,8 @@ import kobo.hub.xmlrpc.client
 from kobo.client.constants import TASK_STATES
 from kobo.hub.decorators import validate_worker
 from kobo.hub.models import Task
+from kobo.client.constants import TASK_STATES
+
 from covscanhub.scan.service import extract_logs_from_tarball, \
     update_scans_state, prepare_and_execute_diff, post_qpid_message
 from covscanhub.waiving.service import create_results, get_unwaived_rgs
@@ -87,23 +89,28 @@ def extract_tarball(request, task_id, name):
 @validate_worker
 def finish_scan(request, scan_id):
     scan = Scan.objects.get(id=scan_id)
-
-    if scan.is_errata_scan() and scan.base:
-        prepare_and_execute_diff(scan.task, scan.base.task,
-                                 scan.nvr, scan.base.nvr)
-    result = create_results(scan)
-
-    if scan.is_errata_scan():
-        # if there are no missing waivers = there some newly added unwaived
-        # defects
-        if not get_unwaived_rgs(result):
-            scan.state = SCAN_STATES['PASSED']
-        else:
-            scan.state = SCAN_STATES['NEEDS_INSPECTION']
-
-        post_qpid_message(scan_id, SCAN_STATES.get_value(scan.state))
-    elif scan.is_errata_base_scan():
-        scan.state = SCAN_STATES['FINISHED']
+    
+    if scan.task.state == TASK_STATES['FAILED'] or \
+            scan.task.state == TASK_STATES['CANCELED']:
+        scan.state = SCAN_STATES['FAILED']
+        scan.enabled = False
+    else:
+        if scan.is_errata_scan() and scan.base:
+            prepare_and_execute_diff(scan.task, scan.base.task,
+                                     scan.nvr, scan.base.nvr)
+        result = create_results(scan)
+    
+        if scan.is_errata_scan():
+            # if there are no missing waivers = there some newly added unwaived
+            # defects
+            if not get_unwaived_rgs(result):
+                scan.state = SCAN_STATES['PASSED']
+            else:
+                scan.state = SCAN_STATES['NEEDS_INSPECTION']
+    
+            post_qpid_message(scan_id, SCAN_STATES.get_value(scan.state))
+        elif scan.is_errata_base_scan():
+            scan.state = SCAN_STATES['FINISHED']
     scan.save()
 
 

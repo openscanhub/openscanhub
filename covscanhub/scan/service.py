@@ -11,6 +11,7 @@ import copy
 from kobo.hub.models import Task
 from kobo.shortcuts import run
 from kobo.django.upload.models import FileUpload
+from kobo.client.constants import TASK_STATES
 
 from models import Scan, SCAN_STATES, SCAN_TYPES
 from covscanhub.waiving.models import Result
@@ -33,6 +34,7 @@ __all__ = (
     'prepare_and_execute_diff',
     'post_qpid_message',
     'diff_fixed_defects_in_package',
+    "get_latest_scan_by_package",
 )
 
 
@@ -390,11 +392,12 @@ def get_latest_scan_by_package(tag, package):
     return latest scan for specified package and tag. This function should be
     called when creating new scan and setting this one as a child
     """
-    try:
-        return Scan.objects.get(package=package, tag=tag, parent=None,
-                                scan_type=SCAN_TYPES['ERRATA'])
-    except ObjectDoesNotExist:
-        return None
+    scans = Scan.objects.filter(package=package, tag__release=tag.release,
+                               task__state=TASK_STATES['CLOSED'],
+                               scan_type=SCAN_TYPES['ERRATA'])
+    if scans:
+        return scans.latest()
+
 
 def diff_fixed_defects_in_package(scan):
     first_scan = Scan.objects.filter(base=scan.base)\

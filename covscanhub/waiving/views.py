@@ -40,7 +40,10 @@ def get_result_context(result_object):
                 logs[i] = label
     #logs.sort(lambda x, y: cmp(os.path.split(x), os.path.split(y)))
 
-    context['output'] = get_five_tuple(get_waiving_data(result_object.id))
+    context['output_new'] = get_five_tuple(get_waiving_data(
+        result_object.id, DEFECT_STATES['NEW']))
+    context['output_fixed'] = get_five_tuple(get_waiving_data(
+        result_object.id, DEFECT_STATES['FIXED']))
     context['result'] = result_object
     context['logs'] = logs
     context['previous_result'] = get_or_none(Result,
@@ -50,14 +53,15 @@ def get_result_context(result_object):
     return context
 
 
-def get_waiving_data(result_id):
+def get_waiving_data(result_id, defect_type):
     output = {}
 
     # checker_group: result_group
     for group in CheckerGroup.objects.filter(enabled=True):
         try:
             output[group] = ResultGroup.objects.get(checker_group=group,
-                                                    result=result_id)
+                                                    result=result_id,
+                                                    defect_type=defect_type)
         except ObjectDoesNotExist:
             output[group] = None
     return output

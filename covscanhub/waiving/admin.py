@@ -4,7 +4,7 @@ from covscanhub.other.shortcuts import add_link_field
 
 import django.contrib.admin as admin
 
-from models import Result, Event, Defect, Checker, CheckerGroup, Waiver,\
+from models import Result, Defect, Checker, CheckerGroup, Waiver,\
     ResultGroup
 
 
@@ -21,11 +21,6 @@ class ResultGroupAdmin(admin.ModelAdmin):
     def state_display(self, instance):
         return instance.get_state_display()
     state_display.short_description = 'State'
-
-
-@add_link_field('defect','defect')
-class EventAdmin(admin.ModelAdmin):
-    list_display = ("id", "file_name", "line", "event", "message", "link")
 
 
 @add_link_field('resultgroup','result_group')
@@ -53,7 +48,6 @@ class WaiverAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Result, ResultAdmin)
-admin.site.register(Event, EventAdmin)
 admin.site.register(Defect, DefectAdmin)
 admin.site.register(Checker, CheckerAdmin)
 admin.site.register(CheckerGroup, CheckerGroupAdmin)

@@ -1,5 +1,6 @@
 {% extends "waiving/result.html" %}
 {% load i18n %}
+{% load utils %}
 
 {% block waiver %}
 
@@ -14,7 +15,7 @@
         <ul>
     {% for event in defect.events %}
             <li>
-        {% if defect.key_event == forloop.counter %}
+        {% if defect.key_event == forloop.counter0 %}
             <b>{{ event.file_name }}:{{ event|line_and_column }}:{{ event.event }} -- {{ event.message }}</b>
         {% else %}
             {{ event.file_name }}:{{ event|line_and_column }}:{{ event.event }} -- {{ event.message }}

@@ -18,6 +18,7 @@ __all__ = (
     'check_brew_build',
     'check_and_create_dirs',
     'get_tag_by_name',
+    'get_or_none',
 )
 
 

@@ -10,10 +10,13 @@ import django.db.models as models
 
 
 DEFECT_STATES = Enum(
-    "NEW",      # newly introduced defect
-    "OLD",      # this one was present in base scan -- nothing new
-    "FIXED",    # present in base, but no longer in actual version; good job
-    "UNKNOWN",  # default value
+    # newly introduced defect    
+    EnumItem("NEW", help_text="Newly introduced defect"),
+    # this one was present in base scan -- nothing new
+    EnumItem("OLD", help_text="Defect present in base and this scan."),
+    # present in base, but no longer in actual version; good job
+    EnumItem("FIXED", help_text="Defect fixed by this build."),
+    EnumItem("UNKNOWN", help_text="Default value."),
 )
 
 WAIVER_TYPES = Enum(
@@ -83,36 +86,6 @@ class Result(models.Model):
             return "#%d %s %s" % (self.id, self.scanner, self.scanner_version)
 
 
-class Event(models.Model):
-    """
-    Each Event is associated with some Defect. Event represents error in
-    specified file on exact line with appropriate message.
-    """
-    file_name = models.CharField("Filename", max_length=128,
-                                 blank=True, null=True)
-    line = models.CharField("Line", max_length=8,
-                            blank=True, null=True)
-    column = models.CharField("Column", max_length=8,
-                              blank=True, null=True)
-    #check_return | example_assign | unterminated_case | fallthrough
-    event = models.CharField("Event", max_length=16,
-                             blank=True, null=True)
-    message = models.CharField("Message", max_length=256,
-                               blank=True, null=True)
-    defect = models.ForeignKey('Defect', verbose_name="Defect",
-                               blank=True, null=True,)
-
-    def line_and_column(self):
-        if not self.column:
-            return self.line
-        else:
-            return '%s:%s' % (self.line, self.column)
-
-    def __unicode__(self):
-        return "#%d %s:%s, %s" % (self.id, self.file_name,
-                                  self.line, self.event)
-
-
 class Defect(models.Model):
     """
     One Result is composed of several Defects, each Defect is defined by
@@ -122,7 +95,8 @@ class Defect(models.Model):
     checker = models.ForeignKey("Checker", verbose_name="Checker",
                                 blank=False, null=False)
 
-    order = models.IntegerField(help_text="Defects in view have fixed order.")
+    order = models.IntegerField(null=True,
+                                help_text="Defects in view have fixed order.")
 
     #CWE-xxx
     annotation = models.CharField("Annotation", max_length=32,
@@ -140,7 +114,8 @@ current defect",
                                         help_text="Defect state")
     result_group = models.ForeignKey('ResultGroup', blank=False, null=False)
 
-    events = JSONField(help_text="List of defect related events.")
+    events = JSONField(default=[],
+                       help_text="List of defect related events.")
 
     def __unicode__(self):
         return "#%d Checker: (%s)" % (self.id, self.checker)
@@ -173,12 +148,16 @@ class ResultGroup(models.Model):
         help_text="Type of waiver")
     checker_group = models.ForeignKey(CheckerGroup,
                                       verbose_name="Group of checkers")
+    defect_type = models.PositiveIntegerField(
+        default=DEFECT_STATES["UNKNOWN"],
+        choices=DEFECT_STATES.get_mapping(),
+        help_text="Type of defects that are associated with this group.")
     new_defects = models.PositiveSmallIntegerField(
         default=0, blank=True, null=True, verbose_name="New defects count")
     fixed_defects = models.PositiveSmallIntegerField(
         default=0, blank=True, null=True, verbose_name="Fixed defects count")
 
-    def get_first_result_group(self):
+    def get_first_result_group(self, state):
         """
         Return result group for same checker group, which is associated with
          previous scan (previous build of specified package)
@@ -188,7 +167,8 @@ class ResultGroup(models.Model):
             try:
                 return ResultGroup.objects.get(
                     checker_group=self.checker_group,
-                    result=child_scan.get_latest_result()
+                    result=child_scan.get_latest_result(),
+                    defect_type = DEFECT_STATES[state],
                 )
             except ObjectDoesNotExist:
                 return None
@@ -210,7 +190,7 @@ class ResultGroup(models.Model):
             -1: one new defect fixed
             +2: there are two newly added defects
         """
-        prev_rg = self.get_first_result_group()
+        prev_rg = self.get_first_result_group(state)
 
         if prev_rg is None:
             if self.result.scan.get_child_scan():

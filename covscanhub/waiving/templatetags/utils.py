@@ -43,7 +43,7 @@ def result_group_display_fixed(obj):
 def line_and_column(obj):
     response = ""
     if "line" in obj:
-        response += obj['line']
+        response += str(obj['line'])
     if "column" in obj:
-        response += ':' + obj['column']
+        response += ':' + str(obj['column'])
     return response

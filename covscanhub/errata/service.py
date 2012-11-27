@@ -5,11 +5,13 @@ import re
 
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
+
 from covscanhub.scan.models import Scan, SCAN_STATES, SCAN_TYPES, Package
 from covscanhub.waiving.models import Result
 from covscanhub.scan.service import get_latest_scan_by_package
 from covscanhub.other.shortcuts import check_brew_build, \
     check_and_create_dirs, get_tag_by_name
+
 from kobo.hub.models import Task
 
 
@@ -51,16 +53,17 @@ def create_errata_base_scan(kwargs, parent_task_id, package):
 
     check_and_create_dirs(task_dir)
 
-    # if base is specified, try to fetch it; if it doesn't exist, create
-    # new task for it
     scan = Scan.create_scan(scan_type=scan_type, nvr=nvr, task_id=task_id,
                             tag=tag_obj, package=package, base=base_obj,
                             username=username)
     scan.enabled = False
     scan.save()
 
-    options['scan_id'] = scan.id
-    Task.objects.filter(id=task_id).update(args=options)
+    options["scan_id"] = scan.id
+    # DO NOT USE filter...update() -- wrong json is filled in db
+    task = Task.objects.get(id=task_id)
+    task.args = options
+    task.save()
 
     return scan
 
@@ -96,17 +99,19 @@ def obtain_base(base, task_id, kwargs, package):
     return base_obj
 
 
-def check_obsolete_scan(nvr):
-    try:
-        scan = Scan.objects.get(nvr=nvr)
-    except ObjectDoesNotExist:
-        return None
-    """
-    if (scan.state == SCAN_STATES['QUEUED'] or 
-        scan.state == SCAN_STATES['BASE_SCANNING']) and \
-        scan.task.state # TODO: cancel running task?
-        scan.task.cancel()
-    """
+def check_obsolete_scan(package, release):
+    scans = Scan.objects.filter(package=package, tag__release=release,
+                                scan_type=SCAN_TYPES['ERRATA'])
+    if scans:
+        for scan in scans:
+            if (scan.state == SCAN_STATES['QUEUED'] or
+                scan.state == SCAN_STATES['BASE_SCANNING']):
+                scan.task.cancel_task(recursive=False)
+                scan.state = SCAN_STATES['CANCELED']
+                scan.enabled = False
+                scan.save()
+                
+
 
 def create_errata_scan(kwargs):
     """
@@ -154,9 +159,19 @@ def create_errata_scan(kwargs):
     # Test if build exists
     # TODO: add check if SRPM exist:
     #    GET /brewroot/.../package/version-release/...src.rpm
-    check_brew_build(nvr)
+    ######### DEBUG check_brew_build(nvr)
 
-    check_obsolete_scan(nvr)
+    # validation of nvr, creating appropriate package object
+    pattern = '(.*)-(.*)-(.*)'
+    m = re.match(pattern, nvr)
+    if m is not None:
+        package_name = m.group(1)
+        package, created = Package.objects.get_or_create(name=package_name)
+    else:
+        raise RuntimeError('%s is not a correct N-V-R (does not match "%s"\
+)' % (nvr, pattern))
+
+    check_obsolete_scan(package, tag_obj.release)
 
     task_id = Task.create_task(
         owner_name=task_user,
@@ -171,16 +186,6 @@ def create_errata_scan(kwargs):
 
     check_and_create_dirs(task_dir)
 
-    # validation of nvr, creating appropriate package object
-    pattern = '(.*)-(.*)-(.*)'
-    m = re.match(pattern, nvr)
-    if m is not None:
-        package_name = m.group(1)
-        package, created = Package.objects.get_or_create(name=package_name)
-    else:
-        raise RuntimeError('%s is not a correct N-V-R (does not match "%s"\
-)' % (nvr, pattern))
-
     # if base is specified, try to fetch it; if it doesn't exist, create
     # new scan for it
     base_obj = obtain_base(base, task_id, kwargs, package)
@@ -191,12 +196,14 @@ def create_errata_scan(kwargs):
                             tag=tag_obj, package=package, base=base_obj,
                             username=username)
 
-    if child is not None:
+    if child:
         child.parent = scan
         child.enabled = False
         child.save()
 
     options['scan_id'] = scan.id
-    Task.objects.filter(id=task_id).update(args=options)
+    task = Task.objects.get(id=task_id)
+    task.args = options
+    task.save()
 
     return scan
