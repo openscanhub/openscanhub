@@ -53,13 +53,11 @@ table.summary td.INFO {
 table.summary span.FIXED {
     color: #00FF00;
     font-size: 1.2em;
-    text-shadow: 2px 1px 2px #000000;
 }
 
 table.summary span.NEW {
     color: #FF0000;
     font-size: 1.2em;
-    text-shadow: 2px 1px 2px #000000;
 }
 
 table.summary span.defects_increased {

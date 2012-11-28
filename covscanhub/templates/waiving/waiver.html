@@ -9,7 +9,7 @@
 <div id="defects">
 
 {% for defect in defects %}
-    <div class="{{ defect.get_state_display }}">
+    <div name="defects" class="{{ defect.get_state_display }}">
         <h3>{{ defect.order }}. Defect {{ defect.checker.name }}</h3>
     {{ checker.annotation }} [{{ defect.get_state_display }}]
         <ul>

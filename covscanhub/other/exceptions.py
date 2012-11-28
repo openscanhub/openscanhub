@@ -3,3 +3,6 @@
 
 class BrewException(Exception):
     pass
+
+class ScanException(Exception):
+    pass

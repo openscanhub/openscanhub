@@ -5,10 +5,11 @@ from covscanhub.other.shortcuts import add_link_field
 
 import django.contrib.admin as admin
 
-from models import Tag, MockConfig, Scan, Package, SystemRelease
+from models import Tag, MockConfig, Scan, Package, SystemRelease, ScanBinding
 
 
-@add_link_field('task', 'task', 'hub', field_label="Task")
+@add_link_field('scanbinding', 'scanbinding', field_label="Binding",
+                field_name="link_bind")
 @add_link_field('scan', 'base', field_name='link_base', field_label="Base")
 @add_link_field('scan', 'parent', field_name='link_parent',
                 field_label="Parent")
@@ -18,11 +19,20 @@ from models import Tag, MockConfig, Scan, Package, SystemRelease
 class ScanAdmin(admin.ModelAdmin):
     list_display = ("id", "nvr", "state", "scan_type", 'link_base',
                     'link_parent', "link_tag",
-                    'username', 'link_package', 'link', 'enabled')
+                    'username', 'link_package', 'link_bind', 'enabled')
 
 
 class PackageAdmin(admin.ModelAdmin):
     list_display = ("id", "name", "blocked")
+
+
+@add_link_field('task', 'task', 'hub', field_name='link_task',
+                field_label="Task")
+@add_link_field('scan', 'scan', field_name='link_scan', field_label="Scan")
+@add_link_field('result', 'result', 'waiving', field_name='link_result',
+                field_label="Result")
+class ScanBindingAdmin(admin.ModelAdmin):
+    list_display = ("id", "link_scan", "link_task", "link_result",)
 
 
 admin.site.register(MockConfig)
@@ -30,3 +40,4 @@ admin.site.register(Tag)
 admin.site.register(SystemRelease)
 admin.site.register(Package, PackageAdmin)
 admin.site.register(Scan, ScanAdmin)
+admin.site.register(ScanBinding, ScanBindingAdmin)

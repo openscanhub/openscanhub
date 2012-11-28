@@ -7,14 +7,16 @@ import os
 import pipes
 import shutil
 import copy
+import logging
 
 from kobo.hub.models import Task
 from kobo.shortcuts import run
 from kobo.django.upload.models import FileUpload
 from kobo.client.constants import TASK_STATES
 
-from models import Scan, SCAN_STATES, SCAN_TYPES
+from models import Scan, SCAN_STATES, SCAN_TYPES, ScanBinding
 from covscanhub.waiving.models import Result
+from covscanhub.other.exceptions import ScanException
 from covscanhub.other.shortcuts import get_mock_by_name, check_brew_build,\
     check_and_create_dirs
 from covscanhub.other.constants import ERROR_DIFF_FILE, FIXED_DIFF_FILE,\
@@ -26,6 +28,8 @@ from django.conf import settings
 
 from messaging import send_message
 
+logger = logging.getLogger(__name__)
+
 __all__ = (
     "update_scans_state",
     "run_diff",
@@ -35,6 +39,7 @@ __all__ = (
     'post_qpid_message',
     'diff_fixed_defects_in_package',
     "get_latest_scan_by_package",
+    "get_latest_binding",
 )
 
 
@@ -75,8 +80,10 @@ def run_diff(task_dir, base_task_dir, nvr, base_nvr):
     new_err = os.path.join(task_dir, nvr, 'run1', nvr + '.js')
 
     if not os.path.exists(old_err) or not os.path.exists(new_err):
-        raise RuntimeError('Error output from coverity does not exist: \
-old: %s new: %s' % (old_err, new_err))
+        logger.critical('Error output from coverity does not exist: \
+old: %s new: %s', old_err, new_err)
+        raise ScanException('Error output from coverity does not exist: \
+old: %s new: %s', old_err, new_err)
 
     #csdiff [options] old.err new.err
     """
@@ -392,11 +399,12 @@ def get_latest_scan_by_package(tag, package):
     return latest scan for specified package and tag. This function should be
     called when creating new scan and setting this one as a child
     """
-    scans = Scan.objects.filter(package=package, tag__release=tag.release,
+    bindings = ScanBinding.objects.filter(scan__package=package,
+                               scan__tag__release=tag.release,
                                task__state=TASK_STATES['CLOSED'],
-                               scan_type=SCAN_TYPES['ERRATA'])
-    if scans:
-        return scans.latest()
+                               scan__scan_type=SCAN_TYPES['ERRATA'])
+    if bindings:
+        return bindings.latest().scan
 
 
 def diff_fixed_defects_in_package(scan):
@@ -404,3 +412,11 @@ def diff_fixed_defects_in_package(scan):
         .order_by("date_submitted")[0]
     return Result.objects.get(scan=scan).fixed_defects_count() - \
         Result.objects.get(scan=first_scan).fixed_defects_count()
+
+
+def get_latest_binding(scan_nvr):
+    query =  ScanBinding.objects.filter(scan__nvr=scan_nvr)
+    if query:
+        return query.order_by("-result__date_submitted")[0]
+    else:
+        return None

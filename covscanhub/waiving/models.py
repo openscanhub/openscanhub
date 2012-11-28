@@ -8,6 +8,7 @@ from django.core.urlresolvers import reverse
 from django.core.exceptions import ObjectDoesNotExist
 import django.db.models as models
 
+from covscanhub.scan.models import ScanBinding
 
 DEFECT_STATES = Enum(
     # newly introduced defect    
@@ -53,11 +54,11 @@ class Result(models.Model):
                                blank=True, null=True)
     scanner_version = models.CharField("Analyser's Version",
                                        max_length=32, blank=True, null=True)
-    scan = models.ForeignKey("scan.Scan",
-                             verbose_name="Scan",
-                             blank=True, null=True,)
     lines = models.IntegerField(help_text='Lines of code scanned', blank=True,
                                 null=True)
+    #time in seconds that scanner spent scanning
+    scanning_time = models.IntegerField(verbose_name='Time spent scanning',
+                                        blank=True, null=True)
     date_submitted = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -78,12 +79,7 @@ class Result(models.Model):
         return count
 
     def __unicode__(self):
-        if self.scan:
-            return "#%d Scan: (%s) (%s %s)" % (self.id, self.scan,
-                                               self.scanner,
-                                               self.scanner_version)
-        else:
-            return "#%d %s %s" % (self.id, self.scanner, self.scanner_version)
+        return "#%d %s %s" % (self.id, self.scanner, self.scanner_version)
 
 
 class Defect(models.Model):
@@ -162,16 +158,18 @@ class ResultGroup(models.Model):
         Return result group for same checker group, which is associated with
          previous scan (previous build of specified package)
         """
-        child_scan = self.result.scan.get_first_scan()
-        if child_scan:
-            try:
-                return ResultGroup.objects.get(
-                    checker_group=self.checker_group,
-                    result=child_scan.get_latest_result(),
-                    defect_type = DEFECT_STATES[state],
-                )
-            except ObjectDoesNotExist:
-                return None
+        first_scan = self.result.scanbinding.scan.get_first_scan()
+        if first_scan:
+            first_result = ScanBinding.get_first_result(first_scan)
+            if first_result:
+                try:
+                    return ResultGroup.objects.get(
+                        checker_group=self.checker_group,
+                        result=first_result,
+                        defect_type = DEFECT_STATES[state],
+                    )
+                except ObjectDoesNotExist:
+                    return None
 
     def is_previously_waived(self):
         return self.state == RESULT_GROUP_STATES['PREVIOUSLY_WAIVED']
@@ -193,7 +191,7 @@ class ResultGroup(models.Model):
         prev_rg = self.get_first_result_group(state)
 
         if prev_rg is None:
-            if self.result.scan.get_child_scan():
+            if self.result.scanbinding.scan.get_child_scan():
                 if state == 'NEW':
                     return self.new_defects
                 elif state == 'FIXED':
@@ -255,7 +253,7 @@ class ResultGroup(models.Model):
         response = '<td class="%s">' % group_state
         if defects.count() > 0:
             url = reverse(url_name, args=(self.result.id, self.id))
-            response += '<a href="%s">' % url
+            response += '<a href="%s#defects">' % url
         response += checker_group
         if defects.count() > 0:
             response += '</a> <span class="%s">%s</span>' % (state,

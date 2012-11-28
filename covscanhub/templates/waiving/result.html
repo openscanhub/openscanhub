@@ -3,8 +3,8 @@
 {% load utils %}
 
 {% block content %}
-<h1>{{ result.scan.tag.release.description }}</h1>
-<h2>{{ result.scan.nvr }} {% trans "compared to" %} {{ result.scan.base.nvr }} </h2>
+<h1>{{ result.scanbinding.scan.tag.release.description }}</h1>
+<h2>{{ result.scanbinding.scan.nvr }} {% trans "compared to" %} {{ result.scanbinding.scan.base.nvr }} </h2>
 
 <table class="summary">
     <tr>
@@ -67,7 +67,7 @@
 <div>
 <ul>
 {% for log, log_label in logs.iteritems %}
-  <li><a href="{% url task/log result.scan.task.id log %}">{{ log_label }}</a> [<a href="{% url task/log result.scan.task.id log %}?format=raw">download</a>]</li>
+  <li><a href="{% url task/log result.scanbinding.task.id log %}">{{ log_label }}</a> [<a href="{% url task/log result.scanbinding.task.id log %}?format=raw">download</a>]</li>
 {% endfor %}
 </ul>
 </div>

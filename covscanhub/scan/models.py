@@ -3,8 +3,6 @@
 
 import datetime
 
-from covscanhub.waiving.models import Result
-
 from django.db import models
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
@@ -198,8 +196,6 @@ class Scan(models.Model):
     tag = models.ForeignKey(Tag, verbose_name="Tag",
                             blank=True, null=True,
                             help_text="Tag from brew")
-    task = models.ForeignKey(Task, verbose_name="Asociated Task",
-                             help_text="Asociated task on worker")
     state = models.PositiveIntegerField(default=SCAN_STATES["QUEUED"],
                                         choices=SCAN_STATES.get_mapping(),
                                         help_text="Current scan state")
@@ -222,9 +218,6 @@ counted in statistics.")
     parent = models.ForeignKey('self', verbose_name="Parent Scan", blank=True,
                                null=True, related_name="parent_scan")
 
-    class Meta:
-        get_latest_by = "task__dt_finished"
-
     def __unicode__(self):
         if self.base is None:
             return u"#%s [%s]" % (self.id, self.nvr)
@@ -241,18 +234,18 @@ counted in statistics.")
         return self.scan_type == SCAN_TYPES['USER']
 
     @classmethod
-    def create_scan(cls, scan_type, nvr, tag, task_id, username, package,
-                    base=None):
+    def create_scan(cls, scan_type, nvr, tag, username, package,
+                    enabled, base=None):
         scan = cls()
         scan.scan_type = scan_type
         scan.nvr = nvr
         scan.base = base
         scan.tag = tag
-        scan.task = Task.objects.get(id=task_id)
         scan.state = SCAN_STATES["QUEUED"]
-        scan.username = User.objects.get(username=username)
+        scan.username = User.objects.get_or_create(username=username)[0]
         scan.last_access = datetime.datetime.now()
         scan.package = package
+        scan.enabled = enabled
         scan.save()
         return scan
 
@@ -271,18 +264,49 @@ counted in statistics.")
             return None
 
     def get_first_scan(self):
-        related_scans = Scan.objects.filter(package=self.package,
-                                            tag__release=self.tag.release,
-                                            task__state=TASK_STATES['CLOSED'],
-                                            scan_type=SCAN_TYPES['ERRATA']).\
-            order_by('date_submitted')
+        related_scans = ScanBinding.objects.filter(
+            scan__package=self.package,
+            scan__tag__release=self.tag.release,
+            task__state=TASK_STATES['CLOSED'],
+            scan__scan_type=SCAN_TYPES['ERRATA']).\
+            order_by('result__date_submitted')
         if related_scans:
             return related_scans[0]
         else:
             return None
-
+    """
     def get_latest_result(self):
         try:
             return Result.objects.filter(scan=self).latest()
         except ObjectDoesNotExist:
             return None
+    """
+
+
+class ScanBinding(models.Model):
+    """
+    Binding between scan, task and result -- for easier creation of scans that
+    are already submitted
+    """
+    task = models.OneToOneField(Task, verbose_name="Asociated Task",
+                                help_text="Asociated task on worker",
+                                blank=True, null=True,)
+    scan = models.OneToOneField(Scan,
+                                verbose_name="Scan")
+    result = models.OneToOneField("waiving.Result",
+                                  blank=True, null=True,)
+
+    class Meta:
+        get_latest_by = "task__dt_finished"
+    
+    def __unicode__(self):
+        return u"#%d: Scan: %s | %s" % (self.id, self.scan, self.task)
+
+    @classmethod    
+    def get_first_result(cls, scan):
+        bindings = cls.objects.filter(scan=scan)
+        if bindings:
+            return bindings.order_by('result__date_submitted')[0]
+        else:
+            return None
+

@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import brew
+import logging
 
 from covscanhub.errata.service import create_errata_scan
 from covscanhub.other.exceptions import BrewException
@@ -43,7 +44,13 @@ def create_errata_diff_scan(request, kwargs):
         response['status'] = 'ERROR'
         response['message'] = 'You are not authorized to execute this \
 function.'
-        # TODO log this suspicous activity
+        logging.info('User %s tried to submit scan.', request.user.username)
+        return response
+    
+    if kwargs == {}:
+        response = {}
+        response['status'] = 'ERROR'
+        response['message'] = 'Provided dictionary (map) is empty.'
         return response
     
     kwargs['scan_type'] = SCAN_TYPES['ERRATA']
@@ -60,7 +67,7 @@ function.'
         response['message'] = '%s' % ex        
     except RuntimeError, ex:
         response['status'] = 'ERROR'
-        response['message'] = 'Scan failed to complete, error: %s' % ex
+        response['message'] = 'Unable to submit the scan, error: %s' % ex
     else:
         response['id'] = scan.id
         response['status'] = 'OK'

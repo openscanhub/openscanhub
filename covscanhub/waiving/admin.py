@@ -8,9 +8,12 @@ from models import Result, Defect, Checker, CheckerGroup, Waiver,\
     ResultGroup
 
 
-@add_link_field('scan','scan', 'scan')
+@add_link_field('scanbinding','scanbinding','scan',
+                field_name='scanbinding_link',
+                field_label="Binding")
 class ResultAdmin(admin.ModelAdmin):
-    list_display = ("id", "scanner", "scanner_version", "link")
+    list_display = ("id", "scanner", "scanner_version", 'date_submitted',
+                    'scanbinding_link')
 
 
 @add_link_field('checkergroup','checker_group',field_name='link2')

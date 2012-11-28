@@ -12,7 +12,6 @@ import logging
 import django.utils.simplejson as json
 from django.core.exceptions import ObjectDoesNotExist
 
-from covscanhub.scan.models import SCAN_STATES, Scan
 from covscanhub.other.constants import ERROR_DIFF_FILE, FIXED_DIFF_FILE,\
     DEFAULT_CHECKER_GROUP
 from models import DEFECT_STATES, RESULT_GROUP_STATES, Defect, Result, \
@@ -102,17 +101,29 @@ def update_analyzer(result, json_dict):
                     result.scanner_version = p2_version.group('version')
                 else:
                     result.scanner_version = version
-        if 'lines_processed' in json_dict['scan']:
+        if 'lines-processed' in json_dict['scan']:
+            result.lines = int(json_dict['scan']['lines-processed'])
+        elif 'lines_processed' in json_dict['scan']:
             result.lines = int(json_dict['scan']['lines_processed'])
+        if 'time-elapsed-analysis' in json_dict['scan']:
+            t = datetime.datetime.strptime(
+                json_dict['scan']['time-elapsed-analysis'],
+                "%H:%M:%S")
+            time_delta = datetime.timedelta(days=t.day,
+                                            hours=t.hour,
+                                            minutes=t.minute,
+                                            seconds=t.second)
+            result.scanning_time = int(time_delta.days * 86400 + 
+                                       time_delta.seconds)
     result.save()
 
 
-def create_results(scan):
+def create_results(scan, sb):
     """
     Task finished, so this method should update results
     """
     logger.debug('Creating results for scan %s', scan)
-    task_dir = Task.get_task_dir(scan.task.id)
+    task_dir = Task.get_task_dir(sb.task.id)
 
     #json's path is <TASK_DIR>/<NVR>/run1/<NVR>.js
     defects_path = os.path.join(task_dir, scan.nvr, 'run1', scan.nvr + '.js')
@@ -130,8 +141,10 @@ def create_results(scan):
 
     update_analyzer(r, json_dict)
 
-    r.scan = scan
     r.save()
+    
+    sb.result = r
+    sb.save()
 
     f.close()
 
@@ -164,8 +177,8 @@ def create_results(scan):
         for rg in get_unwaived_rgs(r):
             w = get_last_waiver(
                 rg.checker_group,
-                rg.result.scan.package,
-                rg.result.scan.tag.release,
+                rg.result.scanbinding.scan.package,
+                rg.result.scanbinding.scan.tag.release,
             )
             if w and compare_result_groups(rg, w.result_group):
                 rg.state = RESULT_GROUP_STATES['ALREADY_WAIVED']
@@ -198,6 +211,8 @@ def compare_result_groups(rg1, rg2):
             rg2_defect = rg2_defects.get(checker=rg1_defect.checker)
         except ObjectDoesNotExist:
             return False
+        if rg1_defect.checker != rg2_defect.checker:
+            return False
         if len(rg1.events) != len(rg2.events):
             return False
     return True
@@ -209,8 +224,8 @@ def get_last_waiver(checker_group, package, release):
     """
     waivers = Waiver.objects.filter(
         result_group__checker_group=checker_group,
-        result_group__result__scan__package=package,
-        result_group__result__scan__tag__release=release,
+        result_group__result__scanbinding__scan__package=package,
+        result_group__result__scanbinding__scan__tag__release=release,
     )
     if waivers:
         return waivers.latest()

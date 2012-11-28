@@ -11,11 +11,11 @@
 {% for result in result_list %}
   <tr>
     <td><a href="{% url waiving/result result.id %}">{{ result.id }}</a></td>
-    <td>{{ result.scan.nvr }}</td>
-    <td>{{ result.scan.base.nvr }}</td>
-    <td><span class="{{ result.scan.get_state_display }}">{{ result.scan.get_state_display }}</span></td>
-    <td>{{ result.scan.last_access|date:"Y-m-d H:i:s" }}</td>
-    <td>{{ result.scan.username }}</td>
+    <td>{{ result.scanbinding.scan.nvr }}</td>
+    <td>{{ result.scanbinding.scan.base.nvr }}</td>
+    <td><span class="{{ result.scan.get_state_display }}">{{ result.scanbinding.scan.get_state_display }}</span></td>
+    <td>{{ result.scanbinding.scan.last_access|date:"Y-m-d H:i:s" }}</td>
+    <td>{{ result.scanbinding.scan.username }}</td>
   </tr>
 {% endfor %}
 </table>

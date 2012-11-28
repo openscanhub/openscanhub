@@ -119,7 +119,7 @@ class ErrataDiffBuild(TaskBase):
                 'Scanning have not completed successfully.')
             self.fail()
 
-        self.hub.worker.finish_scan(self.args['scan_id'])
+        self.hub.worker.finish_scan(self.args['scan_id'], self.task_id)
 
     @classmethod
     def cleanup(cls, hub, conf, task_info):

@@ -6,12 +6,13 @@ import kobo.hub.xmlrpc.client
 from kobo.client.constants import TASK_STATES
 from kobo.hub.decorators import validate_worker
 from kobo.hub.models import Task
-from kobo.client.constants import TASK_STATES
 
+from covscanhub.other.exceptions import ScanException
 from covscanhub.scan.service import extract_logs_from_tarball, \
-    update_scans_state, prepare_and_execute_diff, post_qpid_message
+    update_scans_state, prepare_and_execute_diff, post_qpid_message, \
+    get_latest_binding
 from covscanhub.waiving.service import create_results, get_unwaived_rgs
-from covscanhub.scan.models import SCAN_STATES, Scan
+from covscanhub.scan.models import SCAN_STATES, Scan, ScanBinding
 
 __all__ = (
     "email_task_notification",
@@ -87,18 +88,26 @@ def extract_tarball(request, task_id, name):
 
 
 @validate_worker
-def finish_scan(request, scan_id):
-    scan = Scan.objects.get(id=scan_id)
+def finish_scan(request, scan_id, task_id):
+    sb = ScanBinding.objects.get(scan=scan_id, task=task_id)
+    scan = Scan.objects.get(id=sb.scan.id)
     
-    if scan.task.state == TASK_STATES['FAILED'] or \
-            scan.task.state == TASK_STATES['CANCELED']:
+    if sb.task.state == TASK_STATES['FAILED'] or \
+            sb.task.state == TASK_STATES['CANCELED']:
         scan.state = SCAN_STATES['FAILED']
         scan.enabled = False
     else:
         if scan.is_errata_scan() and scan.base:
-            prepare_and_execute_diff(scan.task, scan.base.task,
+            try:
+                prepare_and_execute_diff(sb.task,
+                                     get_latest_binding(scan.base).task,
                                      scan.nvr, scan.base.nvr)
-        result = create_results(scan)
+            except ScanException:
+                scan.state = SCAN_STATES['FAILED']
+                scan.save()
+                return
+
+        result = create_results(scan, sb)
     
         if scan.is_errata_scan():
             # if there are no missing waivers = there some newly added unwaived
@@ -108,7 +117,7 @@ def finish_scan(request, scan_id):
             else:
                 scan.state = SCAN_STATES['NEEDS_INSPECTION']
     
-            post_qpid_message(scan_id, SCAN_STATES.get_value(scan.state))
+            post_qpid_message(sb.id, SCAN_STATES.get_value(scan.state))
         elif scan.is_errata_base_scan():
             scan.state = SCAN_STATES['FINISHED']
     scan.save()

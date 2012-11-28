@@ -33,7 +33,7 @@ def get_result_context(result_object):
         'csdiff_fixed.html': 'Fixed defects diff',
         '.err': 'Complete defects output',
     }
-    for i in result_object.scan.task.logs.list:
+    for i in result_object.scanbinding.task.logs.list:
         basename = os.path.basename(i)
         for path, label in file_labels.iteritems():
             if basename.endswith(path):
@@ -47,9 +47,9 @@ def get_result_context(result_object):
     context['result'] = result_object
     context['logs'] = logs
     context['previous_result'] = get_or_none(Result,
-        scan=result_object.scan.get_child_scan())
+        scanbinding__scan=result_object.scanbinding.scan.get_child_scan())
     context['next_result'] = get_or_none(Result,
-        scan=result_object.scan.parent)
+        scanbinding__scan=result_object.scanbinding.scan.parent)
     return context
 
 
@@ -88,7 +88,8 @@ def results_list(request):
     Display list of all target results
     """
     args = {
-        "queryset": Result.objects.exclude(scan__base__isnull=True).\
+        "queryset": Result.objects.exclude(
+            scanbinding__scan__base__isnull=True).\
             order_by('-date_submitted'),
         "allow_empty": True,
         "paginate_by": 50,
@@ -121,7 +122,7 @@ def waiver(request, result_id, result_group_id):
             w.state = WAIVER_TYPES[form.cleaned_data['waiver_type']]
             w.save()
 
-            s = Scan.objects.get(id=result_object.scan.id)
+            s = Scan.objects.get(id=result_object.scanbinding.scan.id)
 
             s.last_access = datetime.datetime.now()
 
@@ -139,12 +140,12 @@ def waiver(request, result_id, result_group_id):
 
     if result_group_object.is_previously_waived():
         w = get_last_waiver(result_group_object.checker_group,
-                            result_group_object.result.scan.package,
-                            result_group_object.result.scan.tag.release)
+            result_group_object.result.scanbinding.scan.package,
+            result_group_object.result.scanbinding.scan.tag.release)
 
         place_string = "target = %s, base = %s" % (
-            w.result_group.result.scan.nvr,
-            w.result_group.result.scan.base.nvr,
+            w.result_group.result.scanbinding.scan.nvr,
+            w.result_group.result.scanbinding.scan.base.nvr,
         )
         context['waivers_place'] = place_string
         context['waivers_result'] = w.result_group.result.id
