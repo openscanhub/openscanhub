@@ -106,8 +106,11 @@ for the worker.\n"
 def set_statistics():
     # function = (key, description)
     for desc in get_mapping().itervalues():
-        s, created = StatType.objects.get_or_create(key=desc[0],
-                                                    comment=desc[1])
+        #tag, short_comment, comment, group, order
+        s, created = StatType.objects.get_or_create(
+            key=desc[0], short_comment=desc[1], comment=desc[2],
+            group=desc[3], order=desc[4], is_release_specific=(
+                'RELEASE' in desc[0]))
         if created:
             s.save()
 

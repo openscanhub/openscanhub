@@ -2,11 +2,8 @@
 {% load i18n %}
 
 {% block content %}
-<h2>{% trans "Statistics" %}</h2>
-
-{% for r in releases %}
-    <a href="{% url stats/release/list r.id %}">{{ r.tag }}</a>
-{% endfor %}
+<h2>{% trans "Statistics" %} for {{ release.description }}
+</h2>
 
 <table class="list" width="100%">
   <tr>
@@ -15,7 +12,7 @@
   </tr>
 {% for stat_type, value in results.iteritems %}
   <tr>
-    <td><a href="{% url stats/detail stat_type.id %}">{{ stat_type.short_comment }}</a></td>
+    <td><a href="{% url stats/release/detail release.id stat_type.id %}">{{ stat_type.short_comment }}</a></td>
     <td>{{ value }}</td>
   </tr>
 {% endfor %}

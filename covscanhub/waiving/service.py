@@ -200,6 +200,7 @@ def get_unwaived_rgs(result):
 def compare_result_groups(rg1, rg2):
     """
         Compare defects on two distinct result groups
+        This should be as
     """
     if rg1.new_defects != rg2.new_defects:
         return False

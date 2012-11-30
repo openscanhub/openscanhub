@@ -408,10 +408,14 @@ def get_latest_scan_by_package(tag, package):
 
 
 def diff_fixed_defects_in_package(scan):
-    first_scan = Scan.objects.filter(base=scan.base)\
-        .order_by("date_submitted")[0]
-    return Result.objects.get(scan=scan).fixed_defects_count() - \
-        Result.objects.get(scan=first_scan).fixed_defects_count()
+    try:
+        return ScanBinding.objects.get(scan=scan).result.fixed_defects_count()\
+            - ScanBinding.objects.get(scan=scan.get_first_scan()).result.\
+            fixed_defects_count()
+    except ObjectDoesNotExist:
+        return 0
+    except AttributeError:
+        return 0
 
 
 def get_latest_binding(scan_nvr):

@@ -15,7 +15,7 @@ function formatDate(x)
 }
 
 $(document).ready(function() {
-    $.getJSON("{% url stats/detail/graph type.id %}",function(data)
+    $.getJSON("{% url stats/release/detail/graph type.id release.id %}", function(data)
     {
         $("#chart_title").html(
             '<h3>' + data.title + '</h3>\n' +
@@ -36,6 +36,7 @@ $(document).ready(function() {
 {% endblock %}
 
 {% block content %}
+<h2>Release: {{ release.description }}</h2>
 <h2>{{ type.short_comment }}</h2>
 <div>{{ type.comment }}</div>
 

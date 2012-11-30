@@ -15,5 +15,10 @@ class StatResultsAdmin(admin.ModelAdmin):
     list_display = ("id", "link", "value", "date", 'release')
 
 
-admin.site.register(StatType)
+class StatTypeAdmin(admin.ModelAdmin):
+    list_display = ("id", 'key', 'short_comment', 'comment', 'group', 'order',
+                    'is_release_specific')
+
+
+admin.site.register(StatType, StatTypeAdmin)
 admin.site.register(StatResults, StatResultsAdmin)
