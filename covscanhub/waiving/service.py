@@ -8,6 +8,7 @@
 import os
 import re
 import logging
+import datetime
 
 import django.utils.simplejson as json
 from django.core.exceptions import ObjectDoesNotExist
@@ -113,7 +114,7 @@ def update_analyzer(result, json_dict):
                                             hours=t.hour,
                                             minutes=t.minute,
                                             seconds=t.second)
-            result.scanning_time = int(time_delta.days * 86400 + 
+            result.scanning_time = int(time_delta.days * 86400 +
                                        time_delta.seconds)
     result.save()
 
@@ -142,7 +143,7 @@ def create_results(scan, sb):
     update_analyzer(r, json_dict)
 
     r.save()
-    
+
     sb.result = r
     sb.save()
 

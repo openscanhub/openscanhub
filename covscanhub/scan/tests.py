@@ -20,7 +20,7 @@ class ElementaryScanCreationTestCase(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         fill_db()
-        
+
     @classmethod
     def tearDownClass(cls):
         clear_db()
@@ -320,10 +320,10 @@ class AdvancedScanCreationTestCase(unittest.TestCase):
         base_result.scanner = settings.ACTUAL_SCANNER[0]
         base_result.scanner_version = settings.ACTUAL_SCANNER[1]
         base_result.save()
-        
+
         target_result = Result()
         target_result.scanner = settings.ACTUAL_SCANNER[0]
-        target_result.scanner_version = settings.ACTUAL_SCANNER[1]        
+        target_result.scanner_version = settings.ACTUAL_SCANNER[1]
         target_result.save()
 
         base_bind = ScanBinding()
@@ -409,7 +409,7 @@ class AdvancedScanCreationTestCase(unittest.TestCase):
         base_result.scanner = settings.ACTUAL_SCANNER[0]
         base_result.scanner_version = settings.ACTUAL_SCANNER[1]
         base_result.save()
-        
+
         base_bind = ScanBinding()
         base_bind.task = Task.objects.get(id=base_task_id)
         base_bind.scan = base
@@ -444,13 +444,13 @@ class AdvancedScanCreationTestCase(unittest.TestCase):
         Case:
             parent_scan (failed)
               \_ child_scan (passed) <---- base_scan (passed)
-        
+
         We are adding new scan and we want child_scan to be a child of this
         new scan, this:
 
         new_scan (scanning)
           \ parent_scan (failed)
-           \____ child_scan (passed) <---- base_scan (passed)            
+           \____ child_scan (passed) <---- base_scan (passed)
         """
         libssh2 = Package.objects.get(name='libssh2')
 
@@ -520,12 +520,12 @@ class AdvancedScanCreationTestCase(unittest.TestCase):
         base_result.scanner = settings.ACTUAL_SCANNER[0]
         base_result.scanner_version = settings.ACTUAL_SCANNER[1]
         base_result.save()
-        
+
         target_result = Result()
         target_result.scanner = settings.ACTUAL_SCANNER[0]
-        target_result.scanner_version = settings.ACTUAL_SCANNER[1]        
-        target_result.save()        
-        
+        target_result.scanner_version = settings.ACTUAL_SCANNER[1]
+        target_result.save()
+
         base_bind = ScanBinding()
         base_bind.task = Task.objects.get(id=base_task_id)
         base_bind.scan = base
@@ -610,7 +610,7 @@ class AdvancedScanCreationTestCase(unittest.TestCase):
         base_result.scanner = settings.ACTUAL_SCANNER[0]
         base_result.scanner_version = settings.ACTUAL_SCANNER[1]
         base_result.save()
-        
+
         base_bind = ScanBinding()
         base_bind.task = Task.objects.get(id=base_task_id)
         base_bind.scan = base
