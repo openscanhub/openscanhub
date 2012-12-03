@@ -216,9 +216,9 @@ def init_scans(rpc_url):
         ('cifs-utils-4.8.1-10.el6', 'cifs-utils-4.8.1-14.el6'),
         ('systemd-191-2.fc18', 'systemd-192-1.fc18', ),
         ('systemd-191-2.fc18', 'systemd-193-1.fc18', ),
-        ('systemd-191-2.fc18', 'systemd-196-1.fc19', ),
-        ('systemd-191-2.fc18', 'systemd-195-2.fc18', ),
         ('systemd-191-2.fc18', 'systemd-194-1.fc18', ),
+        ('systemd-191-2.fc18', 'systemd-195-2.fc18', ),
+        ('systemd-191-2.fc18', 'systemd-196-1.fc19', ),
     ]
     for b in nvrs:
         scan_args = {

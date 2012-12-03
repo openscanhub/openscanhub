@@ -45,7 +45,7 @@ class FakeRequest(object):
 
 def finish_scan(scan_id):
     sb = ScanBinding.objects.get(scan=Scan.objects.get(id=scan_id),
-                                 task__state=TASK_STATES['FREE'])
+                                 task__state=TASK_STATES['CREATED'])
     task_dir = Task.get_task_dir(sb.task.id)
 
     source_path = '/tmp/covscanhub'

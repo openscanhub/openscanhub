@@ -15,7 +15,6 @@ from kobo.django.upload.models import FileUpload
 from kobo.client.constants import TASK_STATES
 
 from models import Scan, SCAN_STATES, SCAN_TYPES, ScanBinding
-from covscanhub.waiving.models import Result
 from covscanhub.other.exceptions import ScanException
 from covscanhub.other.shortcuts import get_mock_by_name, check_brew_build,\
     check_and_create_dirs
@@ -421,6 +420,12 @@ def diff_fixed_defects_in_package(scan):
 def get_latest_binding(scan_nvr):
     query =  ScanBinding.objects.filter(scan__nvr=scan_nvr)
     if query:
-        return query.order_by("-result__date_submitted")[0]
+        latest_submitted = query.order_by('scan__date_submitted')[0]
+        if (latest_submitted.scan.state == SCAN_STATES['QUEUED'] or 
+            latest_submitted.scan.state == SCAN_STATES['SCANNING']) and \
+            latest_submitted.result is None:
+            return latest_submitted
+        else:
+            return query.latest()
     else:
         return None

@@ -78,8 +78,10 @@ def obtain_base(base, task_id, kwargs, package):
     binding = get_latest_binding(base)
     found = bool(binding)        
     if found:
-        if not binding.result:
-            found = False                
+        if (binding.scan.state == SCAN_STATES['QUEUED'] or 
+            binding.scan.state == SCAN_STATES['SCANNING']) and \
+            binding.result is None:
+            return binding.scan               
         elif binding.result.scanner_version != settings.ACTUAL_SCANNER[1] or \
                 binding.result.scanner != settings.ACTUAL_SCANNER[0]:
             found = False
