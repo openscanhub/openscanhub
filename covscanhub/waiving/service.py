@@ -15,6 +15,7 @@ from django.core.exceptions import ObjectDoesNotExist
 
 from covscanhub.other.constants import ERROR_DIFF_FILE, FIXED_DIFF_FILE,\
     DEFAULT_CHECKER_GROUP
+from covscanhub.scan.models import ScanBinding
 from models import DEFECT_STATES, RESULT_GROUP_STATES, Defect, Result, \
     Checker, CheckerGroup, Waiver, ResultGroup
 
@@ -233,3 +234,7 @@ def get_last_waiver(checker_group, package, release):
         return waivers.latest()
     else:
         return None
+
+
+def get_first_result(scan):
+    return ScanBinding.get_first_result(scan)

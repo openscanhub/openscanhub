@@ -13,6 +13,8 @@ from kobo.hub.models import Task
 from kobo.types import Enum
 from kobo.client.constants import TASK_STATES
 
+from covscanhub.waiving.models import Result
+
 
 SCAN_STATES = Enum(
     "QUEUED",            # scan was submitted, waiting for scheduler
