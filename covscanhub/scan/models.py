@@ -116,34 +116,33 @@ True, this package will be blacklisted -- not accepted for scanning.")
 
     scans_number = property(calculateScanNumbers)
 
-    def display_graph(self, parent_scan, response, indent_level=1):
-        scan = parent_scan.get_child_scan()
-        if scan is not None:  # TARGET
-            sb = ScanBinding.objects.get(scan=scan)
-            if sb.result is not None:
-                response += '%s<a href="%s">%s</a> (%s) New defects: %d, \
+    def display_graph(self, scan, response, indent_level=0):
+        sb = ScanBinding.objects.get(scan=scan)
+        if sb.result is not None:
+            response += '%s<a href="%s">%s</a> (%s) New defects: %d, \
 fixed defects: %d<br/ >\n' % (
-                    "&nbsp;" * indent_level * 4,  # indent
-                    reverse("waiving/result", args=(sb.result.id,)),  # url
-                    sb.scan.nvr,
-                    sb.scan.get_state_display(),
-                    sb.result.new_defects_count(),
-                    sb.result.fixed_defects_count(),
-                )
-            else:
-                response += "%s%s<br/ >\n" % (
-                    "&nbsp;" * indent_level * 4,
-                    scan.nvr,
-                )
-            return self.display_graph(scan, response, indent_level + 1)
-        else:  # BASE
+                "&nbsp;" * indent_level * 4,  # indent
+                reverse("waiving/result", args=(sb.result.id,)),  # url
+                sb.scan.nvr,
+                sb.scan.get_state_display(),
+                sb.result.new_defects_count(),
+                sb.result.fixed_defects_count(),
+            )
+        else:
+            response += "%s%s<br/ >\n" % (
+                "&nbsp;" * indent_level * 4,
+                scan.nvr,
+            )
+        if scan.get_child_scan() is None:  # BASE
             if response.endswith('<br/ >\n'):
                 response = response[:-7]
             response += '%sBase: %s<br/ >' % (
-                '.' * (160 - (indent_level * 4 + len(parent_scan.base.nvr))),
-                parent_scan.base.nvr
+                '.' * (120 - (indent_level * 4 + len(scan.base.nvr))),
+                scan.base.nvr
             )
-            return response
+            return response                
+        return self.display_graph(scan.get_child_scan(),
+                                  response, indent_level + 1)
 
     def display_scan_tree(self):
         scans = Scan.objects.filter(package=self)
@@ -163,15 +162,6 @@ package')
             parent_scan = scans_package.order_by('-date_submitted')[0]
             response += "<div>\n<h3>%s</h3>\n" % \
                 parent_scan.tag.release.description
-            try:
-                response += '<a href="%s">%s</a><br/ >\n' % (
-                    reverse("waiving/result",
-                            args=(Scanbinding.objects.get(scan=parent_scan)\
-                                .result.id,)),
-                    parent_scan.nvr
-                )
-            except ObjectDoesNotExist:
-                response += "%s<br/ >\n" % parent_scan.nvr
             response = self.display_graph(parent_scan, response)
             response += "<hr/ ></div>\n"
         return mark_safe(response)
@@ -277,13 +267,6 @@ counted in statistics.")
             return related_scans[0]
         else:
             return None
-    """
-    def get_latest_result(self):
-        try:
-            return Result.objects.filter(scan=self).latest()
-        except ObjectDoesNotExist:
-            return None
-    """
 
 
 class ScanBinding(models.Model):

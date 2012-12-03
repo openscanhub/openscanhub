@@ -100,7 +100,7 @@ def finish_scan(request, scan_id, task_id):
         if scan.is_errata_scan() and scan.base:
             try:
                 prepare_and_execute_diff(sb.task,
-                                     get_latest_binding(scan.base).task,
+                                     get_latest_binding(scan.base.nvr).task,
                                      scan.nvr, scan.base.nvr)
             except ScanException:
                 scan.state = SCAN_STATES['FAILED']

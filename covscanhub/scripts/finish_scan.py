@@ -43,7 +43,7 @@ class FakeRequest(object):
         self.META['REMOTE_ADDR'] = 'uqtm.lab.eng.brq.redhat.com'
 
 
-def finish_scan(scan_id):
+def m_finish_scan(scan_id):
     sb = ScanBinding.objects.get(scan=Scan.objects.get(id=scan_id),
                                  task__state=TASK_STATES['CREATED'])
     task_dir = Task.get_task_dir(sb.task.id)
@@ -67,15 +67,15 @@ def finish_scan(scan_id):
     Task.objects.filter(id=sb.task.id).update(state=TASK_STATES['CLOSED'])
 
 
-def finish_all_scans():
+def m_finish_all_scans():
     base_scans = Scan.objects.filter(scan_type=SCAN_TYPES['ERRATA_BASE'],
                                      state=SCAN_STATES['QUEUED'])
     for base in base_scans:
-        finish_scan(base.id)
+        m_finish_scan(base.id)
     target_scans = Scan.objects.filter(scan_type=SCAN_TYPES['ERRATA'],
                                        state=SCAN_STATES['QUEUED'])
     for target in target_scans:
-        finish_scan(target.id)    
+        m_finish_scan(target.id)    
 
 
 if __name__ == '__main__':
@@ -90,6 +90,6 @@ if __name__ == '__main__':
         pass
 
     if id_provided:
-        finish_scan(scan_id)
+        m_finish_scan(scan_id)
     else:
-        finish_all_scans()
+        m_finish_all_scans()

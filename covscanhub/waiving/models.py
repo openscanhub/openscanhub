@@ -8,7 +8,7 @@ from django.core.urlresolvers import reverse
 from django.core.exceptions import ObjectDoesNotExist
 import django.db.models as models
 
-from service import get_first_result
+from covscanhub.scan.models import ScanBinding
 
 
 DEFECT_STATES = Enum(
@@ -161,7 +161,7 @@ class ResultGroup(models.Model):
         """
         first_scan = self.result.scanbinding.scan.get_first_scan()
         if first_scan:
-            first_result = get_first_result(first_scan)
+            first_result = ScanBinding.get_first_result(first_scan).result
             if first_result:
                 try:
                     return ResultGroup.objects.get(
