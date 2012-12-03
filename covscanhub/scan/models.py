@@ -13,8 +13,6 @@ from kobo.hub.models import Task
 from kobo.types import Enum
 from kobo.client.constants import TASK_STATES
 
-from covscanhub.waiving.models import Result
-
 
 SCAN_STATES = Enum(
     "QUEUED",            # scan was submitted, waiting for scheduler
@@ -121,16 +119,18 @@ True, this package will be blacklisted -- not accepted for scanning.")
     def display_graph(self, parent_scan, response, indent_level=1):
         scan = parent_scan.get_child_scan()
         if scan is not None:  # TARGET
-            try:
-                response += '%s<a href="%s">%s</a> New defects: %d, fixed \
-defects: %d<br/ >\n' % (
-                    "&nbsp;" * indent_level * 4,
-                    reverse("waiving/result",
-                            args=(Result.objects.get(scan=scan).id,)),
-                    scan.nvr,
-                    Result.objects.get(scan=scan).new_defects_count(),
-                    Result.objects.get(scan=scan).fixed_defects_count(),)
-            except ObjectDoesNotExist:
+            sb = ScanBinding.objects.get(scan=scan)
+            if sb.result is not None:
+                response += '%s<a href="%s">%s</a> (%s) New defects: %d, \
+fixed defects: %d<br/ >\n' % (
+                    "&nbsp;" * indent_level * 4,  # indent
+                    reverse("waiving/result", args=(sb.result.id,)),  # url
+                    sb.scan.nvr,
+                    sb.scan.get_state_display(),
+                    sb.result.new_defects_count(),
+                    sb.result.fixed_defects_count(),
+                )
+            else:
                 response += "%s%s<br/ >\n" % (
                     "&nbsp;" * indent_level * 4,
                     scan.nvr,
@@ -166,7 +166,8 @@ package')
             try:
                 response += '<a href="%s">%s</a><br/ >\n' % (
                     reverse("waiving/result",
-                            args=(Result.objects.get(scan=parent_scan).id,)),
+                            args=(Scanbinding.objects.get(scan=parent_scan)\
+                                .result.id,)),
                     parent_scan.nvr
                 )
             except ObjectDoesNotExist:
@@ -254,7 +255,7 @@ counted in statistics.")
     def get_errata_id(self):
         if self.is_errata_scan():
             try:
-                return self.task.args['errata_id']
+                return self.scanbinding.task.args['errata_id']
             except KeyError:
                 return None
         return None
