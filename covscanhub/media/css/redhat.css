@@ -50,6 +50,10 @@ table.summary td.INFO {
     background-color: #90aaff;
 }
 
+table.summary td#active {
+    border: 5px solid red;
+}
+
 table.summary span.FIXED {
     color: #00FF00;
     font-size: 1.2em;

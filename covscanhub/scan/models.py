@@ -76,6 +76,16 @@ class SystemRelease(models.Model):
     active = models.BooleanField(default=True, help_text="If set to True,\
 statistical data will be harvested for this system release.")
 
+    parent = models.OneToOneField("self", blank=True, null=True)
+
+    def get_child(self):
+        try:
+            return self.systemrelease
+        except ObjectDoesNotExist:
+            return None
+
+    child = property(get_child)
+
     def __unicode__(self):
         return "%s -- %s" % \
             (self.tag, self.description)
@@ -140,7 +150,7 @@ fixed defects: %d<br/ >\n' % (
                 '.' * (120 - (indent_level * 4 + len(scan.base.nvr))),
                 scan.base.nvr
             )
-            return response                
+            return response
         return self.display_graph(scan.get_child_scan(),
                                   response, indent_level + 1)
 
@@ -256,7 +266,7 @@ counted in statistics.")
         except ObjectDoesNotExist:
             return None
 
-    def get_first_scan(self):
+    def get_first_scan_binding(self):
         related_scans = ScanBinding.objects.filter(
             scan__package=self.package,
             scan__tag__release=self.tag.release,
@@ -284,11 +294,11 @@ class ScanBinding(models.Model):
 
     class Meta:
         get_latest_by = "task__dt_finished"
-    
+
     def __unicode__(self):
         return u"#%d: Scan: %s | %s" % (self.id, self.scan, self.task)
 
-    @classmethod    
+    @classmethod
     def get_first_result(cls, scan):
         bindings = cls.objects.filter(scan=scan)
         if bindings:

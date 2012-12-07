@@ -4,14 +4,14 @@
 
 {% block waiver %}
 
-<h2>{{ group.checker_group.name }}</h2>
+<h2>{{ active_group.checker_group.name }}</h2>
 
 <div id="defects">
 
 {% for defect in defects %}
     <div name="defects" class="{{ defect.get_state_display }}">
         <h3>{{ defect.order }}. Defect {{ defect.checker.name }}</h3>
-    {{ checker.annotation }} [{{ defect.get_state_display }}]
+    {{ checker.annotation }}
         <ul>
     {% for event in defect.events %}
             <li>
@@ -45,20 +45,23 @@
 
 {% endif %} {# display_waivers #}
 
-
 {% if waivers_place %}
-This group has been waived in run: <a href="{% url waiving/waiver waivers_result waivers_group %}">{{ waivers_place }}</a> </br>
-{% endif %}
 
+<h3>This group has been waived in run: <a href="{% url waiving/waiver waivers_result waivers_group %}">{{ waivers_place }}</a></h3>
+{% endif %}
 
 {% if display_form %}
 
-<form action="{% url waiving/waiver result.id group.id %}" method="post">{% csrf_token %}
+<form action="{% url waiving/waiver result.id active_group.id %}" method="post">{% csrf_token %}
 {{ form.as_p }}
 <input type="submit" value="Submit" />
 </form>
 
-{% endif %}
+{% else %}{% if form_message %}
+
+<h3>{{ form_message }}</h3>
+
+{% endif %}{% endif %}
 
 {% endblock %}
     

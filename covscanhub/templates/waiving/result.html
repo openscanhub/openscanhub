@@ -1,6 +1,5 @@
 {% extends "base.html" %}
 {% load i18n %}
-{% load utils %}
 
 {% block content %}
 <h1>{{ result.scanbinding.scan.tag.release.description }}</h1>
@@ -34,11 +33,27 @@
 <table class="summary">
 {% for five in output_new %}
   <tr>
-    {% for group, result_group in five.items %}
-        {% if result_group %}
-            {{ result_group|result_group_display_new }}
+    {% for group, data in five.items %}
+        {% if data and data.id %}
+        <td {% if active_group and active_group.id == data.id %}
+            id="active"
+            {% endif %}
+            class="{{ data.group_state }}">
+            <a href="{% url waiving/waiver result.id data.id %}#defects">{{ group.name }}</a>
+            {% if data.defects_state %}
+            <span class="{{ data.defects_state }}">{{ data.defects_count }}</span>
+            {% endif %}
+            {% if data.diff_state %}
+            <span class="{{ data.diff_state }}">{{ data.diff_count }}</span>
+            {% endif %}
+        </td>
         {% else %}
-        <td class="PASSED">{{ group.name }}</td>
+        <td class="PASSED">
+            {{ group.name }}
+            {% if data.diff_state %}
+            <span class="{{ data.diff_state }}">{{ data.diff_count }}</span>
+            {% endif %}
+        </td>
         {% endif %}
     {% endfor %}
   </tr>
@@ -51,16 +66,36 @@
 <table class="summary">
 {% for five in output_fixed %}
   <tr>
-    {% for group, result_group in five.items %}
-        {% if result_group %}
-            {{ result_group|result_group_display_fixed }}
+    {% for group, data in five.items %}
+        {% if data and data.id %}
+        <td {% if active_group and active_group.id == data.id %}
+            id="active"
+            {% endif %}
+            class="{{ data.group_state }}">
+            <a href="{% url waiving/fixed_defects result.id data.id %}#defects">{{ group.name }}</a>
+            {% if data.defects_state %}
+            <span class="{{ data.defects_state }}">{{ data.defects_count }}</span>
+            {% endif %}
+            {% if data.diff_state %}
+            <span class="{{ data.diff_state }}">{{ data.diff_count }}</span>
+            {% endif %}
+        </td>
         {% else %}
-        <td class="PASSED">{{ group.name }}</td>
+        <td class="PASSED">
+            {{ group.name }}
+            {% if data.diff_state %}
+            <span class="{{ data.diff_state }}">{{ data.diff_count }}</span>
+            {% endif %}
+        </td>
         {% endif %}
     {% endfor %}
   </tr>
 {% endfor %}
 </table>
+{% endif %}
+
+{% if task %}
+<a href="{% url task/detail task.id %}">Task</a>
 {% endif %}
 
 {% if logs %}
@@ -76,11 +111,11 @@
 {% if previous_result or next_result %}
 <div id="result_links">
     {% if previous_result %}
-    <span><a href="{% url waiving/result previous_result.id %}">Previous result</a></span>
+    <span><a href="{% url waiving/result previous_result.id %}">Previous scan ({{ previous_result.nvr }})</a></span>
     {% endif %}
     {% if previous_result and next_result %} | {% endif %}
     {% if next_result %}
-    <span><a href="{% url waiving/result next_result.id %}">Next result</a></span>
+    <span><a href="{% url waiving/result next_result.id %}">Next scan ({{ next_result.nvr }})</a></span>
     {% endif %}
 </div>
 {% endif %}

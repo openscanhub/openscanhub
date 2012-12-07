@@ -13,6 +13,7 @@ from django.core.handlers.wsgi import WSGIRequest
 __all__ = (
     'fill_db',
     'clear_db',
+    'clear_all',
 )
 
 
@@ -107,6 +108,12 @@ def fill_db():
     a.name = 'noarch'
     a.pretty_name = 'noarch'
     a.save()
+
+
+def fill_db_waiving():
+    """
+    Fill database with data related to waiving
+    """
 
 
 def clear_all(model):

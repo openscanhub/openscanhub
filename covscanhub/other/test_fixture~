@@ -1,0 +1,130 @@
+[
+    {
+        "pk": 1,
+        "model": "hub.task",
+        "fields": {
+            "comment": "Errata Tool Scan of systemd-196-1.fc18",
+            "exclusive": false,
+            "resubmitted_by": null,
+            "weight": 1,
+            "awaited": false,
+            "result": "",
+            "owner": 1,
+            "archive": false,
+            "state": 3,
+            "label": "systemd-196-1.fc18",
+            "priority": 20,
+            "waiting": false,
+            "method": "ErrataDiffBuild",
+            "channel": 1,
+            "parent": null,
+            "subtask_count": 0,
+            "args": "{u'mock_config': u'epel-6-x86_64', u'scan_id': 1, u'errata_id': u'test_id', u'brew_build': u'systemd-196-1.fc19'}",
+            "worker": null,
+            "dt_created": "2012-12-03 10:45:38",
+            "arch": 1,
+            "resubmitted_from": null,
+            "dt_finished": "2012-12-03 10:45:38",
+            "dt_started": null,
+            "timeout": null
+        }
+    },
+    {
+        "pk": 2,
+        "model": "hub.task",
+        "fields": {
+            "comment": "Errata Tool Scan of systemd-195-2.fc18",
+            "exclusive": false,
+            "resubmitted_by": null,
+            "weight": 1,
+            "awaited": false,
+            "result": "",
+            "owner": 1,
+            "archive": false,
+            "state": 3,
+            "label": "systemd-195-2.fc18",
+            "priority": 20,
+            "waiting": false,
+            "method": "ErrataDiffBuild",
+            "channel": 1,
+            "parent": null,
+            "subtask_count": 0,
+            "args": "{u'mock_config': u'epel-6-x86_64', u'scan_id': 2, u'errata_id': u'test_id', u'brew_build': u'systemd-195-2.fc18'}",
+            "worker": null,
+            "dt_created": "2012-12-03 10:45:37",
+            "arch": 1,
+            "resubmitted_from": null,
+            "dt_finished": "2012-12-03 10:45:38",
+            "dt_started": null,
+            "timeout": null
+        }
+    },
+    {
+        "pk": 1,
+        "model": "scan.scan",
+        "fields": {
+            "username": 1,
+            "nvr": "libssh2-1-1.el6",
+            "parent": null,
+            "package": 1,
+            "date_submitted": "2012-12-03 10:45:24",
+            "tag": 1,
+            "scan_type": 1,
+            "state": 5,
+            "base": null,
+            "last_access": "2012-12-03 10:45:24",
+            "enabled": false
+        }
+    },
+    {
+        "pk": 2,
+        "model": "scan.scan",
+        "fields": {
+            "username": 1,
+            "nvr": "libssh2-2-1.el6",
+            "parent": 4,
+            "package": 1,
+            "date_submitted": "2012-12-03 10:45:24",
+            "tag": 1,
+            "scan_type": 0,
+            "state": 3,
+            "base": 1,
+            "last_access": "2012-12-03 10:45:24",
+            "enabled": false
+        }
+    },
+    {
+        "pk": 3,
+        "model": "scan.scan",
+        "fields": {
+            "username": 1,
+            "nvr": "libssh2-2-2.el6",
+            "parent": null,
+            "package": 1,
+            "date_submitted": "2012-12-03 10:45:24",
+            "tag": 1,
+            "scan_type": 0,
+            "state": 6,
+            "base": 1,
+            "last_access": "2012-12-03 10:45:24",
+            "enabled": false
+        }
+    },
+    {
+        "pk": 4,
+        "model": "scan.scan",
+        "fields": {
+            "username": 1,
+            "nvr": "libssh2-2-3.el6",
+            "parent": null,
+            "package": 1,
+            "date_submitted": "2012-12-03 10:45:24",
+            "tag": 1,
+            "scan_type": 0,
+            "state": 2,
+            "base": 1,
+            "last_access": "2012-12-03 10:45:24",
+            "enabled": true
+        }
+    },                
+]

@@ -14,8 +14,10 @@ import datetime
 
 from kobo.hub.models import Task
 
-from covscanhub.scan.models import Scan, SystemRelease, SCAN_TYPES
-from covscanhub.scan.service import diff_fixed_defects_in_package
+from covscanhub.scan.models import Scan, SystemRelease, SCAN_TYPES, ScanBinding
+from covscanhub.scan.service import diff_fixed_defects_in_package,\
+    diff_fixed_defects_between_releases, diff_new_defects_between_releases
+
 from covscanhub.waiving.models import Result, Defect, DEFECT_STATES, Waiver, \
     WAIVER_TYPES, ResultGroup, RESULT_GROUP_STATES
 
@@ -63,11 +65,11 @@ def get_total_lines():
 
         Number of total lines of code scanned.
     """
-    result = Result.objects.all()
-    if not result:
+    sbs = ScanBinding.objects.filter(scan__enabled=True)
+    if not sbs:
         return 0
     else:
-        return result.aggregate(Sum('lines'))['lines__sum']
+        return sbs.aggregate(Sum('result__lines'))['result__lines__sum']
 get_total_lines.group = "LOC"
 get_total_lines.order = 1
 
@@ -80,9 +82,9 @@ def get_lines_by_release():
     releases = SystemRelease.objects.filter(active=True)
     result = {}
     for r in releases:
-        result[r] = Result.objects.filter(
-            scanbinding__scan__tag__release=r.id)\
-            .aggregate(Sum('lines'))['lines__sum']
+        result[r] = ScanBinding.objects.filter(scan__enabled=True,
+            scan__tag__release=r.id)\
+            .aggregate(Sum('result__lines'))['result__lines__sum']
     return result
 get_lines_by_release.group = "LOC"
 get_lines_by_release.order = 1
@@ -160,11 +162,46 @@ def get_fixed_defects_in_release():
     result = {}
     for r in releases:
         result[r] = 0
-        for s in Scan.objects.filter(tag__release=r.id, enabled=True):
-            result[r] += diff_fixed_defects_in_package(s)
+        for sb in ScanBinding.objects.filter(scan__tag__release=r.id,
+                                             scan__enabled=True):
+            result[r] += diff_fixed_defects_in_package(sb)
     return result
 get_fixed_defects_in_release.group = "DEFECTS"
 get_fixed_defects_in_release.order = 3
+
+def get_fixed_defects_between_releases():
+    """
+        Fixed defects in one release
+
+        Number of defects that were fixed between first scan and final one.
+    """
+    releases = SystemRelease.objects.filter(active=True, child__isnull=False)
+    result = {}
+    for r in releases:
+        result[r] = 0
+        for sb in ScanBinding.objects.filter(scan__tag__release=r.id,
+                                             scan__enabled=True):
+            result[r] += diff_fixed_defects_between_releases(sb)
+    return result
+get_fixed_defects_between_releases.group = "DEFECTS"
+get_fixed_defects_between_releases.order = 4
+
+def get_new_defects_between_releases():
+    """
+        Fixed defects in one release
+
+        Number of defects that were fixed between first scan and final one.
+    """
+    releases = SystemRelease.objects.filter(active=True)
+    result = {}
+    for r in releases:
+        result[r] = 0
+        for sb in ScanBinding.objects.filter(scan__tag__release=r.id,
+                                             scan__enabled=True):
+            result[r] += diff_new_defects_between_releases(sb)
+    return result
+get_new_defects_between_releases.group = "DEFECTS"
+get_new_defects_between_releases.order = 5
 
 #########
 # WAIVERS

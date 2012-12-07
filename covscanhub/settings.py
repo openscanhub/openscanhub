@@ -139,6 +139,7 @@ INSTALLED_APPS = (
     'covscanhub.scan',
     'covscanhub.waiving',
     'covscanhub.stats',
+    'django_extensions',
 )
 
 BREW_HUB = 'http://brewhub.devel.redhat.com/brewhub'

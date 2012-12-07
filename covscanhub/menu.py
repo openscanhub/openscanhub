@@ -36,6 +36,7 @@ menu = (
         MenuItem("Scan List", "scan/list"),
         MenuItem("Mock configs", "mock_config/index"),
         MenuItem("Packages", "package/list"),
+        MenuItem("New", "scan/new"),
     )),
     MenuItem("Tasks", "task/index", menu=(
         MenuItem("All", "task/index"),

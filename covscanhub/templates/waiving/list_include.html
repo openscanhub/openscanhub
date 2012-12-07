@@ -8,14 +8,14 @@
     <th>{% trans "Date accessed" %}</th>
     <th>{% trans "Owner" %}</th>
   </tr>
-{% for result in result_list %}
+{% for scanbinding in scanbinding_list %}
   <tr>
-    <td><a href="{% url waiving/result result.id %}">{{ result.id }}</a></td>
-    <td>{{ result.scanbinding.scan.nvr }}</td>
-    <td>{{ result.scanbinding.scan.base.nvr }}</td>
-    <td><span class="{{ result.scan.get_state_display }}">{{ result.scanbinding.scan.get_state_display }}</span></td>
-    <td>{{ result.scanbinding.scan.last_access|date:"Y-m-d H:i:s" }}</td>
-    <td>{{ result.scanbinding.scan.username }}</td>
+    <td><a href="{% url waiving/result scanbinding.result.id %}">{{ scanbinding.result.id }}</a></td>
+    <td>{{ scanbinding.scan.nvr }}</td>
+    <td>{{ scanbinding.scan.base.nvr }}</td>
+    <td><span class="{{ scanbinding.scan.get_state_display }}">{{ scanbinding.scan.get_state_display }}</span></td>
+    <td>{{ scanbinding.scan.last_access|date:"Y-m-d H:i:s" }}</td>
+    <td>{{ scanbinding.scan.username }}</td>
   </tr>
 {% endfor %}
 </table>

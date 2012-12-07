@@ -1,0 +1,10 @@
+[
+    {
+        "pk": 1000,
+        "model": "scan.package",
+        "fields": {
+            "name": "test",
+            "blocked": false
+        }
+    }
+]

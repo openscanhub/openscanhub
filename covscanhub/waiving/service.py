@@ -9,6 +9,9 @@ import os
 import re
 import logging
 import datetime
+import tempfile
+import shutil
+import pipes
 
 import django.utils.simplejson as json
 from django.core.exceptions import ObjectDoesNotExist
@@ -19,6 +22,7 @@ from models import DEFECT_STATES, RESULT_GROUP_STATES, Defect, Result, \
     Checker, CheckerGroup, Waiver, ResultGroup
 
 from kobo.hub.models import Task
+from kobo.shortcuts import run
 
 
 logger = logging.getLogger(__name__)
@@ -29,6 +33,10 @@ __all__ = (
     'get_unwaived_rgs',
     'compare_result_groups',
     'get_last_waiver',
+    'update_analyzer',
+    'load_defects_from_json',
+    'get_defects_diff_display',
+    'display_in_result',
 )
 
 
@@ -64,10 +72,7 @@ def load_defects_from_json(json_dict, result,
                 elif defect_state == DEFECT_STATES['FIXED']:
                     rg.state = RESULT_GROUP_STATES['INFO']
 
-            if defect_state == DEFECT_STATES['NEW']:
-                rg.new_defects += 1
-            elif defect_state == DEFECT_STATES['FIXED']:
-                rg.fixed_defects += 1
+            rg.defects_count += 1
             rg.save()
 
             d.checker = checker
@@ -110,8 +115,7 @@ def update_analyzer(result, json_dict):
             t = datetime.datetime.strptime(
                 json_dict['scan']['time-elapsed-analysis'],
                 "%H:%M:%S")
-            time_delta = datetime.timedelta(days=t.day,
-                                            hours=t.hour,
+            time_delta = datetime.timedelta(hours=t.hour,
                                             minutes=t.minute,
                                             seconds=t.second)
             result.scanning_time = int(time_delta.days * 86400 +
@@ -153,7 +157,7 @@ def create_results(scan, sb):
         try:
             fixed_file = open(fixed_file_path, 'r')
         except IOError:
-            print 'Unable to open file %s' % fixed_file_path
+            logger.critical('Unable to open file %s', fixed_file_path)
             return
         fixed_json_dict = json.load(fixed_file)
         load_defects_from_json(fixed_json_dict, r, DEFECT_STATES['FIXED'])
@@ -162,7 +166,7 @@ def create_results(scan, sb):
         try:
             diff_file = open(diff_file_path, 'r')
         except IOError:
-            print 'Unable to open file %s' % diff_file_path
+            logger.critical('Unable to open file %s', diff_file_path)
             return
         diff_json_dict = json.load(diff_file)
         load_defects_from_json(diff_json_dict, r, DEFECT_STATES['NEW'])
@@ -182,7 +186,7 @@ def create_results(scan, sb):
                 rg.result.scanbinding.scan.tag.release,
             )
             if w and compare_result_groups(rg, w.result_group):
-                rg.state = RESULT_GROUP_STATES['ALREADY_WAIVED']
+                rg.state = RESULT_GROUP_STATES['PREVIOUSLY_WAIVED']
                 rg.save()
     return r
 
@@ -198,27 +202,64 @@ def get_unwaived_rgs(result):
             if not result_waivers.filter(result_group=rg)]
 
 
+def assign_if_true(d, key, value):
+    if bool(value):
+        d[key] = value
+
+
+def get_serializable_dict(query):
+    result_dict = {}
+    result_dict['defects'] = []
+    for d in query:
+        d_dict = {}
+        d_dict['checker'] = d.checker.name
+        assign_if_true(d_dict, 'annotation', d.annotation)
+        assign_if_true(d_dict, 'defect_id', d.defect_identifier)
+        assign_if_true(d_dict, 'function', d.function)
+        d_dict['key_event_idx'] = d.key_event
+        d_dict['events'] = d.events
+        result_dict['defects'].append(d_dict)
+    return result_dict
+
 def compare_result_groups(rg1, rg2):
     """
-        Compare defects on two distinct result groups
-        This should be as
+        Compare defects of two distinct result groups
+        use csdiff tool
     """
-    if rg1.new_defects != rg2.new_defects:
+    if rg1.defects_count != rg2.defects_count:
         return False
+    return True
+    """
     rg1_defects = rg1.get_new_defects()
     rg2_defects = rg2.get_new_defects()
 
-    for rg1_defect in rg1_defects:
-        try:
-            rg2_defect = rg2_defects.get(checker=rg1_defect.checker)
-        except ObjectDoesNotExist:
-            return False
-        if rg1_defect.checker != rg2_defect.checker:
-            return False
-        if len(rg1.events) != len(rg2.events):
-            return False
-    return True
+    dict1 = get_serializable_dict(rg1_defects)
+    dict2 = get_serializable_dict(rg2_defects)
 
+    tmp_dir = tempfile.mkdtemp(prefix="cs_diff")
+    os.chmod(tmp_dir, 0775)
+    fd1, filename1 = tempfile.mkstemp(prefix= 'rg1', text=True, dir=tmp_dir)
+    fd2, filename2 = tempfile.mkstemp(prefix= 'rg2', text=True, dir=tmp_dir)
+    file1 = os.fdopen(fd1, 'w')
+    json.dump(dict1, file1)
+    file1.close()
+    file2 = os.fdopen(fd2, 'w')
+    json.dump(dict2, file2)
+    file2.close()
+
+    diff_cmd = ' '.join(['csdiff', '-j',
+                         pipes.quote(os.path.join(tmp_dir, filename1)),
+                         pipes.quote(os.path.join(tmp_dir, filename1)),
+                         '>', 'result.js'])
+    retcode, output = run(diff_cmd,
+                          workdir=tmp_dir,
+                          stdout=False,
+                          can_fail=False,
+                          logfile='csdiff.log',
+                          return_stdout=False,
+                          show_cmd=False)
+    shutil.rmtree(tmp_dir)
+    """
 
 def get_last_waiver(checker_group, package, release):
     """
@@ -233,3 +274,95 @@ def get_last_waiver(checker_group, package, release):
         return waivers.latest()
     else:
         return None
+
+
+def get_first_result_group(checker_group, result, defect_type):
+    """
+    Return result group for same checker group, which is associated with
+     previous scan (previous build of specified package)
+    """
+    first_sb = result.scanbinding.scan.get_first_scan_binding()
+    if first_sb:
+        if first_sb.result:
+            try:
+                return ResultGroup.objects.get(
+                    checker_group=checker_group,
+                    result=first_sb.result,
+                    defect_type = defect_type,
+                )
+            except ObjectDoesNotExist:
+                return None
+
+
+def get_defects_diff(checker_group=None, result=None, defect_type=None, rg=None):
+    """
+    diff between number of new defects from this scan and first one.
+    Return None, if you dont have anything to diff against.
+
+    @rtype: None or int
+    @return: difference between defects
+    """
+    if rg is None:
+        first_rg = get_first_result_group(checker_group, result, defect_type)
+    else:
+        first_rg = get_first_result_group(rg.checker_group, rg.result,
+                                          rg.defect_type)
+    # there is no first result group and there is actual one
+    if first_rg is None and rg is not None:
+        # is this scan first scan? If so, we dont need diff
+        if rg.result.scanbinding.scan.get_child_scan():
+            return rg.defects_count
+        else:
+            return None
+    # there is first result group and there is no actual one
+    elif first_rg is not None and rg is None:
+        return first_rg.defects_count * -1
+    elif first_rg is not None and rg is not None:
+        return rg.defects_count - first_rg.defects_count
+    else:
+        return None
+
+
+def get_defects_diff_display(response=None, checker_group=None,
+                             result=None, defect_type=None, rg=None):
+    if response is None:
+        response = {}
+    defects_diff = get_defects_diff(checker_group=checker_group,
+                                    result=result,
+                                    defect_type=defect_type,
+                                    rg=rg)
+    if defects_diff:  # not None & != 0
+        if defect_type == DEFECT_STATES['NEW']:
+            if defects_diff > 0:
+                response['diff_state'] = 'defects_increased'
+                response['diff_count'] = "%s%d" % ('+', defects_diff)
+            elif defects_diff < 0:
+                response['diff_state'] = 'defects_decreased'
+                response['diff_count'] = "%d" % (defects_diff)
+        elif defect_type == DEFECT_STATES['FIXED']:
+            if defects_diff > 0:
+                response['diff_state'] = 'defects_decreased'
+                response['diff_count'] = "%s%d" % ('+', defects_diff)
+            elif defects_diff < 0:
+                response['diff_state'] = 'defects_increased'
+                response['diff_count'] = "%d" % (defects_diff)
+    return response
+
+
+def get_defects_diff_display_by_rg(response, rg):
+    return get_defects_diff_display(response,
+                                    checker_group=rg.checker_group,
+                                    result=rg.result,
+                                    defect_type=rg.defect_type,
+                                    rg=rg)
+
+
+def display_in_result(rg):
+    """
+    return data that are displayed in waiver
+    """
+    response = {'group_state': rg.get_state_to_display()}
+    response['defects_state'] = DEFECT_STATES.get_value(rg.defect_type)
+    response['defects_count'] = rg.defects_count
+    get_defects_diff_display_by_rg(response=response, rg=rg)
+    return response

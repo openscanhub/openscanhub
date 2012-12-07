@@ -39,6 +39,8 @@ __all__ = (
     'diff_fixed_defects_in_package',
     "get_latest_scan_by_package",
     "get_latest_binding",
+    "diff_new_defects_between_releases",
+    "diff_new_defects_between_releases",
 )
 
 
@@ -124,8 +126,8 @@ old: %s new: %s', old_err, new_err)
             raise RuntimeError("'%s' wasn't successfull; path: %s, code: %s" %
                                (diff_cmd, task_dir, retcode))
 
-        add_title_to_json(diff_file_path, 'Newly introduced defects')        
-        add_title_to_json(fixed_diff_file_path, 'Fixed defects')        
+        add_title_to_json(diff_file_path, 'Newly introduced defects')
+        add_title_to_json(fixed_diff_file_path, 'Fixed defects')
 
         run('cshtml --scan-props-placement bottom %s > %s' %
             (diff_file_path, html_file_path),
@@ -406,10 +408,10 @@ def get_latest_scan_by_package(tag, package):
         return bindings.latest().scan
 
 
-def diff_fixed_defects_in_package(scan):
+def diff_fixed_defects_in_package(sb):
     try:
-        return ScanBinding.objects.get(scan=scan).result.fixed_defects_count()\
-            - ScanBinding.objects.get(scan=scan.get_first_scan()).result.\
+        return sb.result.fixed_defects_count()\
+            - ScanBinding.objects.get(scan=sb.scan.get_first_scan()).result.\
             fixed_defects_count()
     except ObjectDoesNotExist:
         return 0
@@ -417,11 +419,35 @@ def diff_fixed_defects_in_package(scan):
         return 0
 
 
+def diff_defects_between_releases(sb, d_type):
+    try:
+        previous = ScanBinding.objects.get(scan__enabled=True,
+                                           scan__package=sb.scan.package,
+                                           scan__tag__release=sb.scan.tag.\
+                                               release.child)
+        if d_type == 'f':
+            return sb.result.fixed_defects_count() - previous.result.fixed_defects_count()
+        elif d_type == "n":
+            return sb.result.new_defects_count() - previous.result.new_defects_count()
+    except ObjectDoesNotExist:
+        return 0
+    except AttributeError:
+        return 0
+
+
+def diff_fixed_defects_between_releases(scan):
+    diff_defects_between_releases(scan, 'f')
+
+
+def diff_new_defects_between_releases(scan):
+    diff_defects_between_releases(scan, 'n')
+
+
 def get_latest_binding(scan_nvr):
     query =  ScanBinding.objects.filter(scan__nvr=scan_nvr)
     if query:
         latest_submitted = query.order_by('scan__date_submitted')[0]
-        if (latest_submitted.scan.state == SCAN_STATES['QUEUED'] or 
+        if (latest_submitted.scan.state == SCAN_STATES['QUEUED'] or
             latest_submitted.scan.state == SCAN_STATES['SCANNING']) and \
             latest_submitted.result is None:
             return latest_submitted

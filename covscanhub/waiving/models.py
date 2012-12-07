@@ -4,15 +4,12 @@ from kobo.types import Enum, EnumItem
 from kobo.django.fields import JSONField
 
 from django.contrib.auth.models import User
-from django.core.urlresolvers import reverse
 from django.core.exceptions import ObjectDoesNotExist
 import django.db.models as models
 
-from covscanhub.scan.models import ScanBinding
-
 
 DEFECT_STATES = Enum(
-    # newly introduced defect    
+    # newly introduced defect
     EnumItem("NEW", help_text="Newly introduced defect"),
     # this one was present in base scan -- nothing new
     EnumItem("OLD", help_text="Defect present in base and this scan."),
@@ -65,22 +62,23 @@ class Result(models.Model):
     class Meta:
         get_latest_by = "date_submitted"
 
-    def new_defects_count(self):
-        rgs = ResultGroup.objects.filter(result=self)
+    def get_defects_count(self, defect_type):
+        rgs = ResultGroup.objects.filter(result=self,
+                                         defect_type=defect_type)
         count = 0
         for rg in rgs:
-            count += rg.new_defects
+            count += rg.defects_count
         return count
+
+    def new_defects_count(self):
+        return self.get_defects_count(DEFECT_STATES['NEW'])
 
     def fixed_defects_count(self):
-        rgs = ResultGroup.objects.filter(result=self)
-        count = 0
-        for rg in rgs:
-            count += rg.fixed_defects
-        return count
+        return self.get_defects_count(DEFECT_STATES['FIXED'])
 
     def __unicode__(self):
-        return "#%d %s %s" % (self.id, self.scanner, self.scanner_version)
+        return "#%d %s %s %s" % (self.id, self.scanner, self.scanner_version,
+                                 self.scanbinding.scan)
 
 
 class Defect(models.Model):
@@ -149,28 +147,11 @@ class ResultGroup(models.Model):
         default=DEFECT_STATES["UNKNOWN"],
         choices=DEFECT_STATES.get_mapping(),
         help_text="Type of defects that are associated with this group.")
-    new_defects = models.PositiveSmallIntegerField(
-        default=0, blank=True, null=True, verbose_name="New defects count")
-    fixed_defects = models.PositiveSmallIntegerField(
-        default=0, blank=True, null=True, verbose_name="Fixed defects count")
-
-    def get_first_result_group(self, state):
-        """
-        Return result group for same checker group, which is associated with
-         previous scan (previous build of specified package)
-        """
-        first_scan = self.result.scanbinding.scan.get_first_scan()
-        if first_scan:
-            first_result = ScanBinding.get_first_result(first_scan).result
-            if first_result:
-                try:
-                    return ResultGroup.objects.get(
-                        checker_group=self.checker_group,
-                        result=first_result,
-                        defect_type = DEFECT_STATES[state],
-                    )
-                except ObjectDoesNotExist:
-                    return None
+    defects_count = models.PositiveSmallIntegerField(
+        default=0, blank=True, null=True, verbose_name="Number of defects \
+associated with this group.")
+    new_defects = models.PositiveSmallIntegerField()
+    fixed_defects = models.PositiveSmallIntegerField()
 
     def is_previously_waived(self):
         return self.state == RESULT_GROUP_STATES['PREVIOUSLY_WAIVED']
@@ -179,89 +160,32 @@ class ResultGroup(models.Model):
         return Defect.objects.filter(result_group=self.id,
                                      state=DEFECT_STATES['NEW'])
 
-    def get_defects_diff(self, state):
-        """
-        diff between number of new defects from this scan and first
-         return None, if previous scan does not exist
+    def is_marked_as_bug(self):
+        if self.state == RESULT_GROUP_STATES['WAIVED']:
+            try:
+                Waiver.objects.get(result_group=self,
+                                   state=WAIVER_TYPES['IS_A_BUG'])
+                return True
+            except ObjectDoesNotExist:
+                return False
 
-        @rtype: None or int
-        @return:
-            -1: one new defect fixed
-            +2: there are two newly added defects
-        """
-        prev_rg = self.get_first_result_group(state)
-
-        if prev_rg is None:
-            if self.result.scanbinding.scan.get_child_scan():
-                if state == 'NEW':
-                    return self.new_defects
-                elif state == 'FIXED':
-                    return self.fixed_defects
-            else:
-                return None
-        else:
-            if state == 'NEW':
-                return self.new_defects - prev_rg.new_defects
-            elif state == 'FIXED':
-                return self.fixed_defects - prev_rg.fixed_defects
-
-    def get_defects_diff_display(self, state, response):
-        defects_diff = self.get_defects_diff(state)
-        if defects_diff:  # not None & != 0
-            diff_html = '<span class="%s">%s%d</span>'
-            if state == 'NEW':
-                if defects_diff > 0:
-                    response += diff_html % ('defects_increased', '+',
-                                             defects_diff)
-                elif defects_diff < 0:
-                    response += diff_html % ('defects_decreased', '-',
-                                             defects_diff)
-            elif state == 'FIXED':
-                if defects_diff > 0:
-                    response += diff_html % ('defects_decreased', '+',
-                                             defects_diff)
-                elif defects_diff < 0:
-                    response += diff_html % ('defects_increased', '-',
-                                             defects_diff)
-        return response
-
-    def get_state_to_display(self, state, defects_count):
+    def get_state_to_display(self):
         """
         return state for CSS class
         """
-        if state == 'FIXED':
-            if defects_count > 0:
+        if self.defect_type == DEFECT_STATES['FIXED']:
+            if self.defects_count > 0:
                 return 'INFO'
             else:
                 return 'PASSED'
-        elif state == "NEW":
-            if defects_count > 0:
-                return self.get_state_display()
+        elif self.defect_type == DEFECT_STATES["NEW"]:
+            if self.defects_count > 0:
+                if self.is_marked_as_bug():
+                    return 'IS_A_BUG'
+                else:
+                    return self.get_state_display()
             else:
                 return 'PASSED'
-
-    def display_in_result(self, state, url_name):
-        """
-        return HTML formatted representation of result group displayed in
-         waiver, if there are some defects related to this group, create link
-         and display number of defects
-        @param state: 'NEW' | 'FIXED'
-        """
-        defects = Defect.objects.filter(result_group=self.id,
-                                        state=DEFECT_STATES[state])
-        group_state = self.get_state_to_display(state, len(defects))
-        checker_group = self.checker_group.name
-        response = '<td class="%s">' % group_state
-        if defects.count() > 0:
-            url = reverse(url_name, args=(self.result.id, self.id))
-            response += '<a href="%s#defects">' % url
-        response += checker_group
-        if defects.count() > 0:
-            response += '</a> <span class="%s">%s</span>' % (state,
-                                                             defects.count())
-        response = self.get_defects_diff_display(state, response)
-        response += '</td>'
-        return response
 
     def __unicode__(self):
         return "#%d [%s - %s], Result: (%s)" % (

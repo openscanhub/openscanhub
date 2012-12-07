@@ -13,7 +13,7 @@
         "time-finished": "2012-09-24 09:26:08",
         "tool": "cov-mockbuild",
         "lines-processed": 123456,
-        "time-elapsed-analysis": "00:01:45",
+        "time-elapsed-analysis": 00:01:45,
         "tool-args": "fedora-rawhide-cscan /tmp/covscan_2shiDI/systemd-191-2.fc18.src.rpm --security",
         "tool-version": "cov-mockbuild-0.20120803_8ab033d-1.el6.noarch csdiff-0.20120904_92afa5d-1.el6.x86_64"
     },

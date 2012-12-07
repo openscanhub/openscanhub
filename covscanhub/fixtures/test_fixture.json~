@@ -1,0 +1,463 @@
+[
+    {
+        "pk": 1,
+        "model": "hub.task",
+        "fields": {
+            "comment": "libssh2-1-1.el6",
+            "exclusive": false,
+            "resubmitted_by": null,
+            "weight": 1,
+            "awaited": false,
+            "result": "",
+            "owner": 1,
+            "archive": false,
+            "state": 3,
+            "label": "libssh2-1-1.el6",
+            "priority": 20,
+            "waiting": false,
+            "method": "ErrataDiffBuild",
+            "channel": 1,
+            "parent": null,
+            "subtask_count": 0,
+            "args": "{}",
+            "worker": null,
+            "dt_created": "2012-12-01 10:00:01",
+            "arch": 1,
+            "resubmitted_from": null,
+            "dt_finished": "2012-12-01 10:00:50",
+            "dt_started": null,
+            "timeout": null
+        }
+    },
+    {
+        "pk": 2,
+        "model": "hub.task",
+        "fields": {
+            "comment": "libssh2-2-1.el6",
+            "exclusive": false,
+            "resubmitted_by": null,
+            "weight": 1,
+            "awaited": false,
+            "result": "",
+            "owner": 1,
+            "archive": false,
+            "state": 3,
+            "label": "libssh2-2-1.el6",
+            "priority": 20,
+            "waiting": false,
+            "method": "ErrataDiffBuild",
+            "channel": 1,
+            "parent": 1,
+            "subtask_count": 0,
+            "args": "{}",
+            "worker": null,
+            "dt_created": "2012-12-01 10:00:04",
+            "arch": 1,
+            "resubmitted_from": null,
+            "dt_finished": "2012-12-01 10:01:50",
+            "dt_started": null,
+            "timeout": null
+        }
+    },
+    {
+        "pk": 3,
+        "model": "hub.task",
+        "fields": {
+            "comment": "libssh2-2-2.el6",
+            "exclusive": false,
+            "resubmitted_by": null,
+            "weight": 1,
+            "awaited": false,
+            "result": "",
+            "owner": 1,
+            "archive": false,
+            "state": 5,
+            "label": "libssh2-2-2.el6",
+            "priority": 20,
+            "waiting": false,
+            "method": "ErrataDiffBuild",
+            "channel": 1,
+            "parent": null,
+            "subtask_count": 0,
+            "args": "{}",
+            "worker": null,
+            "dt_created": "2012-12-01 11:00:01",
+            "arch": 1,
+            "resubmitted_from": null,
+            "dt_finished": "2012-12-01 11:01:50",
+            "dt_started": null,
+            "timeout": null
+        }
+    },
+    {
+        "pk": 4,
+        "model": "hub.task",
+        "fields": {
+            "comment": "libssh2-2-3.el6",
+            "exclusive": false,
+            "resubmitted_by": null,
+            "weight": 1,
+            "awaited": false,
+            "result": "",
+            "owner": 1,
+            "archive": false,
+            "state": 3,
+            "label": "libssh2-2-3.el6",
+            "priority": 20,
+            "waiting": false,
+            "method": "ErrataDiffBuild",
+            "channel": 1,
+            "parent": null,
+            "subtask_count": 0,
+            "args": "{}",
+            "worker": null,
+            "dt_created": "2012-12-01 12:00:01",
+            "arch": 1,
+            "resubmitted_from": null,
+            "dt_finished": "2012-12-01 12:01:50",
+            "dt_started": null,
+            "timeout": null
+        }
+    },        
+    {
+        "pk": 1,
+        "model": "scan.scan",
+        "fields": {
+            "username": 1,
+            "nvr": "libssh2-1-1.el6",
+            "parent": null,
+            "package": 1,
+            "date_submitted": "2012-12-01 10:00:00",
+            "tag": 1,
+            "scan_type": 1,
+            "state": 5,
+            "base": null,
+            "last_access": "2012-12-01 10:05:00",
+            "enabled": false
+        }
+    },
+    {
+        "pk": 2,
+        "model": "scan.scan",
+        "fields": {
+            "username": 1,
+            "nvr": "libssh2-2-1.el6",
+            "parent": 4,
+            "package": 1,
+            "date_submitted": "2012-12-01 10:00:01",
+            "tag": 1,
+            "scan_type": 0,
+            "state": 3,
+            "base": 1,
+            "last_access": "2012-12-01 10:05:00",
+            "enabled": false
+        }
+    },
+    {
+        "pk": 3,
+        "model": "scan.scan",
+        "fields": {
+            "username": 1,
+            "nvr": "libssh2-2-2.el6",
+            "parent": null,
+            "package": 1,
+            "date_submitted": "2012-12-01 11:00:00",
+            "tag": 1,
+            "scan_type": 0,
+            "state": 6,
+            "base": 1,
+            "last_access": "2012-12-01 11:05:00",
+            "enabled": false
+        }
+    },
+    {
+        "pk": 4,
+        "model": "scan.scan",
+        "fields": {
+            "username": 1,
+            "nvr": "libssh2-2-3.el6",
+            "parent": null,
+            "package": 1,
+            "date_submitted": "2012-12-01 12:00:00",
+            "tag": 1,
+            "scan_type": 0,
+            "state": 2,
+            "base": 1,
+            "last_access": "2012-12-01 15:05:00",
+            "enabled": true
+        }
+    },
+    {
+        "pk": 1,
+        "model": "waiving.result",
+        "fields": {
+            "scanner_version": "6.5.0",
+            "date_submitted": "2012-12-01 10:01:00",
+            "scanning_time": 30,
+            "lines": 11111,
+            "scanner": "coverity"
+        }
+    },
+    {
+        "pk": 2,
+        "model": "waiving.result",
+        "fields": {
+            "scanner_version": "6.5.0",
+            "date_submitted": "2012-12-01 10:02:00",
+            "scanning_time": 35,
+            "lines": 22222,
+            "scanner": "coverity"
+        }
+    },
+    {
+        "pk": 3,
+        "model": "waiving.result",
+        "fields": {
+            "scanner_version": "6.5.0",
+            "date_submitted": "2012-12-01 11:02:00",
+            "scanning_time": 40,
+            "lines": 33333,
+            "scanner": "coverity"
+        }
+    },
+    {
+        "pk": 4,
+        "model": "waiving.result",
+        "fields": {
+            "scanner_version": "6.5.0",
+            "date_submitted": "2012-12-01 12:02:00",
+            "scanning_time": 45,
+            "lines": 44444,
+            "scanner": "coverity"
+        }
+    },
+    {
+        "pk": 1,
+        "model": "scan.scanbinding",
+        "fields": {
+            "task": 1,
+            "result": 1,
+            "scan": 1
+        }
+    },
+    {
+        "pk": 2,
+        "model": "scan.scanbinding",
+        "fields": {
+            "task": 2,
+            "result": 2,
+            "scan": 2
+        }
+    },
+    {
+        "pk": 3,
+        "model": "scan.scanbinding",
+        "fields": {
+            "task": 3,
+            "result": 3,
+            "scan": 3
+        }
+    },
+    {
+        "pk": 4,
+        "model": "scan.scanbinding",
+        "fields": {
+            "task": 4,
+            "result": 4,
+            "scan": 4
+        }
+    },
+    {
+        "pk": 1,
+        "model": "waiving.resultgroup",
+        "fields": {
+            "state": 0,
+            "defects_count": 1,
+            "checker_group": 11,
+            "result": 2,
+            "defect_type": 0
+        }
+    },
+    {
+        "pk": 1,
+        "model": "waiving.defect",
+        "fields": {
+            "function": null,
+            "defect_identifier": null,
+            "state": 0,
+            "annotation": " (CWE-394)",
+            "key_event": 3,
+            "checker": 52,
+            "events": "[{\"file_name\": \"systemd-196/src/core/selinux-access.c\", \"line\": 261, \"message\": \"Declaring variable \\\"len\\\" without initializer.\", \"event\": \"var_decl\"}, {\"file_name\": \"systemd-196/src/core/selinux-access.c\", \"line\": 264, \"message\": \"Condition \\\"sender\\\", taking false branch\", \"event\": \"cond_false\"}, {\"file_name\": \"systemd-196/src/core/selinux-access.c\", \"line\": 267, \"message\": \"Condition \\\"!dbus_connection_get_unix_fd(connection, &fd)\\\", taking false branch\", \"event\": \"cond_false\"}, {\"file_name\": \"systemd-196/src/core/selinux-access.c\", \"line\": 270, \"message\": \"Using uninitialized value \\\"len\\\" when calling \\\"getsockopt(int, int, int, void * restrict, socklen_t * restrict)\\\".\", \"event\": \"uninit_use_in_call\"}]",
+            "result_group": 1,
+            "order": 1
+        }
+    },
+    {
+        "pk": 2,
+        "model": "waiving.resultgroup",
+        "fields": {
+            "state": 1,
+            "defects_count": 1,
+            "checker_group": 12,
+            "result": 2,
+            "defect_type": 0
+        }
+    },
+    {
+        "pk": 2,
+        "model": "waiving.defect",
+        "fields": {
+            "function": null,
+            "defect_identifier": null,
+            "state": 0,
+            "annotation": " (CWE-394)",
+            "key_event": 0,
+            "checker": 7,
+            "events": "[{\"file_name\": \"libssh2-1.2.2/src/userauth.c\", \"line\": 496, \"message\": \"Assigning the return value of \\\"fgetc(FILE *)\\\" to char \\\"c\\\" truncates its value.\", \"event\": \"char_io\"}]",
+            "result_group": 2,
+            "order": 1
+        }
+    },
+    {
+        "pk": 1,
+        "model": "waiving.waiver",
+        "fields": {
+            "date": "2012-12-01 13:00:00",
+            "message": "defect in this group is a bug",
+            "result_group": 2,
+            "user": 1,
+            "state": 1
+        }
+    },
+    {
+        "pk": 3,
+        "model": "waiving.resultgroup",
+        "fields": {
+            "state": 2,
+            "defects_count": 1,
+            "checker_group": 10,
+            "result": 2,
+            "defect_type": 2
+        }
+    },
+    {
+        "pk": 3,
+        "model": "waiving.defect",
+        "fields": {
+            "function": null,
+            "defect_identifier": null,
+            "state": 2,
+            "annotation": " (CWE-394)",
+            "key_event": 10,
+            "checker": 4,
+            "events": "[{\"file_name\": \"libssh2-1.2.2/example/simple/scp_write.c\", \"line\": 60, \"message\": \"Condition \\\"argc > 1\\\", taking true branch\", \"event\": \"cond_true\"}, {\"file_name\": \"libssh2-1.2.2/example/simple/scp_write.c\", \"line\": 62, \"message\": \"Falling through to end of if statement\", \"event\": \"if_fallthrough\"}, {\"file_name\": \"libssh2-1.2.2/example/simple/scp_write.c\", \"line\": 64, \"message\": \"End of if statement\", \"event\": \"if_end\"}, {\"file_name\": \"libssh2-1.2.2/example/simple/scp_write.c\", \"line\": 65, \"message\": \"Condition \\\"argc > 2\\\", taking true branch\", \"event\": \"cond_true\"}, {\"file_name\": \"libssh2-1.2.2/example/simple/scp_write.c\", \"line\": 68, \"message\": \"Condition \\\"argc > 3\\\", taking true branch\", \"event\": \"cond_true\"}, {\"file_name\": \"libssh2-1.2.2/example/simple/scp_write.c\", \"line\": 71, \"message\": \"Condition \\\"argc > 4\\\", taking true branch\", \"event\": \"cond_true\"}, {\"file_name\": \"libssh2-1.2.2/example/simple/scp_write.c\", \"line\": 74, \"message\": \"Condition \\\"argc > 5\\\", taking true branch\", \"event\": \"cond_true\"}, {\"file_name\": \"libssh2-1.2.2/example/simple/scp_write.c\", \"line\": 79, \"message\": \"Condition \\\"!local\\\", taking false branch\", \"event\": \"cond_false\"}, {\"file_name\": \"libssh2-1.2.2/example/simple/scp_write.c\", \"line\": 82, \"message\": \"End of if statement\", \"event\": \"if_end\"}, {\"file_name\": \"libssh2-1.2.2/example/simple/scp_write.c\", \"line\": 84, \"message\": \"Calling function \\\"stat(loclfile, &fileinfo)\\\" without checking return value. This library function may fail and return an error code.\", \"event\": \"check_return\"}, {\"file_name\": \"libssh2-1.2.2/example/simple/scp_write.c\", \"line\": 84, \"message\": \"No check of the return value of \\\"stat(loclfile, &fileinfo)\\\".\", \"event\": \"unchecked_value\"}]",
+            "result_group": 3,
+            "order": 1
+        }
+    },
+    {
+        "pk": 5,
+        "model": "waiving.resultgroup",
+        "fields": {
+            "state": 2,
+            "defects_count": 1,
+            "checker_group": 11,
+            "result": 4,
+            "defect_type": 2
+        }
+    },
+    {
+        "pk": 5,
+        "model": "waiving.defect",
+        "fields": {
+            "function": null,
+            "defect_identifier": null,
+            "state": 2,
+            "annotation": " (CWE-394)",
+            "key_event": 3,
+            "checker": 52,
+            "events": "[{\"file_name\": \"systemd-196/src/core/selinux-access.c\", \"line\": 261, \"message\": \"Declaring variable \\\"len\\\" without initializer.\", \"event\": \"var_decl\"}, {\"file_name\": \"systemd-196/src/core/selinux-access.c\", \"line\": 264, \"message\": \"Condition \\\"sender\\\", taking false branch\", \"event\": \"cond_false\"}, {\"file_name\": \"systemd-196/src/core/selinux-access.c\", \"line\": 267, \"message\": \"Condition \\\"!dbus_connection_get_unix_fd(connection, &fd)\\\", taking false branch\", \"event\": \"cond_false\"}, {\"file_name\": \"systemd-196/src/core/selinux-access.c\", \"line\": 270, \"message\": \"Using uninitialized value \\\"len\\\" when calling \\\"getsockopt(int, int, int, void * restrict, socklen_t * restrict)\\\".\", \"event\": \"uninit_use_in_call\"}]",
+            "result_group": 5,
+            "order": 1
+        }
+    },
+    {
+        "pk": 6,
+        "model": "waiving.resultgroup",
+        "fields": {
+            "state": 2,
+            "defects_count": 1,
+            "checker_group": 10,
+            "result": 4,
+            "defect_type": 2
+        }
+    },
+    {
+        "pk": 6,
+        "model": "waiving.defect",
+        "fields": {
+            "function": null,
+            "defect_identifier": null,
+            "state": 2,
+            "annotation": " (CWE-394)",
+            "key_event": 10,
+            "checker": 4,
+            "events": "[{\"file_name\": \"libssh2-1.2.2/example/simple/scp_write.c\", \"line\": 60, \"message\": \"Condition \\\"argc > 1\\\", taking true branch\", \"event\": \"cond_true\"}, {\"file_name\": \"libssh2-1.2.2/example/simple/scp_write.c\", \"line\": 62, \"message\": \"Falling through to end of if statement\", \"event\": \"if_fallthrough\"}, {\"file_name\": \"libssh2-1.2.2/example/simple/scp_write.c\", \"line\": 64, \"message\": \"End of if statement\", \"event\": \"if_end\"}, {\"file_name\": \"libssh2-1.2.2/example/simple/scp_write.c\", \"line\": 65, \"message\": \"Condition \\\"argc > 2\\\", taking true branch\", \"event\": \"cond_true\"}, {\"file_name\": \"libssh2-1.2.2/example/simple/scp_write.c\", \"line\": 68, \"message\": \"Condition \\\"argc > 3\\\", taking true branch\", \"event\": \"cond_true\"}, {\"file_name\": \"libssh2-1.2.2/example/simple/scp_write.c\", \"line\": 71, \"message\": \"Condition \\\"argc > 4\\\", taking true branch\", \"event\": \"cond_true\"}, {\"file_name\": \"libssh2-1.2.2/example/simple/scp_write.c\", \"line\": 74, \"message\": \"Condition \\\"argc > 5\\\", taking true branch\", \"event\": \"cond_true\"}, {\"file_name\": \"libssh2-1.2.2/example/simple/scp_write.c\", \"line\": 79, \"message\": \"Condition \\\"!local\\\", taking false branch\", \"event\": \"cond_false\"}, {\"file_name\": \"libssh2-1.2.2/example/simple/scp_write.c\", \"line\": 82, \"message\": \"End of if statement\", \"event\": \"if_end\"}, {\"file_name\": \"libssh2-1.2.2/example/simple/scp_write.c\", \"line\": 84, \"message\": \"Calling function \\\"stat(loclfile, &fileinfo)\\\" without checking return value. This library function may fail and return an error code.\", \"event\": \"check_return\"}, {\"file_name\": \"libssh2-1.2.2/example/simple/scp_write.c\", \"line\": 84, \"message\": \"No check of the return value of \\\"stat(loclfile, &fileinfo)\\\".\", \"event\": \"unchecked_value\"}]",
+            "result_group": 6,
+            "order": 1
+        }
+    }, 
+    {
+        "pk": 7,
+        "model": "waiving.resultgroup",
+        "fields": {
+            "state": 0,
+            "defects_count": 1,
+            "checker_group": 9,
+            "result": 4,
+            "defect_type": 0
+        }
+    },
+    {
+        "pk": 7,
+        "model": "waiving.defect",
+        "fields": {
+            "function": null,
+            "defect_identifier": null,
+            "state": 0,
+            "annotation": " (CWE-394)",
+            "key_event": 1,
+            "checker": 106,
+            "events": "[{\"file_name\": \"libssh2-1.2.2/src/packet.c\", \"line\": 520, \"message\": \"\\\"*session->ssh_msg_disconnect\\\" looks like the original copy.\", \"event\": \"original\"}, {\"file_name\": \"libssh2-1.2.2/src/packet.c\", \"line\": 579, \"message\": \"\\\"ssh_msg_disconnect\\\" in \\\"*session->ssh_msg_disconnect\\\" looks like a copy-paste error.  Should it say \\\"ssh_msg_debug\\\" instead?\", \"event\": \"copy_paste_error\"}]",
+            "result_group": 7,
+            "order": 1
+        }
+    },
+    {
+        "pk": 8,
+        "model": "waiving.resultgroup",
+        "fields": {
+            "state": 5,
+            "defects_count": 1,
+            "checker_group": 12,
+            "result": 4,
+            "defect_type": 0
+        }
+    },
+    {
+        "pk": 8,
+        "model": "waiving.defect",
+        "fields": {
+            "function": null,
+            "defect_identifier": null,
+            "state": 0,
+            "annotation": " (CWE-394)",
+            "key_event": 0,
+            "checker": 7,
+            "events": "[{\"file_name\": \"libssh2-1.2.2/src/userauth.c\", \"line\": 496, \"message\": \"Assigning the return value of \\\"fgetc(FILE *)\\\" to char \\\"c\\\" truncates its value.\", \"event\": \"char_io\"}]",
+            "result_group": 8,
+            "order": 1
+        }
+    }    
+]

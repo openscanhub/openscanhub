@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-
 import datetime
 import os
 import logging
@@ -13,13 +12,14 @@ from django.core.exceptions import ObjectDoesNotExist
 
 from kobo.django.views.generic import object_list
 
-from covscanhub.scan.models import Scan, SCAN_STATES
-from covscanhub.other.shortcuts import get_or_none
+from covscanhub.scan.models import Scan, SCAN_STATES, ScanBinding
 
 from models import CheckerGroup, Result, ResultGroup, Defect, Waiver,\
     WAIVER_TYPES, DEFECT_STATES, RESULT_GROUP_STATES
 from forms import WaiverForm
-from service import get_unwaived_rgs, get_last_waiver
+from service import get_unwaived_rgs, get_last_waiver, display_in_result, \
+    get_defects_diff_display_by_rg, get_defects_diff_display
+
 
 logger = logging.getLogger(__name__)
 
@@ -41,29 +41,34 @@ def get_result_context(result_object):
     #logs.sort(lambda x, y: cmp(os.path.split(x), os.path.split(y)))
 
     context['output_new'] = get_five_tuple(get_waiving_data(
-        result_object.id, DEFECT_STATES['NEW']))
+        result_object, DEFECT_STATES['NEW']))
     context['output_fixed'] = get_five_tuple(get_waiving_data(
-        result_object.id, DEFECT_STATES['FIXED']))
+        result_object, DEFECT_STATES['FIXED']))
     context['result'] = result_object
     context['logs'] = logs
-    context['previous_result'] = get_or_none(Result,
-        scanbinding__scan=result_object.scanbinding.scan.get_child_scan())
-    context['next_result'] = get_or_none(Result,
-        scanbinding__scan=result_object.scanbinding.scan.parent)
+    context['task'] = result_object.scanbinding.task
+    context['previous_result'] = result_object.scanbinding.scan.get_child_scan()
+    context['next_result'] = result_object.scanbinding.scan.parent
     return context
 
 
-def get_waiving_data(result_id, defect_type):
+def get_waiving_data(result_object, defect_type):
     output = {}
 
     # checker_group: result_group
     for group in CheckerGroup.objects.filter(enabled=True):
         try:
-            output[group] = ResultGroup.objects.get(checker_group=group,
-                                                    result=result_id,
-                                                    defect_type=defect_type)
+            rg = ResultGroup.objects.get(checker_group=group,
+                                         result=result_object,
+                                         defect_type=defect_type)
         except ObjectDoesNotExist:
-            output[group] = None
+            output[group] = get_defects_diff_display(checker_group=group,
+                                                     result=result_object,
+                                                     defect_type=defect_type)
+        else:
+            view_data = display_in_result(rg)
+            view_data['id'] = rg.id
+            output[group] = view_data
     return output
 
 
@@ -88,13 +93,13 @@ def results_list(request):
     Display list of all target results
     """
     args = {
-        "queryset": Result.objects.exclude(
-            scanbinding__scan__base__isnull=True).\
-            order_by('-date_submitted'),
+        "queryset": ScanBinding.objects.exclude(
+            scan__base__isnull=True).\
+            order_by('-result__date_submitted'),
         "allow_empty": True,
         "paginate_by": 50,
         "template_name": "waiving/list.html",
-        "template_object_name": "result",
+        "template_object_name": "scanbinding",
         "extra_context": {
             "title": "List of all results",
         }
@@ -143,25 +148,27 @@ def waiver(request, result_id, result_group_id):
             result_group_object.result.scanbinding.scan.package,
             result_group_object.result.scanbinding.scan.tag.release)
 
-        place_string = "target = %s, base = %s" % (
-            w.result_group.result.scanbinding.scan.nvr,
-            w.result_group.result.scanbinding.scan.base.nvr,
-        )
+        place_string = w.result_group.result.scanbinding.scan.nvr
+
         context['waivers_place'] = place_string
         context['waivers_result'] = w.result_group.result.id
         context['waivers_group'] = w.result_group.id
         context['display_form'] = False
         context['display_waivers'] = True
     else:
-        form = WaiverForm()
-        context['form'] = form
-        context['display_form'] = True
         context['display_waivers'] = True
+        if result_object.scanbinding.scan.enabled:
+            form = WaiverForm()
+            context['form'] = form
+            context['display_form'] = True
+        else:
+            context['display_form'] = False
+            context['form_message'] = 'This is not the newest scan.'
 
     # merge already created context with result context
     context = dict(context.items() + get_result_context(result_object).items())
 
-    context['group'] = result_group_object
+    context['active_group'] = result_group_object
     context['defects'] = Defect.objects.filter(result_group=result_group_id,
                                                state=DEFECT_STATES['NEW']).\
                                                order_by("order")
@@ -181,12 +188,14 @@ def fixed_defects(request, result_id, result_group_id):
     """
     context = get_result_context(Result.objects.get(id=result_id))
 
-    context['group'] = ResultGroup.objects.get(id=result_group_id)
+    context['active_group'] = ResultGroup.objects.get(id=result_group_id)
     context['defects'] = Defect.objects.filter(result_group=result_group_id,
                                                state=DEFECT_STATES['FIXED']).\
                                                order_by("order")
     context['display_form'] = False
     context['display_waivers'] = False
+    context['form_message'] = "This group can't be waived, because these \
+defects are already fixed."
 
     return render_to_response("waiving/waiver.html",
                               context,
@@ -206,7 +215,8 @@ def result(request, result_id):
 
 def newest_result(request, package_name, release_tag):
     """
-    Display latest result for specified package
+    Display latest result for specified package -- this is available on
+     specific URL
     """
     #TODO display message when scan is not finished:
     # scan is not finished -- you may watch logs <a>here</a>

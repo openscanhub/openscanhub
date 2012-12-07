@@ -46,7 +46,9 @@ def set_options():
 
 
 def set_checker_groups():
-    chgrp_file = open('checker_groups.txt', 'r')
+    chgrp_file = open(os.path.join(settings.PROJECT_DIR,
+                                   'scripts',
+                                   'checker_groups.txt'), 'r')
 
     lines = chgrp_file.readlines()
 
