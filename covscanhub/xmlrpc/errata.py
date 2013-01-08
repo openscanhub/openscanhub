@@ -46,13 +46,13 @@ def create_errata_diff_scan(request, kwargs):
 function.'
         logging.info('User %s tried to submit scan.', request.user.username)
         return response
-    
+
     if kwargs == {}:
         response = {}
         response['status'] = 'ERROR'
         response['message'] = 'Provided dictionary (map) is empty.'
         return response
-    
+
     kwargs['scan_type'] = SCAN_TYPES['ERRATA']
     kwargs['task_user'] = request.user.username
 
@@ -64,7 +64,7 @@ function.'
         response['message'] = 'Requested build does not exist in brew: %s' % ex
     except BrewException, ex:
         response['status'] = 'ERROR'
-        response['message'] = '%s' % ex        
+        response['message'] = '%s' % ex
     except RuntimeError, ex:
         response['status'] = 'ERROR'
         response['message'] = 'Unable to submit the scan, error: %s' % ex

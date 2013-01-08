@@ -9,7 +9,7 @@
 <script type="text/javascript" language="javascript">
 function formatDate(x)
 {
-    monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 
+    monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug',
         'Sep', 'Oct', 'Nov', 'Dec'];
     return monthNames[x.getMonth()] + ' ' + x.getDate();
 }
@@ -36,7 +36,7 @@ $(document).ready(function() {
 {% endblock %}
 
 {% block content %}
-<h2>Release: {{ release.description }}</h2>
+<h2>Release: {{ release.product }}.{{release.release}}</h2>
 <h2>{{ type.short_comment }}</h2>
 <div>{{ type.comment }}</div>
 

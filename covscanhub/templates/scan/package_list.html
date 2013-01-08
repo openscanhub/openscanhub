@@ -8,15 +8,15 @@
 
 <table class="list" width="100%">
   <tr>
-    <th>{% trans "ID" %}</th>
     <th>{% trans "Name" %}</th>
     <th>{% trans "Count" %}</th>
+    <th>{% trans "Latest scans" %}</th>
   </tr>
 {% for package in package_list %}
   <tr>
-    <td><a href="{% url package/detail package.id %}">{{ package.id }}</a></td>
-    <td>{{ package.name }}</td>
+    <td><a href="{% url package/detail package.id %}">{{ package.name }}</a></td>
     <td>{{ package.scans_number }}</td>
+    <td>{{ package.display_latest_scans }}</td>
   </tr>
 {% endfor %}
 </table>

@@ -2,6 +2,7 @@
 
 import types
 import re
+import datetime
 
 import stattypes
 from models import StatType, StatResults
@@ -11,7 +12,7 @@ from models import StatType, StatResults
 
 def get_last_stat_result(stat_type, release=None):
     if release:
-        result = StatResults.objects.filter(stat=stat_type, release=release)    
+        result = StatResults.objects.filter(stat=stat_type, release=release)
     else:
         result = StatResults.objects.filter(stat=stat_type)
     if result:
@@ -29,7 +30,7 @@ def get_mapping():
         if isinstance(binding, types.FunctionType) and\
                 binding.__name__.startswith('get_'):
             doc = re.split('\n\s*\n', binding.__doc__.strip())
-            
+
             mapping[binding] = (binding.__name__[4:].upper(),
                                 doc[0].strip(), doc[1].strip(),
                                 binding.group, binding.order,
@@ -73,6 +74,8 @@ def display_values(stat_type, release=None):
         results = StatResults.objects.filter(stat=stat_type, release=release)
     else:
         results = StatResults.objects.filter(stat=stat_type)
+    if not results:
+        return { datetime.datetime.now(): 0 }
     tmp = {}
     for result in results.order_by('-date'):
         tmp[result.date] = result.value

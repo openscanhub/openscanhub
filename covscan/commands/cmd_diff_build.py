@@ -1,17 +1,15 @@
 # -*- coding: utf-8 -*-
 
 
-import os
-import brew
-
 import covscan
 from kobo.shortcuts import random_string
 from kobo.client import HubProxy
 from shortcuts import verify_brew_build, verify_mock
+from common import *
 
 
 class Diff_Build(covscan.CovScanCommand):
-    """analyze a SRPM without and with pathes, return diff"""
+    """analyze a SRPM without and with patches, return diff"""
     enabled = True
     admin = False  # admin type account required
 
@@ -25,6 +23,10 @@ class Diff_Build(covscan.CovScanCommand):
             "--config",
             help="specify mock config name"
         )
+
+        add_cppcheck_option(self.parser)
+        add_aggressive_option(self.parser)
+        add_concurrency_option(self.parser)
 
         self.parser.add_option(
             "-i",
@@ -84,17 +86,13 @@ class Diff_Build(covscan.CovScanCommand):
             help="turn security checkers on"
         )
 
-        self.parser.add_option(
-            "--hub",
-            help="URL of XML-RPC interface on hub; something like \
-http://$hostname/covscan/xmlrpc"
-        )
-
     def run(self, *args, **kwargs):
         # optparser output is passed via *args (args) and **kwargs (opts)
         username = kwargs.pop("username", None)
         password = kwargs.pop("password", None)
         config = kwargs.pop("config", None)
+        aggressive = kwargs.pop("aggressive", None)
+        cppcheck = kwargs.pop("cppcheck", None)
         keep_covdata = kwargs.pop("keep_covdata", False)
         email_to = kwargs.pop("email_to", [])
         comment = kwargs.pop("comment")
@@ -104,8 +102,7 @@ http://$hostname/covscan/xmlrpc"
         brew_build = kwargs.pop("brew_build")
         all = kwargs.pop("all")
         security = kwargs.pop("security")
-        #'http://uqtm.lab.eng.brq.redhat.com/covscan/xmlrpc'
-        hub_url = kwargs.pop('hub', None)
+        concurrency = kwargs.pop("concurrency")
 
         if len(args) != 1:
             self.parser.error("please specify exactly one SRPM")
@@ -123,12 +120,7 @@ http://$hostname/covscan/xmlrpc"
             self.parser.error("please specify a mock config")
 
         # login to the hub
-        if hub_url is None:
-            self.set_hub(username, password)
-        else:
-            self.hub = HubProxy(conf=self.conf,
-                                AUTH_METHOD='krbv',
-                                HUB_URL=hub_url)
+        self.set_hub(username, password)
 
         result = verify_mock(config, self.hub)
         if result is not None:
@@ -144,10 +136,16 @@ http://$hostname/covscan/xmlrpc"
         if priority is not None:
             options["priority"] = priority
 
+        if aggressive:
+            options["aggressive"] = aggressive
+        if cppcheck:
+            options["cppcheck"] = cppcheck
         if all:
             options["all"] = all
         if security:
             options["security"] = security
+        if concurrency:
+            options["concurrency"] = concurrency
 
         if brew_build:
             options["brew_build"] = srpm

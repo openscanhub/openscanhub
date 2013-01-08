@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+import datetime
+
 from kobo.types import Enum, EnumItem
 from kobo.django.fields import JSONField
 
@@ -7,6 +9,7 @@ from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 import django.db.models as models
 
+from covscanhub.scan.models import Package, SystemRelease
 
 DEFECT_STATES = Enum(
     # newly introduced defect
@@ -43,6 +46,18 @@ RESULT_GROUP_STATES = Enum(
     EnumItem("PREVIOUSLY_WAIVED", help_text="Waived in one of previous runs"),
 )
 
+#DEFECT_PRIORITY = Enum(
+#)
+
+CHECKER_SEVERITIES = Enum(
+    EnumItem("NO_EFFECT", help_text="this test does not affect program, could be style issue"),
+    EnumItem("FALSE_POSITIVE", help_text="test is not reliable & yields many false positives"),
+    EnumItem("UNCLASSIFIED", help_text="the default category"),
+    EnumItem("CONFUSION", help_text="the author is confused; could be logic problems nearby"),
+    EnumItem("SECURITY", help_text="could be exploited"),
+    EnumItem("ROBUSTNESS", help_text="will cause the program to crash or lockup"),
+)
+
 
 class Result(models.Model):
     """
@@ -57,7 +72,13 @@ class Result(models.Model):
     #time in seconds that scanner spent scanning
     scanning_time = models.IntegerField(verbose_name='Time spent scanning',
                                         blank=True, null=True)
-    date_submitted = models.DateTimeField(auto_now_add=True)
+    date_submitted = models.DateTimeField()
+
+    def save(self, *args, **kwargs):
+        ''' On save, update timestamps '''
+        if not self.id:
+            self.date_submitted = datetime.datetime.now()
+        super(Result, self).save(*args, **kwargs)
 
     class Meta:
         get_latest_by = "date_submitted"
@@ -92,6 +113,10 @@ class Defect(models.Model):
 
     order = models.IntegerField(null=True,
                                 help_text="Defects in view have fixed order.")
+
+    #priority = models.PositiveIntegerField(default=DEFECT_STATES["UNKNOWN"],
+    #                                    choices=DEFECT_STATES.get_mapping(),
+    #                                    help_text="Defect state")
 
     #CWE-xxx
     annotation = models.CharField("Annotation", max_length=32,
@@ -150,8 +175,6 @@ class ResultGroup(models.Model):
     defects_count = models.PositiveSmallIntegerField(
         default=0, blank=True, null=True, verbose_name="Number of defects \
 associated with this group.")
-    new_defects = models.PositiveSmallIntegerField()
-    fixed_defects = models.PositiveSmallIntegerField()
 
     def is_previously_waived(self):
         return self.state == RESULT_GROUP_STATES['PREVIOUSLY_WAIVED']
@@ -187,6 +210,21 @@ associated with this group.")
             else:
                 return 'PASSED'
 
+    def previous_waivers(self):
+        actual_waivers = Waiver.objects.filter(result_group=self)
+        if actual_waivers:
+            d = actual_waivers.order_by('date')[0].date
+        else:
+            d = self.result.date_submitted
+        w = Waiver.objects.filter(
+            result_group__checker_group=self.checker_group,
+            date__lt=d,
+            result_group__result__scanbinding__scan__package=
+                self.result.scanbinding.scan.package
+        )
+        if w:
+            return w.order_by('date')
+
     def __unicode__(self):
         return "#%d [%s - %s], Result: (%s)" % (
             self.id, self.checker_group.name, self.get_state_display(),
@@ -200,6 +238,11 @@ class Checker(models.Model):
     """
     name = models.CharField("Checker's name", max_length=32,
                             blank=False, null=False)
+    severity = models.PositiveIntegerField(
+        default=CHECKER_SEVERITIES["NO_EFFECT"],
+        choices=CHECKER_SEVERITIES.get_mapping(),
+        help_text="Severity of checker that the defect represents"
+    )
     # if you use get_or_create, it will save it
     group = models.ForeignKey(CheckerGroup, verbose_name="Checker group",
                               blank=True, null=True,
@@ -208,6 +251,21 @@ checker belong")
 
     def __unicode__(self):
         return "#%d %s, CheckerGroup: (%s)" % (self.id, self.name, self.group)
+
+
+class Bugzilla(models.Model):
+    number = models.IntegerField()
+    package = models.ForeignKey(Package)
+    release = models.ForeignKey(SystemRelease)
+
+    def __unicode__(self):
+        return u"#%d BZ#%d (%s, %s.%d)" % (
+            self.id,
+            self.number,
+            self.package.name,
+            self.release.product,
+            self.release.release,
+        )
 
 
 class Waiver(models.Model):
@@ -223,11 +281,16 @@ waived for specific Result")
     state = models.PositiveIntegerField(default=WAIVER_TYPES["IS_A_BUG"],
                                         choices=WAIVER_TYPES.get_mapping(),
                                         help_text="Type of waiver")
+    bz = models.ForeignKey(Bugzilla, blank=True, null=True)
 
     class Meta:
         get_latest_by = "date"
 
     def __unicode__(self):
-        return "#%d %s - %s, ResultGroup: (%s)" % (self.id, self.message,
-                                                   self.get_state_display(),
-                                                   self.result_group)
+        return u"#%d %s - %s, ResultGroup: (%s) BZ: %s" % (
+            self.id,
+            self.message,
+            self.get_state_display(),
+            self.result_group,
+            self.bz
+        )

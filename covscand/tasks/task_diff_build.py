@@ -34,7 +34,9 @@ class DiffBuild(TaskBase):
         all_checks = self.args.pop("all", False)
         security_checks = self.args.pop("security", False)
         brew_build = self.args.pop("brew_build", None)
-
+        aggressive = self.args.pop("aggressive", None)
+        cppcheck = self.args.pop("cppcheck", None)
+        concurrency = self.args.pop("concurrency", None)
         # create a temp dir, make it writable by 'coverity' user
         tmp_dir = tempfile.mkdtemp(prefix="covscan_")
         os.chmod(tmp_dir, 0775)
@@ -69,15 +71,21 @@ kobo.tback.get_exception())
         cov_cmd.append(program)
         if keep_covdata:
             cov_cmd.append("-i")
+        if cppcheck:
+            cov_cmd.append("-c")
         cov_cmd.append(pipes.quote(mock_config))
         cov_cmd.append(pipes.quote(srpm_path))
         if all_checks:
             cov_cmd.append("--all")
+        if aggressive:
+            cov_cmd.append("--aggressiveness-level high")
         if security_checks:
             cov_cmd.append("--security")
+        if concurrency:
+            cov_cmd.append("--concurrency")
 
-        retcode, output = run(["su", "-", "coverity", 
-                               "-c", " ".join(cov_cmd)], can_fail=True, 
+        retcode, output = run(["su", "-", "coverity",
+                               "-c", " ".join(cov_cmd)], can_fail=True,
                                                          stdout=True)
         if retcode:
             self.fail()

@@ -8,74 +8,132 @@
     color: #9e292b;
 }
 
-label { 
-    vertical-align:top; 
+label {
+    vertical-align:top;
+}
+
+/*title*/
+
+.result_target_nvr {
+    color: #00DD00;
+}
+
+.result_base_nvr {
+    color: #EE0000;
+}
+
+/*bugzilla*/
+
+#bz_wrapper a:link, a:visited{
+    color: white;
+}
+
+#bz_number {
+    font-weight: bold;
+    background-color: #9E292B;
+    padding: 0.4em;
+}
+
+#bz_wrapper {
+}
+
+#bz_update, #bz_create {
+    padding: 0.4em;
+    background-color: #ddd;
 }
 
 /*waiver's summary table*/
 
 table.summary {
-    border: none;
-    font-size: 1em;
+    font-size: 0.9em;
+    border-spacing: 0px;
+    border-collapse: separate;
+    width: 100%;
 }
 
 table.summary td {
-    padding: 0.7em;
-    border: 4px solid #ffffff;
-    font-weight: bold;
-    width: 19em;
+    padding: 0em 0em 0em 0.6em;
+    /*border: 1px solid #999;*/
+    border: 2px solid white;
+    font-weight: bolder;
+    /*width: 24em;*/
+    min-width: 21em;
+    height: 2.5em;
+    line-height: 2.5em;
 }
 
-table.summary td.PASSED {
-    background-color: #99ff99;
+#legend_wrapper h4 {
+    text-align: center;
+    margin: 0px 0px 0px 0px;
 }
 
-table.summary td.WAIVED {
-    background-color: #66ff44;
+table.legend {
+    font-size: 0.9em;
+    border-spacing: 0px;
+    border-collapse: separate;
+    width: 100%;
+    margin-top: 0.3em;
 }
 
-table.summary td.PREVIOUSLY_WAIVED {
-    background-color: #88ff77;
+table.legend td {
+    padding: 0em 0em 0em 0.6em;
+    border: 2px solid white;
+    font-weight: bolder;
+    min-width: 17em;
+    height: 2.5em;
+    line-height: 2.5em;
 }
 
-table.summary td.NEEDS_INSPECTION {
+td.PASSED {
+    background-color: #aaffaa;
+}
+
+td.WAIVED {
+    background-color: #60ff40;
+}
+
+td.PREVIOUSLY_WAIVED {
+    background-color: #AAFFFF;
+}
+
+td.NEEDS_INSPECTION {
     background-color: #ffff66;
 }
 
-table.summary td.IS_A_BUG {
-    background-color: #ff9999;
+td.IS_A_BUG {
+    background-color: #ffb7b7;
 }
 
-table.summary td.INFO {
-    background-color: #90aaff;
+td.INFO {
+    background-color: #BBBBFF;
 }
 
-table.summary td#active {
-    border: 5px solid red;
+table #active {
+    border: 2px solid #0000FF;
 }
 
-table.summary span.FIXED {
-    color: #00FF00;
-    font-size: 1.2em;
+table span.FIXED {
+    color: #007700;
 }
 
-table.summary span.NEW {
+table span.NEW {
     color: #FF0000;
-    font-size: 1.2em;
 }
 
-table.summary span.defects_increased {
-    background-color: #FF5533;
-    left: 7px;
-    position: relative;
-    top: -7px;
+table span.defects_increased {
+    background-color: #FF9282;
+    float: right;
+    padding: 0 0.3em;
+    text-align: right;
+    min-width: 3em;
 }
 
-table.summary span.defects_decreased {
-    background-color: #55FF33;
-    left: 7px;
-    position: relative;
-    top: -7px;
+table span.defects_decreased {
+    background-color: #44FF25;
+    float: right;
+    padding: 0 0.3em;
+    text-align: right;
+    min-width: 3em;
 }
 
 /**/

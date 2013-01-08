@@ -39,7 +39,7 @@ __all__ = (
     'diff_fixed_defects_in_package',
     "get_latest_scan_by_package",
     "get_latest_binding",
-    "diff_new_defects_between_releases",
+    "diff_fixed_defects_between_releases",
     "diff_new_defects_between_releases",
 )
 
@@ -238,6 +238,13 @@ def create_base_diff_task(kwargs, parent_id):
     base_brew_build = kwargs.get('base_brew_build', None)
     base_upload_id = kwargs.get('base_upload_id', None)
 
+    options['aggressive'] = kwargs.get('aggressive', False)
+    options['cppcheck'] = kwargs.get('cppcheck', False)
+    options['keep_covdata'] = kwargs.get("keep_covdata", False)
+    options['all'] = kwargs.get("all", False)
+    options['security'] = kwargs.get("security", False)
+    options['concurrency'] = kwargs.get("concurrency", False)
+
     #from request.user
     task_user = kwargs['task_user']
 
@@ -313,9 +320,12 @@ def create_diff_task(kwargs):
     nvr_brew_build = kwargs.get('nvr_brew_build', None)
     nvr_upload_id = kwargs.get('nvr_upload_id', None)
 
-    options['keep_covdata'] = kwargs.pop("keep_covdata", False)
-    options['all'] = kwargs.pop("all", False)
-    options['security'] = kwargs.pop("security", False)
+    options['aggressive'] = kwargs.get('aggressive', False)
+    options['cppcheck'] = kwargs.get('cppcheck', False)
+    options['keep_covdata'] = kwargs.get("keep_covdata", False)
+    options['all'] = kwargs.get("all", False)
+    options['security'] = kwargs.get("security", False)
+    options['concurrency'] = kwargs.get("concurrency", False)
 
     #Label, description or any reason for this task.
     task_label = nvr_srpm or nvr_brew_build
@@ -423,12 +433,14 @@ def diff_defects_between_releases(sb, d_type):
     try:
         previous = ScanBinding.objects.get(scan__enabled=True,
                                            scan__package=sb.scan.package,
-                                           scan__tag__release=sb.scan.tag.\
+                                           scan__tag__release=sb.scan.tag.
                                                release.child)
         if d_type == 'f':
-            return sb.result.fixed_defects_count() - previous.result.fixed_defects_count()
+            return sb.result.fixed_defects_count() - \
+                previous.result.fixed_defects_count()
         elif d_type == "n":
-            return sb.result.new_defects_count() - previous.result.new_defects_count()
+            return sb.result.new_defects_count() - \
+                previous.result.new_defects_count()
     except ObjectDoesNotExist:
         return 0
     except AttributeError:
@@ -436,11 +448,11 @@ def diff_defects_between_releases(sb, d_type):
 
 
 def diff_fixed_defects_between_releases(scan):
-    diff_defects_between_releases(scan, 'f')
+    return diff_defects_between_releases(scan, 'f')
 
 
 def diff_new_defects_between_releases(scan):
-    diff_defects_between_releases(scan, 'n')
+    return diff_defects_between_releases(scan, 'n')
 
 
 def get_latest_binding(scan_nvr):

@@ -2,31 +2,49 @@
 {% load i18n %}
 
 {% block content %}
-<h1>{{ result.scanbinding.scan.tag.release.description }}</h1>
-<h2>{{ result.scanbinding.scan.nvr }} {% trans "compared to" %} {{ result.scanbinding.scan.base.nvr }} </h2>
+<h1>{{ compare_title }}</h1>
+<h3>{{ result.scanbinding.scan.tag.release.product }} release {{ result.scanbinding.scan.tag.release.release }}</h3>
 
-<table class="summary">
-    <tr>
-        <td class="IS_A_BUG">
-            Is a bug
-        </td>
-        <td class="NEEDS_INSPECTION">
-            Needs Inspection
-        </td>
-        <td class="INFO">
-            Info
-        </td>
-        <td class="WAIVED">
-            Waived
-        </td>
-        <td class="PASSED">
-            Passed
-        </td>
-        <td class="PREVIOUSLY_WAIVED">
-            Previously Waived
-        </td>
-    </tr>
-</table>
+<div id="bz_wrapper">
+    {% if not bugzilla %}
+        {% if unreported_bugs_count > 0 %}
+    <a id="bz_create" href="{% url waiving/new_bz result.scanbinding.scan.package.id result.scanbinding.scan.tag.release.id %}">Create Bugzilla</a>
+    <span id="bz_bugs_count">{{ unreported_bugs_count }}</span>
+        {% endif %}
+    {% else %}
+    <a id="bz_number" href="https://bugzilla.redhat.com/show_bug.cgi?id={{ bugzilla.number }}">BZ#{{ bugzilla.number }}</a>
+        {% if unreported_bugs_count > 0 %}
+        <a id="bz_update" href="{% url waiving/update_bz result.scanbinding.scan.package.id result.scanbinding.scan.tag.release.id %}">Update Bugzilla</a>
+        <span id="bz_bugs_count">{{ unreported_bugs_count }}</span>
+        {% endif %}
+    {% endif %}
+</div>
+
+<div id="legend_wrapper">
+    <h4>Legend</h4>
+    <table class="legend">
+        <tr>
+            <td class="IS_A_BUG">
+                Is a bug
+            </td>
+            <td class="NEEDS_INSPECTION">
+                Needs Inspection (<span class="NEW">defects count</span>)
+            </td>
+            <td class="INFO">
+                Info (<span class="FIXED">defects count</span>)
+            </td>
+            <td class="WAIVED">
+                Waived <span class="defects_increased">diff count</span>
+            </td>
+            <td class="PASSED">
+                Passed <span class="defects_decreased">diff count</span>
+            </td>
+            <td id="active" class="PREVIOUSLY_WAIVED">
+                Previously Waived (active)
+            </td>
+        </tr>
+    </table>
+</div>
 
 <h3>Newly introduced defects</h3>
 {% if output_new %}
@@ -35,13 +53,16 @@
   <tr>
     {% for group, data in five.items %}
         {% if data and data.id %}
-        <td {% if active_group and active_group.id == data.id %}
-            id="active"
+        <td class="{{ data.group_state }}"
+            {% if active_group and active_group.id == data.id %}
+                id="active"
             {% endif %}
-            class="{{ data.group_state }}">
-            <a href="{% url waiving/waiver result.id data.id %}#defects">{{ group.name }}</a>
+        >
+            <a href="{% url waiving/waiver result.id data.id %}#defects">
+                {{ group.name }}
+            </a>
             {% if data.defects_state %}
-            <span class="{{ data.defects_state }}">{{ data.defects_count }}</span>
+            (<span class="{{ data.defects_state }}">{{ data.defects_count }}</span>)
             {% endif %}
             {% if data.diff_state %}
             <span class="{{ data.diff_state }}">{{ data.diff_count }}</span>
@@ -68,13 +89,16 @@
   <tr>
     {% for group, data in five.items %}
         {% if data and data.id %}
-        <td {% if active_group and active_group.id == data.id %}
-            id="active"
+        <td class="{{ data.group_state }}"
+            {% if active_group and active_group.id == data.id %}
+                id="active"
             {% endif %}
-            class="{{ data.group_state }}">
-            <a href="{% url waiving/fixed_defects result.id data.id %}#defects">{{ group.name }}</a>
+        >
+            <a href="{% url waiving/fixed_defects result.id data.id %}#defects">
+                {{ group.name }}
+            </a>
             {% if data.defects_state %}
-            <span class="{{ data.defects_state }}">{{ data.defects_count }}</span>
+            (<span class="{{ data.defects_state }}">{{ data.defects_count }}</span>)
             {% endif %}
             {% if data.diff_state %}
             <span class="{{ data.diff_state }}">{{ data.diff_count }}</span>
@@ -110,12 +134,34 @@
 
 {% if previous_result or next_result %}
 <div id="result_links">
+    {% if first_result %}
+        <span><a href="{% url waiving/result first_result.id %}">First scan ({{ first_result.nvr }})</a></span>
+    {% else %}
+        {% trans "no first scan" %}
+    {% endif %}
+
+    |
+
     {% if previous_result %}
     <span><a href="{% url waiving/result previous_result.id %}">Previous scan ({{ previous_result.nvr }})</a></span>
+    {% else %}
+        {% trans "no previous scan" %}
     {% endif %}
-    {% if previous_result and next_result %} | {% endif %}
+
+    |
+
     {% if next_result %}
     <span><a href="{% url waiving/result next_result.id %}">Next scan ({{ next_result.nvr }})</a></span>
+    {% else %}
+        {% trans "no next scan" %}
+    {% endif %}
+
+    |
+
+    {% if newest_result %}
+    <span><a href="{% url waiving/result newest_result.id %}">Newest scan ({{ newest_result.nvr }})</a></span>
+    {% else %}
+        {% trans "no latest scan" %}
     {% endif %}
 </div>
 {% endif %}

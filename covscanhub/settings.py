@@ -140,6 +140,7 @@ INSTALLED_APPS = (
     'covscanhub.waiving',
     'covscanhub.stats',
     'django_extensions',
+    'south'
 )
 
 BREW_HUB = 'http://brewhub.devel.redhat.com/brewhub'
@@ -176,6 +177,16 @@ XMLRPC_METHODS = {
     ),
 
 }
+
+# BZ 4.2
+BZ_URL = 'https://partner-bugzilla.redhat.com/xmlrpc.cgi'
+# BZ 4.4 -- new RPC API
+# BZ_URL = "https://bzweb01-devel.app.eng.rdu.redhat.com/xmlrpc.cgi"
+# production
+#BZ_URL = "https://bugzilla.redhat.com/xmlrpc.cgi"
+
+BZ_USER = "ttomecek@redhat.com"
+BZ_PSWD = "roflcopter" # not my actual passwd
 
 #if not DEBUG:
 QPID_CONNECTION = {

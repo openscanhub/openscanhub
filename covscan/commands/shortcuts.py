@@ -5,8 +5,8 @@ import os
 
 
 __all__ = (
-    'verify_brew_build',
-    'verify_mock',
+    "verify_brew_build",
+    "verify_mock",
 )
 
 
@@ -31,3 +31,5 @@ def verify_mock(mock, hub):
     if not mock_conf["enabled"]:
         return "Mock config is not enabled: %s" % mock_conf
     return None
+
+

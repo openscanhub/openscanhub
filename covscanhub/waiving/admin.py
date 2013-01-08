@@ -4,8 +4,7 @@ from covscanhub.other.shortcuts import add_link_field
 
 import django.contrib.admin as admin
 
-from models import Result, Defect, Checker, CheckerGroup, Waiver,\
-    ResultGroup
+from models import *
 
 
 @add_link_field('scanbinding','scanbinding','scan',
@@ -20,7 +19,7 @@ class ResultAdmin(admin.ModelAdmin):
 @add_link_field('result','result')
 class ResultGroupAdmin(admin.ModelAdmin):
     list_display = ("id", "state_display", 'defects_count', 'link', 'link2')
-    
+
     def state_display(self, instance):
         return instance.get_state_display()
     state_display.short_description = 'State'
@@ -30,7 +29,7 @@ class ResultGroupAdmin(admin.ModelAdmin):
 class DefectAdmin(admin.ModelAdmin):
     list_display = ("id", "checker", "annotation", "key_event", "link",
                     'state_display')
-    
+
     def state_display(self, instance):
         return instance.get_state_display()
     state_display.short_description = 'State'
@@ -45,11 +44,21 @@ class CheckerGroupAdmin(admin.ModelAdmin):
     list_display = ("id", "name", "enabled")
 
 
+@add_link_field('bugzilla', 'bz', field_name="bz_link")
 @add_link_field('resultgroup','result_group')
 class WaiverAdmin(admin.ModelAdmin):
-    list_display = ("id", "state", 'date', 'user', 'message', 'link')
+    list_display = ("id", "state", 'date', 'user', 'message', 'link', 'bz_link')
 
 
+@add_link_field('package', 'package', 'scan', field_name='package_link',
+                field_label="Package")
+@add_link_field('systemrelease', 'release', 'scan', field_name='release_link',
+                field_label="Release")
+class BugzillaAdmin(admin.ModelAdmin):
+    list_display = ("id", "release_link", "package_link", "number")
+
+
+admin.site.register(Bugzilla, BugzillaAdmin)
 admin.site.register(Result, ResultAdmin)
 admin.site.register(Defect, DefectAdmin)
 admin.site.register(Checker, CheckerAdmin)

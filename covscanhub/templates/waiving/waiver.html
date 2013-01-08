@@ -10,8 +10,14 @@
 
 {% for defect in defects %}
     <div name="defects" class="{{ defect.get_state_display }}">
-        <h3>{{ defect.order }}. Defect {{ defect.checker.name }}</h3>
-    {{ checker.annotation }}
+        <h3>{{ defect.order }}.
+            Defect type: <a href="http://cov01.lab.eng.brq.redhat.com:8080/docs/en/cov_checker_ref.html#static_c_checker_{{ defect.checker.name }}">{{ defect.checker.name }}</a>
+        </h3>
+    {% comment %}
+    {% if check.annotation %}
+        <a href="http://cwe.mitre.org/data/definitions/{{ checker }}.html">{{ checker.annotation }}</a>
+    {% endif %}
+    {% endcomment %}
         <ul>
     {% for event in defect.events %}
             <li>
@@ -37,7 +43,7 @@
         User: {{ waiver.user }} </br>
         Date: {{ waiver.date|date:"Y-m-d H:i:s" }} </br>
         Status: {{ waiver.get_state_display }} </br>
-        Message: <b>{{ waiver.message }}</b> </br>
+        Message: <b>{{ waiver.message|linebreaks }}</b>
     </div>
         {% endfor %}
 </div>
@@ -51,17 +57,24 @@
 {% endif %}
 
 {% if display_form %}
-
 <form action="{% url waiving/waiver result.id active_group.id %}" method="post">{% csrf_token %}
 {{ form.as_p }}
 <input type="submit" value="Submit" />
 </form>
-
 {% else %}{% if form_message %}
-
 <h3>{{ form_message }}</h3>
-
 {% endif %}{% endif %}
 
+{% if previous_waivers %}
+<div>This group has been waived in the past:</div>
+<ul>
+    {% for w in previous_waivers %}
+    <li>
+        <a href="{% url waiving/waiver w.result_group.result.id w.result_group.id %}">{{ w.date }}</a>
+        {{ w.message|linebreaks }}
+    </li>
+    {% endfor %}
+</ul>
+{% endif %}
+
 {% endblock %}
-    

@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 
+import re
 import datetime
 
 from django.db import models
@@ -12,6 +13,11 @@ from django.core.urlresolvers import reverse
 from kobo.hub.models import Task
 from kobo.types import Enum
 from kobo.client.constants import TASK_STATES
+
+
+#south does not know JSONField
+from south.modelsinspector import add_introspection_rules
+add_introspection_rules([], ["^kobo\.django\.fields\.JSONField"])
 
 
 SCAN_STATES = Enum(
@@ -70,8 +76,11 @@ class SystemRelease(models.Model):
     # rhel-6.4 | rhel-7 etc.
     tag = models.CharField("Short tag", max_length=16, blank=False)
 
-    #Red Hat Enterprise Linux 6 release 4 etc.
-    description = models.CharField("Description", max_length=128, blank=False)
+    #Red Hat Enterprise Linux 6 etc.
+    product = models.CharField("Product name", max_length=128, blank=False)
+
+    # release number (y)
+    release = models.IntegerField()
 
     active = models.BooleanField(default=True, help_text="If set to True,\
 statistical data will be harvested for this system release.")
@@ -87,8 +96,15 @@ statistical data will be harvested for this system release.")
     child = property(get_child)
 
     def __unicode__(self):
-        return "%s -- %s" % \
-            (self.tag, self.description)
+        return u"%s -- %s.%d" % \
+            (self.tag, self.product, self.release)
+
+    def get_prod_ver(self):
+        """
+        return product version (such as 7.0, 6.4, etc.), created for BZ
+        """
+        return "%s.%s" % (re.search('(\d)', self.product).group(1),
+                          self.release)
 
 
 class Tag(models.Model):
@@ -126,12 +142,36 @@ True, this package will be blacklisted -- not accepted for scanning.")
 
     scans_number = property(calculateScanNumbers)
 
+    def get_latest_scans(self):
+        srs = SystemRelease.objects.filter(active=True)
+        response = ""
+        for sr in srs:
+            try:
+                scan = Scan.objects.get(package=self, tag__release=sr,
+                                        enabled=True)
+            except ObjectDoesNotExist:
+                pass
+            else:
+                response += '%s: <a href="%s">%s</a>' % (
+                    sr.tag,
+                    reverse("waiving/result/newest", args=(self.name, sr.tag)),
+                    scan.nvr,
+                )
+        if response == "":
+            return "None"
+        return mark_safe(response)
+
+    display_latest_scans = property(get_latest_scans)
+
     def display_graph(self, scan, response, indent_level=0):
+        if scan is None:
+            return response
         sb = ScanBinding.objects.get(scan=scan)
         if sb.result is not None:
-            response += '%s<a href="%s">%s</a> (%s) New defects: %d, \
-fixed defects: %d<br/ >\n' % (
-                "&nbsp;" * indent_level * 4,  # indent
+            response += u'<div style="margin-left: %dem">%s<a \
+href="%s">%s</a> (%s) New defects: %d, fixed defects: %d</div>\n' % (
+                indent_level if indent_level <= 1 else indent_level * 2,
+                u'\u2570\u2500\u2500' if indent_level > 0 else u'',
                 reverse("waiving/result", args=(sb.result.id,)),  # url
                 sb.scan.nvr,
                 sb.scan.get_state_display(),
@@ -139,19 +179,16 @@ fixed defects: %d<br/ >\n' % (
                 sb.result.fixed_defects_count(),
             )
         else:
-            response += "%s%s<br/ >\n" % (
-                "&nbsp;" * indent_level * 4,
-                scan.nvr,
+            response += u"%s%s<br/ >\n" % (
+                u"&nbsp;" * indent_level * 4,
+                sb.scan.nvr,
             )
-        if scan.get_child_scan() is None:  # BASE
-            if response.endswith('<br/ >\n'):
+        if indent_level == 0:  # BASE
+            if response.endswith('</div>\n'):
                 response = response[:-7]
-            response += '%sBase: %s<br/ >' % (
-                '.' * (120 - (indent_level * 4 + len(scan.base.nvr))),
-                scan.base.nvr
-            )
-            return response
-        return self.display_graph(scan.get_child_scan(),
+            response += u'<span style="position:absolute; left: 45em">\
+Base: %s</span></div>\n' % (sb.scan.base.nvr)
+        return self.display_graph(scan.parent,
                                   response, indent_level + 1)
 
     def display_scan_tree(self):
@@ -167,13 +204,15 @@ package')
                 tag__release__id=release['tag__release'],
                 scan_type=SCAN_TYPES['ERRATA'])
             if not scans_package:
-                response += "No scans in this release.<hr/ >\n"
+                response += u"No scans in this release.<hr/ >\n"
                 continue
-            parent_scan = scans_package.order_by('-date_submitted')[0]
-            response += "<div>\n<h3>%s</h3>\n" % \
-                parent_scan.tag.release.description
-            response = self.display_graph(parent_scan, response)
-            response += "<hr/ ></div>\n"
+            first_scan = scans_package.order_by('date_submitted')[0]
+            response += u"<div>\n<h3>%s release %d</h3>\n" % (
+                first_scan.tag.release.product,
+                first_scan.tag.release.release
+            )
+            response = self.display_graph(first_scan, response)
+            response += u"<hr/ ></div>\n"
         return mark_safe(response)
 
 
@@ -293,16 +332,7 @@ class ScanBinding(models.Model):
                                   blank=True, null=True,)
 
     class Meta:
-        get_latest_by = "task__dt_finished"
+        get_latest_by = "result__date_submitted"
 
     def __unicode__(self):
         return u"#%d: Scan: %s | %s" % (self.id, self.scan, self.task)
-
-    @classmethod
-    def get_first_result(cls, scan):
-        bindings = cls.objects.filter(scan=scan)
-        if bindings:
-            return bindings.order_by('result__date_submitted')[0]
-        else:
-            return None
-

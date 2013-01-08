@@ -34,10 +34,12 @@ class PackageAdmin(admin.ModelAdmin):
 class ScanBindingAdmin(admin.ModelAdmin):
     list_display = ("id", "link_scan", "link_task", "link_result",)
 
+
 @add_link_field('systemrelease', 'parent', field_name='parent_link',
                 field_label="Parent")
 class SystemReleaseAdmin(admin.ModelAdmin):
-    list_display = ("id", "tag", "description", "active", "parent_link")
+    list_display = ("id", "tag", "product", "release", "active", "parent_link")
+
 
 admin.site.register(MockConfig)
 admin.site.register(Tag)

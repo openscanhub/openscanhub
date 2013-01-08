@@ -3,6 +3,7 @@
 from covscanhub.other.test_enviroment import *
 from covscanhub.scan.models import *
 from covscanhub.waiving.models import *
+from compare import *
 from covscanhub.xmlrpc.errata import create_errata_diff_scan
 
 from django.utils import unittest
@@ -645,3 +646,60 @@ class AdvancedScanCreationTestCase(unittest.TestCase):
         self.assertEqual(obsolete.task.state, TASK_STATES['CANCELED'])
         self.assertEqual(obsolete.scan.get_child_scan(), None)
         self.assertEqual(obsolete.scan.parent, None)
+
+
+class CompareTestSuite(unittest.TestCase):
+    def test1(self):
+        result = get_compare_title('libssh2-1.4.2-1.el6',
+                                   'libssh2-1.2.2-7.el6',)
+        self.assertEqual(result, 'libssh2-1.\
+<span class="result_target_nvr">4</span>.\
+<span class="result_target_nvr">2</span>-\
+<span class="result_target_nvr">1</span>.\
+<span class="result_target_nvr">el6</span> compared to libssh2-1.\
+<span class="result_base_nvr">2</span>.\
+<span class="result_base_nvr">2</span>-\
+<span class="result_base_nvr">7</span>.\
+<span class="result_base_nvr">el6</span>')
+
+    def test2(self):
+        result = get_compare_title('wget-1.12-1.8.el6',
+                                   'wget-1.12-1.4.el6',)
+        self.assertEqual(result, 'wget-1.12-1.\
+<span class="result_target_nvr">8</span>.\
+<span class="result_target_nvr">el6</span> compared to wget-1.12-1.\
+<span class="result_base_nvr">4</span>.\
+<span class="result_base_nvr">el6</span>')
+
+    def test3(self):
+        result = get_compare_title('btparser-0.17-1.el6',
+                                   'btparser-0.16-3.el6',)
+        self.assertEqual(result, 'btparser-0.\
+<span class="result_target_nvr">17</span>-\
+<span class="result_target_nvr">1</span>.\
+<span class="result_target_nvr">el6</span> compared to btparser-0.\
+<span class="result_base_nvr">16</span>-\
+<span class="result_base_nvr">3</span>.\
+<span class="result_base_nvr">el6</span>')
+
+    def test4(self):
+        result = get_compare_title('sysfsutils-2.1.0-7.el6',
+                                       'sysfsutils-2.1.0-6.1.el6',)
+        self.assertEqual(result, 'sysfsutils-2.1.0-\
+<span class="result_target_nvr">7</span>.\
+<span class="result_target_nvr">el6</span> compared to sysfsutils-2.1.0-\
+<span class="result_base_nvr">6</span>.\
+<span class="result_base_nvr">1</span>.\
+<span class="result_base_nvr">el6</span>')
+
+    def test5(self):
+        result = get_compare_title('systemd-196-1.fc19',
+                                       'systemd-191-2.fc18',)
+        self.assertEqual(result, 'systemd-\
+<span class="result_target_nvr">196</span>-\
+<span class="result_target_nvr">1</span>.\
+<span class="result_target_nvr">fc19</span> compared to systemd-\
+<span class="result_base_nvr">191</span>-\
+<span class="result_base_nvr">2</span>.\
+<span class="result_base_nvr">fc18</span>')
+

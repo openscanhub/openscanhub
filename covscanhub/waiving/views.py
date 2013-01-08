@@ -5,20 +5,27 @@ import os
 import logging
 
 from django.template import RequestContext
-from django.shortcuts import render_to_response
+from django.shortcuts import render_to_response, get_object_or_404
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from django.core.exceptions import ObjectDoesNotExist
 
 from kobo.django.views.generic import object_list
 
-from covscanhub.scan.models import Scan, SCAN_STATES, ScanBinding
+from covscanhub.scan.models import Scan, SCAN_STATES, ScanBinding, Package,\
+    SystemRelease
+from covscanhub.scan.compare import get_compare_title
+from covscanhub.scan.service import get_latest_scan_by_package
 
+from covscanhub.other.shortcuts import get_or_none
+
+from bugzilla_reporting import create_bugzilla, get_unreported_bugs, \
+    update_bugzilla
 from models import CheckerGroup, Result, ResultGroup, Defect, Waiver,\
-    WAIVER_TYPES, DEFECT_STATES, RESULT_GROUP_STATES
+    WAIVER_TYPES, DEFECT_STATES, RESULT_GROUP_STATES, Bugzilla
 from forms import WaiverForm
 from service import get_unwaived_rgs, get_last_waiver, display_in_result, \
-    get_defects_diff_display_by_rg, get_defects_diff_display
+    get_defects_diff_display
 
 
 logger = logging.getLogger(__name__)
@@ -27,6 +34,9 @@ logger = logging.getLogger(__name__)
 def get_result_context(result_object):
     logs = {}
     context = {}
+    package = result_object.scanbinding.scan.package
+    release = result_object.scanbinding.scan.tag.release
+    unrep_waivers = get_unreported_bugs(package, release)
 
     file_labels = {
         'csdiff.html': 'Defects diff',
@@ -40,14 +50,37 @@ def get_result_context(result_object):
                 logs[i] = label
     #logs.sort(lambda x, y: cmp(os.path.split(x), os.path.split(y)))
 
+    context['bugzilla'] = get_or_none(Bugzilla,
+                                      package=package,
+                                      release=release)
+
+    if unrep_waivers:
+        context['unreported_bugs_count'] = unrep_waivers.count()
+    else:
+        context['unreported_bugs_count'] = 0
+
     context['output_new'] = get_five_tuple(get_waiving_data(
         result_object, DEFECT_STATES['NEW']))
     context['output_fixed'] = get_five_tuple(get_waiving_data(
         result_object, DEFECT_STATES['FIXED']))
     context['result'] = result_object
     context['logs'] = logs
+    context['compare_title'] = get_compare_title(
+        result_object.scanbinding.scan.nvr,
+        result_object.scanbinding.scan.base.nvr,
+    )
+    context['title'] = "%s compared to %s" % (
+        result_object.scanbinding.scan.nvr,
+        result_object.scanbinding.scan.base.nvr,
+    )
     context['task'] = result_object.scanbinding.task
-    context['previous_result'] = result_object.scanbinding.scan.get_child_scan()
+    context['first_result'] = \
+        result_object.scanbinding.scan.get_first_scan_binding().scan
+    context['newest_result'] = \
+        get_latest_scan_by_package(result_object.scanbinding.scan.tag,
+                                   result_object.scanbinding.scan.package)
+    context['previous_result'] = \
+        result_object.scanbinding.scan.get_child_scan()
     context['next_result'] = result_object.scanbinding.scan.parent
     return context
 
@@ -156,6 +189,9 @@ def waiver(request, result_id, result_group_id):
         context['display_form'] = False
         context['display_waivers'] = True
     else:
+        previous_waivers = result_group_object.previous_waivers()
+        if previous_waivers:
+            context['previous_waivers'] = previous_waivers
         context['display_waivers'] = True
         if result_object.scanbinding.scan.enabled:
             form = WaiverForm()
@@ -223,10 +259,35 @@ def newest_result(request, package_name, release_tag):
     return render_to_response(
         "waiving/result.html",
         get_result_context(
-            Result.objects.filter(
+            ScanBinding.objects.filter(
                 scan__package__name=package_name,
                 scan__tag__release__tag=release_tag,
-            ).latest()
+                scan__enabled=True
+            ).latest().result
         ),
         context_instance=RequestContext(request)
     )
+
+
+def new_bz(request, package_id, release_id):
+    """
+    Create new bugzilla
+    """
+    package = get_object_or_404(Package, id=package_id)
+    release = get_object_or_404(SystemRelease, id=release_id)
+    if get_unreported_bugs(package, release):
+        create_bugzilla(request, package, release)
+    return HttpResponseRedirect(reverse('waiving/result/newest',
+                                        args=(package.name, release.tag)))
+
+
+def update_bz(request, package_id, release_id):
+    """
+    update existing bugzilla
+    """
+    package = get_object_or_404(Package, id=package_id)
+    release = get_object_or_404(SystemRelease, id=release_id)
+    if get_unreported_bugs(package, release):
+        update_bugzilla(request, package, release)
+    return HttpResponseRedirect(reverse('waiving/result/newest',
+                                        args=(package.name, release.tag)))

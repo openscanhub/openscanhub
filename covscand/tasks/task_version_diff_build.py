@@ -49,6 +49,9 @@ class VersionDiffBuild(TaskBase):
         security_checks = self.args.pop("security", False)
         brew_build = self.args.pop("brew_build", None)
         srpm_name = self.args.pop("srpm_name", None)
+        aggressive = self.args.pop("aggressive", None)
+        cppcheck = self.args.pop("cppcheck", None)
+        concurrency = self.args.pop("concurrency", None)
 
         # create a temp dir, make it writable by 'coverity' user
         tmp_dir = tempfile.mkdtemp(prefix="covscan_")
@@ -76,8 +79,8 @@ class VersionDiffBuild(TaskBase):
                 # download SRPM
                 task_url = self.hub.client.task_url(self.task_id).rstrip("/")
                 srpm_path = os.path.join(tmp_dir, srpm_name)
-                urllib.urlretrieve("%s/log/%s?format=raw" % (task_url, 
-                                                             srpm_name), 
+                urllib.urlretrieve("%s/log/%s?format=raw" % (task_url,
+                                                             srpm_name),
                                    srpm_path)
 
             #is srpm allright?
@@ -98,12 +101,18 @@ class VersionDiffBuild(TaskBase):
         cov_cmd.append('cov-mockbuild')
         if keep_covdata:
             cov_cmd.append("-i")
+        if cppcheck:
+            cov_cmd.append("-c")
         cov_cmd.append(pipes.quote(mock_config))
         cov_cmd.append(pipes.quote(srpm_path))
         if all_checks:
             cov_cmd.append("--all")
+        if aggressive:
+            cov_cmd.append("--aggressiveness-level high")
         if security_checks:
             cov_cmd.append("--security")
+        if concurrency:
+            cov_cmd.append("--concurrency")
 
         command = ["su", "-", "coverity", "-c", " ".join(cov_cmd)]
 

@@ -5,6 +5,8 @@ import covscan
 from kobo.shortcuts import random_string
 from kobo.client import HubProxy
 from shortcuts import verify_brew_build, verify_mock
+from common import *
+
 
 class Version_Diff_Build(covscan.CovScanCommand):
     """analyze 2 SRPMs and diff results"""
@@ -22,9 +24,21 @@ class Version_Diff_Build(covscan.CovScanCommand):
             help="specify mock config name for base package"
         )
 
+        add_cppcheck_option(self.parser)
+        add_aggressive_option(self.parser)
+        add_concurrency_option(self.parser)
+
         self.parser.add_option(
             "--nvr-config",
             help="specify mock config name for parent package"
+        )
+
+        self.parser.add_option(
+            "-c",
+            "--cppcheck",
+            default=False,
+            action="store_true",
+            help="run cppcheck after build",
         )
 
         self.parser.add_option(
@@ -100,19 +114,15 @@ local file"
             help="turn security checkers on"
         )
 
-        self.parser.add_option(
-            "--hub",
-            help="URL of XML-RPC interface on hub; something like \
-http://$hostname/covscan/xmlrpc"
-        )
-
     def run(self, *args, **kwargs):
         # optparser output is passed via *args (args) and **kwargs (opts)
-        options = {}        
+        options = {}
         username = kwargs.pop("username", None)
         password = kwargs.pop("password", None)
         nvr_config = kwargs.pop("nvr_config", None)
         base_config = kwargs.pop("base_config", None)
+        aggressive = kwargs.pop("aggressive", None)
+        cppcheck = kwargs.pop("cppcheck", None)
         keep_covdata = kwargs.pop("keep_covdata", False)
         email_to = kwargs.pop("email_to", [])
         comment = kwargs.pop("comment")
@@ -125,11 +135,11 @@ http://$hostname/covscan/xmlrpc"
         nvr_srpm = kwargs.pop("nvr_srpm", None)
         all_checker = kwargs.pop("all")
         security = kwargs.pop("security")
-        hub_url = kwargs.pop('hub', None)
-        
-        if comment:        
-            options['comment'] = comment        
-        
+        concurrency = kwargs.pop("concurrency")
+
+        if comment:
+            options['comment'] = comment
+
         #both bases are specified
         if base_brew_build and base_srpm:
             self.parser.error("Choose exactly one option (--base-brew-build, \
@@ -173,12 +183,7 @@ a SRPM")
             self.parser.error("please specify a mock config for target")
 
         # login to the hub
-        if hub_url is None:
-            self.set_hub(username, password)
-        else:
-            self.hub = HubProxy(conf=self.conf,
-                                AUTH_METHOD='krbv',
-                                HUB_URL=hub_url)
+        self.set_hub(username, password)
 
         verify_mock(base_config, self.hub)
         options['base_mock'] = base_config
@@ -194,10 +199,16 @@ a SRPM")
         if priority is not None:
             options["priority"] = priority
 
+        if aggressive:
+            options["aggressive"] = aggressive
+        if cppcheck:
+            options["cppcheck"] = cppcheck
         if all_checker:
             options["all"] = all_checker
         if security:
             options["security"] = security
+        if concurrency:
+            options["concurrency"] = concurrency
 
         if nvr_brew_build:
             options["nvr_brew_build"] = nvr_brew_build
@@ -218,7 +229,7 @@ a SRPM")
             options['base_srpm'] = base_srpm
 
         print 'submitting task with options %s' % options
-            
+
         task_id = self.submit_task(options)
         self.write_task_id_file(task_id, task_id_file)
         print "Task info: %s" % self.hub.client.task_url(task_id)

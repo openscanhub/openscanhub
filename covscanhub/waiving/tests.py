@@ -93,9 +93,9 @@ class WaivingQueriesTestCase(TestCase):
 
     def test_last_waiver(self):
         cg = CheckerGroup.objects.get(id=12)
-        sb_child = ScanBinding.objects.get(scan__id=2)
         sb_parent = ScanBinding.objects.get(scan__id=4)
-        w = get_last_waiver(cg, sb_parent.scan.package, sb_parent.scan.tag.release)
+        w = get_last_waiver(cg, sb_parent.scan.package,
+                            sb_parent.scan.tag.release)
         self.assertEqual(w, Waiver.objects.get(id=1))
 
     def test_results_defects_count_new(self):
@@ -116,5 +116,3 @@ class WaivingQueriesTestCase(TestCase):
         self.assertEqual(d['group_state'], 'INFO')
         self.assertEqual(d['defects_state'], 'FIXED')
         self.assertEqual(d['defects_count'], 1)
-        print d['diff_state']
-        print d['diff_count']

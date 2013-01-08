@@ -30,7 +30,7 @@ def create_errata_base_scan(kwargs, parent_task_id, package):
     try:
         tag = kwargs['base_tag']
     except KeyError:
-        raise RuntimeError("Key 'base_tag' is missing from %s" % kwargs) 
+        raise RuntimeError("Key 'base_tag' is missing from %s" % kwargs)
 
     priority = kwargs.get('priority', settings.ET_SCAN_PRIORITY) + 1
     comment = 'Errata Tool Base scan of %s requested by %s' % \
@@ -76,12 +76,12 @@ def create_errata_base_scan(kwargs, parent_task_id, package):
 
 def obtain_base(base, task_id, kwargs, package):
     binding = get_latest_binding(base)
-    found = bool(binding)        
+    found = bool(binding)
     if found:
-        if (binding.scan.state == SCAN_STATES['QUEUED'] or 
+        if (binding.scan.state == SCAN_STATES['QUEUED'] or
             binding.scan.state == SCAN_STATES['SCANNING']) and \
             binding.result is None:
-            return binding.scan               
+            return binding.scan
         elif binding.result.scanner_version != settings.ACTUAL_SCANNER[1] or \
                 binding.result.scanner != settings.ACTUAL_SCANNER[0]:
             found = False
@@ -146,14 +146,14 @@ def create_errata_scan(kwargs):
     try:
         nvr = kwargs['nvr']
     except KeyError:
-        raise RuntimeError("Key 'nvr' is missing from %s" % kwargs)    
+        raise RuntimeError("Key 'nvr' is missing from %s" % kwargs)
 
     try:
         base = kwargs['base']
     except KeyError:
-        raise RuntimeError("Key 'base' is missing from %s" % kwargs)    
-    
-    try:    
+        raise RuntimeError("Key 'base' is missing from %s" % kwargs)
+
+    try:
         options['errata_id'] = kwargs['id']
     except KeyError:
         raise RuntimeError("Key 'id' is missing from %s" % kwargs)
@@ -166,7 +166,7 @@ def create_errata_scan(kwargs):
     try:
         tag = kwargs['nvr_tag']
     except KeyError:
-        raise RuntimeError("Key 'nvr_tag' is missing from %s" % kwargs)    
+        raise RuntimeError("Key 'nvr_tag' is missing from %s" % kwargs)
 
     priority = kwargs.get('priority', settings.ET_SCAN_PRIORITY)
 
@@ -228,7 +228,7 @@ def create_errata_scan(kwargs):
     task = Task.objects.get(id=task_id)
     task.args = options
     task.save()
-    
+
     sb = ScanBinding()
     sb.task = task
     sb.scan = scan
@@ -239,7 +239,7 @@ def create_errata_scan(kwargs):
 
 def rescan(scan):
     latest_binding = get_latest_binding(scan.nvr)
-    
+
     if latest_binding.scan.state != SCAN_STATES['FAILED']:
         raise ScanException("You are trying to rescan a scan that haven't \
 failed. This is not supported.")
@@ -256,9 +256,9 @@ failed. This is not supported.")
             priority=latest_binding.task.priority,
         )
         task_dir = Task.get_task_dir(task_id)
-    
+
         check_and_create_dirs(task_dir)
-    
+
         scan = Scan.create_scan(
             scan_type=latest_binding.scan.scan_type,
             nvr=latest_binding.scan.nvr,
@@ -272,7 +272,7 @@ failed. This is not supported.")
         task = Task.objects.get(id=task_id)
         task.args = options
         task.save()
-    
+
         sb = ScanBinding()
         sb.task = task
         sb.scan = scan
@@ -293,11 +293,11 @@ Unsupported.')
             priority=latest_binding.task.priority,
         )
         task_dir = Task.get_task_dir(task_id)
-    
+
         check_and_create_dirs(task_dir)
-    
-        child = scan.get_child_scan()    
-    
+
+        child = scan.get_child_scan()
+
         scan = Scan.create_scan(
             scan_type=latest_binding.scan.scan_type,
             nvr=latest_binding.scan.nvr,
@@ -306,7 +306,7 @@ Unsupported.')
             package=latest_binding.scan.package,
             enabled=True,
             base=get_latest_binding(scan.base.nvr).scan)
-        
+
         if child:
             child.parent = scan
             child.save()
@@ -316,8 +316,8 @@ Unsupported.')
         task = Task.objects.get(id=task_id)
         task.args = options
         task.save()
-    
+
         sb = ScanBinding()
         sb.task = task
         sb.scan = scan
-        sb.save()    
+        sb.save()

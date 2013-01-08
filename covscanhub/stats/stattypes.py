@@ -171,11 +171,11 @@ get_fixed_defects_in_release.order = 3
 
 def get_fixed_defects_between_releases():
     """
-        Fixed defects in one release
+        Fixed defects between releases
 
-        Number of defects that were fixed between first scan and final one.
+        Number of defects that were fixed between this release and previous one
     """
-    releases = SystemRelease.objects.filter(active=True, child__isnull=False)
+    releases = SystemRelease.objects.filter(active=True, systemrelease=False)
     result = {}
     for r in releases:
         result[r] = 0
@@ -188,9 +188,9 @@ get_fixed_defects_between_releases.order = 4
 
 def get_new_defects_between_releases():
     """
-        Fixed defects in one release
+        New defects between releases
 
-        Number of defects that were fixed between first scan and final one.
+        Number of newly added defects between this release and previous one
     """
     releases = SystemRelease.objects.filter(active=True)
     result = {}

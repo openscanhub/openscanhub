@@ -12,9 +12,12 @@ import datetime
 import tempfile
 import shutil
 import pipes
+import difflib
+import pycsdiff
 
 import django.utils.simplejson as json
 from django.core.exceptions import ObjectDoesNotExist
+from django.utils.safestring import mark_safe
 
 from covscanhub.other.constants import ERROR_DIFF_FILE, FIXED_DIFF_FILE,\
     DEFAULT_CHECKER_GROUP
@@ -221,15 +224,15 @@ def get_serializable_dict(query):
         result_dict['defects'].append(d_dict)
     return result_dict
 
-def compare_result_groups(rg1, rg2):
+
+def compare_result_groups_shell(rg1, rg2):
     """
         Compare defects of two distinct result groups
-        use csdiff tool
+        use csdiff tool - CLI interface
     """
     if rg1.defects_count != rg2.defects_count:
         return False
     return True
-    """
     rg1_defects = rg1.get_new_defects()
     rg2_defects = rg2.get_new_defects()
 
@@ -259,7 +262,28 @@ def compare_result_groups(rg1, rg2):
                           return_stdout=False,
                           show_cmd=False)
     shutil.rmtree(tmp_dir)
+
+
+def compare_result_groups(rg1, rg2):
     """
+        Compare defects of two distinct result groups
+        use csdiff tool -- python binding
+    """
+    if rg1.defects_count != rg2.defects_count:
+        return False
+
+    rg1_defects = rg1.get_new_defects()
+    rg2_defects = rg2.get_new_defects()
+
+    dict1 = get_serializable_dict(rg1_defects)
+    dict2 = get_serializable_dict(rg2_defects)
+
+    s1 = json.dumps(dict1)
+    s2 = json.dumps(dict2)
+    r_s1 = json.loads(pycsdiff.diff_scans(s1, s2))
+    r_s2 = json.loads(pycsdiff.diff_scans(s2, s1))
+    return not (r_s1['defects'] or r_s2['defects'])
+
 
 def get_last_waiver(checker_group, package, release):
     """
@@ -288,13 +312,14 @@ def get_first_result_group(checker_group, result, defect_type):
                 return ResultGroup.objects.get(
                     checker_group=checker_group,
                     result=first_sb.result,
-                    defect_type = defect_type,
+                    defect_type=defect_type,
                 )
             except ObjectDoesNotExist:
                 return None
 
 
-def get_defects_diff(checker_group=None, result=None, defect_type=None, rg=None):
+def get_defects_diff(checker_group=None, result=None, defect_type=None,
+                     rg=None):
     """
     diff between number of new defects from this scan and first one.
     Return None, if you dont have anything to diff against.
@@ -355,7 +380,6 @@ def get_defects_diff_display_by_rg(response, rg):
                                     result=rg.result,
                                     defect_type=rg.defect_type,
                                     rg=rg)
-
 
 def display_in_result(rg):
     """

@@ -1,11 +1,6 @@
 # -*- coding: utf-8 -*-
 
-import types
-
 import django.db.models as models
-from django.utils.safestring import mark_safe
-
-import kobo.django.fields
 
 from covscanhub.scan.models import SystemRelease
 
@@ -24,6 +19,8 @@ describes value of this stat.")
 
     def display_value(self, release=None):
         results = StatResults.objects.filter(stat=self)
+        if not results:
+            return 0
         if self.is_release_specific and release:
             return results.filter(release=release).latest().value
         else:
@@ -39,7 +36,7 @@ class StatResults(models.Model):
     release = models.ForeignKey(SystemRelease, blank=True, null=True)
 
     class Meta:
-        get_latest_by = "date"        
+        get_latest_by = "date"
 
     def __unicode__(self):
         return u"%s = %s" % (self.stat.key, self.value)

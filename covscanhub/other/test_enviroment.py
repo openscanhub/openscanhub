@@ -22,12 +22,12 @@ def fill_db():
     p1.name = "libssh2"
     p1.blocked = False
     p1.save()
-    
+
     p2 = Package()
     p2.name = "box"
     p2.blocked = False
     p2.save()
-    
+
     p3 = Package()
     p3.name = "kernel"
     p3.blocked = True
@@ -35,27 +35,30 @@ def fill_db():
 
     sr1 = SystemRelease()
     sr1.tag = "rhel-0.1"
-    sr1.description = "Red Hat Enterprise Linux 0 release 1"
+    sr1.product = "Red Hat Enterprise Linux 0"
+    sr1.release = 1
     sr1.active = True
     sr1.save()
 
     sr2 = SystemRelease()
     sr2.tag = "rhel-1.0"
-    sr2.description = "Red Hat Enterprise Linux 1 release 0"
+    sr1.product = "Red Hat Enterprise Linux 1"
+    sr1.release = 0
     sr2.active = True
     sr2.save()
-    
+
     sr3 = SystemRelease()
     sr3.tag = "rhel-0.0"
-    sr3.description = "Red Hat Enterprise Linux 0 release 0"
+    sr1.product = "Red Hat Enterprise Linux 0"
+    sr1.release = 0
     sr3.active = False
     sr3.save()
-    
+
     m1 = MockConfig()
     m1.name = "rhel-0.1"
     m1.enabled = True
     m1.save()
-    
+
     t1 = Tag()
     t1.name = "rhel-0.1-pending"
     t1.release = sr1
@@ -71,19 +74,19 @@ def fill_db():
     m3.name = "rhel-1.0-override"
     m3.enabled = False
     m3.save()
-    
+
     t2 = Tag()
     t2.name = "rhel-1.0-pending"
     t2.release = sr2
     t2.mock = m2
     t2.save()
-    
+
     t3 = Tag()
     t3.name = "rhel-1.0-release"
     t3.release = sr2
     t3.mock = m3
     t3.save()
-    
+
     u = User()
     u.username = 'test_user'
     u.is_staff = False
@@ -120,7 +123,7 @@ def clear_all(model):
     if isinstance(model, list) or isinstance(model, tuple):
         for model_instance in model:
             for m in model_instance.objects.all():
-                m.delete()        
+                m.delete()
     else:
         for m in model.objects.all():
             m.delete()
