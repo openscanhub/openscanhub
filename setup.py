@@ -11,13 +11,13 @@ from scripts.include import *
 
 project_name         = "covscan"
 project_dirs         = ["covscan", "covscand", "covscanhub"]
-project_url          = "http://git.engineering.redhat.com/?p=users/dmach/covscan.git"
+project_url          = "http://git.app.eng.bos.redhat.com/git/covscan.git"
 project_author       = "Red Hat, Inc."
-project_author_email = "dmach@redhat.com"
+project_author_email = "ttomecek@redhat.com"
 project_description  = "Coverity scan scheduler"
 package_name         = "%s" % project_name
 package_module_name  = project_name
-package_version      = [0, 2, 0, "final", ""]
+package_version      = [0, 2, 2, "final", ""]
 
 
 script_files = []
