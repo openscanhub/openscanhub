@@ -13,6 +13,8 @@ from kobo.rpmlib import get_rpm_header
 from kobo.shortcuts import run
 from kobo.worker import TaskBase
 
+from common import downloadSRPM
+
 
 class DiffBuild(TaskBase):
     enabled = True
@@ -44,9 +46,7 @@ class DiffBuild(TaskBase):
         os.chown(tmp_dir, -1, coverity_gid)
 
         if brew_build:
-            cmd = ["brew", "download-build", "--quiet", "--arch=src", brew_build]
-            run(cmd, workdir=tmp_dir)
-            srpm_path = os.path.join(tmp_dir, "%s.src.rpm" % brew_build)
+            srpm_path = downloadSRPM(tmp_dir, brew_build)
         else:
             # download SRPM
             task_url = self.hub.client.task_url(self.task_id).rstrip("/")

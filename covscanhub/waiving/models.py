@@ -146,7 +146,7 @@ class CheckerGroup(models.Model):
     We don't want users to waive each defect so instead we compose checkers
     into specified groups and users waive these groups.
     """
-    name = models.CharField("Checker's name", max_length=32,
+    name = models.CharField("Checker's name", max_length=64,
                             blank=False, null=False)
     enabled = models.BooleanField(default=True, help_text="User may waive \
 only ResultGroups which belong to enabled CheckerGroups")
@@ -236,7 +236,7 @@ class Checker(models.Model):
     """
     Checker is a type of defect.
     """
-    name = models.CharField("Checker's name", max_length=32,
+    name = models.CharField("Checker's name", max_length=64,
                             blank=False, null=False)
     severity = models.PositiveIntegerField(
         default=CHECKER_SEVERITIES["NO_EFFECT"],

@@ -47,7 +47,7 @@ class Permissions(models.Model):
     class Meta:
         permissions = (
             ('errata_xmlrpc_scan',
-             'Enables user to submit scans via XML-RPC for Errata Tool'),
+             'Can submit ET scan via XML-RPC'),
         )
 
 

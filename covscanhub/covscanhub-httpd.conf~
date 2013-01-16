@@ -13,8 +13,8 @@ Alias /covscanhub/media/kobo/ "/usr/lib/python2.4/site-packages/kobo/hub/media/"
 
 
 # project media
-Alias /covscanhub/media/ "/usr/lib/python2.4/site-packages/covscanhub/media/"
-<Directory "/usr/lib/python2.4/site-packages/covscanhub/media/">
+Alias /covscanhub/media/ "/var/www/django/covscanhub/media/"
+<Directory "/var/www/django/covscanhub/media/">
     Order allow,deny
     Options Indexes
     Allow from all

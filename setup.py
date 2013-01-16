@@ -44,7 +44,7 @@ data_files = {
 
 
 package_data = {
-    "covscanhub": get_files("covscanhub", "templates") + get_files("covscanhub", "media") + ["covscanhub.wsgi"]
+    "covscanhub": get_files("covscanhub", "templates") + get_files("covscanhub", "media") + ["covscanhub.wsgi"] + ['scripts/checker_groups.txt']
 }
 
 

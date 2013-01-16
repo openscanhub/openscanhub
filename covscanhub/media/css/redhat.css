@@ -24,7 +24,7 @@ label {
 
 /*bugzilla*/
 
-#bz_wrapper a:link, a:visited{
+#bz_wrapper a:link, #bz_wrapper a:visited {
     color: white;
 }
 

@@ -56,7 +56,6 @@ class VersionDiffBuild(TaskBase):
         # create a temp dir, make it writable by 'coverity' user
         tmp_dir = tempfile.mkdtemp(prefix="covscan_")
         os.chmod(tmp_dir, 0775)
-        srpm_path = os.path.join(tmp_dir, "%s.src.rpm" % brew_build)
 
         if not DEBUG:
             #change atributes of temp dir
@@ -66,10 +65,7 @@ class VersionDiffBuild(TaskBase):
             #download srpm from brew
             if brew_build is not None:
                 logging.debug('I am about to download %s', brew_build)
-                cmd = ["brew", "download-build", "--quiet",
-                       "--arch=src", brew_build]
-                run(cmd, workdir=tmp_dir)
-
+                srpm_path = downloadSRPM(tmp_dir, brew_build)
                 if not os.path.exists(srpm_path):
                     print >> sys.stderr, \
                         "Invalid path %s to SRPM file (%s): %s" % \

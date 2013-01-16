@@ -7,10 +7,15 @@ import os
 __all__ = (
     "verify_brew_build",
     "verify_mock",
+    "downloadSRPM",
 )
 
 
-def verify_brew_build(build, brew_url):
+def verify_brew_build(build, brew_url, koji_url=None):
+    """
+    Verify if brew build exists
+    FIXME: add koji support
+    """
     srpm = os.path.basename(build)  # strip path if any
     if srpm.endswith(".src.rpm"):
         srpm = srpm[:-8]
@@ -20,7 +25,7 @@ def verify_brew_build(build, brew_url):
     except brew.GenericError:
         return "Build does not exist in brew: %s" % srpm
     if build is None:
-        raise RuntimeError('Brew build %s does not exist' % srpm)
+        return 'Brew build %s does not exist' % srpm
     return None
 
 
@@ -31,5 +36,3 @@ def verify_mock(mock, hub):
     if not mock_conf["enabled"]:
         return "Mock config is not enabled: %s" % mock_conf
     return None
-
-
