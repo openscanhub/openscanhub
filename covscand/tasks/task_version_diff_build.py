@@ -6,7 +6,6 @@ import pipes
 import sys
 import grp
 import shutil
-import logging
 import urllib
 
 from kobo.rpmlib import get_rpm_header
@@ -14,6 +13,8 @@ from kobo.worker import TaskBase
 from kobo.shortcuts import run
 
 import kobo.tback
+
+from common import downloadSRPM
 
 
 class VersionDiffBuild(TaskBase):
@@ -36,12 +37,6 @@ class VersionDiffBuild(TaskBase):
 
     def run(self):
         DEBUG = False
-        logging.basicConfig(
-            format='%(asctime)s %(levelname)8s %(filename)s %(lineno)s \
-%(message)s',
-            filename='/tmp/covscand_task.log',
-            level=logging.DEBUG
-        )
 
         mock_config = self.args.pop("mock_config")
         keep_covdata = self.args.pop("keep_covdata", False)
@@ -64,7 +59,6 @@ class VersionDiffBuild(TaskBase):
 
             #download srpm from brew
             if brew_build is not None:
-                logging.debug('I am about to download %s', brew_build)
                 srpm_path = downloadSRPM(tmp_dir, brew_build)
                 if not os.path.exists(srpm_path):
                     print >> sys.stderr, \
@@ -116,14 +110,10 @@ class VersionDiffBuild(TaskBase):
             retcode, output = run(command, can_fail=True, stdout=True)
         else:
             command_str = ' '.join(command)
-            logging.info("In production I would run this command: %s",
-                         command_str)
             retcode = 0
 
         # upload results back to hub
-
         if DEBUG:
-            logging.debug('I am about to copy test tarball')
             shutil.copy2('/tmp/' + brew_build + '.tar.xz', tmp_dir)
 
         xz_path = srpm_path[:-8] + ".tar.xz"
@@ -134,9 +124,9 @@ class VersionDiffBuild(TaskBase):
 
         try:
             self.hub.worker.extract_tarball(self.task_id, '')
-        except Exception, ex:
-            logging.error("got exception %s, trace:\n%s", str(ex),
-                          kobo.tback.get_exception())
+        except Exception:
+            print >> sys.stderr, "Exception while extracting tarball for task \
+%s" % (self.task_id)
             self.fail()
 
         # remove temp files
