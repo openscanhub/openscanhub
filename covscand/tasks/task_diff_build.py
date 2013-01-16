@@ -86,9 +86,8 @@ kobo.tback.get_exception())
         if concurrency:
             cov_cmd.append("--concurrency")
 
-        retcode, output = run(["su", "-", "coverity",
-                               "-c", " ".join(cov_cmd)], can_fail=True,
-                                                         stdout=True)
+        retcode, output = run(["su", "-", "coverity", "-c", " ".join(cov_cmd)],
+                              can_fail=True, stdout=True, buffer_size=128)
         if retcode:
             self.fail()
 

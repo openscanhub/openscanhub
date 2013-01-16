@@ -91,7 +91,8 @@ class ErrataDiffBuild(TaskBase):
 
         command = ["su", "-", "coverity", "-c", " ".join(cov_cmd)]
 
-        retcode, output = run(command, can_fail=False, stdout=True)
+        retcode, output = run(command, can_fail=False, stdout=True,
+                              buffer_size=128)
 
         # upload results back to hub
         xz_path = srpm_path[:-8] + ".tar.xz"

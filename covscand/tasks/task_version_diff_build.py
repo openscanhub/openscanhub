@@ -107,7 +107,8 @@ class VersionDiffBuild(TaskBase):
         command = ["su", "-", "coverity", "-c", " ".join(cov_cmd)]
 
         if not DEBUG:
-            retcode, output = run(command, can_fail=True, stdout=True)
+            retcode, output = run(command, can_fail=True, stdout=True,
+                                  buffer_size=128)
         else:
             command_str = ' '.join(command)
             retcode = 0
