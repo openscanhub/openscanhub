@@ -1,32 +1,50 @@
 # -*- coding: utf-8 -*-
 
 import brew
+import koji
 import os
-
+import re
 
 __all__ = (
-    "verify_brew_build",
+    "verify_brew_koji_build",
     "verify_mock",
-    "downloadSRPM",
 )
 
 
-def verify_brew_build(build, brew_url, koji_url=None):
+def verify_build_exists(build, url, builder):
     """
-    Verify if brew build exists
-    FIXME: add koji support
+    Verify if build exists
+    """
+    proxy_object = builder.ClientSession(url)
+    try:
+        returned_build = proxy_object.getBuild(build)
+    except brew.GenericError:
+        return 'Build %s does not exist' % build
+    except koji.GenericError:
+        return 'Build %s does not exist' % build
+    if returned_build is None:
+        return 'Build %s does not exist' % build
+    return None
+
+
+def verify_brew_koji_build(build, brew_url, koji_url):
+    """
+    Verify if brew or koji build exists
     """
     srpm = os.path.basename(build)  # strip path if any
     if srpm.endswith(".src.rpm"):
         srpm = srpm[:-8]
-    brew_proxy = brew.ClientSession(brew_url)
-    try:
-        build = brew_proxy.getBuild(srpm)
-    except brew.GenericError:
-        return "Build does not exist in brew: %s" % srpm
-    if build is None:
-        return 'Brew build %s does not exist' % srpm
-    return None
+
+    dist_tag = re.search('.*-.*-(.*).', srpm).group(1)
+
+    if 'fc' in dist_tag:
+        return verify_build_exists(srpm, koji_url, koji)
+    else:
+        exists = verify_build_exists(srpm, brew_url, brew)
+        if not exists:
+            return verify_build_exists(srpm, koji_url, koji)
+        else:
+            return None
 
 
 def verify_mock(mock, hub):

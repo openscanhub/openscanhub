@@ -3,8 +3,7 @@
 
 import covscan
 from kobo.shortcuts import random_string
-from kobo.client import HubProxy
-from shortcuts import verify_brew_build, verify_mock
+from shortcuts import verify_brew_koji_build, verify_mock
 from common import *
 
 
@@ -100,7 +99,7 @@ class Diff_Build(covscan.CovScanCommand):
         task_id_file = kwargs.pop("task_id_file")
         priority = kwargs.pop("priority")
         brew_build = kwargs.pop("brew_build")
-        all = kwargs.pop("all")
+        all_option = kwargs.pop("all")
         security = kwargs.pop("security")
         concurrency = kwargs.pop("concurrency")
 
@@ -112,7 +111,8 @@ class Diff_Build(covscan.CovScanCommand):
             self.parser.error("provided file doesn't appear to be a SRPM")
 
         if brew_build:
-            result = verify_brew_build(srpm, self.conf['BREW_URL'])
+            result = verify_brew_koji_build(srpm, self.conf['BREW_URL'],
+                                            self.conf['KOJI_URL'])
             if result is not None:
                 self.parser.error(result)
 
@@ -140,8 +140,8 @@ class Diff_Build(covscan.CovScanCommand):
             options["aggressive"] = aggressive
         if cppcheck:
             options["cppcheck"] = cppcheck
-        if all:
-            options["all"] = all
+        if all_option:
+            options["all"] = all_option
         if security:
             options["security"] = security
         if concurrency:

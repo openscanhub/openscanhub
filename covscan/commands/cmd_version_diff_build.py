@@ -3,8 +3,7 @@
 
 import covscan
 from kobo.shortcuts import random_string
-from kobo.client import HubProxy
-from shortcuts import verify_brew_build, verify_mock
+from shortcuts import verify_brew_koji_build, verify_mock
 from common import *
 
 
@@ -171,10 +170,16 @@ a SRPM")
             self.parser.error("provided base file doesn't appear to be a SRPM")
 
         if nvr_brew_build:
-            verify_brew_build(nvr_brew_build, self.conf['BREW_URL'])
+            result = verify_brew_koji_build(nvr_brew_build, self.conf['BREW_URL'],
+                                            self.conf['KOJI_URL'])
+            if result is not None:
+                self.parser.error(result)
 
         if base_brew_build:
-            verify_brew_build(base_brew_build, self.conf['BREW_URL'])
+            result = verify_brew_koji_build(base_brew_build, self.conf['BREW_URL'],
+                                            self.conf['KOJI_URL'])
+            if result is not None:
+                self.parser.error(result)
 
         if not base_config:
             self.parser.error("please specify a mock config for base")
@@ -228,11 +233,8 @@ a SRPM")
             options["base_upload_id"] = upload_id
             options['base_srpm'] = base_srpm
 
-        print 'submitting task with options %s' % options
-
         task_id = self.submit_task(options)
         self.write_task_id_file(task_id, task_id_file)
-        print "Task info: %s" % self.hub.client.task_url(task_id)
 
         if not nowait:
             from kobo.client.task_watcher import TaskWatcher
