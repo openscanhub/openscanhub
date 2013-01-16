@@ -38,13 +38,14 @@ def verify_brew_koji_build(build, brew_url, koji_url):
     dist_tag = re.search('.*-.*-(.*).', srpm).group(1)
 
     if 'fc' in dist_tag:
+        error_line = verify_build_exists(srpm, koji_url, koji)
+        if not error_line:
+            return None
+    error_line = verify_build_exists(srpm, brew_url, brew)
+    if error_line:
         return verify_build_exists(srpm, koji_url, koji)
     else:
-        exists = verify_build_exists(srpm, brew_url, brew)
-        if not exists:
-            return verify_build_exists(srpm, koji_url, koji)
-        else:
-            return None
+        return None
 
 
 def verify_mock(mock, hub):

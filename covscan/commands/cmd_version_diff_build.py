@@ -33,14 +33,6 @@ class Version_Diff_Build(covscan.CovScanCommand):
         )
 
         self.parser.add_option(
-            "-c",
-            "--cppcheck",
-            default=False,
-            action="store_true",
-            help="run cppcheck after build",
-        )
-
-        self.parser.add_option(
             "-i",
             "--keep-covdata",
             default=False,
