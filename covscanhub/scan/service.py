@@ -161,8 +161,11 @@ def extract_logs_from_tarball(task_id, name=None):
     else:
         #name wasn't specified, guess tarball name:
         #file_base (nvr without srcrpm) + tar.xz|tar.lzma
-        tarball_logs = os.path.join(task_dir, task.label + '.tar.xz')
-        tarball_logs2 = os.path.join(task_dir, task.label + '.tar.lzma')
+        file_base = task.label
+        if file_base.endswith('.src.rpm'):
+            file_base = file_base[:-8]
+        tarball_logs = os.path.join(task_dir, file_base + '.tar.xz')
+        tarball_logs2 = os.path.join(task_dir, file_base + '.tar.lzma')
         if os.path.isfile(tarball_logs):
             tar_archive = tarball_logs
         elif os.path.isfile(tarball_logs2):

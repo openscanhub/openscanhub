@@ -53,14 +53,14 @@ class DiffBuild(TaskBase):
             # download SRPM
             task_url = self.hub.client.task_url(self.task_id).rstrip("/")
             srpm_path = os.path.join(tmp_dir, srpm_name)
-            urllib.urlretrieve("%s/log/%s?format=raw" % (task_url, srpm_name), srpm_path)
+            urllib.urlretrieve("%s/log/%s?format=raw" % (task_url, srpm_name),
+                               srpm_path)
 
         try:
             get_rpm_header(srpm_path)
-        except Exception, ex:
-            import kobo.tback
-            print >> sys.stderr, "Invalid RPM file(%s): %s" % (srpm_name, \
-kobo.tback.get_exception())
+        except Exception:
+            print >> sys.stderr, "Invalid RPM file(%s): %s" % (srpm_name,
+                                                kobo.tback.get_exception())
             self.fail()
 
         program = self.get_program()
