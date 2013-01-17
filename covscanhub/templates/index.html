@@ -4,16 +4,22 @@
 <h2>Home page</h2>
 
 <p>
-Welcome to staging server of covscan hub -- web interface. This server will contain latest development version of hub and worker (program that manages coverity scans). You may expect lots of outages, so be patient, please. I might alter database structure sometimes, so as soon as your scan is finished, download all data to your computer and don't expect them to persist here.
+Welcome to shiny new covscan HUB. There are several new improvements:
+<u>
+    <li>new option <em>version-diff-build</em> -- it scans two builds and diff results</li>
+    <li>tarballs are automatically extracted</li>
+    <li>open scans are not lost in the of the "All tasks" list</li>
+    <li>you may browse more filetypes (not just .logs)</li>
+</u>
 </p>
 
 <p>
-Feel free to fill bugs or RFEs in <a href="https://engineering.redhat.com/trac/CoverityScan/newticket">Trac</a>, but don't forget to mention this instance.
+Feel free to fill bugs or RFEs in <a href="https://engineering.redhat.com/trac/CoverityScan/newticket">Trac</a>.
 </p>
 
 <h3>Required setup before usage</h3>
 <ol>
-  <li>Install latest covscan-client and it's depenencies (kobo-client, python-krbV) from <a href="https://dell-per610-03.lab.eng.brq.redhat.com/coverity/install/covscan/">here</a></li>
+  <li>Install latest covscan-client and it's depenencies (kobo-client, python-krbV) from <a href="http://cov01.lab.eng.brq.redhat.com/coverity/install/covscan/">here</a></li>
   <li>Generate a kerberos ticket (kinit)</li>
 </ol>
 
@@ -27,13 +33,6 @@ Feel free to fill bugs or RFEs in <a href="https://engineering.redhat.com/trac/C
 </ul>
 
 <h3>Updates in latest version</h3>
-
-<ul>
-  <li>New type of build: <strong><tt>version-diff-build</strong></tt>. You have to provide two builds, it will scan both SRPMs and diff results. For more information see <strong><tt>covscan version-diff-build --help</tt></strong> </li>
-  <li>New option: <strong><tt>--hub=http://uqtm.lab.eng.brq.redhat.com/covscan/xmlrpc</strong></tt>, this is very useful if you want to use this instance and don't want to mess covscan's config file</li>
-  <li>Tarballs are extracted on server, so you don't have to download</li>
-  <li>You may view other files, not just ones with .log suffix</li>
-</ul>
 
 <p>
 For additional information please check <a href="https://engineering.redhat.com/trac/CoverityScan/wiki/covscan/advanced">advanced usage page</a>

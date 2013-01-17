@@ -168,8 +168,10 @@ def extract_logs_from_tarball(task_id, name=None):
         elif os.path.isfile(tarball_logs2):
             tar_archive = tarball_logs2
         else:
-            raise RuntimeError('There is no tarball (%s, %s) for task %s' %
-                               (tarball_logs, tarball_logs2, task_id))
+            error_string = 'There is no tarball (%s, %s) for task %s' % \
+                (tarball_logs, tarball_logs2, task_id)
+            logger.error(error_string)
+            raise RuntimeError(error_string)
 
     if tar_archive is None:
         raise RuntimeError('There is no tarball specfied for task %s' %

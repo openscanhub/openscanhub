@@ -127,7 +127,7 @@ class VersionDiffBuild(TaskBase):
             self.hub.worker.extract_tarball(self.task_id, '')
         except Exception:
             print >> sys.stderr, "Exception while extracting tarball for task \
-%s" % (self.task_id)
+%s: %s" % (self.task_id, kobo.tback.get_exception())
             self.fail()
 
         # remove temp files
