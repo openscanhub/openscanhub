@@ -8,6 +8,9 @@ import django.contrib.admin as admin
 from models import Tag, MockConfig, Scan, Package, SystemRelease, ScanBinding
 
 
+class MockConfigAdmin(admin.ModelAdmin):
+    list_display = ("id", "name", "enabled")
+
 @add_link_field('scanbinding', 'scanbinding', field_label="Binding",
                 field_name="link_bind")
 @add_link_field('scan', 'base', field_name='link_base', field_label="Base")
@@ -41,7 +44,7 @@ class SystemReleaseAdmin(admin.ModelAdmin):
     list_display = ("id", "tag", "product", "release", "active", "parent_link")
 
 
-admin.site.register(MockConfig)
+admin.site.register(MockConfig, MockConfigAdmin)
 admin.site.register(Tag)
 admin.site.register(SystemRelease, SystemReleaseAdmin)
 admin.site.register(Package, PackageAdmin)

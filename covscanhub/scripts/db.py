@@ -4,13 +4,13 @@
 import sys
 import os
 import re
-import inspect
+
 
 PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.dirname
-    (os.path.abspath(__file__))))   
+    (os.path.abspath(__file__))))
 
 if PROJECT_DIR not in sys.path:
-    print '%s is not on sys.path' % PROJECT_DIR 
+    print '%s is not on sys.path' % PROJECT_DIR
     sys.path.append(PROJECT_DIR)
 
 os.environ['DJANGO_SETTINGS_MODULE'] = 'covscanhub.settings'
@@ -30,7 +30,7 @@ from optparse import OptionParser
 
 def set_options():
     parser = OptionParser()
-    parser.add_option("-H", "--hub", help="configure hub", 
+    parser.add_option("-H", "--hub", help="configure hub",
                       action="store_true", dest="hub", default=False)
     parser.add_option("-c", "--checkergroups",
                       action="store_true", dest="cgroups", default=False,
@@ -39,9 +39,9 @@ def set_options():
     parser.add_option("-s", "--statistics",
                       action="store_true", dest="stats", default=False,
                       help="write statistics definition into database",)
-    
+
     (options, args) = parser.parse_args()
-    
+
     return parser, options, args
 
 
@@ -131,4 +131,3 @@ couple of seconds, please be patient.'
 if __name__ == '__main__':
     main()
     sys.exit(0)
-    
