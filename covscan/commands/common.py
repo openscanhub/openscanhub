@@ -7,7 +7,7 @@ def add_cppcheck_option(parser):
         "--cppcheck",
         default=False,
         action="store_true",
-        help="run cppcheck after build",
+        help="run cppcheck before Coverity scan",
     )
 
 
