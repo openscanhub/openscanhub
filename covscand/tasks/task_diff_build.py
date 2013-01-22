@@ -88,8 +88,6 @@ class DiffBuild(TaskBase):
 
         retcode, output = run(["su", "-", "coverity", "-c", " ".join(cov_cmd)],
                               can_fail=True, stdout=True, buffer_size=128)
-        if retcode:
-            self.fail()
 
         # upload results back to hub
         xz_path = srpm_path[:-8] + ".tar.xz"
@@ -103,6 +101,8 @@ class DiffBuild(TaskBase):
         except Exception:
             print >> sys.stderr, "Exception while extracting tarball for task \
 %s: %s" % (self.task_id, kobo.tback.get_exception())
+
+        if retcode:
             self.fail()
 
         # remove temp files
