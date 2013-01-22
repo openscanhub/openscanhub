@@ -188,16 +188,17 @@ def extract_logs_from_tarball(task_id, name=None):
     # tar xvf file.tar.gz -C /output/directory
     if tmp_tar_archive.endswith('xz'):
         command = ' '.join(['unxz', pipes.quote(tmp_tar_archive),
-                            '&&', 'tar', '-xf',
+                            '&&', 'tar', '-xf', '--exclude=*.cov',
                             pipes.quote(tmp_tar_archive[:-3]),
                             '-C ' + pipes.quote(task_dir)])
     elif tmp_tar_archive.endswith('lzma'):
         command = ' '.join(['unxz', pipes.quote(tmp_tar_archive),
-                            '&&', 'tar', '-xf',
+                            '&&', 'tar', '-xf', '--exclude=*.cov',
                             pipes.quote(tmp_tar_archive[:-5]),
                             '-C ' + pipes.quote(task_dir)])
     elif tmp_tar_archive.endswith('gz'):
-        command = ['tar', '-xzf', pipes.quote(tmp_tar_archive),
+        command = ['tar', '-xzf', '--exclude=*.cov',
+                   pipes.quote(tmp_tar_archive),
                    '-C ' + pipes.quote(task_dir)]
     else:
         raise RuntimeError('Unsupported compression format (%s), task id: %s' %
