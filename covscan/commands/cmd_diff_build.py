@@ -5,7 +5,7 @@ import covscan
 from kobo.shortcuts import random_string
 from shortcuts import verify_brew_koji_build, verify_mock
 from common import *
-
+from covscan.utils.conf import get_default_mockconfig
 
 class Diff_Build(covscan.CovScanCommand):
     """analyze a SRPM without and with patches, return diff"""
@@ -117,7 +117,8 @@ class Diff_Build(covscan.CovScanCommand):
                 self.parser.error(result)
 
         if not config:
-            self.parser.error("please specify a mock config")
+            config = get_default_mockconfig()
+            #self.parser.error("please specify a mock config")
 
         # login to the hub
         self.set_hub(username, password)
