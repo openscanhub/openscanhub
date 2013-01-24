@@ -180,45 +180,31 @@ def extract_logs_from_tarball(task_id, name=None):
         raise RuntimeError('There is no tarball specfied for task %s' %
                            (task_id))
 
-    tmp_tar_file_name = 'tmp_%s' % os.path.split(tar_archive)[1]
-    tmp_tar_archive = os.path.join(task_dir, tmp_tar_file_name)
-    shutil.copy2(tar_archive, tmp_tar_archive)
-
-    # unxz file.tar.xz|lzma && tar xf file.tar -C /output/directory
-    # tar xvf file.tar.gz -C /output/directory
-    if tmp_tar_archive.endswith('xz'):
-        command = ' '.join(['unxz', pipes.quote(tmp_tar_archive),
-                            '&&', 'tar', '-xf', '--exclude=*.cov',
-                            pipes.quote(tmp_tar_archive[:-3]),
+    # xz -cd asd.tar.xz | tar -x --exclude=\*.cov -C ./test/
+    # tar -xzf file.tar.gz -C /output/directory
+    if tar_archive.endswith('xz'):
+        command = ' '.join(['xz', '-cd', pipes.quote(tar_archive),
+                            '|', 'tar', '-x', '--exclude=\*.cov',
                             '-C ' + pipes.quote(task_dir)])
-    elif tmp_tar_archive.endswith('lzma'):
-        command = ' '.join(['unxz', pipes.quote(tmp_tar_archive),
-                            '&&', 'tar', '-xf', '--exclude=*.cov',
-                            pipes.quote(tmp_tar_archive[:-5]),
+    elif tar_archive.endswith('lzma'):
+        command = ' '.join(['xz', '-cd', '--format=lzma',
+                            pipes.quote(tar_archive),
+                            '|', 'tar', '-x', '--exclude=\*.cov',
                             '-C ' + pipes.quote(task_dir)])
-    elif tmp_tar_archive.endswith('gz'):
-        command = ['tar', '-xzf', '--exclude=*.cov',
-                   pipes.quote(tmp_tar_archive),
+    elif tar_archive.endswith('gz'):
+        command = ['tar', '-xzf',
+                   pipes.quote(tar_archive),
+                   '--exclude=*.cov',
                    '-C ' + pipes.quote(task_dir)]
     else:
         raise RuntimeError('Unsupported compression format (%s), task id: %s' %
-                           (tmp_tar_archive, task_id))
+                           (tar_archive, task_id))
     try:
         run(command, can_fail=False, stdout=False)
 #            logfile='/tmp/covscanhub_extract_tarball.log')
     except RuntimeError:
         raise RuntimeError('[%s] Unable to extract tarball archive %s \
 I have used this command: %s' % (task_id, tar_archive, command))
-
-    #clean temporary file tmp_<nvr>.tar
-    if os.path.exists(tmp_tar_archive):
-        os.remove(tmp_tar_archive)
-    if os.path.exists(tmp_tar_archive[:-5]) and \
-            tmp_tar_archive[:-5].endswith('.tar'):
-        os.remove(tmp_tar_archive[:-5])
-    if os.path.exists(tmp_tar_archive[:-3]) and \
-            tmp_tar_archive[:-3].endswith('.tar'):
-        os.remove(tmp_tar_archive[:-3])
 
 
 def create_base_diff_task(kwargs, parent_id):
