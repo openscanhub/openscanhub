@@ -7,7 +7,7 @@
 
 Name:           covscan
 Version:        0.2.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Commercial
 Summary:        Coverity scan scheduler
 Group:          Applications/Engineering
@@ -117,10 +117,6 @@ touch $RPM_BUILD_ROOT/var/log/covscanhub.log
 # copy checker_groups.txt
 cp -R covscanhub/scripts/checker_groups.txt $RPM_BUILD_ROOT/%{py_sitedir}/covscanhub/scripts/
 
-# copy completion script
-mkdir -p $RPM_BUILD_ROOT/%{_sysconfdir}/bash_completion.d/
-cp scripts/covscan.bash $RPM_BUILD_ROOT/%{_sysconfdir}/bash_completion.d/
-
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -145,8 +141,9 @@ rm -rf $RPM_BUILD_ROOT
 %files hub
 %defattr(644,root,apache,755)
 %{py_sitedir}/covscanhub
-%attr(640,root,apache) %{py_sitedir}/covscanhub/settings.py*
+%attr(640,root,apache) %config(noreplace) %{py_sitedir}/covscanhub/settings.py
 %attr(640,root,apache) %config(noreplace) %{py_sitedir}/covscanhub/settings_local.py
+%attr(640,root,apache) %{py_sitedir}/covscanhub/settings.py[co]
 %attr(640,root,apache) %{py_sitedir}/covscanhub/settings_local.py[co]
 %attr(640,root,root) %config(noreplace) /etc/httpd/conf.d/covscanhub-httpd.conf
 %config %ghost /var/log/covscanhub.log
@@ -157,6 +154,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Thu Jan 24 2013 Tomas Tomecek <ttomecek@redhat.com> - 0.2.2-2
+- tarball extraction fix
+
 * Wed Jan 09 2013 Tomas Tomecek <ttomecek@redhat.com> - 0.2.2-1
 - Added support for multiple new options (CLI)
 
