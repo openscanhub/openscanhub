@@ -34,6 +34,9 @@ data_files = {
     "/etc/init.d": [
         "files/etc/init.d/covscand",
     ],
+    "/etc/bash_completion.d": [
+        "files/etc/bash_completion.d/covscan.bash",
+    ],
     "/usr/bin": [
         "covscan/covscan",
     ],
