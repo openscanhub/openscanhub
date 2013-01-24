@@ -11,20 +11,35 @@ __all__ = (
 )
 
 
+# took this directly from koji source
+# <koji_git_repo>/koji/__init__.py:153
+KOJI_BUILD_STATES = (
+    'BUILDING',
+    'COMPLETE',
+    'DELETED',
+    'FAILED',
+    'CANCELED',
+)
+
+
 def verify_build_exists(build, url, builder):
     """
     Verify if build exists
     """
     proxy_object = builder.ClientSession(url)
     try:
+        # getBuild XML-RPC call is defined here: ./hub/kojihub.py:3206
         returned_build = proxy_object.getBuild(build)
     except brew.GenericError:
-        return 'Build %s does not exist' % build
+        return False
     except koji.GenericError:
-        return 'Build %s does not exist' % build
+        return False
     if returned_build is None:
-        return 'Build %s does not exist' % build
-    return None
+        return False
+    if 'state' in returned_build and \
+            returned_build['state'] != KOJI_BUILD_STATES.index('COMPLETE'):
+        return False
+    return True
 
 
 def verify_brew_koji_build(build, brew_url, koji_url):
@@ -35,15 +50,25 @@ def verify_brew_koji_build(build, brew_url, koji_url):
     if srpm.endswith(".src.rpm"):
         srpm = srpm[:-8]
 
-    dist_tag = re.search('.*-.*-(.*).', srpm).group(1)
+    dist_tag = re.search('.*-.*-(.*)', srpm).group(1)
 
+    error_template = "Build %s does not exist in koji nor in brew, or has its \
+files deleted, or did not finish successfully." % build
+
+    koji_build_exists = True
     if 'fc' in dist_tag:
-        error_line = verify_build_exists(srpm, koji_url, koji)
-        if not error_line:
+        koji_build_exists = verify_build_exists(srpm, koji_url, koji)
+        if koji_build_exists:
             return None
-    error_line = verify_build_exists(srpm, brew_url, brew)
-    if error_line:
-        return verify_build_exists(srpm, koji_url, koji)
+    brew_build_exists = verify_build_exists(srpm, brew_url, brew)
+    if not brew_build_exists and not koji_build_exists:
+        return error_template
+    elif not brew_build_exists:
+        koji_build_exists = verify_build_exists(srpm, koji_url, koji)
+        if not brew_build_exists and not koji_build_exists:
+            return error_template
+        else:
+            return None
     else:
         return None
 
