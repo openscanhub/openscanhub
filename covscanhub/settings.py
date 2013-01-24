@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
 # Django settings for covscanhub (kobo hub) project.
 
-import sys
+#import sys
 
 # IF YOU NEED LATEST KOBO (FROM GIT), BE SURE TO CHANGE THIS ACCORDINGLY
-sys.path.insert(0, '/home/ttomecek/dev/kobo/')
+#sys.path.insert(0, '/home/ttomecek/dev/kobo/')
 
 import os
 import kobo
 
-print 'You are using kobo from %s' % kobo.__file__
+#print 'You are using kobo from %s' % kobo.__file__
 
 # Definition of PROJECT_DIR, just for convenience:
 # you can use it instead of specifying the full path
