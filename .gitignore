@@ -8,3 +8,4 @@ MANIFEST
 settings.py
 settings_local.py
 .spyderproject
+*.src.rpm
