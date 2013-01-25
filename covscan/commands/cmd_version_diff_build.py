@@ -8,7 +8,7 @@ from common import *
 
 
 class Version_Diff_Build(covscan.CovScanCommand):
-    """analyze 2 SRPMs and diff results"""
+    """analyze 2 SRPMs (base and target) and diff results"""
     enabled = True
     admin = False  # admin type account required
 
@@ -18,18 +18,18 @@ class Version_Diff_Build(covscan.CovScanCommand):
         #  converted to dashes
         self.parser.usage = "%%prog %s [options] <args>" % self.normalized_name
 
-        self.parser.add_option(
-            "--base-config",
-            help="specify mock config name for base package"
-        )
-
         add_cppcheck_option(self.parser)
         add_aggressive_option(self.parser)
         add_concurrency_option(self.parser)
 
         self.parser.add_option(
-            "--nvr-config",
-            help="specify mock config name for parent package"
+            "--base-config",
+            help="specify mock config name for base package"
+        )
+
+        self.parser.add_option(
+            "--config",
+            help="specify mock config name for target package"
         )
 
         self.parser.add_option(
@@ -76,19 +76,19 @@ local file"
         )
 
         self.parser.add_option(
-            "--nvr-brew-build",
+            "--brew-build",
             help="use a brew build for target (specified by NVR) instead of a \
 local file"
         )
 
         self.parser.add_option(
             "--base-srpm",
-            help="local file used as base"
+            help="path to SRPM used as base"
         )
 
         self.parser.add_option(
-            "--nvr-srpm",
-            help="local file used as target"
+            "--srpm",
+            help="path to SRPM used as target"
         )
 
         self.parser.add_option(
