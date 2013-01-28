@@ -5,6 +5,7 @@ import covscan
 from kobo.shortcuts import random_string
 from shortcuts import verify_brew_koji_build, verify_mock
 from common import *
+from xmlrpclib import Fault
 
 
 class Version_Diff_Build(covscan.CovScanCommand):
@@ -211,8 +212,16 @@ a SRPM")
             options["nvr_brew_build"] = nvr_brew_build
         else:
             target_dir = random_string(32)
-            upload_id, err_code, err_msg = self.hub.upload_file(nvr_srpm,
-                                                                target_dir)
+            try:
+                upload_id, err_code, err_msg = self.hub.upload_file(nvr_srpm,
+                                                                    target_dir)
+            except Fault, e:
+                if 'PermissionDenied' in e.faultString:
+                    self.parser.error('You are not authenticated. Please \
+    obtain Kerberos ticket or specify username and password.')
+                else:
+                    raise
+
             options["nvr_upload_id"] = upload_id
             options['nvr_srpm'] = nvr_srpm
 
@@ -220,12 +229,26 @@ a SRPM")
             options["base_brew_build"] = base_brew_build
         else:
             target_dir = random_string(32)
-            upload_id, err_code, err_msg = self.hub.upload_file(base_srpm,
-                                                                target_dir)
+            try:
+                upload_id, err_code, err_msg = self.hub.upload_file(base_srpm,
+                                                                    target_dir)
+            except Fault, e:
+                if 'PermissionDenied' in e.faultString:
+                    self.parser.error('You are not authenticated. Please \
+    obtain Kerberos ticket or specify username and password.')
+                else:
+                    raise
             options["base_upload_id"] = upload_id
             options['base_srpm'] = base_srpm
 
-        task_id = self.submit_task(options)
+        try:
+            task_id = self.submit_task(options)
+        except Fault, e:
+            if 'PermissionDenied' in e.faultString:
+                self.parser.error('You are not authenticated. Please \
+obtain Kerberos ticket or specify username and password.')
+            else:
+                raise
         self.write_task_id_file(task_id, task_id_file)
 
         if not nowait:
