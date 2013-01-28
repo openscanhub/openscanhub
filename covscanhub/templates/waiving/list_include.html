@@ -10,7 +10,11 @@
   </tr>
 {% for scanbinding in scanbinding_list %}
   <tr>
-    <td><a href="{% url waiving/result scanbinding.result.id %}">{{ scanbinding.result.id }}</a></td>
+    {% if not scanbinding.result.id %}
+        <td>Not finished yet</td>
+    {% else %}
+        <td><a href="{% url waiving/result scanbinding.result.id %}">{{ scanbinding.result.id }}</a></td>
+    {% endif %}
     <td>{{ scanbinding.scan.nvr }}</td>
     <td>{{ scanbinding.scan.base.nvr }}</td>
     <td><span class="{{ scanbinding.scan.get_state_display }}">{{ scanbinding.scan.get_state_display }}</span></td>
