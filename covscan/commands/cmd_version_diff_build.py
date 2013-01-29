@@ -217,7 +217,7 @@ a SRPM")
                 upload_id, err_code, err_msg = self.hub.upload_file(srpm,
                                                                     target_dir)
             except Fault, e:
-                if 'PermissionDenied' in e.faultString:
+                if 'PermissionDenied: Login required.' in e.faultString:
                     self.parser.error('You are not authenticated. Please \
     obtain Kerberos ticket or specify username and password.')
                 else:
@@ -234,7 +234,7 @@ a SRPM")
                 upload_id, err_code, err_msg = self.hub.upload_file(base_srpm,
                                                                     target_dir)
             except Fault, e:
-                if 'PermissionDenied' in e.faultString:
+                if 'PermissionDenied: Login required.' in e.faultString:
                     self.parser.error('You are not authenticated. Please \
     obtain Kerberos ticket or specify username and password.')
                 else:
@@ -245,7 +245,7 @@ a SRPM")
         try:
             task_id = self.submit_task(options)
         except Fault, e:
-            if 'PermissionDenied' in e.faultString:
+            if 'PermissionDenied: Login required.' in e.faultString:
                 self.parser.error('You are not authenticated. Please \
 obtain Kerberos ticket or specify username and password.')
             else:
