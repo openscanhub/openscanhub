@@ -4,7 +4,7 @@
 import covscan
 from xmlrpclib import Fault
 from kobo.shortcuts import random_string
-from shortcuts import verify_brew_koji_build, verify_mock
+from shortcuts import verify_brew_koji_build, verify_mock, upload_file
 from common import *
 from covscan.utils.conf import get_default_mockconfig
 
@@ -155,27 +155,12 @@ class Diff_Build(covscan.CovScanCommand):
             options["srpm_name"] = srpm
         else:
             target_dir = random_string(32)
-            try:
-                upload_id, err_code, err_msg = self.hub.upload_file(srpm,
-                                                                    target_dir)
-            #catch PermissionDenied exception
-            except Fault, e:
-                if 'PermissionDenied: Login required.' in e.faultString:
-                    self.parser.error('You are not authenticated. Please \
-obtain Kerberos ticket or specify username and password.')
-                else:
-                    raise
+            upload_id, err_code, err_msg = upload_file(self.hub, srpm,
+                                                       target_dir, self.parser)
             options["upload_id"] = upload_id
 
-        try:
-            task_id = self.submit_task(config, comment, options)
-        #catch PermissionDenied exception
-        except Fault, e:
-            if 'PermissionDenied: Login required.' in e.faultString:
-                self.parser.error('You are not authenticated. Please \
-obtain Kerberos ticket or specify username and password.')
-            else:
-                raise
+        task_id = self.submit_task(config, comment, options)
+
         self.write_task_id_file(task_id, task_id_file)
         print "Task info: %s" % self.hub.client.task_url(task_id)
 
@@ -184,5 +169,7 @@ obtain Kerberos ticket or specify username and password.')
             TaskWatcher.watch_tasks(self.hub, [task_id])
 
     def submit_task(self, config, comment, options):
-        #xmlrpc call
-        return self.hub.scan.diff_build(config, comment, options)
+        try:
+            return self.hub.scan.diff_build(config, comment, options)
+        except Fault, e:
+            handle_perm_denied(e, self.parser)

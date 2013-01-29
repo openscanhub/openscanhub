@@ -19,6 +19,7 @@ def get_configs_from_hub():
     """
     Return enabled mockconfigs from hub
     """
+    # FIXME: load this URL from /etc/covscan.conf instead
     rpc_url = "http://cov01.lab.eng.brq.redhat.com/covscanhub/xmlrpc/client/"
     client = xmlrpclib.ServerProxy(rpc_url, allow_none=True)
     return filter(lambda x: x['enabled'], client.mock_config.all())

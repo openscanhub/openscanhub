@@ -5,6 +5,9 @@ import koji
 import os
 import re
 
+from xmlrpclib import Fault
+
+
 __all__ = (
     "verify_brew_koji_build",
     "verify_mock",
@@ -80,3 +83,21 @@ def verify_mock(mock, hub):
     if not mock_conf["enabled"]:
         return "Mock config is not enabled: %s" % mock_conf
     return None
+
+
+def handle_perm_denied(e, parser):
+    """"DRY"""
+    if 'PermissionDenied: Login required.' in e.faultString:
+        parser.error('You are not authenticated. Please \
+obtain Kerberos ticket or specify username and password.')
+    else:
+        raise
+
+
+def upload_file(hub, srpm, target_dir, parser):
+    """Upload file to hub, catch PermDenied exception"""
+    try:
+        #returns (upload_id, err_code, err_msg)
+        return hub.upload_file(srpm, target_dir)
+    except Fault, e:
+        handle_perm_denied(e, parser)

@@ -3,7 +3,8 @@
 
 import covscan
 from kobo.shortcuts import random_string
-from shortcuts import verify_brew_koji_build, verify_mock
+from shortcuts import verify_brew_koji_build, verify_mock, upload_file, \
+    handle_perm_denied
 from common import *
 from xmlrpclib import Fault
 
@@ -213,16 +214,8 @@ a SRPM")
             options["nvr_brew_build"] = brew_build
         else:
             target_dir = random_string(32)
-            try:
-                upload_id, err_code, err_msg = self.hub.upload_file(srpm,
-                                                                    target_dir)
-            except Fault, e:
-                if 'PermissionDenied: Login required.' in e.faultString:
-                    self.parser.error('You are not authenticated. Please \
-    obtain Kerberos ticket or specify username and password.')
-                else:
-                    raise
-
+            upload_id, err_code, err_msg = upload_file(self.hub, srpm,
+                                                       target_dir, self.parser)
             options["nvr_upload_id"] = upload_id
             options['nvr_srpm'] = srpm
 
@@ -230,26 +223,13 @@ a SRPM")
             options["base_brew_build"] = base_brew_build
         else:
             target_dir = random_string(32)
-            try:
-                upload_id, err_code, err_msg = self.hub.upload_file(base_srpm,
-                                                                    target_dir)
-            except Fault, e:
-                if 'PermissionDenied: Login required.' in e.faultString:
-                    self.parser.error('You are not authenticated. Please \
-    obtain Kerberos ticket or specify username and password.')
-                else:
-                    raise
+            upload_id, err_code, err_msg = upload_file(self.hub, base_srpm,
+                                                       target_dir, self.parser)
             options["base_upload_id"] = upload_id
             options['base_srpm'] = base_srpm
 
-        try:
-            task_id = self.submit_task(options)
-        except Fault, e:
-            if 'PermissionDenied: Login required.' in e.faultString:
-                self.parser.error('You are not authenticated. Please \
-obtain Kerberos ticket or specify username and password.')
-            else:
-                raise
+        task_id = self.submit_task(options)
+
         self.write_task_id_file(task_id, task_id_file)
 
         if not nowait:
@@ -257,5 +237,7 @@ obtain Kerberos ticket or specify username and password.')
             TaskWatcher.watch_tasks(self.hub, [task_id])
 
     def submit_task(self, options):
-        #xmlrpc call
-        return self.hub.scan.create_user_diff_task(options)
+        try:
+            return self.hub.scan.create_user_diff_task(options)
+        except Fault, e:
+            handle_perm_denied(e, self.parser)
