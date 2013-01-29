@@ -231,6 +231,7 @@ a SRPM")
         task_id = self.submit_task(options)
 
         self.write_task_id_file(task_id, task_id_file)
+        print "Task info: %s" % self.hub.client.task_url(task_id)
 
         if not nowait:
             from kobo.client.task_watcher import TaskWatcher
