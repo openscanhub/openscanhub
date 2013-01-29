@@ -29,7 +29,7 @@ class Version_Diff_Build(covscan.CovScanCommand):
         add_concurrency_option(self.parser)
 
         self.parser.add_option(
-            "--nvr-config",
+            "--config",
             help="specify mock config name for parent package"
         )
 
@@ -77,7 +77,7 @@ local file"
         )
 
         self.parser.add_option(
-            "--nvr-brew-build",
+            "--brew-build",
             help="use a brew build for target (specified by NVR) instead of a \
 local file"
         )
@@ -88,7 +88,7 @@ local file"
         )
 
         self.parser.add_option(
-            "--nvr-srpm",
+            "--srpm",
             help="local file used as target"
         )
 
