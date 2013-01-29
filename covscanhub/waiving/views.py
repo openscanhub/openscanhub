@@ -244,7 +244,7 @@ def result(request, result_id):
     """
     return render_to_response(
         "waiving/result.html",
-        get_result_context(Result.objects.get(id=result_id)),
+        get_result_context(get_object_or_404(Result, id=result_id)),
         context_instance=RequestContext(request)
     )
 

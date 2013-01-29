@@ -56,6 +56,9 @@ def m_finish_scan(scan_id):
         if sb.scan.nvr in d and '.tar.' in d:
             final_dir = d
             break
+    if not final_dir:
+        raise RuntimeError('Cannot find tarball with results for %s.' %
+                           sb.scan.nvr)
 
     shutil.copy(os.path.join(source_path, final_dir), task_dir)
 
@@ -75,7 +78,7 @@ def m_finish_all_scans():
     target_scans = Scan.objects.filter(scan_type=SCAN_TYPES['ERRATA'],
                                        state=SCAN_STATES['QUEUED'])
     for target in target_scans:
-        m_finish_scan(target.id)    
+        m_finish_scan(target.id)
 
 
 if __name__ == '__main__':

@@ -2,10 +2,12 @@
 
 
 import covscan
+from xmlrpclib import Fault
 from kobo.shortcuts import random_string
 from shortcuts import verify_brew_koji_build, verify_mock
 from common import *
 from covscan.utils.conf import get_default_mockconfig
+
 
 class Diff_Build(covscan.CovScanCommand):
     """analyze a SRPM without and with patches, return diff"""
@@ -153,11 +155,27 @@ class Diff_Build(covscan.CovScanCommand):
             options["srpm_name"] = srpm
         else:
             target_dir = random_string(32)
-            upload_id, err_code, err_msg = self.hub.upload_file(srpm,
-                                                                target_dir)
+            try:
+                upload_id, err_code, err_msg = self.hub.upload_file(srpm,
+                                                                    target_dir)
+            #catch PermissionDenied exception
+            except Fault, e:
+                if 'PermissionDenied' in e.faultString:
+                    self.parser.error('You are not authenticated. Please \
+obtain Kerberos ticket or specify username and password.')
+                else:
+                    raise
             options["upload_id"] = upload_id
 
-        task_id = self.submit_task(config, comment, options)
+        try:
+            task_id = self.submit_task(config, comment, options)
+        #catch PermissionDenied exception
+        except Fault, e:
+            if 'PermissionDenied' in e.faultString:
+                self.parser.error('You are not authenticated. Please \
+obtain Kerberos ticket or specify username and password.')
+            else:
+                raise
         self.write_task_id_file(task_id, task_id_file)
         print "Task info: %s" % self.hub.client.task_url(task_id)
 

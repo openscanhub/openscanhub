@@ -5,6 +5,7 @@ import covscan
 from kobo.shortcuts import random_string
 from shortcuts import verify_brew_koji_build, verify_mock
 from common import *
+from xmlrpclib import Fault
 
 
 class Version_Diff_Build(covscan.CovScanCommand):
@@ -110,7 +111,7 @@ local file"
         options = {}
         username = kwargs.pop("username", None)
         password = kwargs.pop("password", None)
-        nvr_config = kwargs.pop("nvr_config", None)
+        config = kwargs.pop("config", None)
         base_config = kwargs.pop("base_config", None)
         aggressive = kwargs.pop("aggressive", None)
         cppcheck = kwargs.pop("cppcheck", None)
@@ -121,9 +122,9 @@ local file"
         task_id_file = kwargs.pop("task_id_file")
         priority = kwargs.pop("priority")
         base_brew_build = kwargs.pop("base_brew_build", None)
-        nvr_brew_build = kwargs.pop("nvr_brew_build", None)
+        brew_build = kwargs.pop("brew_build", None)
         base_srpm = kwargs.pop("base_srpm", None)
-        nvr_srpm = kwargs.pop("nvr_srpm", None)
+        srpm = kwargs.pop("srpm", None)
         all_checker = kwargs.pop("all")
         security = kwargs.pop("security")
         concurrency = kwargs.pop("concurrency")
@@ -137,13 +138,13 @@ local file"
 --base-srpm), not both of them.")
 
         #both nvr/targets are specified
-        if nvr_brew_build and nvr_srpm:
+        if brew_build and srpm:
             self.parser.error("Choose exactly one option (--nvr-brew-build, \
 --nvr-srpm), not both of them.")
 
         #no package option specified
-        if (not base_brew_build and not nvr_brew_build and
-            not nvr_srpm and not base_srpm):
+        if (not base_brew_build and not brew_build and
+                not srpm and not base_srpm):
             self.parser.error("Please specify both builds or SRPMs.")
 
         #no base specified
@@ -151,24 +152,25 @@ local file"
             self.parser.error("You haven't specified base.")
 
         #no nvr/target specified
-        if not nvr_brew_build and not nvr_srpm:
+        if not brew_build and not srpm:
             self.parser.error("You haven't specified target.")
 
-        if nvr_srpm and not nvr_srpm.endswith(".src.rpm"):
+        if srpm and not srpm.endswith(".src.rpm"):
             self.parser.error("provided target file doesn't appear to be \
 a SRPM")
 
         if base_srpm and not base_srpm.endswith(".src.rpm"):
             self.parser.error("provided base file doesn't appear to be a SRPM")
 
-        if nvr_brew_build:
-            result = verify_brew_koji_build(nvr_brew_build, self.conf['BREW_URL'],
+        if brew_build:
+            result = verify_brew_koji_build(brew_build, self.conf['BREW_URL'],
                                             self.conf['KOJI_URL'])
             if result is not None:
                 self.parser.error(result)
 
         if base_brew_build:
-            result = verify_brew_koji_build(base_brew_build, self.conf['BREW_URL'],
+            result = verify_brew_koji_build(base_brew_build,
+                                            self.conf['BREW_URL'],
                                             self.conf['KOJI_URL'])
             if result is not None:
                 self.parser.error(result)
@@ -176,7 +178,7 @@ a SRPM")
         if not base_config:
             self.parser.error("please specify a mock config for base")
 
-        if not nvr_config:
+        if not config:
             self.parser.error("please specify a mock config for target")
 
         # login to the hub
@@ -184,8 +186,8 @@ a SRPM")
 
         verify_mock(base_config, self.hub)
         options['base_mock'] = base_config
-        verify_mock(nvr_config, self.hub)
-        options['nvr_mock'] = nvr_config
+        verify_mock(config, self.hub)
+        options['nvr_mock'] = config
 
         # end of CLI options handling
 
@@ -207,25 +209,47 @@ a SRPM")
         if concurrency:
             options["concurrency"] = concurrency
 
-        if nvr_brew_build:
-            options["nvr_brew_build"] = nvr_brew_build
+        if brew_build:
+            options["nvr_brew_build"] = brew_build
         else:
             target_dir = random_string(32)
-            upload_id, err_code, err_msg = self.hub.upload_file(nvr_srpm,
-                                                                target_dir)
+            try:
+                upload_id, err_code, err_msg = self.hub.upload_file(srpm,
+                                                                    target_dir)
+            except Fault, e:
+                if 'PermissionDenied' in e.faultString:
+                    self.parser.error('You are not authenticated. Please \
+    obtain Kerberos ticket or specify username and password.')
+                else:
+                    raise
+
             options["nvr_upload_id"] = upload_id
-            options['nvr_srpm'] = nvr_srpm
+            options['nvr_srpm'] = srpm
 
         if base_brew_build:
             options["base_brew_build"] = base_brew_build
         else:
             target_dir = random_string(32)
-            upload_id, err_code, err_msg = self.hub.upload_file(base_srpm,
-                                                                target_dir)
+            try:
+                upload_id, err_code, err_msg = self.hub.upload_file(base_srpm,
+                                                                    target_dir)
+            except Fault, e:
+                if 'PermissionDenied' in e.faultString:
+                    self.parser.error('You are not authenticated. Please \
+    obtain Kerberos ticket or specify username and password.')
+                else:
+                    raise
             options["base_upload_id"] = upload_id
             options['base_srpm'] = base_srpm
 
-        task_id = self.submit_task(options)
+        try:
+            task_id = self.submit_task(options)
+        except Fault, e:
+            if 'PermissionDenied' in e.faultString:
+                self.parser.error('You are not authenticated. Please \
+obtain Kerberos ticket or specify username and password.')
+            else:
+                raise
         self.write_task_id_file(task_id, task_id_file)
 
         if not nowait:
