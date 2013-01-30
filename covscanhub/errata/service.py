@@ -129,6 +129,8 @@ def create_errata_scan(kwargs):
      - nvr_tag - tag of the package from brew
      - base_tag - tag of the base package from brew
      - rhel_version - version of enterprise linux in which will package appear
+
+    return scanbinding
     """
     options = {}
 
@@ -234,7 +236,7 @@ def create_errata_scan(kwargs):
     sb.scan = scan
     sb.save()
 
-    return scan
+    return sb
 
 
 def rescan(scan):
