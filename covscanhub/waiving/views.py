@@ -202,7 +202,7 @@ def waiver(request, sb_id, result_group_id):
             context['form_message'] = 'This is not the newest scan.'
 
     # merge already created context with result context
-    context = dict(context.items() + get_result_context(sb.result).items())
+    context = dict(context.items() + get_result_context(sb).items())
 
     context['active_group'] = result_group_object
     context['defects'] = Defect.objects.filter(result_group=result_group_id,
@@ -262,7 +262,7 @@ def newest_result(request, package_name, release_tag):
                 scan__package__name=package_name,
                 scan__tag__release__tag=release_tag,
                 scan__enabled=True
-            ).latest().result
+            ).latest()
         ),
         context_instance=RequestContext(request)
     )
