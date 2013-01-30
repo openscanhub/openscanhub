@@ -49,7 +49,7 @@ def create_errata_base_scan(kwargs, parent_task_id, package):
         method='ErrataDiffBuild',
         args={},  # I want to add scan's id here, so I update it later
         comment=comment,
-        state=TASK_STATES["CREATED"],
+        state=TASK_STATES["FREE"],
         priority=priority,
         parent_id=parent_task_id,
     )
@@ -80,7 +80,7 @@ def obtain_base(base, task_id, kwargs, package):
     if found:
         if (binding.scan.state == SCAN_STATES['QUEUED'] or
             binding.scan.state == SCAN_STATES['SCANNING']) and \
-            binding.result is None:
+                binding.result is None:
             return binding.scan
         elif binding.result.scanner_version != settings.ACTUAL_SCANNER[1] or \
                 binding.result.scanner != settings.ACTUAL_SCANNER[0]:
@@ -204,7 +204,7 @@ def create_errata_scan(kwargs):
         method='ErrataDiffBuild',
         args={},  # I want to add scan's id here, so I update it later
         comment=comment,
-        state=TASK_STATES["CREATED"],
+        state=TASK_STATES["FREE"],
         priority=priority,
     )
     task_dir = Task.get_task_dir(task_id)
@@ -221,7 +221,7 @@ def create_errata_scan(kwargs):
                             tag=tag_obj, package=package, base=base_obj,
                             enabled=True)
 
-    if child.scan:
+    if child and child.scan:
         child_scan = Scan.objects.get(id=child.scan.id)
         child_scan.parent = scan
         child_scan.enabled = False
@@ -255,7 +255,7 @@ failed. This is not supported.")
             method='ErrataDiffBuild',
             args={},
             comment=latest_binding.task.comment,
-            state=TASK_STATES["CREATED"],
+            state=TASK_STATES["FREE"],
             priority=latest_binding.task.priority,
         )
         task_dir = Task.get_task_dir(task_id)
@@ -292,7 +292,7 @@ Unsupported.')
             method='ErrataDiffBuild',
             args={},
             comment=latest_binding.task.comment,
-            state=TASK_STATES["CREATED"],
+            state=TASK_STATES["FREE"],
             priority=latest_binding.task.priority,
         )
         task_dir = Task.get_task_dir(task_id)
