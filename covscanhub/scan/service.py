@@ -273,7 +273,7 @@ def create_base_diff_task(kwargs, parent_id):
         method='VersionDiffBuild',
         args=options,
         comment=comment,
-        state=SCAN_STATES["QUEUED"],
+        state=TASK_STATES["FREE"],
         priority=priority,
         parent_id=parent_id,
     )
@@ -358,7 +358,7 @@ def create_diff_task(kwargs):
         method='VersionDiffBuild',
         args=options,
         comment=comment,
-        state=SCAN_STATES["QUEUED"],
+        state=TASK_STATES["FREE"],
         priority=priority
     )
     task_dir = Task.get_task_dir(task_id)

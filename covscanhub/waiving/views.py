@@ -63,8 +63,10 @@ def get_result_context(sb):
             sb.result, DEFECT_STATES['NEW']))
         context['output_fixed'] = get_five_tuple(get_waiving_data(
             sb.result, DEFECT_STATES['FIXED']))
+    elif sb.scan.state == SCAN_STATES['FAILED']:
+        context['not_finished'] = "Scan failed. Please contact administrator."
     else:
-        context['not_finished'] = "Scan haven't finished yet,"
+        context['not_finished'] = "Scan haven't finished yet."
     context['sb'] = sb
     context['logs'] = logs
     context['compare_title'] = get_compare_title(
