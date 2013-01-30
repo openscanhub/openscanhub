@@ -11,10 +11,10 @@ This module is present in Fedora repositories and in EPEL:
 """
 import sys
 
-KOBO_DIR = '/home/ttomecek/dev/kobo'
+#KOBO_DIR = '/home/ttomecek/dev/kobo'
 
-if KOBO_DIR not in sys.path:
-    sys.path.insert(0, KOBO_DIR)
+#if KOBO_DIR not in sys.path:
+#    sys.path.insert(0, KOBO_DIR)
 
 from kobo.tback import Traceback, set_except_hook
 #print sys.excepthook
@@ -50,10 +50,14 @@ def set_options():
     parser.add_option("-t", "--target", action="store", type="string",
                       dest="target",
                       help="write statistics definition into database",)
-
+    parser.add_option("-f", "--file", help="create base scans from this file",
+                      action="store", type="string", dest="file")
+    parser.add_option("-T", "--tag", help="name of tag for mass prescan",
+                      action="store", type="string", dest="tag_name")
     (options, args) = parser.parse_args()
 
     return parser, options, args
+
 
 def connect(rpc_url):
     """
@@ -175,12 +179,10 @@ KRB_REALM (current value: %s)." % realm
     return base64.encodestring(req)
 
 
-def create_et_scan(rpc_url, base, target):
+def create_et_scan(client, base, target):
     """
     Connect to RPC server, login and execute some method
     """
-    client = connect(rpc_url)
-
     #login_krbv is rpc call
     #print client.auth.login_krbv(login())
     #if '127.0.0.1' in RPC_URL or 'localhost' in RPC_URL:
@@ -197,15 +199,13 @@ def create_et_scan(rpc_url, base, target):
             'nvr_tag': 'epel-6-x86_64',
         }
     except Exception:
-        print "Usage:\n%prog <base_nvr> <target_nvr>"
+        print "Usage:\n%prog -b <base_nvr> -t <target_nvr>"
         sys.exit(1)
     #'base': 'units-1.87-4.el6' 'nvr': 'units-1.87-7.el6',
     #print call_send_message(client)
     print call_errata_version_task(client, scan_args)
-    #print call_version_task(client, user_kwargs)
 
-def init_scans(rpc_url):
-    client = connect(rpc_url)
+def init_scans(client):
     nvrs = [
         ('libssh2-1.2.2-7.el6', 'libssh2-1.4.2-1.el6'),
         ('wget-1.12-1.4.el6', 'wget-1.12-1.8.el6'),
@@ -232,6 +232,14 @@ def init_scans(rpc_url):
         print call_errata_version_task(client, scan_args)
 
 
+def mass_prescan(client, file_path, parser, tag_name):
+    try:
+        fp = open(file_path, 'r')
+    except IOError:
+        parser.error('Cannot open specified file')
+    print client.scan.create_base_scans(fp.readlines(), tag_name)
+
+
 if __name__ == '__main__':
     print 'You are using kobo from %s' % kobo.__file__
 
@@ -241,17 +249,23 @@ if __name__ == '__main__':
     if options.hub_local:
         rpc_url = "http://127.0.0.1:8000/xmlrpc/kerbauth/"
     elif options.hub_prod:
-        rpc_url = "https://releng-test1.englab.brq.redhat.com/covscan/xmlrpc/client/"
+        #rpc_url = "https://releng-test1.englab.brq.redhat.com/covscan\
+#/xmlrpc/client/"
+        rpc_url = "https://cov01.lab.eng.brq.redhat.com/covscan/xmlrpc/client/"
     elif options.hub_staging:
-        rpc_url = "http://uqtm.lab.eng.brq.redhat.com/covscan/xmlrpc/kerbauth/"
+        rpc_url = "http://uqtm.lab.eng.brq.redhat.com/covscan/xmlrpc/client/"
+
+    client = connect(rpc_url)
 
     #sys.excepthook = sys.__excepthook__
     before = datetime.datetime.now()
     #try:
     if options.init:
-        init_scans(rpc_url)
+        init_scans(client)
     elif options.base and options.target:
-        create_et_scan(rpc_url, options.base, options.target)
+        create_et_scan(client, options.base, options.target)
+    elif options.file and options.tag_name:
+        mass_prescan(client, options.file, parser, options.tag_name)
     #except Exception, ex:
     #    print '---EXCEPTION---\n\n\n%s\n\n\n' % ex
     #    t = Traceback()

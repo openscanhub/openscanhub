@@ -2,6 +2,7 @@
 
 
 import os
+import re
 
 from django.core.exceptions import ObjectDoesNotExist
 
@@ -9,16 +10,18 @@ import koji
 
 from kobo.hub.models import Task, TASK_STATES
 from kobo.django.upload.models import FileUpload
-from kobo.django.xmlrpc.decorators import login_required
+from kobo.django.xmlrpc.decorators import login_required, admin_required
 
-from covscanhub.scan.models import MockConfig
+from covscanhub.scan.models import MockConfig, Package, Tag
 from covscanhub.scan.service import create_diff_task
+from covscanhub.errata.service import create_errata_base_scan
 
 
 __all__ = (
     "diff_build",
     "mock_build",
     "create_user_diff_task",
+    "create_base_scans",
 )
 
 
@@ -141,3 +144,30 @@ def create_user_diff_task(request, kwargs):
     """
     kwargs['task_user'] = request.user.username
     return create_diff_task(kwargs)
+
+
+@admin_required
+def create_base_scans(request, nvrs_list, tag_name):
+    try:
+        tag = Tag.objects.get(name=tag_name)
+    except ObjectDoesNotExist:
+        return ['Tag %s does not exist' % tag_name]
+    response = []
+    nvr_pattern = re.compile("(.*)-(.*)-(.*)")
+    for nvr in nvrs_list:
+        m = nvr_pattern.match(nvr)
+        if m:
+            package_str = m.group(1)
+            package, created = Package.objects.get_or_create(name=package_str)
+            if not created and package.blocked:
+                response.append('package %s is blacklisted' % package_str)
+            options = {
+                'username': request.user.username,
+                'task_user': request.user.username,
+                'base': nvr,
+                'base_tag': tag_name,
+            }
+            create_errata_base_scan(options, None, package)
+        else:
+            response.append('%s is not a valid NVR' % nvr)
+    return response
