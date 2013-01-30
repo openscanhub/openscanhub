@@ -184,8 +184,8 @@ def waiver(request, sb_id, result_group_id):
         place_string = w.result_group.result.scanbinding.scan.nvr
 
         context['waivers_place'] = place_string
-        context['waivers_result'] = w.result_group.result.id
-        context['waivers_group'] = w.result_group.id
+        context['waivers_sb_id'] = w.result_group.result.scanbinding.id
+        context['waivers_group_id'] = w.result_group.id
         context['display_form'] = False
         context['display_waivers'] = True
     else:
