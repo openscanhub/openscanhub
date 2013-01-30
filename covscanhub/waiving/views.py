@@ -12,16 +12,16 @@ from django.core.exceptions import ObjectDoesNotExist
 
 from kobo.django.views.generic import object_list
 
-from covscanhub.scan.models import Scan, SCAN_STATES, ScanBinding, Package,\
+from covscanhub.scan.models import SCAN_STATES, ScanBinding, Package,\
     SystemRelease
 from covscanhub.scan.compare import get_compare_title
-from covscanhub.scan.service import get_latest_scan_by_package
+from covscanhub.scan.service import get_latest_sb_by_package
 
 from covscanhub.other.shortcuts import get_or_none
 
 from bugzilla_reporting import create_bugzilla, get_unreported_bugs, \
     update_bugzilla
-from models import CheckerGroup, Result, ResultGroup, Defect, Waiver,\
+from models import CheckerGroup, ResultGroup, Defect, Waiver,\
     WAIVER_TYPES, DEFECT_STATES, RESULT_GROUP_STATES, Bugzilla
 from forms import WaiverForm
 from service import get_unwaived_rgs, get_last_waiver, display_in_result, \
@@ -31,57 +31,56 @@ from service import get_unwaived_rgs, get_last_waiver, display_in_result, \
 logger = logging.getLogger(__name__)
 
 
-def get_result_context(result_object):
+def get_result_context(sb):
     logs = {}
     context = {}
-    package = result_object.scanbinding.scan.package
-    release = result_object.scanbinding.scan.tag.release
+    package = sb.scan.package
+    release = sb.scan.tag.release
     unrep_waivers = get_unreported_bugs(package, release)
 
     file_labels = {
         'csdiff.html': 'Defects diff',
         'csdiff_fixed.html': 'Fixed defects diff',
         '.err': 'Complete defects output',
+        'stdout.log': 'Log',
     }
-    for i in result_object.scanbinding.task.logs.list:
+    for i in sb.task.logs.list:
         basename = os.path.basename(i)
         for path, label in file_labels.iteritems():
             if basename.endswith(path):
                 logs[i] = label
     #logs.sort(lambda x, y: cmp(os.path.split(x), os.path.split(y)))
-
     context['bugzilla'] = get_or_none(Bugzilla,
                                       package=package,
                                       release=release)
-
     if unrep_waivers:
         context['unreported_bugs_count'] = unrep_waivers.count()
     else:
         context['unreported_bugs_count'] = 0
 
-    context['output_new'] = get_five_tuple(get_waiving_data(
-        result_object, DEFECT_STATES['NEW']))
-    context['output_fixed'] = get_five_tuple(get_waiving_data(
-        result_object, DEFECT_STATES['FIXED']))
-    context['result'] = result_object
+    if sb.result:
+        context['output_new'] = get_five_tuple(get_waiving_data(
+            sb.result, DEFECT_STATES['NEW']))
+        context['output_fixed'] = get_five_tuple(get_waiving_data(
+            sb.result, DEFECT_STATES['FIXED']))
+    else:
+        context['not_finished'] = "Scan haven't finished yet,"
+    context['sb'] = sb
     context['logs'] = logs
     context['compare_title'] = get_compare_title(
-        result_object.scanbinding.scan.nvr,
-        result_object.scanbinding.scan.base.nvr,
+        sb.scan.nvr,
+        sb.scan.base.nvr,
     )
     context['title'] = "%s compared to %s" % (
-        result_object.scanbinding.scan.nvr,
-        result_object.scanbinding.scan.base.nvr,
+        sb.scan.nvr,
+        sb.scan.base.nvr,
     )
-    context['task'] = result_object.scanbinding.task
-    context['first_result'] = \
-        result_object.scanbinding.scan.get_first_scan_binding().scan
-    context['newest_result'] = \
-        get_latest_scan_by_package(result_object.scanbinding.scan.tag,
-                                   result_object.scanbinding.scan.package)
-    context['previous_result'] = \
-        result_object.scanbinding.scan.get_child_scan()
-    context['next_result'] = result_object.scanbinding.scan.parent
+    context['first_sb'] = sb.scan.get_first_scan_binding()
+    context['newest_sb'] = \
+        get_latest_sb_by_package(sb.scan.tag, sb.scan.package)
+    context['previous_sb'] = getattr(sb.scan.get_child_scan(),
+                                     'scanbinding', None)
+    context['next_sb'] = getattr(sb.scan.parent, 'scanbinding', None)
     return context
 
 
@@ -127,8 +126,7 @@ def results_list(request):
     """
     args = {
         "queryset": ScanBinding.objects.exclude(
-            scan__base__isnull=True).\
-            order_by('-result__date_submitted'),
+            scan__base__isnull=True).order_by('-result__date_submitted'),
         "allow_empty": True,
         "paginate_by": 50,
         "template_name": "waiving/list.html",
@@ -140,13 +138,13 @@ def results_list(request):
     return object_list(request, **args)
 
 
-def waiver(request, result_id, result_group_id):
+def waiver(request, sb_id, result_group_id):
     """
     Display waiver (for new defects) for specified result & group
     """
     context = {}
 
-    result_object = Result.objects.get(id=result_id)
+    sb = get_object_or_404(ScanBinding, id=sb_id)
     result_group_object = ResultGroup.objects.get(id=result_group_id)
 
     if request.method == "POST":
@@ -160,26 +158,26 @@ def waiver(request, result_id, result_group_id):
             w.state = WAIVER_TYPES[form.cleaned_data['waiver_type']]
             w.save()
 
-            s = Scan.objects.get(id=result_object.scanbinding.scan.id)
+            s = sb.scan
 
             s.last_access = datetime.datetime.now()
 
             result_group_object.state = RESULT_GROUP_STATES['WAIVED']
             result_group_object.save()
 
-            if not get_unwaived_rgs(result_object):
+            if not get_unwaived_rgs(sb.result):
                 s.state = SCAN_STATES['WAIVED']
             s.save()
 
             logger.info('Waiver submitted for resultgroup %s',
                         result_group_object)
             return HttpResponseRedirect(reverse('waiving/result',
-                                                args=(result_id,)))
+                                                args=(sb.id,)))
 
     if result_group_object.is_previously_waived():
         w = get_last_waiver(result_group_object.checker_group,
-            result_group_object.result.scanbinding.scan.package,
-            result_group_object.result.scanbinding.scan.tag.release)
+                            sb.scan.package,
+                            sb.scan.tag.release)
 
         place_string = w.result_group.result.scanbinding.scan.nvr
 
@@ -193,7 +191,7 @@ def waiver(request, result_id, result_group_id):
         if previous_waivers:
             context['previous_waivers'] = previous_waivers
         context['display_waivers'] = True
-        if result_object.scanbinding.scan.enabled:
+        if sb.scan.enabled:
             form = WaiverForm()
             context['form'] = form
             context['display_form'] = True
@@ -202,27 +200,28 @@ def waiver(request, result_id, result_group_id):
             context['form_message'] = 'This is not the newest scan.'
 
     # merge already created context with result context
-    context = dict(context.items() + get_result_context(result_object).items())
+    context = dict(context.items() + get_result_context(sb.result).items())
 
     context['active_group'] = result_group_object
     context['defects'] = Defect.objects.filter(result_group=result_group_id,
                                                state=DEFECT_STATES['NEW']).\
-                                               order_by("order")
+                                                   order_by("order")
     context['waivers'] = Waiver.objects.filter(result_group=result_group_id)
 
-    logger.debug('Displaying waiver for result %s, result-group %s',
-                 result_object, result_group_object)
+    logger.debug('Displaying waiver for sb %s, result-group %s',
+                 sb, result_group_object)
 
     return render_to_response("waiving/waiver.html",
                               context,
                               context_instance=RequestContext(request))
 
 
-def fixed_defects(request, result_id, result_group_id):
+def fixed_defects(request, sb_id, result_group_id):
     """
     Display fixed defects
     """
-    context = get_result_context(Result.objects.get(id=result_id))
+    sb = get_object_or_404(ScanBinding, id=sb_id)
+    context = get_result_context(sb)
 
     context['active_group'] = ResultGroup.objects.get(id=result_group_id)
     context['defects'] = Defect.objects.filter(result_group=result_group_id,
@@ -238,13 +237,13 @@ defects are already fixed."
                               context_instance=RequestContext(request))
 
 
-def result(request, result_id):
+def result(request, sb_id):
     """
     Display all the tests for specified scan
     """
     return render_to_response(
         "waiving/result.html",
-        get_result_context(get_object_or_404(Result, id=result_id)),
+        get_result_context(get_object_or_404(ScanBinding, id=sb_id)),
         context_instance=RequestContext(request)
     )
 
@@ -254,8 +253,6 @@ def newest_result(request, package_name, release_tag):
     Display latest result for specified package -- this is available on
      specific URL
     """
-    #TODO display message when scan is not finished:
-    # scan is not finished -- you may watch logs <a>here</a>
     return render_to_response(
         "waiving/result.html",
         get_result_context(

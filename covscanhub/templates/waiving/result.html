@@ -3,7 +3,9 @@
 
 {% block content %}
 <h1>{{ compare_title }}</h1>
-<h3>{{ result.scanbinding.scan.tag.release.product }} release {{ result.scanbinding.scan.tag.release.release }}</h3>
+<h3>{{ sb.scan.tag.release.product }} release {{ sb.scan.tag.release.release }}</h3>
+
+{% if sb.result %}
 
 <div id="bz_wrapper">
     {% if not bugzilla %}
@@ -58,7 +60,7 @@
                 id="active"
             {% endif %}
         >
-            <a href="{% url waiving/waiver result.id data.id %}#defects">
+            <a href="{% url waiving/waiver sb.id data.id %}#defects">
                 {{ group.name }}
             </a>
             {% if data.defects_state %}
@@ -94,7 +96,7 @@
                 id="active"
             {% endif %}
         >
-            <a href="{% url waiving/fixed_defects result.id data.id %}#defects">
+            <a href="{% url waiving/fixed_defects sb.id data.id %}#defects">
                 {{ group.name }}
             </a>
             {% if data.defects_state %}
@@ -118,48 +120,54 @@
 </table>
 {% endif %}
 
+{% else %} {# sb.result #}
+
+<h3> {{ not_finished }} </h3>
+
+{% endif %}
+
 {% if task %}
-<a href="{% url task/detail task.id %}">Task</a>
+<a href="{% url task/detail sb.task.id %}">Task</a>
 {% endif %}
 
 {% if logs %}
 <div>
 <ul>
 {% for log, log_label in logs.iteritems %}
-  <li><a href="{% url task/log result.scanbinding.task.id log %}">{{ log_label }}</a> [<a href="{% url task/log result.scanbinding.task.id log %}?format=raw">download</a>]</li>
+  <li><a href="{% url task/log sb.task.id log %}">{{ log_label }}</a> [<a href="{% url task/log sb.task.id log %}?format=raw">download</a>]</li>
 {% endfor %}
 </ul>
 </div>
 {% endif %}
 
-{% if previous_result or next_result %}
+{% if previous_sb or next_sb %}
 <div id="result_links">
-    {% if first_result %}
-        <span><a href="{% url waiving/result first_result.id %}">First scan ({{ first_result.nvr }})</a></span>
+    {% if first_sb %}
+        <span><a href="{% url waiving/result first_sb.id %}">First scan ({{ first_sb.scan.nvr }})</a></span>
     {% else %}
         {% trans "no first scan" %}
     {% endif %}
 
     |
 
-    {% if previous_result %}
-    <span><a href="{% url waiving/result previous_result.id %}">Previous scan ({{ previous_result.nvr }})</a></span>
+    {% if previous_sb %}
+    <span><a href="{% url waiving/result previous_sb.id %}">Previous scan ({{ previous_sb.scan.nvr }})</a></span>
     {% else %}
         {% trans "no previous scan" %}
     {% endif %}
 
     |
 
-    {% if next_result %}
-    <span><a href="{% url waiving/result next_result.id %}">Next scan ({{ next_result.nvr }})</a></span>
+    {% if next_sb %}
+    <span><a href="{% url waiving/result sb.id %}">Next scan ({{ next_sb.scan.nvr }})</a></span>
     {% else %}
         {% trans "no next scan" %}
     {% endif %}
 
     |
 
-    {% if newest_result %}
-    <span><a href="{% url waiving/result newest_result.id %}">Newest scan ({{ newest_result.nvr }})</a></span>
+    {% if newest_sb %}
+    <span><a href="{% url waiving/result newest_sb.id %}">Newest scan ({{ newest_sb.scan.nvr }})</a></span>
     {% else %}
         {% trans "no latest scan" %}
     {% endif %}

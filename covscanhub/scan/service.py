@@ -37,7 +37,7 @@ __all__ = (
     'prepare_and_execute_diff',
     'post_qpid_message',
     'diff_fixed_defects_in_package',
-    "get_latest_scan_by_package",
+    "get_latest_sb_by_package",
     "get_latest_binding",
     "diff_fixed_defects_between_releases",
     "diff_new_defects_between_releases",
@@ -397,7 +397,7 @@ def post_qpid_message(scan_id, scan_state):
     send_message(s, {'scan_id': scan_id, 'scan_state': scan_state}, 'finished')
 
 
-def get_latest_scan_by_package(tag, package):
+def get_latest_sb_by_package(tag, package):
     """
     return latest scan for specified package and tag. This function should be
     called when creating new scan and setting this one as a child
@@ -407,7 +407,7 @@ def get_latest_scan_by_package(tag, package):
                                task__state=TASK_STATES['CLOSED'],
                                scan__scan_type=SCAN_TYPES['ERRATA'])
     if bindings:
-        return bindings.latest().scan
+        return bindings.latest()
 
 
 def diff_fixed_defects_in_package(sb):

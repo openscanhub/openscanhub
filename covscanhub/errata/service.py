@@ -8,7 +8,7 @@ from django.conf import settings
 
 from covscanhub.scan.models import Scan, SCAN_STATES, SCAN_TYPES, Package, \
     ScanBinding
-from covscanhub.scan.service import get_latest_scan_by_package, \
+from covscanhub.scan.service import get_latest_sb_by_package, \
     get_latest_binding
 from covscanhub.other.shortcuts import check_brew_build, \
     check_and_create_dirs, get_tag_by_name
@@ -215,16 +215,17 @@ def create_errata_scan(kwargs):
     # new scan for it
     base_obj = obtain_base(base, task_id, kwargs, package)
 
-    child = get_latest_scan_by_package(tag_obj, package)
+    child = get_latest_sb_by_package(tag_obj, package)
 
     scan = Scan.create_scan(scan_type=scan_type, nvr=nvr, username=username,
                             tag=tag_obj, package=package, base=base_obj,
                             enabled=True)
 
-    if child:
-        child.parent = scan
-        child.enabled = False
-        child.save()
+    if child.scan:
+        child_scan = Scan.objects.get(id=child.scan.id)
+        child_scan.parent = scan
+        child_scan.enabled = False
+        child_scan.save()
 
     options['scan_id'] = scan.id
     task = Task.objects.get(id=task_id)
