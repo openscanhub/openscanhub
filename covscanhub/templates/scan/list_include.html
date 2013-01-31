@@ -8,14 +8,14 @@
     <th>{% trans "Owner" %}</th>
     <th>{% trans "Last Access" %}</th>
   </tr>
-{% for scan in scan_list %}
+{% for sb in sb_list %}
   <tr>
-    <td><a href="{% url scan/detail scan.id %}">{{ scan.id }}</a></td>
-    <td>{{ scan.nvr }}</td>
-    <td>{{ scan.base.nvr }}</td>
-    <td>{{ scan.get_state_display }}</td>
-    <td>{{ scan.username }}</td>
-    <td>{{ scan.last_access|date:"Y-m-d H:i:s" }}</td>
+    <td><a href="{% url scan/detail sb.id %}">{{ sb.id }}</a></td>
+    <td>{{ sb.scan.nvr }}</td>
+    <td>{{ sb.scan.base.nvr }}</td>
+    <td>{{ sb.scan.get_state_display }}</td>
+    <td>{{ sb.scan.username }}</td>
+    <td>{{ sb.scan.last_access|date:"Y-m-d H:i:s" }}</td>
   </tr>
 {% endfor %}
 </table>

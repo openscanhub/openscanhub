@@ -9,7 +9,7 @@ from django.core.urlresolvers import reverse
 
 from kobo.django.views.generic import object_list
 
-from models import MockConfig, Scan, Package
+from models import MockConfig, ScanBinding, Package
 from forms import ScanSubmissionForm
 from covscanhub.xmlrpc.scan import *
 
@@ -33,12 +33,12 @@ def mock_config_list(request):
 def scan_list(request):
 
     args = {
-        "queryset": Scan.objects.exclude(base__isnull=True).\
-            order_by('-date_submitted'),
+        "queryset": ScanBinding.objects.exclude(scan__base__isnull=True).\
+            order_by('-scan__date_submitted'),
         "allow_empty": True,
         "paginate_by": 50,
         "template_name": "scan/list.html",
-        "template_object_name": "scan",
+        "template_object_name": "sb",
         "extra_context": {
             "title": "List errata scans",
         }
@@ -50,9 +50,9 @@ def scan_list(request):
 def scan_detail(request, id):
 
     args = {
-        "queryset": Scan.objects.select_related(),
+        "queryset": ScanBinding.objects.select_related(),
         "object_id": id,
-        "template_object_name": "scan",
+        "template_object_name": "sb",
         "template_name": "scan/detail.html",
         "extra_context": {
             "title": "Scan detail",
