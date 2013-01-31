@@ -390,3 +390,17 @@ def display_in_result(rg):
     response['defects_count'] = rg.defects_count
     get_defects_diff_display_by_rg(response=response, rg=rg)
     return response
+
+
+def waiver_condition(waivers_list):
+    """
+    Function that contains condition for successfull waive.
+
+    @param waivers_list: list of Waiver objects
+    @type waivers_list: list
+
+    @rtype: bool
+    @return: True if condition holds and group is waived False otherwise
+    """
+    for waiver in waivers_list:
+        waiver
