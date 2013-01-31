@@ -11,10 +11,10 @@ This module is present in Fedora repositories and in EPEL:
 """
 import sys
 
-#KOBO_DIR = '/home/ttomecek/dev/kobo'
+KOBO_DIR = '/home/ttomecek/dev/kobo'
 
-#if KOBO_DIR not in sys.path:
-#    sys.path.insert(0, KOBO_DIR)
+if KOBO_DIR not in sys.path:
+    sys.path.insert(0, KOBO_DIR)
 
 from kobo.tback import Traceback, set_except_hook
 #print sys.excepthook
@@ -237,7 +237,7 @@ def mass_prescan(client, file_path, parser, tag_name):
         fp = open(file_path, 'r')
     except IOError:
         parser.error('Cannot open specified file')
-    print client.scan.create_base_scans(fp.readlines(), tag_name)
+    print client.scan.create_base_scans(fp.read().splitlines(), tag_name)
 
 
 if __name__ == '__main__':
@@ -265,6 +265,7 @@ if __name__ == '__main__':
     elif options.base and options.target:
         create_et_scan(client, options.base, options.target)
     elif options.file and options.tag_name:
+        client.auth.login_krbv(login(rpc_url))
         mass_prescan(client, options.file, parser, options.tag_name)
     #except Exception, ex:
     #    print '---EXCEPTION---\n\n\n%s\n\n\n' % ex

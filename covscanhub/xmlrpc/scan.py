@@ -166,6 +166,7 @@ def create_base_scans(request, nvrs_list, tag_name):
                 'task_user': request.user.username,
                 'base': nvr,
                 'base_tag': tag_name,
+                'nvr': 'prescan',
             }
             create_errata_base_scan(options, None, package)
         else:
