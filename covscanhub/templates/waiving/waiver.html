@@ -56,6 +56,8 @@
 <h3>This group has been waived in run: <a href="{% url waiving/waiver waivers_sb_id waivers_group_id %}">{{ waivers_place }}</a></h3>
 {% endif %}
 
+{% if user.is_authenticated %}
+
 {% if display_form %}
 <form action="{% url waiving/waiver sb.id active_group.id %}" method="post">{% csrf_token %}
 {{ form.as_p }}
@@ -64,6 +66,12 @@
 {% else %}{% if form_message %}
 <h3>{{ form_message }}</h3>
 {% endif %}{% endif %}
+
+{% else %}
+
+<h3>You have to log in if you want to waive.</h3>
+
+{% endif %} {# user_is_auth #}
 
 {% if previous_waivers %}
 <div>This group has been waived in the past:</div>
