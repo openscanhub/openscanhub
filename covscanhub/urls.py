@@ -20,7 +20,7 @@ urlpatterns = patterns('',
     #url(r"^$", 'covscanhub.home.views.index_redirect', name="task/list"),
     url(r"^$", "django.views.generic.simple.direct_to_template", kwargs={"template": "index.html"}, name="index"),
     url(r"^auth/", include("kobo.hub.urls.auth")),
-    url(r"^task/", include("kobo.hub.urls.task")),
+    url(r"^task/", include("covscanhub.scan.task_urls")),
     url(r"^info/arch/", include("kobo.hub.urls.arch")),
     url(r"^info/channel/", include("kobo.hub.urls.channel")),
     url(r"^info/user/", include("kobo.hub.urls.user")),
@@ -28,7 +28,7 @@ urlpatterns = patterns('',
     url(r"^waiving/", include("covscanhub.waiving.urls")),
 
     url(r"^scan/", include("covscanhub.scan.urls")),
-    
+
     url(r"^stats/", include("covscanhub.stats.urls")),
 
     url(r'^admin/', include(admin.site.urls)),

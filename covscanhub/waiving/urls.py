@@ -9,7 +9,9 @@ urlpatterns = patterns("",
 
     url(r"^(?P<sb_id>\d+)/(?P<result_group_id>\d+)/$",
         "covscanhub.waiving.views.waiver", name="waiving/waiver"),
-
+    url(r"^(?P<waiver_id>\d+)/remove$",
+        "covscanhub.waiving.views.remove_waiver",
+        name="waiving/waiver/remove"),
     url(r"^(?P<sb_id>\d+)/(?P<result_group_id>\d+)/fixed/$",
         "covscanhub.waiving.views.fixed_defects",
         name="waiving/fixed_defects"),
@@ -19,6 +21,8 @@ urlpatterns = patterns("",
     url(r"^(?P<package_name>.+)/(?P<release_tag>.+)/newest/$",
         "covscanhub.waiving.views.newest_result",
         name="waiving/result/newest"),
+
+    #BZ stuff
     url(r"^(?P<package_id>\d+)/(?P<release_id>\d+)/newbz/$",
         "covscanhub.waiving.views.new_bz",
         name="waiving/new_bz"),
