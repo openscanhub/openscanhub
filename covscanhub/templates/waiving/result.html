@@ -159,7 +159,7 @@
     |
 
     {% if next_sb %}
-    <span><a href="{% url waiving/result sb.id %}">Next scan ({{ next_sb.scan.nvr }})</a></span>
+    <span><a href="{% url waiving/result next_sb.id %}">Next scan ({{ next_sb.scan.nvr }})</a></span>
     {% else %}
         {% trans "no next scan" %}
     {% endif %}
