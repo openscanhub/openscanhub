@@ -7,3 +7,4 @@ dist/*
 MANIFEST
 .spyderproject
 *.src.rpm
+covscanhub/*/migrations
