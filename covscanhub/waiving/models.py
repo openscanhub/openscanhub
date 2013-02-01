@@ -30,6 +30,12 @@ WAIVER_TYPES = Enum(
     EnumItem("FIX_LATER", help_text="Fix later"),
 )
 
+WAIVER_LOG_ACTIONS = Enum(
+    EnumItem("NEW", help_text="New waiver"),
+    EnumItem("DELETE", help_text="Delete existing waiver"),
+    EnumItem("REWAIVE", help_text="Change current waiver"),
+)
+
 RESULT_GROUP_STATES = Enum(
     # there are some new defects found which need to be reviewed
     EnumItem("NEEDS_INSPECTION", help_text="Needs inspection"),
@@ -98,8 +104,14 @@ class Result(models.Model):
         return self.get_defects_count(DEFECT_STATES['FIXED'])
 
     def __unicode__(self):
+        try:
+            self.scanbinding
+        except ObjectDoesNotExist:
+            return "#%d %s %s" % (self.id, self.scanner, self.scanner_version)
         return "#%d %s %s %s" % (self.id, self.scanner, self.scanner_version,
                                  self.scanbinding.scan)
+
+
 
 
 class Defect(models.Model):
@@ -183,14 +195,32 @@ associated with this group.")
         return Defect.objects.filter(result_group=self.id,
                                      state=DEFECT_STATES['NEW'])
 
-    def is_marked_as_bug(self):
+    def get_waivers(self):
+        """return all non-deleted waivers associated with this rg"""
+        return Waiver.objects.filter(
+            result_group=self,
+            is_deleted=False
+        )
+
+
+    def has_waiver(self):
+        """return latest waiver, if it exists"""
         if self.state == RESULT_GROUP_STATES['WAIVED']:
-            try:
-                Waiver.objects.get(result_group=self,
-                                   state=WAIVER_TYPES['IS_A_BUG'])
-                return True
-            except ObjectDoesNotExist:
-                return False
+            waivers = self.get_waivers()
+            if not waivers:
+                return None
+            else:
+                return waivers.latest()
+
+
+    def is_marked_as_bug(self):
+        """return True if there is latest waiver with type IS_A_BUG"""
+        w = self.has_waiver()
+        if w:
+            return w.state == WAIVER_TYPES['IS_A_BUG']
+        else:
+            return False
+
 
     def get_state_to_display(self):
         """
@@ -211,6 +241,7 @@ associated with this group.")
                 return 'PASSED'
 
     def previous_waivers(self):
+        """Return every past waiver associated with this rg"""
         actual_waivers = Waiver.objects.filter(result_group=self)
         if actual_waivers:
             d = actual_waivers.order_by('date')[0].date
@@ -223,7 +254,7 @@ associated with this group.")
                 self.result.scanbinding.scan.package
         )
         if w:
-            return w.order_by('date')
+            return w.order_by('-date')
 
     def __unicode__(self):
         return "#%d [%s - %s], Result: (%s)" % (
@@ -282,9 +313,19 @@ waived for specific Result")
                                         choices=WAIVER_TYPES.get_mapping(),
                                         help_text="Type of waiver")
     bz = models.ForeignKey(Bugzilla, blank=True, null=True)
+    is_deleted = models.BooleanField(default=False)
 
     class Meta:
         get_latest_by = "date"
+
+    def get_display_type(self):
+        return WAIVER_TYPES.get_item_help_text(self.state)
+
+    def get_delete_waiving_log(self):
+        return WaivingLog.objects.get(
+            waiver=self,
+            state=WAIVER_LOG_ACTIONS['DELETE']
+        )
 
     def __unicode__(self):
         return u"#%d %s - %s, ResultGroup: (%s) BZ: %s" % (
@@ -293,4 +334,31 @@ waived for specific Result")
             self.get_state_display(),
             self.result_group,
             self.bz
+        )
+
+
+class WaivingLog(models.Model):
+    """
+    Log of waiving related actions
+    """
+    date = models.DateTimeField()  # date submitted
+    user = models.OneToOneField(User)
+    # possible actions:
+    #  new -- submit waiver to group that wasn't waived yet
+    #  delete -- delete waiver
+    #  rewaive -- submit another waiver
+    state = models.PositiveIntegerField(
+        choices=WAIVER_LOG_ACTIONS.get_mapping(),
+        help_text="Waiving action"
+    )
+    waiver = models.ForeignKey(Waiver)
+
+    class Meta:
+        ordering = ['date']
+
+    def __unicode__(self):
+        return u"#%d %s (%s)" % (
+            self.id,
+            WAIVER_LOG_ACTIONS.get_value(self.state),
+            self.waiver,
         )

@@ -12,12 +12,10 @@ import datetime
 import tempfile
 import shutil
 import pipes
-import difflib
 import pycsdiff
 
 import django.utils.simplejson as json
 from django.core.exceptions import ObjectDoesNotExist
-from django.utils.safestring import mark_safe
 
 from covscanhub.other.constants import ERROR_DIFF_FILE, FIXED_DIFF_FILE,\
     DEFAULT_CHECKER_GROUP
@@ -199,10 +197,8 @@ def get_unwaived_rgs(result):
         Return ResultGroups that are not waived (and should be waived)
         for specific Result
     """
-    result_waivers = Waiver.objects.filter(result_group__result=result)
-    return [rg for rg in ResultGroup.objects.filter(result=result,
-            state=RESULT_GROUP_STATES['NEEDS_INSPECTION'])
-            if not result_waivers.filter(result_group=rg)]
+    return ResultGroup.objects.filter(result=result,
+        state=RESULT_GROUP_STATES['NEEDS_INSPECTION'])
 
 
 def assign_if_true(d, key, value):
@@ -241,8 +237,8 @@ def compare_result_groups_shell(rg1, rg2):
 
     tmp_dir = tempfile.mkdtemp(prefix="cs_diff")
     os.chmod(tmp_dir, 0775)
-    fd1, filename1 = tempfile.mkstemp(prefix= 'rg1', text=True, dir=tmp_dir)
-    fd2, filename2 = tempfile.mkstemp(prefix= 'rg2', text=True, dir=tmp_dir)
+    fd1, filename1 = tempfile.mkstemp(prefix='rg1', text=True, dir=tmp_dir)
+    fd2, filename2 = tempfile.mkstemp(prefix='rg2', text=True, dir=tmp_dir)
     file1 = os.fdopen(fd1, 'w')
     json.dump(dict1, file1)
     file1.close()
@@ -293,6 +289,7 @@ def get_last_waiver(checker_group, package, release):
         result_group__checker_group=checker_group,
         result_group__result__scanbinding__scan__package=package,
         result_group__result__scanbinding__scan__tag__release=release,
+        is_deleted=False,
     )
     if waivers:
         return waivers.latest()
@@ -381,6 +378,7 @@ def get_defects_diff_display_by_rg(response, rg):
                                     defect_type=rg.defect_type,
                                     rg=rg)
 
+
 def display_in_result(rg):
     """
     return data that are displayed in waiver
@@ -392,15 +390,30 @@ def display_in_result(rg):
     return response
 
 
-def waiver_condition(waivers_list):
-    """
-    Function that contains condition for successfull waive.
+def waiver_condition(result_group):
+    """placeholder for custom waiving conditions"""
+    return bool(result_group.get_waivers())
+
+
+"""
+def waiver_condition(result_group):
+    \"\"\"
+    Function that contains condition for successfull waive -- there has to
+    exist waiver from user who is in group 'qa' and 'devel'
 
     @param waivers_list: list of Waiver objects
     @type waivers_list: list
 
     @rtype: bool
     @return: True if condition holds and group is waived False otherwise
-    """
-    for waiver in waivers_list:
-        waiver
+    \"\"\"
+    #this should be in settings probably -- group names that users have to be
+    #in to successfully waive
+    required_groups = [u'qa', u'devel']
+    ack_missing_from = set(required_groups)
+    for waiver in result_group.get_waivers():
+        ack_missing_from = ack_missing_from.difference(
+            *waiver.user.groups.all().values_list('name')
+        )
+    return not bool(ack_missing_from)
+"""

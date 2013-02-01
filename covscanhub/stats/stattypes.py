@@ -123,6 +123,7 @@ def get_fixed_defects_by_release():
 get_fixed_defects_by_release.group = "DEFECTS"
 get_fixed_defects_by_release.order = 1
 
+
 def get_total_new_defects():
     """
         New defects
@@ -133,6 +134,7 @@ def get_total_new_defects():
         result_group__result__scanbinding__scan__enabled=True).count()
 get_total_new_defects.group = "DEFECTS"
 get_total_new_defects.order = 2
+
 
 def get_new_defects_by_release():
     """
@@ -152,6 +154,7 @@ def get_new_defects_by_release():
 get_new_defects_by_release.group = "DEFECTS"
 get_new_defects_by_release.order = 2
 
+
 def get_fixed_defects_in_release():
     """
         Fixed defects in one release
@@ -169,6 +172,7 @@ def get_fixed_defects_in_release():
 get_fixed_defects_in_release.group = "DEFECTS"
 get_fixed_defects_in_release.order = 3
 
+
 def get_fixed_defects_between_releases():
     """
         Fixed defects between releases
@@ -185,6 +189,7 @@ def get_fixed_defects_between_releases():
     return result
 get_fixed_defects_between_releases.group = "DEFECTS"
 get_fixed_defects_between_releases.order = 4
+
 
 def get_new_defects_between_releases():
     """
@@ -218,6 +223,7 @@ def get_total_waivers_submitted():
 get_total_waivers_submitted.order = 1
 get_total_waivers_submitted.group = "WAIVERS"
 
+
 def get_waivers_submitted_by_release():
     """
         Waivers submitted
@@ -234,6 +240,7 @@ def get_waivers_submitted_by_release():
 get_waivers_submitted_by_release.group = "WAIVERS"
 get_waivers_submitted_by_release.order = 1
 
+
 def get_total_missing_waivers():
     """
         Missing waivers
@@ -244,6 +251,7 @@ def get_total_missing_waivers():
         state=RESULT_GROUP_STATES['NEEDS_INSPECTION']).count()
 get_total_missing_waivers.group = "WAIVERS"
 get_total_missing_waivers.order = 2
+
 
 def get_missing_waivers_by_release():
     """
@@ -262,6 +270,7 @@ def get_missing_waivers_by_release():
 get_missing_waivers_by_release.group = "WAIVERS"
 get_missing_waivers_by_release.order = 2
 
+
 def get_total_is_a_bug_waivers():
     """
         'is a bug' waivers
@@ -271,6 +280,7 @@ def get_total_is_a_bug_waivers():
     return Waiver.objects.filter(state=WAIVER_TYPES['IS_A_BUG']).count()
 get_total_is_a_bug_waivers.group = "WAIVERS"
 get_total_is_a_bug_waivers.order = 3
+
 
 def get_is_a_bug_waivers_by_release():
     """
@@ -289,6 +299,7 @@ def get_is_a_bug_waivers_by_release():
 get_is_a_bug_waivers_by_release.group = "WAIVERS"
 get_is_a_bug_waivers_by_release.order = 3
 
+
 def get_total_not_a_bug_waivers():
     """
         'not a bug' waivers
@@ -298,6 +309,7 @@ def get_total_not_a_bug_waivers():
     return Waiver.objects.filter(state=WAIVER_TYPES['NOT_A_BUG']).count()
 get_total_not_a_bug_waivers.group = "WAIVERS"
 get_total_not_a_bug_waivers.order = 4
+
 
 def get_not_a_bug_waivers_by_release():
     """
@@ -316,6 +328,7 @@ def get_not_a_bug_waivers_by_release():
 get_not_a_bug_waivers_by_release.group = "WAIVERS"
 get_not_a_bug_waivers_by_release.order = 4
 
+
 def get_total_fix_later_waivers():
     """
         'fix later' waivers
@@ -325,6 +338,7 @@ def get_total_fix_later_waivers():
     return Waiver.objects.filter(state=WAIVER_TYPES['FIX_LATER']).count()
 get_total_fix_later_waivers.group = "WAIVERS"
 get_total_fix_later_waivers.order = 5
+
 
 def get_fix_later_waivers_by_release():
     """

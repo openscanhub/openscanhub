@@ -47,7 +47,8 @@ class CheckerGroupAdmin(admin.ModelAdmin):
 @add_link_field('bugzilla', 'bz', field_name="bz_link")
 @add_link_field('resultgroup','result_group')
 class WaiverAdmin(admin.ModelAdmin):
-    list_display = ("id", "state", 'date', 'user', 'message', 'link', 'bz_link')
+    list_display = ("id", "state", 'is_deleted', 'date', 'user', 'message',
+                    'link', 'bz_link')
 
 
 @add_link_field('package', 'package', 'scan', field_name='package_link',
@@ -58,6 +59,16 @@ class BugzillaAdmin(admin.ModelAdmin):
     list_display = ("id", "release_link", "package_link", "number")
 
 
+@add_link_field('waiver', 'waiver', field_name='waiver_link',
+                field_label="Waiver")
+class WaivingLogAdmin(admin.ModelAdmin):
+    list_display = ('id', 'date', 'user', 'state_display', 'waiver_link')
+
+    def state_display(self, instance):
+        return instance.get_state_display()
+    state_display.short_description = 'State'
+
+
 admin.site.register(Bugzilla, BugzillaAdmin)
 admin.site.register(Result, ResultAdmin)
 admin.site.register(Defect, DefectAdmin)
@@ -65,3 +76,4 @@ admin.site.register(Checker, CheckerAdmin)
 admin.site.register(CheckerGroup, CheckerGroupAdmin)
 admin.site.register(Waiver, WaiverAdmin)
 admin.site.register(ResultGroup, ResultGroupAdmin)
+admin.site.register(WaivingLog, WaivingLogAdmin)

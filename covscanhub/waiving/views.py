@@ -19,13 +19,12 @@ from covscanhub.scan.service import get_latest_sb_by_package
 
 from covscanhub.other.shortcuts import get_or_none
 
-from bugzilla_reporting import create_bugzilla, get_unreported_bugs, \
-    update_bugzilla
-from models import CheckerGroup, ResultGroup, Defect, Waiver,\
-    WAIVER_TYPES, DEFECT_STATES, RESULT_GROUP_STATES, Bugzilla
-from forms import WaiverForm
-from service import get_unwaived_rgs, get_last_waiver, display_in_result, \
-    get_defects_diff_display
+from covscanhub.waiving.bugzilla_reporting import create_bugzilla, \
+    get_unreported_bugs, update_bugzilla
+from covscanhub.waiving.models import *
+from covscanhub.waiving.forms import WaiverForm
+from covscanhub.waiving.service import get_unwaived_rgs, get_last_waiver, \
+    display_in_result, get_defects_diff_display, waiver_condition
 
 
 logger = logging.getLogger(__name__)
@@ -147,11 +146,18 @@ def waiver(request, sb_id, result_group_id):
     context = {}
 
     sb = get_object_or_404(ScanBinding, id=sb_id)
-    result_group_object = ResultGroup.objects.get(id=result_group_id)
+    result_group_object = get_object_or_404(ResultGroup, id=result_group_id)
 
     if request.method == "POST":
         form = WaiverForm(request.POST)
         if form.is_valid():
+            wl = WaivingLog()
+            wl.user = request.user
+            wl.date = datetime.datetime.now()
+            if result_group_object.has_waiver():
+                wl.state = WAIVER_LOG_ACTIONS['REWAIVE']
+            else:
+                wl.state = WAIVER_LOG_ACTIONS['NEW']
             w = Waiver()
             w.date = datetime.datetime.now()
             w.message = form.cleaned_data['message']
@@ -160,15 +166,17 @@ def waiver(request, sb_id, result_group_id):
             w.state = WAIVER_TYPES[form.cleaned_data['waiver_type']]
             w.save()
 
+            wl.waiver = w
+            wl.save()
+
             s = sb.scan
+            if waiver_condition(result_group_object):
+                result_group_object.state = RESULT_GROUP_STATES['WAIVED']
+                result_group_object.save()
 
+                if not get_unwaived_rgs(sb.result):
+                    s.state = SCAN_STATES['WAIVED']
             s.last_access = datetime.datetime.now()
-
-            result_group_object.state = RESULT_GROUP_STATES['WAIVED']
-            result_group_object.save()
-
-            if not get_unwaived_rgs(sb.result):
-                s.state = SCAN_STATES['WAIVED']
             s.save()
 
             logger.info('Waiver submitted for resultgroup %s',
@@ -184,11 +192,11 @@ def waiver(request, sb_id, result_group_id):
         place_string = w.result_group.result.scanbinding.scan.nvr
 
         context['waivers_place'] = place_string
-        context['waivers_sb_id'] = w.result_group.result.scanbinding.id
-        context['waivers_group_id'] = w.result_group.id
+        context['matching_waiver'] = w
         context['display_form'] = False
-        context['display_waivers'] = True
+        context['display_waivers'] = False
     else:
+        # this could help user to determine if this is FP or not
         previous_waivers = result_group_object.previous_waivers()
         if previous_waivers:
             context['previous_waivers'] = previous_waivers
@@ -208,7 +216,9 @@ def waiver(request, sb_id, result_group_id):
     context['defects'] = Defect.objects.filter(result_group=result_group_id,
                                                state=DEFECT_STATES['NEW']).\
                                                    order_by("order")
-    context['waivers'] = Waiver.objects.filter(result_group=result_group_id)
+    context['waiving_logs'] = WaivingLog.objects.filter(
+        waiver__result_group=result_group_id).exclude(
+        state=WAIVER_LOG_ACTIONS['DELETE'])
 
     logger.debug('Displaying waiver for sb %s, result-group %s',
                  sb, result_group_object)
@@ -216,6 +226,23 @@ def waiver(request, sb_id, result_group_id):
     return render_to_response("waiving/waiver.html",
                               context,
                               context_instance=RequestContext(request))
+
+
+def remove_waiver(request, waiver_id):
+    waiver = get_object_or_404(Waiver, id=waiver_id)
+    wl = WaivingLog()
+    wl.date = datetime.datetime.now()
+    wl.state = WAIVER_LOG_ACTIONS['DELETE']
+    wl.waiver = waiver
+    wl.user = request.user
+    wl.save()
+    waiver.is_deleted = True
+    waiver.save()
+    if waiver_condition(waiver.result_group):
+        ResultGroup.objects.filter(id=waiver.result_group.id).update(
+            state=RESULT_GROUP_STATES['NEEDS_INSPECTION'])
+    return HttpResponseRedirect(reverse('waiving/result',
+        args=(waiver.result_group.result.scanbinding.id,)))
 
 
 def fixed_defects(request, sb_id, result_group_id):

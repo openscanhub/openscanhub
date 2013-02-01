@@ -26,6 +26,7 @@ def get_unreported_bugs(package, release):
         result_group__result__scanbinding__scan__tag__release=release,
         state=WAIVER_TYPES['IS_A_BUG'],
         bz__isnull=True,
+        is_deleted=False,
     )
     if waivers:
         return waivers.order_by('date')

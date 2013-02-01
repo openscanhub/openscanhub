@@ -36,24 +36,53 @@
 
 {% if display_waivers %}
 
-    {% if waivers %}
-<div id="waivers">
-        {% for waiver in waivers %}
-    <div class="waiver">
-        User: {{ waiver.user }} </br>
-        Date: {{ waiver.date|date:"Y-m-d H:i:s" }} </br>
-        Status: {{ waiver.get_state_display }} </br>
-        Message: <b>{{ waiver.message|linebreaks }}</b>
+    {% if waiving_logs %}
+<h2>Waiving log ({{ waiving_logs.count }})</h2>
+<div>
+    {% for wl in waiving_logs %}
+        {% if wl.waiver.is_deleted %}
+    <div class="waiving_log wl_type_DELETE">
+        {% else %}
+    <div class="waiving_log wl_type_{{ wl.get_state_display }}">
+        {% endif %}
+        User {{ wl.user }}
+        {% if wl.get_state_display == "NEW" %}
+            submitted <span class="wl_type new">new</span> waiver.
+        {% endif %}
+        {% if wl.get_state_display == "REWAIVE" %}
+            <span class="wl_type change">changed</span> current waiver.
+        {% endif %}
+        {% if wl.get_state_display != "DELETE" and not wl.waiver.is_deleted and user.is_authenticated %}
+            <a class="delete_link" href="{% url waiving/waiver/remove wl.waiver.id %}">⨯</a>
+        {% endif %}
+        <div class="small grey waiver">
+            <span class="waiver_type {{ wl.waiver.get_state_display }}">{{ wl.waiver.get_display_type }}</span> waiver submitted by {{ wl.waiver.user }} at {{ wl.waiver.date|date:"Y-m-d H:i:s" }}:
+            <div class="message_box">
+            {#<div class="message">{{ wl.waiver.message|linebreaks }}</div>#}
+            <div class="message">{{ wl.waiver.message }}</div>
+            </div>
+        </div>
+        {% if wl.waiver.is_deleted %}
+        <span class="small grey">
+            This waiver has been <span class="wl_type delete">deleted</span> by user {{ wl.waiver.get_delete_waiving_log.user }} on {{ wl.waiver.get_delete_waiving_log.date|date:"Y-m-d H:i:s" }}.
+        </span>
+        {% endif %}
     </div>
-        {% endfor %}
+    {% endfor %}
 </div>
     {% endif %}
 
 {% endif %} {# display_waivers #}
 
-{% if waivers_place %}
+{% if waivers_place and matching_waiver %}
 
-<h3>This group has been waived in run: <a href="{% url waiving/waiver waivers_sb_id waivers_group_id %}">{{ waivers_place }}</a></h3>
+<div class="waiving_log wl_type_PREV_WAIVED">
+    <div class="small grey">This group has been waived in run: <a href="{% url waiving/waiver matching_waiver.result_group.result.id matching_waiver.result_group.id %}">{{ waivers_place }}</a></div>
+    <div class="message">
+    {{ matching_waiver.message }}
+    </div>
+</div>
+
 {% endif %}
 
 {% if user.is_authenticated %}
@@ -74,15 +103,16 @@
 {% endif %} {# user_is_auth #}
 
 {% if previous_waivers %}
-<div>This group has been waived in the past:</div>
-<ul>
+<h3>This group has been waived in a past with these waivers:</h3>
     {% for w in previous_waivers %}
-    <li>
-        <a href="{% url waiving/waiver w.result_group.result.scanbinding.id w.result_group.id %}">{{ w.date }}</a>
-        {{ w.message|linebreaks }}
-    </li>
+    <div class="waiving_log wl_type_PAST_WAIVERS">
+        Waiver for build <a href="{% url waiving/waiver w.result_group.result.scanbinding.id w.result_group.id %}">{{ w.result_group.result.scanbinding.scan.nvr}}</a> submitted on
+        {{ w.date|date:"Y-m-d H:i:s" }}:
+        <div class="message">
+        {{ w.message }}
+        </div>
+    </div>
     {% endfor %}
-</ul>
 {% endif %}
 
 {% endblock %}

@@ -140,14 +140,114 @@ table span.defects_decreased {
 
 /*waivers presentation*/
 
-/**/
-
-#content #waivers div.waiver {
-    border: 1px solid #aaa;
-    margin: 0.5em;
-    padding: 0.5em;
-    width: 50%;
+.waiving_log {
+    background-color: #EEEEEE;
+    margin: 1em 3em 1em 2em;
+    padding: 1em 1.5em 0.9em;
 }
+
+.wl_type_NEW {
+    border: 1px solid #20D000;
+    box-shadow: 0 0 4px #20D000;
+}
+
+.wl_type_DELETE {
+    border: 1px solid #DB2a2a;
+    box-shadow: 0 0 4px #DB2a2a;
+}
+
+.wl_type_REWAIVE {
+    border: 1px solid #EDB600;
+    box-shadow: 0 0 4px #EDB600;
+}
+
+.wl_type_PREV_WAIVED {
+    border: 1px solid #AAFFFF;
+    box-shadow: 0 0 4px #AAFFFF;
+}
+
+.wl_type_PAST_WAIVERS {
+    border: 1px solid #CCC;
+    box-shadow: 0 0 4px #CCC;
+}
+
+.wl_type {
+    border: 1px solid transparent;
+    color: #FFFFFF;
+    font-weight: bold;
+    opacity: 0.9;
+    padding: 2px 3px 1px;
+}
+
+div.waiver span.IS_A_BUG {
+    background-color: #FFB7B7;
+    color: #DD0000;
+}
+
+div.waiver span.NOT_A_BUG {
+    background-color: #AAFFAA;
+    color: #009900;
+}
+
+div.waiver span.FIX_LATER {
+    background-color: #F5F500;
+    color: #AA6600;
+}
+
+.waiver_type {
+    border: 1px solid transparent;
+    font-weight: bold;
+    opacity: 0.9;
+    padding: 3px 4px 2px;
+}
+
+div.waiving_log span.delete {
+    background-color: #DB2a2a;
+}
+
+div.waiving_log span.new {
+    background-color: #20D000;
+}
+
+div.waiving_log span.change {
+    background-color: #EDB600;
+}
+
+.delete_link {
+    float: right;
+    padding: 0.3em;
+    border: 1px solid red;
+    background-color: #FFBBBB;
+    text-decoration: none;
+    color: red;
+}
+
+.message_box {
+    padding: 0.3em 0.7em 0.3em;
+}
+
+.message {
+    background-color: #FFF;
+    border: 1px solid #AAA;
+    font-size: 16px;
+    margin: 0 0 0.5em 0.5em;
+    padding: 10px 8px;
+    color: #000;
+}
+
+.small {
+    font-size: 12px;
+}
+
+.grey {
+    color: #888;
+}
+
+.waiver {
+    padding-top: 1.5em;
+}
+
+/**/
 
 /*defects presentation*/
 
@@ -155,16 +255,17 @@ table span.defects_decreased {
     font-family: "Courier New",monospace;
 }
 
+#content div#defects div {
+    margin: 1em 3em 1em 2em;
+    padding: 0.3em 2em 0.3em 1.5em;
+}
+
 #content div#defects div.FIXED {
     background-color: #DDFFCC;
-    margin: 0.5em;
-    padding: 0.5em;
 }
 
 #content div#defects div.NEW {
     background-color: #FFD9D9;
-    margin: 0.5em;
-    padding: 0.5em;
 }
 
 /**/
