@@ -126,8 +126,9 @@ def results_list(request):
     Display list of all target results
     """
     args = {
+        # order by scan__date, because result might not exist
         "queryset": ScanBinding.objects.exclude(
-            scan__base__isnull=True).order_by('-result__date_submitted'),
+            scan__base__isnull=True).order_by('-scan__date_submitted'),
         "allow_empty": True,
         "paginate_by": 50,
         "template_name": "waiving/list.html",
