@@ -145,5 +145,4 @@ class VersionDiffBuild(TaskBase):
 
     @classmethod
     def notification(cls, hub, conf, task_info):
-        pass
-        #hub.worker.email_task_notification(task_info["id"])
+        hub.worker.email_task_notification(task_info["id"])
