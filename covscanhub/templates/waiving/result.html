@@ -5,7 +5,7 @@
 <h1>{{ compare_title }}</h1>
 <h3>{{ sb.scan.tag.release.product }} release {{ sb.scan.tag.release.release }}</h3>
 
-{% if sb.result %}
+{% if sb.result %} {# display BZ related info only if scan finished #}
 
 <div id="bz_wrapper">
     {% if not bugzilla %}
@@ -21,6 +21,8 @@
         {% endif %}
     {% endif %}
 </div>
+
+{% endif %}
 
 <div id="legend_wrapper">
     <h4>Legend</h4>
@@ -47,6 +49,8 @@
         </tr>
     </table>
 </div>
+
+{% if sb.result %} {# display defects list only if scan finished #}
 
 <h3>Newly introduced defects</h3>
 {% if output_new %}
