@@ -46,7 +46,7 @@ def set_options():
     parser.add_option("-f", "--finish", help="finish scan",
                       action="store", type="int", dest="finish")
 
-    parser.add_option("-f", "--finish", help="finish all scans",
+    parser.add_option("-a", "--finish-all", help="finish all scans",
                       action="store_true", dest="finish_all")
 
     (options, args) = parser.parse_args()
