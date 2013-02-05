@@ -54,6 +54,9 @@ def set_options():
                       action="store", type="string", dest="file")
     parser.add_option("-T", "--tag", help="name of tag for mass prescan",
                       action="store", type="string", dest="tag_name")
+    parser.add_option("-m", "--send-message", help="send random message to qpid broker",
+                      action="store_true", dest="messaging")
+
     (options, args) = parser.parse_args()
 
     return parser, options, args
@@ -262,6 +265,8 @@ if __name__ == '__main__':
     #try:
     if options.init:
         init_scans(client)
+    elif options.messaging:
+        call_send_message(client)
     elif options.base and options.target:
         create_et_scan(client, options.base, options.target)
     elif options.file and options.tag_name:
