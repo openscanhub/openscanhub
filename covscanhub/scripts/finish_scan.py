@@ -24,7 +24,7 @@ os.environ['DJANGO_SETTINGS_MODULE'] = 'covscanhub.settings'
 
 from django.contrib.auth.models import User
 
-from covscanhub.xmlrpc.worker import finish_scan
+from covscanhub.xmlrpc.worker import finish_scan, fail_scan
 from covscanhub.scan.models import Scan, ScanBinding, SCAN_TYPES, SCAN_STATES
 from covscanhub.scan.service import extract_logs_from_tarball
 
@@ -32,6 +32,26 @@ from kobo.client.constants import TASK_STATES
 from kobo.hub.models import Task
 
 import shutil
+
+
+from optparse import OptionParser
+
+
+def set_options():
+    parser = OptionParser()
+
+    parser.add_option("-F", "--fail", help="fail scan",
+                      action="store", type="int", dest="fail")
+
+    parser.add_option("-f", "--finish", help="finish scan",
+                      action="store", type="int", dest="finish")
+
+    parser.add_option("-f", "--finish", help="finish all scans",
+                      action="store_true", dest="finish_all")
+
+    (options, args) = parser.parse_args()
+
+    return parser, options, args
 
 
 class FakeRequest(object):
@@ -70,6 +90,10 @@ def m_finish_scan(scan_id):
     Task.objects.filter(id=sb.task.id).update(state=TASK_STATES['CLOSED'])
 
 
+def m_fail_scan(scan_id):
+    fail_scan(FakeRequest(), scan_id, "Scan set to failed from CLI")
+
+
 def m_finish_all_scans():
     base_scans = Scan.objects.filter(scan_type=SCAN_TYPES['ERRATA_BASE'],
                                      state=SCAN_STATES['QUEUED'])
@@ -82,17 +106,13 @@ def m_finish_all_scans():
 
 
 if __name__ == '__main__':
-    id_provided = False
-    try:
-        scan_id = int(sys.argv[1])
-        id_provided = True
-    except ValueError:
-        print 'Invalid ID.'
-        sys.exit(1)
-    except IndexError:
-        pass
+    parser, options, args = set_options()
 
-    if id_provided:
-        m_finish_scan(scan_id)
-    else:
+    if options.finish:
+        m_finish_scan(options.finish)
+    elif options.finish_all:
         m_finish_all_scans()
+    elif options.fail:
+        m_fail_scan(options.fail)
+    else:
+        parser.error('You haven\'t specified any option.')
