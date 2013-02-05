@@ -239,7 +239,7 @@ def remove_waiver(request, waiver_id):
     wl.save()
     waiver.is_deleted = True
     waiver.save()
-    if waiver_condition(waiver.result_group):
+    if not waiver_condition(waiver.result_group):
         ResultGroup.objects.filter(id=waiver.result_group.id).update(
             state=RESULT_GROUP_STATES['NEEDS_INSPECTION'])
     return HttpResponseRedirect(reverse('waiving/result',
