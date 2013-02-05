@@ -91,7 +91,7 @@ def extract_tarball(request, task_id, name):
 def finish_scan(request, scan_id, task_id):
     sb = ScanBinding.objects.get(scan=scan_id, task=task_id)
     scan = Scan.objects.get(id=sb.scan.id)
-    
+
     if sb.task.state == TASK_STATES['FAILED'] or \
             sb.task.state == TASK_STATES['CANCELED']:
         scan.state = SCAN_STATES['FAILED']
@@ -108,7 +108,7 @@ def finish_scan(request, scan_id, task_id):
                 return
 
         result = create_results(scan, sb)
-    
+
         if scan.is_errata_scan():
             # if there are no missing waivers = there some newly added unwaived
             # defects
@@ -116,7 +116,7 @@ def finish_scan(request, scan_id, task_id):
                 scan.state = SCAN_STATES['PASSED']
             else:
                 scan.state = SCAN_STATES['NEEDS_INSPECTION']
-    
+
             post_qpid_message(sb.id, SCAN_STATES.get_value(scan.state))
         elif scan.is_errata_base_scan():
             scan.state = SCAN_STATES['FINISHED']
@@ -144,9 +144,9 @@ def set_scan_to_scanning(request, scan_id):
 
 
 @validate_worker
-def fail_scan(request, scan_id, reason):
+def fail_scan(request, scan_id, reason=None):
     update_scans_state(scan_id, SCAN_STATES['FAILED'])
     if reason:
         scan = Scan.objects.get(id=scan_id)
-        Task.objects.filter(id=scan.task.id).update(
+        Task.objects.filter(id=scan.scanbinding.task.id).update(
             result="Scan failed due to: %s" % reason)
