@@ -342,7 +342,7 @@ class WaivingLog(models.Model):
     Log of waiving related actions
     """
     date = models.DateTimeField()  # date submitted
-    user = models.OneToOneField(User)
+    user = models.ForeignKey(User)
     # possible actions:
     #  new -- submit waiver to group that wasn't waived yet
     #  delete -- delete waiver
