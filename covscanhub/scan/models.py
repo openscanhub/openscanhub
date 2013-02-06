@@ -125,16 +125,18 @@ class Tag(models.Model):
 
 class Package(models.Model):
     """
-    Package name -- for statistics purposes mainly
+    model that represents packages, these are linked directly to scans
     """
     name = models.CharField("Package name", max_length=64,
                             blank=False, null=False)
     blocked = models.BooleanField(default=False, help_text="If this is set to \
-True, this package will be blacklisted -- not accepted for scanning.")
+True, the package is blacklisted -- not accepted for scanning.")
+    eligible = models.BooleanField(default=True, help_text="Is package \
+scannable? You may have package written in different language that is \
+supported by your scanner.")
 
     def __unicode__(self):
-        return "#%s %s" % \
-            (self.id, self.name)
+        return "#%s %s" % (self.id, self.name)
 
     def calculateScanNumbers(self):
         return Scan.objects.filter(package=self,

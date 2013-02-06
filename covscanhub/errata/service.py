@@ -2,6 +2,7 @@
 
 import copy
 import re
+import logging
 
 from django.conf import settings
 #from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
@@ -15,6 +16,8 @@ from covscanhub.other.shortcuts import check_brew_build, \
 from covscanhub.other.exceptions import ScanException
 
 from kobo.hub.models import Task, TASK_STATES
+
+logger = logging.getLogger(__name__)
 
 
 def create_errata_base_scan(kwargs, parent_task_id, package):
@@ -112,7 +115,17 @@ def check_obsolete_scan(package, release):
             Scan.objects.filter(id=binding.scan.id).update(
                 state=SCAN_STATES['CANCELED'],
                 enabled=False,
-                )
+            )
+
+
+def check_package_eligibility(package, created):
+    if created:
+        logger.warn('Package %s was created', package)
+    if not created and package.blocked:
+        raise RuntimeError('Package %s is blacklisted' % (package.name))
+    elif not created and not package.eligible:
+        raise RuntimeError('Package %s is not able to be scanned' %
+                           (package.name))
 
 
 def create_errata_scan(kwargs):
@@ -174,7 +187,6 @@ def create_errata_scan(kwargs):
 
     priority = kwargs.get('priority', settings.ET_SCAN_PRIORITY)
 
-    #if kwargs does not have 'id', it is base scan
     comment = 'Errata Tool Scan of %s' % nvr
 
     #does tag exist?
@@ -192,8 +204,7 @@ def create_errata_scan(kwargs):
     if m is not None:
         package_name = m.group(1)
         package, created = Package.objects.get_or_create(name=package_name)
-        if not created and package.blocked:
-            raise RuntimeError('Package %s is blacklisted' % (package))
+        check_package_eligibility(package, created)
     else:
         raise RuntimeError('%s is not a correct N-V-R (does not match "%s"\
 )' % (nvr, pattern))
