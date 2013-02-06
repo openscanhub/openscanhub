@@ -68,9 +68,13 @@ function.'
     except RuntimeError, ex:
         response['status'] = 'ERROR'
         response['message'] = 'Unable to submit the scan, error: %s' % ex
+    except Exception, ex:
+        response['status'] = 'ERROR'
+        response['message'] = '%s' % ex
     else:
         response['id'] = sb.id
         response['status'] = 'OK'
+
     return response
 
 
