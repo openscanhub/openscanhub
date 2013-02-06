@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 
 
-import kobo.hub.xmlrpc.client
-
 from kobo.client.constants import TASK_STATES
 from kobo.hub.decorators import validate_worker
 from kobo.hub.models import Task
@@ -11,11 +9,14 @@ from covscanhub.other.exceptions import ScanException
 from covscanhub.scan.service import extract_logs_from_tarball, \
     update_scans_state, prepare_and_execute_diff, post_qpid_message, \
     get_latest_binding
+from covscanhub.scan.notify import send_task_notification, \
+    send_scan_notification
 from covscanhub.waiving.service import create_results, get_unwaived_rgs
 from covscanhub.scan.models import SCAN_STATES, Scan, ScanBinding
 
 __all__ = (
     "email_task_notification",
+    "email_scan_notification",
     "extract_tarball",
     "finish_scan",
     "finish_task",
@@ -25,57 +26,12 @@ __all__ = (
 
 @validate_worker
 def email_task_notification(request, task_id):
-    import socket
-    from django.core.mail import get_connection, EmailMessage
-    connection = get_connection(fail_silently=False)
+    return send_task_notification(request, task_id)
 
-    task = Task.objects.get(id=task_id)
-    recipient = task.owner.username
-    if "@" not in recipient:
-        if recipient == "admin" or recipient == "test":
-            recipient = None
-        else:
-            # XXX: hardcoded
-            recipient += "@redhat.com"
 
-    state = TASK_STATES.get_value(task.state)
-    to = task.args.get("email_to", []) or []
-    bcc = task.args.get("email_bcc", []) or []
-
-    task_url = kobo.hub.xmlrpc.client.task_url(request, task_id)
-
-    # XXX: hardcoded
-    from_addr = "Coverity Results mailing list <coverity-results@redhat.com>"
-    recipients = []
-    if recipient:
-        recipients.append(recipient)
-    if to:
-        recipients.extend(to)
-    if not recipients and not bcc:
-        return
-    subject = "Task [#%s] finished, state: %s" % (task_id, state)
-    hostname = socket.gethostname()
-    message = [
-        "Hostname: %s" % hostname,
-        "Task ID: %s" % task_id,
-        "Task state: %s" % state,
-        "Task owner: %s" % task.owner.username,
-        "Task method: %s" % task.method,
-        "",
-        "Task URL: %s" % task_url,
-        "Comment: %s" % task.comment or "",
-    ]
-    message = "\n".join(message)
-
-    headers = {
-        "X-Application-ID": "covscan",
-        "X-Hostname": hostname,
-        "X-Task-ID": task_id,
-        "X-Task-State": state,
-        "X-Task-Owner": task.owner.username,
-    }
-
-    return EmailMessage(subject, message, from_addr, recipients, bcc=bcc, headers=headers, connection=connection).send()
+@validate_worker
+def email_scan_notification(request, scan_id):
+    return send_scan_notification(request, scan_id)
 
 
 @validate_worker
@@ -99,9 +55,11 @@ def finish_scan(request, scan_id, task_id):
     else:
         if scan.is_errata_scan() and scan.base:
             try:
-                prepare_and_execute_diff(sb.task,
-                                     get_latest_binding(scan.base.nvr).task,
-                                     scan.nvr, scan.base.nvr)
+                prepare_and_execute_diff(
+                    sb.task,
+                    get_latest_binding(scan.base.nvr).task,
+                    scan.nvr, scan.base.nvr
+                )
             except ScanException:
                 scan.state = SCAN_STATES['FAILED']
                 scan.save()
@@ -110,8 +68,8 @@ def finish_scan(request, scan_id, task_id):
         result = create_results(scan, sb)
 
         if scan.is_errata_scan():
-            # if there are no missing waivers = there some newly added unwaived
-            # defects
+            # if there are no missing waivers = there are some newly added
+            # unwaived defects
             if not get_unwaived_rgs(result):
                 scan.state = SCAN_STATES['PASSED']
             else:
