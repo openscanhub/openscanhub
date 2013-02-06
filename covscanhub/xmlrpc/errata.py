@@ -15,6 +15,8 @@ __all__ = (
     "get_scan_state",
 )
 
+logger = logging.getLogger(__name__)
+
 
 @login_required
 def create_errata_diff_scan(request, kwargs):
@@ -44,13 +46,13 @@ def create_errata_diff_scan(request, kwargs):
         response['status'] = 'ERROR'
         response['message'] = 'You are not authorized to execute this \
 function.'
-        logging.info('User %s tried to submit scan.', request.user.username)
+        logger.info('User %s tried to submit scan.', request.user.username)
         return response
 
     if kwargs == {}:
         response = {}
         response['status'] = 'ERROR'
-        response['message'] = 'Provided dictionary (map) is empty.'
+        response['message'] = 'Provided dictionary (map/Hash) is empty.'
         return response
 
     kwargs['scan_type'] = SCAN_TYPES['ERRATA']
