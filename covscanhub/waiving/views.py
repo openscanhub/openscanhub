@@ -180,8 +180,8 @@ def waiver(request, sb_id, result_group_id):
             s.last_access = datetime.datetime.now()
             s.save()
 
-            logger.info('Waiver submitted for resultgroup %s',
-                        result_group_object)
+            logger.info('Waiver %s submitted for resultgroup %s',
+                        w, result_group_object)
             return HttpResponseRedirect(reverse('waiving/result',
                                                 args=(sb.id,)))
 
