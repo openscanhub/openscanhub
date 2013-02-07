@@ -24,7 +24,8 @@ os.environ['DJANGO_SETTINGS_MODULE'] = 'covscanhub.settings'
 
 from django.contrib.auth.models import User
 
-from covscanhub.xmlrpc.worker import finish_scan, fail_scan
+from covscanhub.xmlrpc.worker import finish_scan, fail_scan, \
+    email_scan_notification
 from covscanhub.scan.models import Scan, ScanBinding, SCAN_TYPES, SCAN_STATES
 from covscanhub.scan.service import extract_logs_from_tarball
 
@@ -45,6 +46,10 @@ def set_options():
 
     parser.add_option("-f", "--finish", help="finish scan",
                       action="store", type="int", dest="finish")
+
+    parser.add_option("-n", "--notify",
+                      help="notify about scan being finished",
+                      action="store", type="int", dest="notify")
 
     parser.add_option("-a", "--finish-all", help="finish all scans",
                       action="store_true", dest="finish_all")
@@ -94,6 +99,10 @@ def m_fail_scan(scan_id):
     fail_scan(FakeRequest(), scan_id, "Scan set to failed from CLI")
 
 
+def m_email_scan_notification(scan_id):
+    email_scan_notification(FakeRequest(), scan_id)
+
+
 def m_finish_all_scans():
     base_scans = Scan.objects.filter(scan_type=SCAN_TYPES['ERRATA_BASE'],
                                      state=SCAN_STATES['QUEUED'])
@@ -114,5 +123,7 @@ if __name__ == '__main__':
         m_finish_all_scans()
     elif options.fail:
         m_fail_scan(options.fail)
+    elif options.notify:
+        m_email_scan_notification(options.notify)
     else:
         parser.error('You haven\'t specified any option.')

@@ -390,11 +390,15 @@ def prepare_and_execute_diff(task, base_task, nvr, base_nvr):
     return run_diff(task_dir, base_task_dir, nvr, base_nvr)
 
 
-def post_qpid_message(scan_id, scan_state):
+def post_qpid_message(scan_id, scan_state, et_id):
     s = copy.deepcopy(settings.QPID_CONNECTION)
     s['KRB_PRINCIPAL'] = settings.KRB_AUTH_PRINCIPAL
     s['KRB_KEYTAB'] = settings.KRB_AUTH_KEYTAB
-    send_message(s, {'scan_id': scan_id, 'scan_state': scan_state}, 'finished')
+    send_message(s,
+                 {'scan_id': scan_id,
+                  'et_id': et_id,
+                  'scan_state': scan_state, },
+                 'finished')
 
 
 def get_latest_sb_by_package(tag, package):

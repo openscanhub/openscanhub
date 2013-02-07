@@ -46,7 +46,7 @@ def extract_tarball(request, task_id, name):
 @validate_worker
 def finish_scan(request, scan_id, task_id):
     sb = ScanBinding.objects.get(scan=scan_id, task=task_id)
-    scan = Scan.objects.get(id=sb.scan.id)
+    scan = sb.scan
 
     if sb.task.state == TASK_STATES['FAILED'] or \
             sb.task.state == TASK_STATES['CANCELED']:
@@ -75,7 +75,9 @@ def finish_scan(request, scan_id, task_id):
             else:
                 scan.state = SCAN_STATES['NEEDS_INSPECTION']
 
-            post_qpid_message(sb.id, SCAN_STATES.get_value(scan.state))
+            post_qpid_message(sb.id,
+                              SCAN_STATES.get_value(scan.state),
+                              sb.get_errata_id())
         elif scan.is_errata_base_scan():
             scan.state = SCAN_STATES['FINISHED']
     scan.save()

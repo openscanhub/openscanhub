@@ -11,13 +11,14 @@ __all__ = (
     'send_message',
 )
 
+
 @login_required
 def send_message(request):
     """
     send_message()
 
     Posts message on qpid broker. It is generating random IDs and states.
-    
+
     It is using currently this configuration:
         'broker': "qpid-stage.app.eng.bos.redhat.com"
         'address': "eso.topic"
@@ -31,13 +32,15 @@ def send_message(request):
         }
     """
     scan_id = random.randint(1, 10000)
-    scan_state = random.choice([value for (key, value) \
-in SCAN_STATES.get_mapping()])
-    post_qpid_message(scan_id, scan_state)
+    et_id = random.randint(1, 10000)
+    scan_state = random.choice([value for (key, value)
+                               in SCAN_STATES.get_mapping()])
+    post_qpid_message(scan_id, scan_state, et_id)
     result = {
         'message': {
             'scan_id': scan_id,
             'scan_state': scan_state,
+            'et_id': et_id,
         },
         'comment': 'The message provided has been sent to broker, for more \
 info see documentation on \

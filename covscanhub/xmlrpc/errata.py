@@ -9,6 +9,8 @@ from covscanhub.scan.models import SCAN_TYPES, SCAN_STATES, Scan
 
 from kobo.django.xmlrpc.decorators import login_required
 
+from django.shortcuts import get_object_or_404
+
 
 __all__ = (
     "create_errata_diff_scan",
@@ -95,11 +97,13 @@ def get_scan_state(request, scan_id):
      - message: in case of error, here is detailed message
      - state: state of scan. It can be one of following values (description
          can be found in etherpad in part "Requirements"):
-       {'QUEUED', 'SCANNING', 'NEEDS_INSPECTION', 'WAIVED', 'PASSED'}
+       {'QUEUED', 'SCANNING', 'NEEDS_INSPECTION', 'WAIVED', 'PASSED',
+        'FAILED', 'BASE_SCANNING', 'CANCELED'}
     """
     response = {}
     try:
-        state = SCAN_STATES.get_value(Scan.objects.get(id=scan_id).state)
+        scan = get_object_or_404(Scan, id=scan_id)
+        state = SCAN_STATES.get_value(scan.state)
     except RuntimeError, ex:
         response['status'] = 'ERROR'
         response['message'] = "Unable to retrieve scan's state, error: %s" % ex
