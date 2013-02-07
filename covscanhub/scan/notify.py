@@ -91,11 +91,11 @@ def send_scan_notification(request, scan_id):
         "Scan state: %s" % state,
         "",
         "Waiver URL: %s" % request.build_absolute_uri(
-            reverse('waiving/result', args=(scan.scanbinding.id))
+            reverse('waiving/result', args=(scan.scanbinding.id, ))
         ),
     ]
     message = "\n".join(message)
-    subject = "Scan [#%s] finished, state: %s" % (scan.scanbinding.id, state)
+    subject = "Scan of %s finished, state: %s" % (scan.nvr, state)
 
     headers = {
         "X-Scan-ID": scan.scanbinding.id,
