@@ -234,6 +234,10 @@ def create_errata_scan(kwargs):
                             tag=tag_obj, package=package, base=base_obj,
                             enabled=True)
 
+    if base_obj.state != SCAN_STATES['FINISHED']:
+        scan.state = SCAN_STATES['BASE_SCANNING']
+        scan.save()
+
     if child and child.scan:
         child_scan = Scan.objects.get(id=child.scan.id)
         child_scan.parent = scan
