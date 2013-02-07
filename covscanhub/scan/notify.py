@@ -83,7 +83,7 @@ def send_task_notification(request, task_id):
 def send_scan_notification(request, scan_id):
     scan = Scan.objects.get(id=scan_id)
     state = SCAN_STATES.get_value(scan.state)
-    recipient = get_recipient(scan.user.username)
+    recipient = get_recipient(scan.username.username)
 
     message = [
         "Scan of package %s have finished:" % scan.package.name,

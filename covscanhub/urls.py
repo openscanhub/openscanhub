@@ -35,6 +35,9 @@ urlpatterns = patterns('',
 
     # Include kobo hub xmlrpc module urls:
     url(r"^xmlrpc/", include("covscanhub.xmlrpc.urls")),
+
+    # debugging URLs
+    url(r"^test/", include("covscanhub.test.urls")),
 )
 
 
