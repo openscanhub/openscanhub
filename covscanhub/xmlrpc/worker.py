@@ -12,7 +12,7 @@ from covscanhub.scan.service import extract_logs_from_tarball, \
 from covscanhub.scan.notify import send_task_notification, \
     send_scan_notification
 from covscanhub.waiving.service import create_results, get_unwaived_rgs
-from covscanhub.scan.models import SCAN_STATES, Scan, ScanBinding
+from covscanhub.scan.models import SCAN_STATES, SCAN_TYPES, Scan, ScanBinding
 
 __all__ = (
     "email_task_notification",
@@ -31,7 +31,10 @@ def email_task_notification(request, task_id):
 
 @validate_worker
 def email_scan_notification(request, scan_id):
-    return send_scan_notification(request, scan_id)
+    scan = Scan.objects.get(id=scan_id)
+    if scan.scan_type == SCAN_TYPES['ERRATA']:
+        if scan.state != SCAN_STATES['FAILED'] and scan.state != SCAN_STATES['CANCELED']:
+            return send_scan_notification(request, scan_id)
 
 
 @validate_worker
@@ -77,7 +80,7 @@ def finish_scan(request, scan_id, task_id):
 
             post_qpid_message(sb.id,
                               SCAN_STATES.get_value(scan.state),
-                              sb.get_errata_id())
+                              sb.scan.get_errata_id())
         elif scan.is_errata_base_scan():
             scan.state = SCAN_STATES['FINISHED']
     scan.save()
@@ -110,3 +113,8 @@ def fail_scan(request, scan_id, reason=None):
         scan = Scan.objects.get(id=scan_id)
         Task.objects.filter(id=scan.scanbinding.task.id).update(
             result="Scan failed due to: %s" % reason)
+    post_qpid_message(
+        scan.scanbinding.id,
+        SCAN_STATES.get_value(scan.state),
+        scan.get_errata_id()
+    )
