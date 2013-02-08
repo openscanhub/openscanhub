@@ -2,7 +2,11 @@
 
 
 from covscanhub.other.shortcuts import add_link_field
+from covscanhub.scan.notify import send_scan_notification
 
+from django.template import RequestContext
+from django.conf.urls.defaults import patterns
+from django.shortcuts import render_to_response
 import django.contrib.admin as admin
 
 from models import Tag, MockConfig, Scan, Package, SystemRelease, ScanBinding
@@ -23,6 +27,27 @@ class ScanAdmin(admin.ModelAdmin):
     list_display = ("id", "nvr", "state", "scan_type", 'link_base',
                     'link_parent', "link_tag",
                     'username', 'link_package', 'link_bind', 'enabled')
+
+    review_template = 'admin/my_test/myentry/review.html'
+
+    def get_urls(self):
+        urls = super(ScanAdmin, self).get_urls()
+        my_urls = patterns('',
+            (r'(?P<scan_id>\d+)/notify/$', self.admin_site.admin_view(self.notify)),
+        )
+        return my_urls + urls
+
+    def notify(self, request, scan_id):
+        result = send_scan_notification(request, scan_id)
+        scan = Scan.objects.get(id=scan_id)
+
+        return render_to_response('admin/scan/scan/notify.html', {
+            'title': 'Notify: %s' % scan.nvr,
+            'entry': scan,
+            'opts': self.model._meta,
+            'result': result,
+            'root_path': self.admin_site.root_path,
+        }, context_instance=RequestContext(request))
 
 
 class PackageAdmin(admin.ModelAdmin):
