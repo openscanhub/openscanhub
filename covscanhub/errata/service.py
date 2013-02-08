@@ -10,7 +10,7 @@ from django.conf import settings
 from covscanhub.scan.models import Scan, SCAN_STATES, SCAN_TYPES, Package, \
     ScanBinding
 from covscanhub.scan.service import get_latest_sb_by_package, \
-    get_latest_binding
+    get_latest_binding, post_qpid_message
 from covscanhub.other.shortcuts import check_brew_build, \
     check_and_create_dirs, get_tag_by_name
 from covscanhub.other.exceptions import ScanException
@@ -115,6 +115,11 @@ def check_obsolete_scan(package, release):
             Scan.objects.filter(id=binding.scan.id).update(
                 state=SCAN_STATES['CANCELED'],
                 enabled=False,
+            )
+            post_qpid_message(
+                binding.id,
+                SCAN_STATES.get_value(binding.scan.state),
+                binding.scan.get_errata_id()
             )
 
 
