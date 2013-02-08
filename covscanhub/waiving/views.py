@@ -15,7 +15,7 @@ from kobo.django.views.generic import object_list
 from covscanhub.scan.models import SCAN_STATES, ScanBinding, Package,\
     SystemRelease
 from covscanhub.scan.compare import get_compare_title
-from covscanhub.scan.service import get_latest_sb_by_package
+from covscanhub.scan.service import get_latest_sb_by_package, post_qpid_message
 
 from covscanhub.other.shortcuts import get_or_none
 
@@ -177,6 +177,11 @@ def waiver(request, sb_id, result_group_id):
 
                 if not get_unwaived_rgs(sb.result):
                     s.state = SCAN_STATES['WAIVED']
+                    post_qpid_message(
+                        sb.id,
+                        SCAN_STATES.get_value(sb.scan.state),
+                        sb.scan.get_errata_id()
+                    )
             s.last_access = datetime.datetime.now()
             s.save()
 
