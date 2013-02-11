@@ -6,6 +6,7 @@ from kobo.hub.models import Task
 from covscanhub.other.shortcuts import add_link_field
 from covscanhub.scan.notify import send_scan_notification
 from covscanhub.scan.models import SCAN_STATES
+from covscanhub.errata.service import rescan
 
 from covscanhub.scan.xmlrpc_helper import finish_scan as h_finish_scan, \
     fail_scan as h_fail_scan
@@ -44,6 +45,7 @@ class ScanAdmin(admin.ModelAdmin):
             (r'(?P<scan_id>\d+)/notify/$', self.admin_site.admin_view(self.notify)),
             (r'(?P<scan_id>\d+)/fail/$', self.admin_site.admin_view(self.fail_scan)),
             (r'(?P<scan_id>\d+)/finish/$', self.admin_site.admin_view(self.finish_scan)),
+            (r'(?P<scan_id>\d+)/rescan/$', self.admin_site.admin_view(self.rescan)),
         )
         return my_urls + urls
 
@@ -81,6 +83,18 @@ class ScanAdmin(admin.ModelAdmin):
             'entry': scan,
             'opts': self.model._meta,
             'result': "Scan #%s set to %s" % (scan_id, SCAN_STATES.get_value(scan.state)),
+            'root_path': self.admin_site.root_path,
+        }, context_instance=RequestContext(request))
+
+    def rescan(self, request, scan_id):
+        scan = Scan.objects.get(id=scan_id)
+        new_scan = rescan(scan)
+
+        return render_to_response('admin/scan/scan/state_change.html', {
+            'title': 'Rescan of package: %s' % scan.nvr,
+            'entry': scan,
+            'opts': self.model._meta,
+            'result': "New scan #%s submitted." % (new_scan.scan.id),
             'root_path': self.admin_site.root_path,
         }, context_instance=RequestContext(request))
 
