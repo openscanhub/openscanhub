@@ -148,12 +148,10 @@ supported by your scanner.")
         srs = SystemRelease.objects.filter(active=True)
         response = ""
         for sr in srs:
-            try:
-                scan = Scan.objects.get(package=self, tag__release=sr,
+            scans = Scan.objects.filter(package=self, tag__release=sr,
                                         enabled=True)
-            except ObjectDoesNotExist:
-                pass
-            else:
+            if scans:
+                scan = scans.latest()
                 response += '%s: <a href="%s">%s</a>' % (
                     sr.tag,
                     reverse("waiving/result/newest", args=(self.name, sr.tag)),
