@@ -56,6 +56,7 @@ def finish_scan(scan_id, task_id):
 def fail_scan(scan_id, reason=None):
     """analysis didn't finish successfully, so process it appropriately"""
     update_scans_state(scan_id, SCAN_STATES['FAILED'])
+    Scan.objects.filter(id=scan_id).update(enabled=False)
     if reason:
         scan = Scan.objects.get(id=scan_id)
         Task.objects.filter(id=scan.scanbinding.task.id).update(
