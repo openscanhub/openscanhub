@@ -277,7 +277,7 @@ failed. This is not supported.")
             method='ErrataDiffBuild',
             args={},
             comment=latest_binding.task.comment,
-            state=TASK_STATES["FREE"],
+            state=TASK_STATES["CREATED"],
             priority=latest_binding.task.priority,
         )
         task_dir = Task.get_task_dir(task_id)
@@ -297,12 +297,13 @@ failed. This is not supported.")
         task = Task.objects.get(id=task_id)
         task.args = options
         task.save()
+        task.free_task()
 
         sb = ScanBinding()
         sb.task = task
         sb.scan = scan
         sb.save()
-    #scan is errata scan
+    # scan is errata scan
     # do not forget to set up parent id for task
     else:
         if latest_binding.task.parent:
