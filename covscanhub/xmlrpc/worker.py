@@ -23,6 +23,7 @@ __all__ = (
     "email_scan_notification",
     "extract_tarball",
     "finish_scan",
+    "fail_scan",
     "finish_task",
     "set_scan_to_scanning",
 )
