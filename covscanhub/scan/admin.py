@@ -22,6 +22,7 @@ from models import Tag, MockConfig, Scan, Package, SystemRelease, ScanBinding
 class MockConfigAdmin(admin.ModelAdmin):
     list_display = ("id", "name", "enabled")
 
+
 @add_link_field('scanbinding', 'scanbinding', field_label="Binding",
                 field_name="link_bind")
 @add_link_field('scan', 'base', field_name='link_base', field_label="Base")

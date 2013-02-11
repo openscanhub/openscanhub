@@ -1,19 +1,14 @@
 # -*- coding: utf-8 -*-
 
 
-from kobo.client.constants import TASK_STATES
 from kobo.hub.decorators import validate_worker
 from kobo.hub.models import Task
 
-from covscanhub.other.exceptions import ScanException
 from covscanhub.scan.service import extract_logs_from_tarball, \
-    update_scans_state, prepare_and_execute_diff, post_qpid_message, \
-    get_latest_binding
+    update_scans_state, prepare_and_execute_diff
 from covscanhub.scan.notify import send_task_notification, \
     send_scan_notification
-from covscanhub.waiving.service import create_results, get_unwaived_rgs
-from covscanhub.scan.models import SCAN_STATES, SCAN_TYPES, Scan, ScanBinding
-
+from covscanhub.scan.models import SCAN_STATES, SCAN_TYPES, Scan
 from covscanhub.scan.xmlrpc_helper import finish_scan as h_finish_scan,\
     fail_scan as h_fail_scan
 
