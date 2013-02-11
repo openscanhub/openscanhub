@@ -14,6 +14,10 @@ from covscanhub.scan.notify import send_task_notification, \
 from covscanhub.waiving.service import create_results, get_unwaived_rgs
 from covscanhub.scan.models import SCAN_STATES, SCAN_TYPES, Scan, ScanBinding
 
+from covscanhub.scan.xmlrpc_helper import finish_scan as h_finish_scan,\
+    fail_scan as h_fail_scan
+
+
 __all__ = (
     "email_task_notification",
     "email_scan_notification",
@@ -48,42 +52,7 @@ def extract_tarball(request, task_id, name):
 
 @validate_worker
 def finish_scan(request, scan_id, task_id):
-    sb = ScanBinding.objects.get(scan=scan_id, task=task_id)
-    scan = sb.scan
-
-    if sb.task.state == TASK_STATES['FAILED'] or \
-            sb.task.state == TASK_STATES['CANCELED']:
-        scan.state = SCAN_STATES['FAILED']
-        scan.enabled = False
-    else:
-        if scan.is_errata_scan() and scan.base:
-            try:
-                prepare_and_execute_diff(
-                    sb.task,
-                    get_latest_binding(scan.base.nvr).task,
-                    scan.nvr, scan.base.nvr
-                )
-            except ScanException:
-                scan.state = SCAN_STATES['FAILED']
-                scan.save()
-                return
-
-        result = create_results(scan, sb)
-
-        if scan.is_errata_scan():
-            # if there are no missing waivers = there are some newly added
-            # unwaived defects
-            if not get_unwaived_rgs(result):
-                scan.state = SCAN_STATES['PASSED']
-            else:
-                scan.state = SCAN_STATES['NEEDS_INSPECTION']
-
-            post_qpid_message(sb.id,
-                              SCAN_STATES.get_value(scan.state),
-                              sb.scan.get_errata_id())
-        elif scan.is_errata_base_scan():
-            scan.state = SCAN_STATES['FINISHED']
-    scan.save()
+    h_finish_scan(scan_id, task_id)
 
 
 @validate_worker
@@ -108,13 +77,4 @@ def set_scan_to_scanning(request, scan_id):
 
 @validate_worker
 def fail_scan(request, scan_id, reason=None):
-    update_scans_state(scan_id, SCAN_STATES['FAILED'])
-    if reason:
-        scan = Scan.objects.get(id=scan_id)
-        Task.objects.filter(id=scan.scanbinding.task.id).update(
-            result="Scan failed due to: %s" % reason)
-    post_qpid_message(
-        scan.scanbinding.id,
-        SCAN_STATES.get_value(scan.state),
-        scan.get_errata_id()
-    )
+    h_fail_scan(scan_id, reason)
