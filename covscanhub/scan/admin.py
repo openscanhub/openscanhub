@@ -1,12 +1,19 @@
 # -*- coding: utf-8 -*-
 
 
+from kobo.hub.models import Task
+
 from covscanhub.other.shortcuts import add_link_field
 from covscanhub.scan.notify import send_scan_notification
+from covscanhub.scan.models import SCAN_STATES
+
+from covscanhub.scan.xmlrpc_helper import finish_scan as h_finish_scan, \
+    fail_scan as h_fail_scan
 
 from django.template import RequestContext
 from django.conf.urls.defaults import patterns
 from django.shortcuts import render_to_response
+from django.utils.safestring import mark_safe
 import django.contrib.admin as admin
 
 from models import Tag, MockConfig, Scan, Package, SystemRelease, ScanBinding
@@ -34,6 +41,8 @@ class ScanAdmin(admin.ModelAdmin):
         urls = super(ScanAdmin, self).get_urls()
         my_urls = patterns('',
             (r'(?P<scan_id>\d+)/notify/$', self.admin_site.admin_view(self.notify)),
+            (r'(?P<scan_id>\d+)/fail/$', self.admin_site.admin_view(self.fail_scan)),
+            (r'(?P<scan_id>\d+)/finish/$', self.admin_site.admin_view(self.finish_scan)),
         )
         return my_urls + urls
 
@@ -41,11 +50,36 @@ class ScanAdmin(admin.ModelAdmin):
         result = send_scan_notification(request, scan_id)
         scan = Scan.objects.get(id=scan_id)
 
-        return render_to_response('admin/scan/scan/notify.html', {
+        return render_to_response('admin/scan/scan/state_change.html', {
             'title': 'Notify: %s' % scan.nvr,
             'entry': scan,
             'opts': self.model._meta,
-            'result': result,
+            'result': mark_safe("Number of e-mails sent: <b>%s</b>" % result),
+            'root_path': self.admin_site.root_path,
+        }, context_instance=RequestContext(request))
+
+    def fail_scan(self, request, scan_id):
+        h_fail_scan(scan_id, "Scan set to failed from admin interface.")
+        scan = Scan.objects.get(id=scan_id)
+
+        return render_to_response('admin/scan/scan/state_change.html', {
+            'title': 'Fail scan: %s' % scan.nvr,
+            'entry': scan,
+            'opts': self.model._meta,
+            'result': "Scan #%s set to failed" % scan_id,
+            'root_path': self.admin_site.root_path,
+        }, context_instance=RequestContext(request))
+
+    def finish_scan(self, request, scan_id):
+        h_finish_scan(scan_id,
+                      Task.objects.get(scanbinding__scan__id=scan_id).id)
+        scan = Scan.objects.get(id=scan_id)
+
+        return render_to_response('admin/scan/scan/state_change.html', {
+            'title': 'Finish scan: %s' % scan.nvr,
+            'entry': scan,
+            'opts': self.model._meta,
+            'result': "Scan #%s set to %s" % (scan_id, SCAN_STATES.get_value(scan.state)),
             'root_path': self.admin_site.root_path,
         }, context_instance=RequestContext(request))
 
