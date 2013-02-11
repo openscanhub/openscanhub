@@ -59,7 +59,7 @@ class ScanAdmin(admin.ModelAdmin):
         }, context_instance=RequestContext(request))
 
     def fail_scan(self, request, scan_id):
-        h_fail_scan(scan_id, "Scan set to failed from admin interface.")
+        h_fail_scan(scan_id, "set as failed from admin interface.")
         scan = Scan.objects.get(id=scan_id)
 
         return render_to_response('admin/scan/scan/state_change.html', {
