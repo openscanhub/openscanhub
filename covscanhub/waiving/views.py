@@ -38,8 +38,8 @@ def get_result_context(sb):
     unrep_waivers = get_unreported_bugs(package, release)
 
     file_labels = {
-        'csdiff.html': 'Defects diff',
-        'csdiff_fixed.html': 'Fixed defects diff',
+        'csdiff.html': 'Added defects',
+        'csdiff_fixed.html': 'Fixed defects',
         '.err': 'Complete defects output',
         'stdout.log': 'Log',
     }
