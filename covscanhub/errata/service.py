@@ -263,6 +263,12 @@ def create_errata_scan(kwargs):
 
 
 def rescan(scan):
+    """
+        Rescan supplied scan.
+
+        @param scan - scan to be rescanned
+        @type scan - covscanhub.scan,models.Scan
+    """
     latest_binding = get_latest_binding(scan.nvr)
 
     if latest_binding.scan.state != SCAN_STATES['FAILED']:
@@ -303,6 +309,8 @@ failed. This is not supported.")
         sb.task = task
         sb.scan = scan
         sb.save()
+
+        return sb
     # scan is errata scan
     # do not forget to set up parent id for task
     else:
@@ -347,3 +355,5 @@ Unsupported.')
         sb.task = task
         sb.scan = scan
         sb.save()
+
+        return sb
