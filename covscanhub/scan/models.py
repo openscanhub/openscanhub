@@ -152,14 +152,15 @@ supported by your scanner.")
                                         enabled=True)
             if scans:
                 scan = scans.latest()
-                response += '%s: <a href="%s">%s</a>' % (
+                response += '%s: <a href="%s">%s</a>, ' % (
                     sr.tag,
                     reverse("waiving/result/newest", args=(self.name, sr.tag)),
                     scan.nvr,
                 )
         if response == "":
             return "None"
-        return mark_safe(response)
+        else:
+            return mark_safe(response[:-2])
 
     display_latest_scans = property(get_latest_scans)
 
@@ -259,6 +260,9 @@ counted in statistics.")
 
     parent = models.ForeignKey('self', verbose_name="Parent Scan", blank=True,
                                null=True, related_name="parent_scan")
+
+    class Meta:
+        get_latest_by = "date_submitted"
 
     def __unicode__(self):
         if self.base is None:
