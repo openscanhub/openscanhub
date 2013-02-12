@@ -13,7 +13,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from kobo.django.views.generic import object_list
 
 from covscanhub.scan.models import SCAN_STATES, ScanBinding, Package,\
-    SystemRelease
+    SystemRelease, Scan
 from covscanhub.scan.compare import get_compare_title
 from covscanhub.scan.service import get_latest_sb_by_package, post_qpid_message
 
@@ -245,8 +245,16 @@ def remove_waiver(request, waiver_id):
     waiver.is_deleted = True
     waiver.save()
     if not waiver_condition(waiver.result_group):
+        sb = waiver.result_group.result.scanbinding
         ResultGroup.objects.filter(id=waiver.result_group.id).update(
             state=RESULT_GROUP_STATES['NEEDS_INSPECTION'])
+        Scan.objects.filter(id=sb.scan.id).update(
+            state=SCAN_STATES['DISPUTED'])
+        post_qpid_message(
+            sb.id,
+            SCAN_STATES.get_value(sb.scan.state),
+            sb.scan.get_errata_id()
+        )
     return HttpResponseRedirect(reverse('waiving/result',
         args=(waiver.result_group.result.scanbinding.id,)))
 
