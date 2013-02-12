@@ -43,6 +43,7 @@ def create_errata_diff_scan(request, kwargs):
      - message: in case of error, here is detailed message
      - id: ID of submitted scan
     """
+    logger.info('Incoming scan request: %s.', kwargs)
     if not request.user.has_perm('scan.errata_xmlrpc_scan'):
         response = {}
         response['status'] = 'ERROR'
@@ -100,6 +101,7 @@ def get_scan_state(request, scan_id):
        {'QUEUED', 'SCANNING', 'NEEDS_INSPECTION', 'WAIVED', 'PASSED',
         'FAILED', 'BASE_SCANNING', 'CANCELED'}
     """
+    logger.info('%s', scan_id)
     response = {}
     try:
         scan = Scan.objects.get(id=scan_id)
