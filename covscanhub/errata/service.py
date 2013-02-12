@@ -8,11 +8,11 @@ from django.conf import settings
 #from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 
 from covscanhub.scan.models import Scan, SCAN_STATES, SCAN_TYPES, Package, \
-    ScanBinding
+    ScanBinding, Tag
 from covscanhub.scan.service import get_latest_sb_by_package, \
     get_latest_binding, post_qpid_message
 from covscanhub.other.shortcuts import check_brew_build, \
-    check_and_create_dirs, get_tag_by_name
+    check_and_create_dirs
 from covscanhub.other.exceptions import ScanException
 
 from kobo.hub.models import Task, TASK_STATES
@@ -30,11 +30,6 @@ def create_errata_base_scan(kwargs, parent_task_id, package):
     task_label = nvr
     options['brew_build'] = nvr
 
-    try:
-        tag = kwargs['base_tag']
-    except KeyError:
-        raise RuntimeError("Key 'base_tag' is missing from %s" % kwargs)
-
     priority = kwargs.get('priority', settings.ET_SCAN_PRIORITY) + 1
     comment = 'Errata Tool Base scan of %s requested by %s' % \
         (nvr, kwargs['nvr'])
@@ -42,9 +37,11 @@ def create_errata_base_scan(kwargs, parent_task_id, package):
     # Test if SRPM exists
     check_brew_build(nvr)
 
-    #does tag exist?
-    tag_obj = get_tag_by_name(tag)
-    options['mock_config'] = tag_obj.mock.name
+    mock_tag = assign_mock_config(re.match(".+-.+-(.+)", nvr).group(1))
+    if mock_tag:
+        options['mock_config'] = mock_tag[0]
+    else:
+        raise RuntimeError("Unable to assign mock profile")
 
     task_id = Task.create_task(
         owner_name=task_user,
@@ -61,7 +58,7 @@ def create_errata_base_scan(kwargs, parent_task_id, package):
     check_and_create_dirs(task_dir)
 
     scan = Scan.create_scan(scan_type=scan_type, nvr=nvr, username=username,
-                            tag=tag_obj, package=package, enabled=False)
+                            tag=mock_tag[1], package=package, enabled=False)
 
     options["scan_id"] = scan.id
     # DO NOT USE filter...update() -- invalid json is filled in db
@@ -133,6 +130,20 @@ def check_package_eligibility(package, created):
                            (package.name))
 
 
+def assign_mock_config(dist_tag):
+    """Assign appropriate mock config according to magic (dist_tag)"""
+    # TODO FIXME
+    # This is nasty, bad, worst thing in the world
+    try:
+        release = re.match(".+\.el(\d)", dist_tag).group(1)
+        tag = Tag.objects.get(name="rhel-%s" % release)
+    except Exception, ex:
+        logger.critical("Unable to assaign mock profile: %s" % ex)
+        return
+    else:
+        return tag.mock.name, tag
+
+
 def create_errata_scan(kwargs):
     """
     create scan of a package and perform diff on results against specified
@@ -146,8 +157,6 @@ def create_errata_scan(kwargs):
      - nvr - name, version, release of scanned package
      - base - previous version of package, the one to make diff against
      - id - errata ID
-     - nvr_tag - tag of the package from brew
-     - base_tag - tag of the base package from brew
      - rhel_version - version of enterprise linux in which will package appear
 
     return scanbinding
@@ -185,18 +194,9 @@ def create_errata_scan(kwargs):
     #Label, description or any reason for this task.
     task_label = nvr
 
-    try:
-        tag = kwargs['nvr_tag']
-    except KeyError:
-        raise RuntimeError("Key 'nvr_tag' is missing from %s" % kwargs)
-
     priority = kwargs.get('priority', settings.ET_SCAN_PRIORITY)
 
     comment = 'Errata Tool Scan of %s' % nvr
-
-    #does tag exist?
-    tag_obj = get_tag_by_name(tag)
-    options['mock_config'] = tag_obj.mock.name
 
     # Test if build exists
     # TODO: add check if SRPM exist:
@@ -214,7 +214,13 @@ def create_errata_scan(kwargs):
         raise RuntimeError('%s is not a correct N-V-R (does not match "%s"\
 )' % (nvr, pattern))
 
-    check_obsolete_scan(package, tag_obj.release)
+    mock_tag = assign_mock_config(m.group(3))
+    if mock_tag:
+        options['mock_config'] = mock_tag[0]
+    else:
+        raise RuntimeError("Unable to assign mock profile")
+
+    check_obsolete_scan(package, mock_tag[1].release)
 
     task_id = Task.create_task(
         owner_name=task_user,
@@ -233,10 +239,10 @@ def create_errata_scan(kwargs):
     # new scan for it
     base_obj = obtain_base(base, task_id, kwargs, package)
 
-    child = get_latest_sb_by_package(tag_obj, package)
+    child = get_latest_sb_by_package(mock_tag[1], package)
 
     scan = Scan.create_scan(scan_type=scan_type, nvr=nvr, username=username,
-                            tag=tag_obj, package=package, base=base_obj,
+                            tag=mock_tag[1], package=package, base=base_obj,
                             enabled=True)
 
     if base_obj.state != SCAN_STATES['FINISHED']:

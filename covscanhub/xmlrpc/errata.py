@@ -33,8 +33,6 @@ def create_errata_diff_scan(request, kwargs):
      - nvr - name, version, release of scanned package
      - base - previous version of package, the one to make diff against
      - id - errata ID
-     - nvr_tag - tag of the package from brew
-     - base_tag - tag of the base package from brew
      - rhel_version - version of enterprise linux in which will package appear
     @type kwargs: dictionary
     @rtype: dictionary
