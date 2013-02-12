@@ -52,7 +52,15 @@ class ErrataDiffBuild(TaskBase):
         #download srpm from brew
         cmd = ["brew", "download-build", "--quiet",
                "--arch=src", brew_build]
-        run(cmd, workdir=tmp_dir)
+        try:
+            run(cmd, workdir=tmp_dir)
+        except RuntimeError:
+            print >> sys.stderr, \
+                "Error while downloading build from brew: %s" % \
+                (kobo.tback.get_exception())
+            self.hub.worker.fail_scan(self.args['scan_id'],
+                'Can\'t download build %s from brew.' % brew_build)
+            self.fail()
 
         if not os.path.exists(srpm_path):
             print >> sys.stderr, \
@@ -84,14 +92,12 @@ class ErrataDiffBuild(TaskBase):
         cov_cmd.append("-i")
         cov_cmd.append(pipes.quote(mock_config))
         cov_cmd.append(pipes.quote(srpm_path))
-        #if all_checks:
-        #    cov_cmd.append("--all")
-        #if security_checks:
-        #    cov_cmd.append("--security")
+        cov_cmd.append("--security")
+        cov_cmd.append("--concurrency")
 
         command = ["su", "-", "coverity", "-c", " ".join(cov_cmd)]
 
-        retcode, output = run(command, can_fail=False, stdout=True,
+        retcode, output = run(command, can_fail=True, stdout=True,
                               buffer_size=128)
 
         # upload results back to hub
