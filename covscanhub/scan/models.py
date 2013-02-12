@@ -23,13 +23,15 @@ add_introspection_rules([], ["^kobo\.django\.fields\.JSONField"])
 SCAN_STATES = Enum(
     "QUEUED",            # scan was submitted, waiting for scheduler
     "SCANNING",          # scan/task is active now
-    "NEEDS_INSPECTION",  # scan finished and there are some unwaived things
-    "WAIVED",            # scan finished and everything is okay -- waived
-    "PASSED",            # nothing new
+    "NEEDS_INSPECTION",  # scan finished and there are defects which need owner's attention
+    "WAIVED",            # user appropriately waived each defect
+    "PASSED",            # scan didn't discover new defects; everything is fine
     "FINISHED",          # scan finished -- USER/ERRATA_BASE scans only
-    "FAILED",            # scan failed -- this shouldn't happened
+    "FAILED",            # scan has failed, need an attention by covscan admins
+                         #  (something went wrong during build process or
+                         #  analyser had some problems)
     "BASE_SCANNING",     # child scan is in scanning process right now
-    "CANCELED",          # there is new build of package, this one is obsolete
+    "CANCELED",          # there is newer build submitted, this one is obsolete
 )
 
 SCAN_TYPES = Enum(
