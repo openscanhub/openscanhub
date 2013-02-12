@@ -9,7 +9,7 @@ from covscanhub.scan.models import SCAN_TYPES, SCAN_STATES, Scan
 
 from kobo.django.xmlrpc.decorators import login_required
 
-from django.shortcuts import get_object_or_404
+from django.core.exceptions import ObjectDoesNotExist
 
 
 __all__ = (
@@ -102,12 +102,15 @@ def get_scan_state(request, scan_id):
     """
     response = {}
     try:
-        scan = get_object_or_404(Scan, id=scan_id)
-        state = SCAN_STATES.get_value(scan.state)
+        scan = Scan.objects.get(id=scan_id)
+    except ObjectDoesNotExist:
+        response['status'] = 'ERROR'
+        response['message'] = "Scan %s does not exist." % scan_id
     except RuntimeError, ex:
         response['status'] = 'ERROR'
         response['message'] = "Unable to retrieve scan's state, error: %s" % ex
     else:
+        state = SCAN_STATES.get_value(scan.state)
         response['state'] = state
         response['status'] = 'OK'
     return response
