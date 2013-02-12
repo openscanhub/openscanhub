@@ -20,8 +20,8 @@ def finish_scan(scan_id, task_id):
 
     if sb.task.state == TASK_STATES['FAILED'] or \
             sb.task.state == TASK_STATES['CANCELED']:
-        scan.state = SCAN_STATES['FAILED']
-        scan.enabled = False
+        fail_scan(scan_id, "Task failed.")
+        return
     else:
         if scan.is_errata_scan() and scan.base:
             try:
@@ -30,9 +30,8 @@ def finish_scan(scan_id, task_id):
                     get_latest_binding(scan.base.nvr).task,
                     scan.nvr, scan.base.nvr
                 )
-            except ScanException:
-                scan.state = SCAN_STATES['FAILED']
-                scan.save()
+            except ScanException, ex:
+                fail_scan(scan_id, ex.message)
                 return
 
         result = create_results(scan, sb)
