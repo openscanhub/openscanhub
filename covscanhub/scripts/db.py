@@ -10,7 +10,6 @@ PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.dirname
     (os.path.abspath(__file__))))
 
 if PROJECT_DIR not in sys.path:
-    print '%s is not on sys.path' % PROJECT_DIR
     sys.path.append(PROJECT_DIR)
 
 os.environ['DJANGO_SETTINGS_MODULE'] = 'covscanhub.settings'
@@ -19,6 +18,8 @@ from kobo.hub.models import Arch, Channel
 
 from covscanhub.waiving.models import Checker, CheckerGroup
 from covscanhub.stats.models import StatType
+from covscanhub.scan.models import Tag, SystemRelease, MockConfig, \
+    ReleaseMapping
 from covscanhub.stats.service import get_mapping
 from covscanhub.other.constants import DEFAULT_CHECKER_GROUP
 
@@ -39,7 +40,10 @@ def set_options():
     parser.add_option("-s", "--statistics",
                       action="store_true", dest="stats", default=False,
                       help="write statistics definition into database",)
-
+    parser.add_option("-m", "--mock", help="configure mock config",
+                      action="store_true", dest="mock", default=False)
+    parser.add_option("-r", "--release", help="configure release hierarchy",
+                      action="store_true", dest="release", default=False)
     (options, args) = parser.parse_args()
 
     return parser, options, args
@@ -102,7 +106,56 @@ def configure_hub():
 
     print "Don't forget to set up worker!\nYou have to use hostname as a name \
 for the worker.\n"
-    print "Don't forget to set up mock configs and tags!"
+
+
+def download_mock_configs():
+    # TODO: download configs (hardcore magic to find out latest build tag for
+    #  product -- (rhel|RHEL)-(?P<x>\d+).(?P<y>\d+)(\.[zZ]){0,1}-build
+    x_list = [5, 6, 7]
+    for x in x_list:
+        m = MockConfig()
+        m.name = "rhel-%d-x86_64" % x
+        m.enabled = False
+        m.save()
+
+
+def release_tree():
+    #release parsing
+    r = ReleaseMapping()
+    r.template = "RHEL-%s.%s"
+    r.priority = 1
+    r.release_tag = "^RHEL-(\d+).(\d+)"
+    r.save()
+
+    r = ReleaseMapping()
+    r.template = "RHEL-%s.%s"
+    r.priority = 2
+    r.release_tag = "^FAST(\d+).(\d+)"
+    r.save()
+
+    x_list = [5, 6, 7]
+    y_list = range(12)
+
+    # tags and system releases
+    for x in x_list:
+        previous = None
+        mock = MockConfig.objects.get(name="rhel-%d-x86_64" % x)
+        product = "Red Hat Enterprise Linux %d" % x
+        for y in y_list:
+            sr = SystemRelease()
+            sr.active = False
+            sr.parent = previous
+            sr.tag = 'rhel-%d.%d' % (x, y)
+            sr.product = product
+            sr.release = y
+            sr.save()
+
+            previous = sr
+
+            tag = Tag()
+            tag.name = "RHEL-%d.%d"
+            tag.mock = mock
+            tag.release = sr
 
 
 def set_statistics():
@@ -123,10 +176,14 @@ def main():
 couple of seconds, please be patient.'
     if options.hub:
         configure_hub()
-    elif options.cgroups:
+    if options.cgroups:
         set_checker_groups()
-    elif options.stats:
+    if options.stats:
         set_statistics()
+    if options.release:
+        release_tree()
+    if options.mock:
+        download_mock_configs()
 
 if __name__ == '__main__':
     main()
