@@ -8,7 +8,7 @@ from django.conf import settings
 #from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 
 from covscanhub.scan.models import Scan, SCAN_STATES, SCAN_TYPES, Package, \
-    ScanBinding, Tag
+    ScanBinding, MockConfig, ReleaseMapping
 from covscanhub.scan.service import get_latest_sb_by_package, \
     get_latest_binding, post_qpid_message
 from covscanhub.other.shortcuts import check_brew_build, \
@@ -37,9 +37,9 @@ def create_errata_base_scan(kwargs, parent_task_id, package):
     # Test if SRPM exists
     check_brew_build(nvr)
 
-    mock_tag = assign_mock_config(re.match(".+-.+-(.+)", nvr).group(1))
-    if mock_tag:
-        options['mock_config'] = mock_tag[0]
+    mock_name = assign_mock_config(re.match(".+-.+-(.+)", nvr).group(1))
+    if mock_name:
+        options['mock_config'] = mock_name
     else:
         raise RuntimeError("Unable to assign mock profile")
 
@@ -58,7 +58,7 @@ def create_errata_base_scan(kwargs, parent_task_id, package):
     check_and_create_dirs(task_dir)
 
     scan = Scan.create_scan(scan_type=scan_type, nvr=nvr, username=username,
-                            tag=mock_tag[1], package=package, enabled=False)
+                            package=package, enabled=False)
 
     options["scan_id"] = scan.id
     # DO NOT USE filter...update() -- invalid json is filled in db
@@ -131,33 +131,51 @@ def check_package_eligibility(package, created):
 
 
 def assign_mock_config(dist_tag):
-    """Assign appropriate mock config according to magic (dist_tag)"""
-    # TODO FIXME
-    # This is nasty, bad, worst thing in the world
+    """
+        Assign appropriate mock config according to 'dist_tag', if this fails
+        fallback to rhel-6 -- there is at least some output
+    """
     try:
         release = re.match(".+\.el(\d)", dist_tag).group(1)
-        tag = Tag.objects.get(name="rhel-%s" % release)
+        mock = MockConfig.objects.get(name="rhel-%s-x86_64" % release)
     except Exception, ex:
-        logger.critical("Unable to assaign mock profile: %s" % ex)
-        return
+        logger.error("Unable to find proper mock profile for dist_tag %s: %s"
+                     % (dist_tag, ex))
+        return MockConfig.objects.get(get="rhel-6-x86_64").name
     else:
-        return tag.mock.name, tag
+        return mock.name
+
+
+def get_tag(rhel_version):
+    for rm in ReleaseMapping.objects.all():
+        tag = rm.get_tag(rhel_version)
+        if tag:
+            return tag
+    logger.critical("Unable to assaign proper product and release.")
+    raise RuntimeError("Unable to assaign proper product and release.")
+
+
+def return_or_raise(key, data):
+    try:
+        return data[key]
+    except KeyError:
+        raise RuntimeError("Key '%s' is missing from %s" % (key, data))
 
 
 def create_errata_scan(kwargs):
     """
     create scan of a package and perform diff on results against specified
-    version
+     version
     options of this scan are in dict 'kwargs'
 
     kwargs
-     - scan_type - type of scan (SCAN_TYPES in covscanhub.scan.models)
-     - username - name of user who is requesting scan (from ET)
-     - task_user - username from request.user.username
-     - nvr - name, version, release of scanned package
+     - package_owner - name of the package for the advisory owner
+     - target - name, version, release of scanned package (brew build)
      - base - previous version of package, the one to make diff against
-     - id - errata ID
-     - rhel_version - version of enterprise linux in which will package appear
+     - id - ET internal id for the scan record in ET
+     - errata_id - the ET internal id of the advisory that the build is part of
+     - rhel_version - short tag of rhel version (e. g. 'RHEL-6.3.Z')
+     - release - The advisory's release (mainly for knowledge of advisory being 'ASYNC')
 
     return scanbinding
     """
@@ -168,59 +186,53 @@ def create_errata_scan(kwargs):
 
     scan_type = kwargs['scan_type']
 
-    #supplied by scan initiator
-    try:
-        username = kwargs['username']
-    except KeyError:
-        raise RuntimeError("Key 'username' is missing from %s" % kwargs)
+    package_owner = return_or_raise('package_owner', kwargs)
+    target = return_or_raise('target', kwargs)
+    base = return_or_raise('base', kwargs)
 
-    try:
-        nvr = kwargs['nvr']
-    except KeyError:
-        raise RuntimeError("Key 'nvr' is missing from %s" % kwargs)
+    # ET internal id for the scan record in ET
+    options['errata_id'] = return_or_raise('id', kwargs)
+    # ET internal id of the advisory that the build is part of
+    options['advisory_id'] = return_or_raise('errata_id', kwargs)
 
-    try:
-        base = kwargs['base']
-    except KeyError:
-        raise RuntimeError("Key 'base' is missing from %s" % kwargs)
+    # one of RHEL-6.2.0, RHEL-6.2.z, etc.
+    rhel_version = return_or_raise('rhel_version', kwargs)
+    # The advisory's release (mainly for knowledge of advisory being 'ASYNC')
+    release = return_or_raise('release', kwargs)
 
-    try:
-        options['errata_id'] = kwargs['id']
-    except KeyError:
-        raise RuntimeError("Key 'id' is missing from %s" % kwargs)
-
-    options['brew_build'] = nvr
+    options['brew_build'] = target
 
     #Label, description or any reason for this task.
-    task_label = nvr
+    task_label = target
 
     priority = kwargs.get('priority', settings.ET_SCAN_PRIORITY)
 
-    comment = 'Errata Tool Scan of %s' % nvr
+    comment = 'Errata Tool Scan of %s' % target
 
     # Test if build exists
     # TODO: add check if SRPM exist:
     #    GET /brewroot/.../package/version-release/...src.rpm
-    check_brew_build(nvr)
+    check_brew_build(target)
 
     # validation of nvr, creating appropriate package object
     pattern = '(.*)-(.*)-(.*)'
-    m = re.match(pattern, nvr)
+    m = re.match(pattern, target)
     if m is not None:
         package_name = m.group(1)
         package, created = Package.objects.get_or_create(name=package_name)
         check_package_eligibility(package, created)
     else:
         raise RuntimeError('%s is not a correct N-V-R (does not match "%s"\
-)' % (nvr, pattern))
+)' % (target, pattern))
 
-    mock_tag = assign_mock_config(m.group(3))
-    if mock_tag:
-        options['mock_config'] = mock_tag[0]
+    # returns (mock config's name, tag object)
+    tag = get_tag(rhel_version)
+    if tag:
+        options['mock_config'] = tag.mock.name
     else:
         raise RuntimeError("Unable to assign mock profile")
 
-    check_obsolete_scan(package, mock_tag[1].release)
+    check_obsolete_scan(package, tag.release)
 
     task_id = Task.create_task(
         owner_name=task_user,
@@ -239,10 +251,11 @@ def create_errata_scan(kwargs):
     # new scan for it
     base_obj = obtain_base(base, task_id, kwargs, package)
 
-    child = get_latest_sb_by_package(mock_tag[1], package)
+    child = get_latest_sb_by_package(tag, package)
 
-    scan = Scan.create_scan(scan_type=scan_type, nvr=nvr, username=username,
-                            tag=mock_tag[1], package=package, base=base_obj,
+    scan = Scan.create_scan(scan_type=scan_type, nvr=target,
+                            username=package_owner,
+                            tag=tag, package=package, base=base_obj,
                             enabled=True)
 
     if base_obj.state != SCAN_STATES['FINISHED']:
