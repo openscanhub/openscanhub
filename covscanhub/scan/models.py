@@ -342,7 +342,7 @@ class ScanBinding(models.Model):
                                   blank=True, null=True,)
 
     class Meta:
-        get_latest_by = "-result__date_submitted"
+        get_latest_by = "result__date_submitted"
 
     def __unicode__(self):
         return u"#%d: Scan: %s | %s" % (self.id, self.scan, self.task)
