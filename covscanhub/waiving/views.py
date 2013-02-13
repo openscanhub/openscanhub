@@ -248,11 +248,12 @@ def remove_waiver(request, waiver_id):
         sb = waiver.result_group.result.scanbinding
         ResultGroup.objects.filter(id=waiver.result_group.id).update(
             state=RESULT_GROUP_STATES['NEEDS_INSPECTION'])
-        Scan.objects.filter(id=sb.scan.id).update(
-            state=SCAN_STATES['DISPUTED'])
+        s = sb.scan
+        s.state = SCAN_STATES['DISPUTED']
+        s.save()
         post_qpid_message(
             sb.id,
-            SCAN_STATES.get_value(sb.scan.state),
+            SCAN_STATES.get_value(s.state),
             sb.scan.get_errata_id()
         )
     return HttpResponseRedirect(reverse('waiving/result',
