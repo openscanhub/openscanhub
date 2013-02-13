@@ -5,7 +5,6 @@ from kobo.hub.models import Task
 
 from covscanhub.other.shortcuts import add_link_field
 from covscanhub.scan.notify import send_scan_notification
-from covscanhub.scan.models import SCAN_STATES
 from covscanhub.errata.service import rescan
 
 from covscanhub.scan.xmlrpc_helper import finish_scan as h_finish_scan, \
@@ -17,7 +16,7 @@ from django.shortcuts import render_to_response
 from django.utils.safestring import mark_safe
 import django.contrib.admin as admin
 
-from models import Tag, MockConfig, Scan, Package, SystemRelease, ScanBinding
+from models import *
 
 
 class MockConfigAdmin(admin.ModelAdmin):
@@ -98,6 +97,9 @@ class ScanAdmin(admin.ModelAdmin):
             'root_path': self.admin_site.root_path,
         }, context_instance=RequestContext(request))
 
+    def cancel(self, request, scan_id):
+        #TODO
+        pass
 
 class PackageAdmin(admin.ModelAdmin):
     list_display = ("id", "name", "blocked")
@@ -118,8 +120,20 @@ class SystemReleaseAdmin(admin.ModelAdmin):
     list_display = ("id", "tag", "product", "release", "active", "parent_link")
 
 
+@add_link_field('mockconfig', 'mock', field_name='mock_link',
+                field_label="Mock Profile")
+@add_link_field('systemrelease', 'release', field_name='release_link',
+                field_label="Release")
+class TagAdmin(admin.ModelAdmin):
+    list_display = ("id", "name", "mock_link", "release_link")
+
+
+class ReleaseMappingAdmin(admin.ModelAdmin):
+    list_display = ("id", "release_tag", "template", "priority")
+
 admin.site.register(MockConfig, MockConfigAdmin)
-admin.site.register(Tag)
+admin.site.register(Tag, TagAdmin)
+admin.site.register(ReleaseMapping, ReleaseMappingAdmin)
 admin.site.register(SystemRelease, SystemReleaseAdmin)
 admin.site.register(Package, PackageAdmin)
 admin.site.register(Scan, ScanAdmin)
