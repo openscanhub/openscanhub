@@ -452,12 +452,12 @@ def diff_new_defects_between_releases(scan):
 
 
 def get_latest_binding(scan_nvr):
-    query =  ScanBinding.objects.filter(scan__nvr=scan_nvr)
+    query = ScanBinding.objects.filter(scan__nvr=scan_nvr)
     if query:
         latest_submitted = query.order_by('scan__date_submitted')[0]
         if (latest_submitted.scan.state == SCAN_STATES['QUEUED'] or
             latest_submitted.scan.state == SCAN_STATES['SCANNING']) and \
-            latest_submitted.result is None:
+                latest_submitted.result is None:
             return latest_submitted
         else:
             return query.latest()
