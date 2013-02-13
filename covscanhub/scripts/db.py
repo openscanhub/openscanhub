@@ -153,9 +153,10 @@ def release_tree():
             previous = sr
 
             tag = Tag()
-            tag.name = "RHEL-%d.%d"
+            tag.name = "RHEL-%d.%d" % (x, y)
             tag.mock = mock
             tag.release = sr
+            tag.save()
 
 
 def set_statistics():
