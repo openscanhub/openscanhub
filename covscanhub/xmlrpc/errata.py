@@ -29,17 +29,21 @@ def create_errata_diff_scan(request, kwargs):
         from errata tool
 
     @param kwargs:
-     - username - name of user who is requesting scan (from ET)
-     - nvr - name, version, release of scanned package
+     - package_owner - name of the package for the advisory owner
+     - target - name, version, release of scanned package (brew build)
      - base - previous version of package, the one to make diff against
-     - id - errata ID
-     - rhel_version - version of enterprise linux in which will package appear
+     - id - ET internal id for the scan record in ET
+     - errata_id - the ET internal id of the advisory that the build is part of
+     - rhel_version - short tag of rhel version (e. g. 'RHEL-6.3.Z')
+     - release - The advisory's release (mainly for knowledge of advisory being 'ASYNC')
     @type kwargs: dictionary
     @rtype: dictionary
     @return:
      - status: status message: { 'OK', 'ERROR' }
      - message: in case of error, here is detailed message
-     - id: ID of submitted scan
+     - id: ID of submitted scan (it is the ID used for waiver's URL)
+
+     for more info see http://etherpad.corp.redhat.com/Covscan-ErrataTool-Integration
     """
     logger.info('Incoming scan request: %s.', kwargs)
     if not request.user.has_perm('scan.errata_xmlrpc_scan'):
