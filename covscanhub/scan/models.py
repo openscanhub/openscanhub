@@ -3,10 +3,11 @@
 
 import re
 import datetime
+import logging
 
 from django.db import models
 from django.contrib.auth.models import User
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.utils.safestring import mark_safe
 from django.core.urlresolvers import reverse
 
@@ -14,6 +15,7 @@ from kobo.hub.models import Task
 from kobo.types import Enum
 from kobo.client.constants import TASK_STATES
 
+logger = logging.getLogger(__name__)
 
 #south does not know JSONField
 from south.modelsinspector import add_introspection_rules
@@ -340,7 +342,35 @@ class ScanBinding(models.Model):
                                   blank=True, null=True,)
 
     class Meta:
-        get_latest_by = "result__date_submitted"
+        get_latest_by = "-result__date_submitted"
 
     def __unicode__(self):
         return u"#%d: Scan: %s | %s" % (self.id, self.scan, self.task)
+
+
+class ReleaseMapping(models.Model):
+    # regular expression
+    release_tag = models.CharField(max_length=32, blank=False, null=False)
+    # string template for inserting values gathered through regex
+    # "RHEL-%s.%s" % re.match(self.release_tag, ...).groups()
+    template = models.CharField(max_length=32, blank=False, null=False)
+    priority = models.IntegerField()
+
+    class Meta:
+        ordering = ['priority']
+
+    def __unicode__(self):
+        return u"#%d (%d) %s %s" % (self.id, self.priority,
+                                    self.release_tag, self.template)
+
+    def get_tag(self, rhel_version):
+        m = re.match(self.release_tag, rhel_version)
+        if m:
+            try:
+                tag = Tag.objects.get(name=self.template % m.groups())
+            except ObjectDoesNotExist:
+                return
+            except MultipleObjectsReturned:
+                return
+            else:
+                return tag
