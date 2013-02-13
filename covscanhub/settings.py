@@ -72,7 +72,13 @@ ROOT_URLCONF = 'covscanhub.urls'
 ROOT_MENUCONF = 'covscanhub.menu'
 
 TEMPLATE_CONTEXT_PROCESSORS = (
-    'django.core.context_processors.auth',
+
+    #   django.core.context_processors
+    # was moved to
+    #   django.contrib.auth.context_processors
+    # in Django 1.2 and the old location removed in Django 1.4
+    'django.contrib.auth.context_processors.auth',
+
     'django.core.context_processors.media',
     'django.core.context_processors.request',
     'kobo.django.menu.context_processors.menu_context_processor',
