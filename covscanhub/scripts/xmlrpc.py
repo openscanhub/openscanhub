@@ -198,8 +198,8 @@ def create_et_scan(client, base, target):
             'base': base,
             'nvr': target,
             'id': str(p),
-            'base_tag': 'epel-6-x86_64',
-            'nvr_tag': 'epel-6-x86_64',
+            #'base_tag': 'epel-6-x86_64',
+            #'nvr_tag': 'epel-6-x86_64',
         }
     except Exception:
         print "Usage:\n%prog -b <base_nvr> -t <target_nvr>"
