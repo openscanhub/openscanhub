@@ -455,7 +455,7 @@ def get_latest_binding(scan_nvr):
     query = ScanBinding.objects.filter(
         scan__nvr=scan_nvr,
         result__isnull=False).exclude(
-            state=SCAN_STATES['FAILED'])
+            scan__state=SCAN_STATES['FAILED'])
     if query:
         #'-date' -- latest; 'date' -- oldest
         latest_submitted = query.order_by('-scan__date_submitted')[0]
