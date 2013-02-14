@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from covscanhub.scan.service import post_qpid_message
+from covscanhub.scan.messaging import post_qpid_message
 from covscanhub.scan.models import SCAN_STATES
 
 from kobo.django.xmlrpc.decorators import login_required
@@ -27,20 +27,23 @@ def send_message(request):
 
     Message has this structure:
         {
-            'scan_id': int, # random ID
+            'scan_id': string, # random ID
             'scan_state': string, # random state
+            'et_id': string, # random ID
         }
     """
-    scan_id = random.randint(1, 10000)
-    et_id = random.randint(1, 10000)
+    etm = True
+    etm.id = random.randint(1, 10000)
+    etm.et_scan_id = random.randint(1, 10000)
     scan_state = random.choice([value for (key, value)
                                in SCAN_STATES.get_mapping()])
-    post_qpid_message(scan_id, scan_state, et_id)
+    post_qpid_message(scan_state, etm,
+                      random.choice(('unfinished', 'finished')))
     result = {
         'message': {
-            'scan_id': scan_id,
+            'scan_id': str(etm.id),
             'scan_state': scan_state,
-            'et_id': et_id,
+            'et_id': str(etm.et_scan_id),
         },
         'comment': 'The message provided has been sent to broker, for more \
 info see documentation on \
