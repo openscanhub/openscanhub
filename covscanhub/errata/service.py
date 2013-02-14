@@ -146,13 +146,13 @@ def assign_mock_config(dist_tag):
         return mock.name
 
 
-def get_tag(rhel_version):
+def get_tag(release):
     for rm in ReleaseMapping.objects.all():
-        tag = rm.get_tag(rhel_version)
+        tag = rm.get_tag(release)
         if tag:
             return tag
-    logger.critical("Unable to assaign proper product and release.")
-    raise RuntimeError("Unable to assaign proper product and release.")
+    logger.critical("Unable to assign proper product and release.")
+    raise RuntimeError("Unable to assign proper product and release.")
 
 
 def return_or_raise(key, data):
@@ -226,7 +226,11 @@ def create_errata_scan(kwargs):
 )' % (target, pattern))
 
     # returns (mock config's name, tag object)
-    tag = get_tag(rhel_version)
+    if release != "ASYNC":
+        tag = get_tag(release)
+    else:
+        # FIXME handle properly
+        raise RuntimeError("Async advisories are blacklisted.")
     if tag:
         options['mock_config'] = tag.mock.name
     else:
