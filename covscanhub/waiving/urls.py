@@ -21,6 +21,12 @@ urlpatterns = patterns("",
     url(r"^(?P<package_name>.+)/(?P<release_tag>.+)/newest/$",
         "covscanhub.waiving.views.newest_result",
         name="waiving/result/newest"),
+    url(r"^et/(?P<et_id>.+)/$",
+        "covscanhub.waiving.views.et_latest",
+        name="waiving/et_id"),
+    url(r"^et_mapping/(?P<etmapping_id>\d+)/$",
+        "covscanhub.waiving.views.etmapping_latest",
+        name="waiving/etmapping_id"),
 
     #BZ stuff
     url(r"^(?P<package_id>\d+)/(?P<release_id>\d+)/newbz/$",

@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
 
 
+import logging
+
 from kobo.hub.decorators import validate_worker
 from kobo.hub.models import Task
 
 from covscanhub.scan.service import extract_logs_from_tarball, \
-    update_scans_state, prepare_and_execute_diff
+    prepare_and_execute_diff
 from covscanhub.scan.notify import send_task_notification, \
     send_scan_notification
 from covscanhub.scan.models import SCAN_STATES, SCAN_TYPES, Scan
@@ -23,6 +25,8 @@ __all__ = (
     "set_scan_to_scanning",
 )
 
+logger = logging.getLogger(__name__)
+
 
 @validate_worker
 def email_task_notification(request, task_id):
@@ -33,7 +37,7 @@ def email_task_notification(request, task_id):
 def email_scan_notification(request, scan_id):
     scan = Scan.objects.get(id=scan_id)
     if scan.scan_type == SCAN_TYPES['ERRATA']:
-        if scan.state != SCAN_STATES['FAILED'] and scan.state != SCAN_STATES['CANCELED']:
+        if scan.state not in (SCAN_STATES['FAILED'], SCAN_STATES['CANCELED']):
             return send_scan_notification(request, scan_id)
 
 
@@ -64,11 +68,16 @@ def finish_task(request, task_id):
 
 @validate_worker
 def set_scan_to_scanning(request, scan_id):
-    update_scans_state(scan_id, SCAN_STATES['SCANNING'])
     scan = Scan.objects.get(id=scan_id)
-    if scan.parent:
-        Scan.objects.filter(id=scan.parent.id)\
-            .update(state=SCAN_STATES['BASE_SCANNING'])
+    scan.set_state(SCAN_STATES['SCANNING'])
+    if not scan.base:
+        try:
+            Scan.objects.get(
+                state=SCAN_STATES['QUEUED'],
+                base=scan,
+            ).set_state(SCAN_STATES['BASE_SCANNING'])
+        except Exception, ex:
+            logger.error("Can't find target for base %s: %s" % (scan, ex))
 
 
 @validate_worker

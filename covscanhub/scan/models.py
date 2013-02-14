@@ -5,6 +5,8 @@ import re
 import datetime
 import logging
 
+from covscanhub.scan.service import post_qpid_message
+
 from django.db import models
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
@@ -36,6 +38,23 @@ SCAN_STATES = Enum(
     "BASE_SCANNING",     # child scan is in scanning process right now
     "CANCELED",          # there is newer build submitted, this one is obsolete
     "DISPUTED",          # scan was waived but one of waivers was obsoleted
+)
+
+SCAN_STATES_IN_PROGRESS = (
+    SCAN_STATES['QUEUED'],
+    SCAN_STATES['SCANNING'],
+    SCAN_STATES['BASE_SCANNING'],
+)
+SCAN_STATES_FINISHED = (
+    SCAN_STATES['NEEDS_INSPECTION'],
+    SCAN_STATES['WAIVED'],
+    SCAN_STATES['PASSED'],
+    SCAN_STATES['FAILED'],
+    SCAN_STATES['CANCELED'],
+    SCAN_STATES['DISPUTED'],
+)
+SCAN_STATES_BASE = (
+    SCAN_STATES['FINISHED'],
 )
 
 SCAN_TYPES = Enum(
@@ -285,6 +304,9 @@ counted in statistics.")
     def is_user_scan(self):
         return self.scan_type == SCAN_TYPES['USER']
 
+    def is_waived(self):
+        return self.scan == SCAN_STATES['WAIVED']
+
     @classmethod
     def create_scan(cls, scan_type, nvr, tag, username, package,
                     enabled, base=None):
@@ -301,13 +323,10 @@ counted in statistics.")
         scan.save()
         return scan
 
-    def get_errata_id(self):
-        if self.is_errata_scan():
-            try:
-                return self.scanbinding.task.args['errata_id']
-            except KeyError:
-                return None
-        return None
+    def set_state(self, state):
+        self.state = state
+        self.save()
+        post_qpid_message(self.scanbinding)
 
     def get_child_scan(self):
         try:
@@ -347,6 +366,14 @@ class ScanBinding(models.Model):
     def __unicode__(self):
         return u"#%d: Scan: %s | %s" % (self.id, self.scan, self.task)
 
+    def get_errata_id(self):
+        if self.is_errata_scan():
+            try:
+                return ETMapping.objects.get(latest_run=self).et_scan_id
+            except KeyError:
+                return None
+        return None
+
 
 class ReleaseMapping(models.Model):
     # regular expression
@@ -374,3 +401,14 @@ class ReleaseMapping(models.Model):
                 return
             else:
                 return tag
+
+
+class ETMapping(models.Model):
+    advisory_id = models.CharField(max_length=16, blank=False, null=False)
+    et_scan_id = models.CharField(max_length=16, blank=False, null=False)
+    # self.id is covscan_internal_target_run_id (formerly scanbinding.id)
+    latest_run = models.ForeignKey(ScanBinding, null=True, blank=True)
+
+    def __unicode__(self):
+        return u"#%d Advisory: %s %s" % (self.id, self.advisory_id,
+                                         self.latest_run)

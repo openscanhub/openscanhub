@@ -13,9 +13,9 @@ from django.core.exceptions import ObjectDoesNotExist
 from kobo.django.views.generic import object_list
 
 from covscanhub.scan.models import SCAN_STATES, ScanBinding, Package,\
-    SystemRelease, Scan
+    SystemRelease
 from covscanhub.scan.compare import get_compare_title
-from covscanhub.scan.service import get_latest_sb_by_package, post_qpid_message
+from covscanhub.scan.service import get_latest_sb_by_package
 
 from covscanhub.other.shortcuts import get_or_none
 
@@ -175,13 +175,8 @@ def waiver(request, sb_id, result_group_id):
                 result_group_object.state = RESULT_GROUP_STATES['WAIVED']
                 result_group_object.save()
 
-                if not get_unwaived_rgs(sb.result):
-                    s.state = SCAN_STATES['WAIVED']
-                    post_qpid_message(
-                        sb.id,
-                        SCAN_STATES.get_value(sb.scan.state),
-                        sb.scan.get_errata_id()
-                    )
+                if not get_unwaived_rgs(sb.result) and not s.is_waived():
+                    s.set_state(SCAN_STATES['WAIVED'])
             s.last_access = datetime.datetime.now()
             s.save()
 
@@ -248,16 +243,11 @@ def remove_waiver(request, waiver_id):
         sb = waiver.result_group.result.scanbinding
         ResultGroup.objects.filter(id=waiver.result_group.id).update(
             state=RESULT_GROUP_STATES['NEEDS_INSPECTION'])
-        s = sb.scan
-        s.state = SCAN_STATES['DISPUTED']
-        s.save()
-        post_qpid_message(
-            sb.id,
-            SCAN_STATES.get_value(s.state),
-            sb.scan.get_errata_id()
-        )
-    return HttpResponseRedirect(reverse('waiving/result',
-        args=(waiver.result_group.result.scanbinding.id,)))
+        sb.scan.set_state(SCAN_STATES['DISPUTED'])
+    return HttpResponseRedirect(
+        reverse('waiving/result',
+                args=(waiver.result_group.result.scanbinding.id,))
+    )
 
 
 def fixed_defects(request, sb_id, result_group_id):
@@ -305,6 +295,40 @@ def newest_result(request, package_name, release_tag):
                 scan__tag__release__tag=release_tag,
                 scan__enabled=True
             ).latest()
+        ),
+        context_instance=RequestContext(request)
+    )
+
+
+def etmapping_latest(request, etmapping_id):
+    """
+    url(r"^et_mapping/(?P<etmapping_id>\d+)/$",
+        "covscanhub.waiving.views.etmapping_latest",
+        name="waiving/etmapping_id"),
+
+    Display latest result for et_internal_covscan_id
+    """
+    return render_to_response(
+        "waiving/result.html",
+        get_result_context(
+            ETMapping.objects.get(id=etmapping_id).latest_run
+        ),
+        context_instance=RequestContext(request)
+    )
+
+
+def et_latest(request, et_id):
+    """
+    url(r"^et/(?P<et_id>.+)/$",
+        "covscanhub.waiving.views.et_latest",
+        name="waiving/et_id"),
+
+    Display latest result for et_internal_covscan_id
+    """
+    return render_to_response(
+        "waiving/result.html",
+        get_result_context(
+            ETMapping.objects.get(et_scan_id=et_id).latest_run
         ),
         context_instance=RequestContext(request)
     )

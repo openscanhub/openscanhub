@@ -8,9 +8,9 @@ from django.conf import settings
 #from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 
 from covscanhub.scan.models import Scan, SCAN_STATES, SCAN_TYPES, Package, \
-    ScanBinding, MockConfig, ReleaseMapping
+    ScanBinding, MockConfig, ReleaseMapping, ETMapping
 from covscanhub.scan.service import get_latest_sb_by_package, \
-    get_latest_binding, post_qpid_message
+    get_latest_binding
 from covscanhub.other.shortcuts import check_brew_build, \
     check_and_create_dirs
 from covscanhub.other.exceptions import ScanException
@@ -109,14 +109,9 @@ def check_obsolete_scan(package, release):
         if (binding.scan.state == SCAN_STATES['QUEUED'] or
                 binding.scan.state == SCAN_STATES['BASE_SCANNING']):
             binding.task.cancel_task(recursive=False)
+            binding.scan.set_state(SCAN_STATES['CANCELED'])
             Scan.objects.filter(id=binding.scan.id).update(
-                state=SCAN_STATES['CANCELED'],
                 enabled=False,
-            )
-            post_qpid_message(
-                binding.id,
-                SCAN_STATES.get_value(binding.scan.state),
-                binding.scan.get_errata_id()
             )
 
 
@@ -174,8 +169,8 @@ def create_errata_scan(kwargs):
      - base - previous version of package, the one to make diff against
      - id - ET internal id for the scan record in ET
      - errata_id - the ET internal id of the advisory that the build is part of
-     - rhel_version - short tag of rhel version (e. g. 'RHEL-6.3.Z')
-     - release - The advisory's release (mainly for knowledge of advisory being 'ASYNC')
+     - rhel_version - short tag of rhel version -- product (e. g. 'RHEL-6.3.Z')
+     - release - The advisory's release ('ASYNC', 'RHEL-.*', 'MRG.*')
 
     return scanbinding
     """
@@ -190,10 +185,12 @@ def create_errata_scan(kwargs):
     target = return_or_raise('target', kwargs)
     base = return_or_raise('base', kwargs)
 
+    etm = ETMapping()
     # ET internal id for the scan record in ET
-    options['errata_id'] = return_or_raise('id', kwargs)
+    etm.et_scan_id = return_or_raise('id', kwargs)
     # ET internal id of the advisory that the build is part of
-    options['advisory_id'] = return_or_raise('errata_id', kwargs)
+    etm.advisory_id = return_or_raise('errata_id', kwargs)
+    etm.save()
 
     # one of RHEL-6.2.0, RHEL-6.2.z, etc.
     rhel_version = return_or_raise('rhel_version', kwargs)
@@ -262,10 +259,6 @@ def create_errata_scan(kwargs):
                             tag=tag, package=package, base=base_obj,
                             enabled=True)
 
-    if base_obj.state != SCAN_STATES['FINISHED']:
-        scan.state = SCAN_STATES['BASE_SCANNING']
-        scan.save()
-
     if child and child.scan:
         child_scan = Scan.objects.get(id=child.scan.id)
         child_scan.parent = scan
@@ -281,6 +274,9 @@ def create_errata_scan(kwargs):
     sb.task = task
     sb.scan = scan
     sb.save()
+
+    etm.latest_run = sb
+    etm.save()
 
     return sb
 

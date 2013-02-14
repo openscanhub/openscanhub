@@ -34,8 +34,8 @@ def create_errata_diff_scan(request, kwargs):
      - base - previous version of package, the one to make diff against
      - id - ET internal id for the scan record in ET
      - errata_id - the ET internal id of the advisory that the build is part of
-     - rhel_version - short tag of rhel version (e. g. 'RHEL-6.3.Z')
-     - release - The advisory's release (mainly for knowledge of advisory being 'ASYNC')
+     - rhel_version - short tag of rhel version -- product (e. g. 'RHEL-6.3.Z')
+     - release - The advisory's release ('ASYNC', 'RHEL-.*', 'MRG.*')
     @type kwargs: dictionary
     @rtype: dictionary
     @return:
