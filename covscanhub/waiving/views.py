@@ -65,7 +65,7 @@ def get_result_context(sb):
     elif sb.scan.state == SCAN_STATES['FAILED']:
         context['not_finished'] = "Scan failed. Please contact administrator."
     else:
-        context['not_finished'] = "Scan haven't finished yet."
+        context['not_finished'] = "Scan not complete."
     context['sb'] = sb
     context['logs'] = logs
     context['compare_title'] = get_compare_title(
