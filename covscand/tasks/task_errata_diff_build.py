@@ -121,7 +121,7 @@ class ErrataDiffBuild(TaskBase):
 
         if retcode:
             print >> sys.stderr, "Scanning have not completed successfully \
-(%s): %s" % (brew_build, kobo.tback.get_exception())
+(%s): %s" % (brew_build, kobo.tback.get_traceback())
             self.hub.worker.fail_scan(self.args['scan_id'],
                 'Scanning have not completed successfully.')
             self.fail()
