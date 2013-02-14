@@ -226,8 +226,7 @@ def create_errata_scan(kwargs):
     if release != "ASYNC":
         tag = get_tag(release)
     else:
-        # FIXME handle properly
-        raise RuntimeError("Async advisories are blacklisted.")
+        tag = get_tag(rhel_version)
     if tag:
         options['mock_config'] = tag.mock.name
     else:
@@ -295,7 +294,7 @@ def rescan(scan):
 failed. This is not supported.")
 
     #scan is base scan
-    if scan.is_errata_base_scan() or (Scan.objects.filter(base=scan)):
+    if scan.is_errata_base_scan() or (Scan.objects.filter(nvr=scan.nvr)):
         task_id = Task.create_task(
             owner_name=latest_binding.task.owner.username,
             label=latest_binding.task.label,
@@ -342,7 +341,7 @@ Unsupported.')
             method='ErrataDiffBuild',
             args={},
             comment=latest_binding.task.comment,
-            state=TASK_STATES["FREE"],
+            state=TASK_STATES["CREATED"],
             priority=latest_binding.task.priority,
         )
         task_dir = Task.get_task_dir(task_id)
@@ -369,10 +368,14 @@ Unsupported.')
         task = Task.objects.get(id=task_id)
         task.args = options
         task.save()
+        task.free_task()
 
         sb = ScanBinding()
         sb.task = task
         sb.scan = scan
         sb.save()
+
+        ETMapping.objects.filter(
+            latest_run=latest_binding).update(latest_run=sb)
 
         return sb
