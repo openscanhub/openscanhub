@@ -201,7 +201,7 @@ def create_et_scan(client, base, target):
             'id': str(p),
             'errata_id': str(p2),
             'rhel_version': "RHEL-6.4.0",
-            'release': 'CLI',
+            'release': 'RHEL-6.4.0',
         }
     except Exception:
         print "Usage:\n%prog -b <base_nvr> -t <target_nvr>"
@@ -233,7 +233,7 @@ def init_scans(client):
             'id': 'test_id',
             'errata_id': 'test_id2',
             'rhel_version': "RHEL-6.4.0",
-            'release': 'CLI',
+            'release': 'RHEL-6.4.0',
         }
         print call_errata_version_task(client, scan_args)
 
