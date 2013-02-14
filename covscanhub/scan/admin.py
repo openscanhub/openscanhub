@@ -73,15 +73,18 @@ class ScanAdmin(admin.ModelAdmin):
         }, context_instance=RequestContext(request))
 
     def finish_scan(self, request, scan_id):
-        h_finish_scan(scan_id,
-                      Task.objects.get(scanbinding__scan__id=scan_id).id)
+        task = Task.objects.get(scanbinding__scan__id=scan_id)
+        task.state = TASK_STATES['CLOSED']
+        task.save()
+        h_finish_scan(scan_id, task.id)
         scan = Scan.objects.get(id=scan_id)
 
         return render_to_response('admin/scan/scan/state_change.html', {
             'title': 'Finish scan: %s' % scan.nvr,
             'entry': scan,
             'opts': self.model._meta,
-            'result': "Scan #%s set to %s" % (scan_id, SCAN_STATES.get_value(scan.state)),
+            'result': "Scan #%s set to %s" % (scan_id,
+                SCAN_STATES.get_value(scan.state)),
             'root_path': self.admin_site.root_path,
         }, context_instance=RequestContext(request))
 
