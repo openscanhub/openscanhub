@@ -13,9 +13,14 @@ from qpid.util import URL
 import threading
 import os
 import krbV
+import copy
+
+from django.conf import settings
+
 
 __all__ = (
     "send_message",
+    "post_qpid_message",
 )
 
 
@@ -106,3 +111,15 @@ def send_message(qpid_connection, message, key):
     """
     s = SenderThread(qpid_connection, message=message, key=key)
     s.start()
+
+
+def post_qpid_message(state, etm, key):
+    """Separated this into scan_notice because of dependency deadlock"""
+    s = copy.deepcopy(settings.QPID_CONNECTION)
+    s['KRB_PRINCIPAL'] = settings.KRB_AUTH_PRINCIPAL
+    s['KRB_KEYTAB'] = settings.KRB_AUTH_KEYTAB
+    send_message(s,
+                 {'scan_id': etm.id,
+                  'et_id': etm.et_scan_id,
+                  'scan_state': state, },
+                 key)

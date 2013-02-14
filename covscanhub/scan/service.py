@@ -14,8 +14,7 @@ from kobo.shortcuts import run
 from kobo.django.upload.models import FileUpload
 from kobo.client.constants import TASK_STATES
 
-from models import Scan, SCAN_STATES, SCAN_TYPES, ScanBinding, \
-    SCAN_STATES_IN_PROGRESS, ETMapping
+from models import SCAN_STATES, SCAN_TYPES, ScanBinding
 from covscanhub.other.exceptions import ScanException
 from covscanhub.other.shortcuts import get_mock_by_name, check_brew_build,\
     check_and_create_dirs
@@ -24,9 +23,7 @@ from covscanhub.other.constants import ERROR_DIFF_FILE, FIXED_DIFF_FILE,\
 
 import django.utils.simplejson as json
 from django.core.exceptions import ObjectDoesNotExist
-from django.conf import settings
 
-from messaging import send_message
 
 logger = logging.getLogger(__name__)
 
@@ -35,7 +32,6 @@ __all__ = (
     "extract_logs_from_tarball",
     "create_diff_task",
     'prepare_and_execute_diff',
-    'post_qpid_message',
     'diff_fixed_defects_in_package',
     "get_latest_sb_by_package",
     "get_latest_binding",
@@ -52,6 +48,7 @@ def add_title_to_json(path, title):
     fd.truncate()
     json.dump(loaded_json, fd, indent=4)
     fd.close()
+
 
 def run_diff(task_dir, base_task_dir, nvr, base_nvr):
     """
@@ -377,24 +374,6 @@ def prepare_and_execute_diff(task, base_task, nvr, base_nvr):
     base_task_dir = Task.get_task_dir(base_task.id)
 
     return run_diff(task_dir, base_task_dir, nvr, base_nvr)
-
-
-def post_qpid_message(scanbinding):
-    if scanbinding.scan.is_errata_base_scan():
-        return
-    s = copy.deepcopy(settings.QPID_CONNECTION)
-    s['KRB_PRINCIPAL'] = settings.KRB_AUTH_PRINCIPAL
-    s['KRB_KEYTAB'] = settings.KRB_AUTH_KEYTAB
-    if scanbinding.scan.state in SCAN_STATES_IN_PROGRESS:
-        key = 'unfinished'
-    else:
-        key = 'finished'
-    etm = ETMapping.objects.get(latest_run=scanbinding)
-    send_message(s,
-                 {'scan_id': etm.id,
-                  'et_id': etm.et_scan_id,
-                  'scan_state': SCAN_STATES.get_value(scanbinding.scan.state)},
-                 key)
 
 
 def get_latest_sb_by_package(tag, package):

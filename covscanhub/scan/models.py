@@ -5,7 +5,7 @@ import re
 import datetime
 import logging
 
-from covscanhub.scan.service import post_qpid_message
+from covscanhub.scan.messaging import post_qpid_message
 
 from django.db import models
 from django.contrib.auth.models import User
@@ -323,10 +323,21 @@ counted in statistics.")
         scan.save()
         return scan
 
+    def scan_state_notice(self):
+        if self.scanbinding.scan.state in SCAN_STATES_IN_PROGRESS:
+            key = 'unfinished'
+        else:
+            key = 'finished'
+        if self.scanbinding.scan.is_errata_base_scan():
+            return
+        post_qpid_message(SCAN_STATES.get_value(self.scanbinding.scan.state),
+                          ETMapping.objects.get(latest_run=self.scanbinding),
+                          key)
+
     def set_state(self, state):
         self.state = state
         self.save()
-        post_qpid_message(self.scanbinding)
+        self.scan_state_notice()
 
     def get_child_scan(self):
         try:
