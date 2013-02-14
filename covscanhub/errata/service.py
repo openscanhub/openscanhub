@@ -172,7 +172,7 @@ def create_errata_scan(kwargs):
      - rhel_version - short tag of rhel version -- product (e. g. 'RHEL-6.3.Z')
      - release - The advisory's release ('ASYNC', 'RHEL-.*', 'MRG.*')
 
-    return scanbinding
+    return ETMapping
     """
     options = {}
 
@@ -277,7 +277,7 @@ def create_errata_scan(kwargs):
     etm.latest_run = sb
     etm.save()
 
-    return sb
+    return etm
 
 
 def rescan(scan):

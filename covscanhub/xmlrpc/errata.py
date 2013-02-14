@@ -65,7 +65,7 @@ function.'
 
     response = {}
     try:
-        sb = create_errata_scan(kwargs)
+        etm = create_errata_scan(kwargs)
     except brew.GenericError, ex:
         response['status'] = 'ERROR'
         response['message'] = 'Requested build does not exist in brew: %s' % ex
@@ -79,7 +79,7 @@ function.'
         response['status'] = 'ERROR'
         response['message'] = '%s' % ex
     else:
-        response['id'] = sb.id
+        response['id'] = etm.id
         response['status'] = 'OK'
 
     return response
