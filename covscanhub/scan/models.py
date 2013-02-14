@@ -335,6 +335,8 @@ counted in statistics.")
                           key)
 
     def set_state(self, state):
+        if state == self.state:
+            return
         self.state = state
         self.save()
         self.scan_state_notice()
