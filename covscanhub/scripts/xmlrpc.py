@@ -57,6 +57,9 @@ def set_options():
     parser.add_option("-m", "--send-message", help="send random message to qpid broker",
                       action="store_true", dest="messaging")
 
+    parser.add_option("-S", "--get-state", help="get scan's state",
+                      action="store", type="int", dest="scan_state")
+
     (options, args) = parser.parse_args()
 
     return parser, options, args
@@ -275,6 +278,8 @@ if __name__ == '__main__':
     elif options.file and options.tag_name:
         client.auth.login_krbv(login(rpc_url))
         mass_prescan(client, options.file, parser, options.tag_name)
+    elif options.scan_state:
+        print call_get_scan_state(client, options.scan_state)
     #except Exception, ex:
     #    print '---EXCEPTION---\n\n\n%s\n\n\n' % ex
     #    t = Traceback()
