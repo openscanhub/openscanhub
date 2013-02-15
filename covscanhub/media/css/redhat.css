@@ -22,6 +22,14 @@ label {
     color: #EE0000;
 }
 
+#scan_state {
+    float: right;
+}
+
+#scan_release {
+    float: right;
+}
+
 /*bugzilla*/
 
 #bz_wrapper a:link, #bz_wrapper a:visited {
@@ -253,19 +261,37 @@ div.waiving_log span.change {
 
 #content div#defects ul {
     font-family: "Courier New",monospace;
+    margin: 1em;
+    padding-left: 1.5em;
 }
 
 #content div#defects div {
     margin: 1em 3em 1em 2em;
-    padding: 0.3em 2em 0.3em 1.5em;
+}
+
+div#content div#defects div h3 {
+    margin: 0;
+    padding: 1em;
 }
 
 #content div#defects div.FIXED {
     background-color: #DDFFCC;
 }
 
+#content div#defects div.FIXED {
+    background-color: #DDFFCC;
+    border: 2px solid #BBFFAA;
+    box-shadow: 0 0 5px #BBFFAA;
+}
+
 #content div#defects div.NEW {
     background-color: #FFD9D9;
+    border: 2px solid #FFB0B0;
+    box-shadow: 0 0 5px #FFB0B0;
+}
+
+div#content div#defects div.NEW h3 {
+    background-color: #FFEEEE;
 }
 
 /**/
