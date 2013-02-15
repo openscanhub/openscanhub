@@ -142,6 +142,58 @@ def results_list(request):
     return object_list(request, **args)
 
 
+def waiver_post(request, sb, result_group_object):
+    form = WaiverForm(request.POST)
+    if form.is_valid():
+        wl = WaivingLog()
+        wl.user = request.user
+        wl.date = datetime.datetime.now()
+        if result_group_object.has_waiver():
+            wl.state = WAIVER_LOG_ACTIONS['REWAIVE']
+        else:
+            wl.state = WAIVER_LOG_ACTIONS['NEW']
+        w = Waiver()
+        w.date = datetime.datetime.now()
+        w.message = form.cleaned_data['message']
+        w.result_group = result_group_object
+        w.user = request.user
+        w.state = WAIVER_TYPES[form.cleaned_data['waiver_type']]
+        w.save()
+
+        wl.waiver = w
+        wl.save()
+
+        s = sb.scan
+        if waiver_condition(result_group_object):
+            result_group_object.state = RESULT_GROUP_STATES['WAIVED']
+            result_group_object.save()
+
+            if not get_unwaived_rgs(sb.result) and not s.is_waived():
+                s.set_state(SCAN_STATES['WAIVED'])
+        s.last_access = datetime.datetime.now()
+        s.save()
+
+        logger.info('Waiver %s submitted for resultgroup %s',
+                    w, result_group_object)
+        request.session['status_message'] = \
+            "Waiver (%s) successfully submitted." % (
+            w.message[:50].rstrip() + '... ' if len(w.message) > 50
+            else w.message)
+        if 'submit_next' in request.POST:
+            rgs = get_unwaived_rgs(result_group_object)
+            if rgs:
+                return HttpResponseRedirect(reverse('waiving/waiver',
+                    args=(sb.id, rgs[0].id)))
+            else:
+                request.session['status_message'] += " Everything is waived."
+        return HttpResponseRedirect(reverse('waiving/result',
+                                            args=(sb.id,)))
+    else:
+        request.session['status_message'] = "You have entered invalid data."
+        return HttpResponseRedirect(reverse('waiving/result',
+                                    args=(sb.id,)))
+
+
 def waiver(request, sb_id, result_group_id):
     """
     Display waiver (for new defects) for specified result & group
@@ -152,43 +204,7 @@ def waiver(request, sb_id, result_group_id):
     result_group_object = get_object_or_404(ResultGroup, id=result_group_id)
 
     if request.method == "POST":
-        form = WaiverForm(request.POST)
-        if form.is_valid():
-            wl = WaivingLog()
-            wl.user = request.user
-            wl.date = datetime.datetime.now()
-            if result_group_object.has_waiver():
-                wl.state = WAIVER_LOG_ACTIONS['REWAIVE']
-            else:
-                wl.state = WAIVER_LOG_ACTIONS['NEW']
-            w = Waiver()
-            w.date = datetime.datetime.now()
-            w.message = form.cleaned_data['message']
-            w.result_group = result_group_object
-            w.user = request.user
-            w.state = WAIVER_TYPES[form.cleaned_data['waiver_type']]
-            w.save()
-
-            wl.waiver = w
-            wl.save()
-
-            s = sb.scan
-            if waiver_condition(result_group_object):
-                result_group_object.state = RESULT_GROUP_STATES['WAIVED']
-                result_group_object.save()
-
-                if not get_unwaived_rgs(sb.result) and not s.is_waived():
-                    s.set_state(SCAN_STATES['WAIVED'])
-            s.last_access = datetime.datetime.now()
-            s.save()
-
-            logger.info('Waiver %s submitted for resultgroup %s',
-                        w, result_group_object)
-            request.session['status_message'] = \
-                "Waiver (%s) successfully submitted." % (
-                w.message[:50] + '... ' if len(w.message) > 50 else w.message)
-            return HttpResponseRedirect(reverse('waiving/result',
-                                                args=(sb.id,)))
+        waiver_post(request, sb, result_group_object)
 
     if result_group_object.is_previously_waived():
         w = get_last_waiver(result_group_object.checker_group,

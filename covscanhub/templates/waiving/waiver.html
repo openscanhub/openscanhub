@@ -90,7 +90,8 @@
 {% if display_form %}
 <form action="{% url waiving/waiver sb.id active_group.id %}" method="post">{% csrf_token %}
 {{ form.as_p }}
-<input type="submit" value="Submit" />
+<input type="submit" value="Submit" name="submit" />
+<input type="submit" value="Submit and show next" name="submit_next" />
 </form>
 {% else %}{% if form_message %}
 <h3>{{ form_message }}</h3>
