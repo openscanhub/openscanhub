@@ -305,7 +305,7 @@ counted in statistics.")
         return self.scan_type == SCAN_TYPES['USER']
 
     def is_waived(self):
-        return self.scan == SCAN_STATES['WAIVED']
+        return self.state == SCAN_STATES['WAIVED']
 
     @classmethod
     def create_scan(cls, scan_type, nvr, tag, username, package,
