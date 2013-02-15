@@ -2,8 +2,10 @@
 {% load i18n %}
 
 {% block content %}
+<span id="scan_release" class="info_box white_font">{{ sb.scan.tag.release.product }} release {{ sb.scan.tag.release.release }}</span>
+<span id="scan_state" class="info_box black_font bg_{{ sb.scan.get_state_display }}">{{ sb.scan.get_state_display }}</span>
 <h1>{{ compare_title }}</h1>
-<h3>{{ sb.scan.tag.release.product }} release {{ sb.scan.tag.release.release }}</h3>
+
 
 {% if sb.result %} {# display BZ related info only if scan finished #}
 
@@ -28,22 +30,22 @@
     <h4>Legend</h4>
     <table class="legend">
         <tr>
-            <td class="IS_A_BUG">
+            <td class="bg_IS_A_BUG">
                 Is a bug
             </td>
-            <td class="NEEDS_INSPECTION">
+            <td class="bg_NEEDS_INSPECTION">
                 Needs Inspection (<span class="NEW">defects count</span>)
             </td>
-            <td class="INFO">
+            <td class="bg_INFO">
                 Info (<span class="FIXED">defects count</span>)
             </td>
-            <td class="WAIVED">
+            <td class="bg_WAIVED">
                 Waived <span class="defects_increased">diff count</span>
             </td>
-            <td class="PASSED">
+            <td class="bg_PASSED">
                 Passed <span class="defects_decreased">diff count</span>
             </td>
-            <td id="active" class="PREVIOUSLY_WAIVED">
+            <td id="active" class="bg_PREVIOUSLY_WAIVED">
                 Previously Waived (active)
             </td>
         </tr>
@@ -53,13 +55,18 @@
 {% if sb.result %} {# display defects list only if scan finished #}
 
 <h3>Newly introduced defects</h3>
+
+{% if status_message %}
+<div id="status_messages">{{ status_message }}</div>
+{% endif %}
+
 {% if output_new %}
 <table class="summary">
 {% for five in output_new %}
   <tr>
     {% for group, data in five.items %}
         {% if data and data.id %}
-        <td class="{{ data.group_state }}"
+        <td class="bg_{{ data.group_state }}"
             {% if active_group and active_group.id == data.id %}
                 id="active"
             {% endif %}
@@ -75,7 +82,7 @@
             {% endif %}
         </td>
         {% else %}
-        <td class="PASSED">
+        <td class="bg_PASSED">
             {{ group.name }}
             {% if data.diff_state %}
             <span class="{{ data.diff_state }}">{{ data.diff_count }}</span>
@@ -95,7 +102,7 @@
   <tr>
     {% for group, data in five.items %}
         {% if data and data.id %}
-        <td class="{{ data.group_state }}"
+        <td class="bg_{{ data.group_state }}"
             {% if active_group and active_group.id == data.id %}
                 id="active"
             {% endif %}
@@ -111,7 +118,7 @@
             {% endif %}
         </td>
         {% else %}
-        <td class="PASSED">
+        <td class="bg_PASSED">
             {{ group.name }}
             {% if data.diff_state %}
             <span class="{{ data.diff_state }}">{{ data.diff_count }}</span>

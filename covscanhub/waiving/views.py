@@ -30,7 +30,7 @@ from covscanhub.waiving.service import get_unwaived_rgs, get_last_waiver, \
 logger = logging.getLogger(__name__)
 
 
-def get_result_context(sb):
+def get_result_context(request, sb):
     logs = {}
     context = {}
     package = sb.scan.package
@@ -72,6 +72,8 @@ def get_result_context(sb):
         sb.scan.nvr,
         sb.scan.base.nvr,
     )
+    if 'status_message' in request.session:
+        context['status_message'] = request.session.pop('status_message')
     context['title'] = "%s compared to %s" % (
         sb.scan.nvr,
         sb.scan.base.nvr,
@@ -182,6 +184,9 @@ def waiver(request, sb_id, result_group_id):
 
             logger.info('Waiver %s submitted for resultgroup %s',
                         w, result_group_object)
+            request.session['status_message'] = \
+                "Waiver (%s) successfully submitted." % (
+                w.message[:50] + '... ' if len(w.message) > 50 else w.message)
             return HttpResponseRedirect(reverse('waiving/result',
                                                 args=(sb.id,)))
 
@@ -211,7 +216,7 @@ def waiver(request, sb_id, result_group_id):
             context['form_message'] = 'This is not the newest scan.'
 
     # merge already created context with result context
-    context = dict(context.items() + get_result_context(sb).items())
+    context = dict(context.items() + get_result_context(request, sb).items())
 
     context['active_group'] = result_group_object
     context['defects'] = Defect.objects.filter(result_group=result_group_id,
@@ -255,7 +260,7 @@ def fixed_defects(request, sb_id, result_group_id):
     Display fixed defects
     """
     sb = get_object_or_404(ScanBinding, id=sb_id)
-    context = get_result_context(sb)
+    context = get_result_context(request, sb)
 
     context['active_group'] = ResultGroup.objects.get(id=result_group_id)
     context['defects'] = Defect.objects.filter(result_group=result_group_id,
@@ -277,7 +282,7 @@ def result(request, sb_id):
     """
     return render_to_response(
         "waiving/result.html",
-        get_result_context(get_object_or_404(ScanBinding, id=sb_id)),
+        get_result_context(request, get_object_or_404(ScanBinding, id=sb_id)),
         context_instance=RequestContext(request)
     )
 
@@ -290,6 +295,7 @@ def newest_result(request, package_name, release_tag):
     return render_to_response(
         "waiving/result.html",
         get_result_context(
+            request,
             ScanBinding.objects.filter(
                 scan__package__name=package_name,
                 scan__tag__release__tag=release_tag,
@@ -311,6 +317,7 @@ def etmapping_latest(request, etmapping_id):
     return render_to_response(
         "waiving/result.html",
         get_result_context(
+            request,
             ETMapping.objects.get(id=etmapping_id).latest_run
         ),
         context_instance=RequestContext(request)
@@ -328,6 +335,7 @@ def et_latest(request, et_id):
     return render_to_response(
         "waiving/result.html",
         get_result_context(
+            request,
             ETMapping.objects.get(et_scan_id=et_id).latest_run
         ),
         context_instance=RequestContext(request)
