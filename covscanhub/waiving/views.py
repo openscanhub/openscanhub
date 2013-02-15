@@ -179,13 +179,13 @@ def waiver_post(request, sb, result_group_object):
             "Waiver (%s) successfully submitted." % (
             w.message[:50].rstrip() + '... ' if len(w.message) > 50
             else w.message)
+        rgs = get_unwaived_rgs(result_group_object.result)
+        if not rgs:
+            request.session['status_message'] += " Everything is waived."
         if 'submit_next' in request.POST:
-            rgs = get_unwaived_rgs(result_group_object)
             if rgs:
                 return HttpResponseRedirect(reverse('waiving/waiver',
                     args=(sb.id, rgs[0].id)))
-            else:
-                request.session['status_message'] += " Everything is waived."
         return HttpResponseRedirect(reverse('waiving/result',
                                             args=(sb.id,)))
     else:
@@ -204,7 +204,7 @@ def waiver(request, sb_id, result_group_id):
     result_group_object = get_object_or_404(ResultGroup, id=result_group_id)
 
     if request.method == "POST":
-        waiver_post(request, sb, result_group_object)
+        return waiver_post(request, sb, result_group_object)
 
     if result_group_object.is_previously_waived():
         w = get_last_waiver(result_group_object.checker_group,
