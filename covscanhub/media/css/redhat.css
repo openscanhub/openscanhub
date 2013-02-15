@@ -12,6 +12,64 @@ label {
     vertical-align:top;
 }
 
+/* SHORTCUTS */
+
+.white_font {
+    color: white;
+}
+
+.black_font {
+    color: black;
+}
+
+/* STATES */
+
+.bg_WAIVED {
+    background-color: #00FF00;
+}
+
+.bg_PASSED {
+    background-color: #BBFFAA;
+}
+
+.bg_PREVIOUSLY_WAIVED {
+    background-color: #AAFFFF;
+}
+
+.bg_NEEDS_INSPECTION {
+    background-color: #ffff66;
+}
+
+.bg_IS_A_BUG {
+    background-color: #ffb7b7;
+}
+
+.bg_INFO {
+    background-color: #BBBBFF;
+}
+
+.bg_SCANNING {
+    background-color: #8888FF;
+}
+
+.bg_BASE_SCANNING {
+    background-color: #6666FF;
+}
+
+.bg_FAILED {
+    background-color: #FFAAAA;
+}
+
+.bg_CANCELED {
+    background-color: #FFFF88;
+}
+
+.bg_DISPUTED {
+    background-color: #FFBB66;
+}
+
+
+
 /*title*/
 
 .result_target_nvr {
@@ -22,12 +80,19 @@ label {
     color: #EE0000;
 }
 
+.info_box {
+    font-weight: bold;
+    padding: 0.5em;
+}
+
 #scan_state {
     float: right;
+    margin-right: 0.5em;
 }
 
 #scan_release {
     float: right;
+    background-color: #FF3333;
 }
 
 /*bugzilla*/
@@ -51,6 +116,14 @@ label {
 }
 
 /*waiver's summary table*/
+
+#status_messages {
+    background-color: #FFFFBB;
+    border: 1px solid #FFCC33;
+    color: red;
+    padding: 1em;
+    text-align: center;
+}
 
 table.summary {
     font-size: 0.9em;
@@ -90,30 +163,6 @@ table.legend td {
     min-width: 17em;
     height: 2.5em;
     line-height: 2.5em;
-}
-
-td.PASSED {
-    background-color: #aaffaa;
-}
-
-td.WAIVED {
-    background-color: #60ff40;
-}
-
-td.PREVIOUSLY_WAIVED {
-    background-color: #AAFFFF;
-}
-
-td.NEEDS_INSPECTION {
-    background-color: #ffff66;
-}
-
-td.IS_A_BUG {
-    background-color: #ffb7b7;
-}
-
-td.INFO {
-    background-color: #BBBBFF;
 }
 
 table #active {
@@ -292,30 +341,6 @@ div#content div#defects div h3 {
 
 div#content div#defects div.NEW h3 {
     background-color: #FFEEEE;
-}
-
-/**/
-
-/* TABLE list */
-
-#content table.list span.QUEUED {
-    color: #0033CC;
-}
-
-#content table.list span.SCANNING {
-    color: #33AAAA;
-}
-
-#content table.list span.NEEDS_INSPECTION {
-    color: #AAAA33;
-}
-
-#content table.list span.PASSED {
-    color: #66AA66;
-}
-
-#content table.list span.WAIVED {
-    color: #33AA11;
 }
 
 /**/
