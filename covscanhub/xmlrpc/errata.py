@@ -5,7 +5,7 @@ import logging
 
 from covscanhub.errata.service import create_errata_scan
 from covscanhub.other.exceptions import BrewException
-from covscanhub.scan.models import SCAN_TYPES, SCAN_STATES, Scan
+from covscanhub.scan.models import SCAN_TYPES, SCAN_STATES, ETMapping
 
 from kobo.django.xmlrpc.decorators import login_required
 
@@ -41,11 +41,15 @@ def create_errata_diff_scan(request, kwargs):
     @return:
      - status: status message: { 'OK', 'ERROR' }
      - message: in case of error, here is detailed message
-     - id: ID of submitted scan (it is the ID used for waiver's URL)
+     - id: ID of mapping between ET_IDs and covscan IDs. This may be used to
+       access waiver upon scan creation (you may use both URLs, same content
+       is served):
+           <hub_prefix>/waiving/et_mapping/<id>
+           <hub_prefix>/waiving/et/<et_inernal_covscan_id>
 
      for more info see http://etherpad.corp.redhat.com/Covscan-ErrataTool-Integration
     """
-    logger.info('Incoming scan request: %s.', kwargs)
+    logger.info('[CREATE_SCAN] %s', kwargs)
     if not request.user.has_perm('scan.errata_xmlrpc_scan'):
         response = {}
         response['status'] = 'ERROR'
@@ -81,17 +85,17 @@ function.'
     else:
         response['id'] = etm.id
         response['status'] = 'OK'
-
+    logger.info('[CREATE_SCAN] => %s', response)
     return response
 
 
-def get_scan_state(request, scan_id):
+def get_scan_state(request, etm_id):
     """
     get_scan_state(scan_id)
 
         Function that informs requestor about actual state of specified scan
 
-    @param scan_id: ID of requested scan
+    @param scan_id: ID of requested scan (returned by create_scan function)
     @type scan_id: string or int
 
     @rtype: dictionary
@@ -103,18 +107,19 @@ def get_scan_state(request, scan_id):
        {'QUEUED', 'SCANNING', 'NEEDS_INSPECTION', 'WAIVED', 'PASSED',
         'FAILED', 'BASE_SCANNING', 'CANCELED'}
     """
-    logger.info('%s', scan_id)
+    logger.info('[SCAN_STATE] %s', etm_id)
     response = {}
     try:
-        scan = Scan.objects.get(id=scan_id)
+        etm = ETMapping.objects.get(id=etm_id)
     except ObjectDoesNotExist:
         response['status'] = 'ERROR'
-        response['message'] = "Scan %s does not exist." % scan_id
-    except RuntimeError, ex:
+        response['message'] = "Scan %s does not exist." % etm_id
+    except Exception, ex:
         response['status'] = 'ERROR'
         response['message'] = "Unable to retrieve scan's state, error: %s" % ex
     else:
-        state = SCAN_STATES.get_value(scan.state)
+        state = SCAN_STATES.get_value(etm.latest_run.scan.state)
         response['state'] = state
         response['status'] = 'OK'
+    logger.info('[SCAN_STATE] => %s', response)
     return response
