@@ -77,7 +77,7 @@
 {% if waivers_place and matching_waiver %}
 
 <div class="waiving_log wl_type_PREV_WAIVED">
-    <div class="small grey">This group has been waived in run: <a href="{% url waiving/waiver matching_waiver.result_group.result.id matching_waiver.result_group.id %}">{{ waivers_place }}</a></div>
+    <div class="small grey">This group has been waived in run: <a href="{% url waiving/waiver matching_waiver.result_group.result.scanbinding.id matching_waiver.result_group.id %}">{{ waivers_place }}</a></div>
     <div class="message">
     {{ matching_waiver.message }}
     </div>
