@@ -38,6 +38,7 @@ SCAN_STATES = Enum(
     "BASE_SCANNING",     # child scan is in scanning process right now
     "CANCELED",          # there is newer build submitted, this one is obsolete
     "DISPUTED",          # scan was waived but one of waivers was obsoleted
+    "INIT",              # first, default state
 )
 
 SCAN_STATES_IN_PROGRESS = (
@@ -270,7 +271,7 @@ class Scan(models.Model):
     tag = models.ForeignKey(Tag, verbose_name="Tag",
                             blank=True, null=True,
                             help_text="Tag from brew")
-    state = models.PositiveIntegerField(default=SCAN_STATES["QUEUED"],
+    state = models.PositiveIntegerField(default=SCAN_STATES["INIT"],
                                         choices=SCAN_STATES.get_mapping(),
                                         help_text="Current scan state")
     username = models.ForeignKey(User)
@@ -321,16 +322,11 @@ counted in statistics.")
         scan.nvr = nvr
         scan.base = base
         scan.tag = tag
-
-        # default state, so we can set queued via scan.set_state and post
-        # message to bus
-        scan.state = SCAN_STATES["CANCELED"]
         scan.username = User.objects.get_or_create(username=username)[0]
         scan.last_access = datetime.datetime.now()
         scan.package = package
         scan.enabled = enabled
         scan.save()
-        scan.set_state(SCAN_STATES['QUEUED'])
         return scan
 
     def scan_state_notice(self):

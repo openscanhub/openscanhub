@@ -49,7 +49,7 @@ def create_errata_base_scan(kwargs, parent_task_id, package):
         method='ErrataDiffBuild',
         args={},  # I want to add scan's id here, so I update it later
         comment=comment,
-        state=TASK_STATES["FREE"],
+        state=TASK_STATES["CREATED"],
         priority=priority,
         parent_id=parent_task_id,
     )
@@ -66,6 +66,7 @@ def create_errata_base_scan(kwargs, parent_task_id, package):
     task = Task.objects.get(id=task_id)
     task.args = options
     task.save()
+    task.free_task()
 
     sb = ScanBinding()
     sb.task = task
@@ -240,7 +241,7 @@ def create_errata_scan(kwargs):
         method='ErrataDiffBuild',
         args={},  # I want to add scan's id here, so I update it later
         comment=comment,
-        state=TASK_STATES["FREE"],
+        state=TASK_STATES["CREATED"],
         priority=priority,
     )
     task_dir = Task.get_task_dir(task_id)
@@ -268,6 +269,7 @@ def create_errata_scan(kwargs):
     task = Task.objects.get(id=task_id)
     task.args = options
     task.save()
+    task.free_task()
 
     sb = ScanBinding()
     sb.task = task
@@ -276,6 +278,8 @@ def create_errata_scan(kwargs):
 
     etm.latest_run = sb
     etm.save()
+
+    scan.set_state(SCAN_STATES['QUEUED'])
 
     return etm
 
