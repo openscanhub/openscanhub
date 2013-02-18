@@ -37,7 +37,6 @@ urlpatterns = patterns('',
     url(r"^xmlrpc/", include("covscanhub.xmlrpc.urls")),
 )
 
-
 # this is a hack to enable media (with correct prefix) while debugging
 if settings.DEBUG:
     import os
