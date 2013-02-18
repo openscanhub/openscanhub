@@ -61,6 +61,7 @@ class ScanAdmin(admin.ModelAdmin):
         }, context_instance=RequestContext(request))
 
     def fail_scan(self, request, scan_id):
+        ScanBinding.objects.get(scan__id=scan_id).task.fail_task()
         h_fail_scan(scan_id, "set as failed from admin interface.")
         scan = Scan.objects.get(id=scan_id)
 
@@ -134,6 +135,14 @@ class TagAdmin(admin.ModelAdmin):
 class ReleaseMappingAdmin(admin.ModelAdmin):
     list_display = ("id", "release_tag", "template", "priority")
 
+
+@add_link_field('scanbinding', 'latest_run', field_name='latest',
+                field_label="Latest")
+class ETMappingAdmin(admin.ModelAdmin):
+    list_display = ("id", "advisory_id", "et_scan_id", "latest")
+
+
+admin.site.register(ETMapping, ETMappingAdmin)
 admin.site.register(MockConfig, MockConfigAdmin)
 admin.site.register(Tag, TagAdmin)
 admin.site.register(ReleaseMapping, ReleaseMappingAdmin)
