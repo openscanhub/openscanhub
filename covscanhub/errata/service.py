@@ -24,20 +24,20 @@ def create_errata_base_scan(kwargs, parent_task_id, package):
     options = {}
 
     task_user = kwargs['task_user']
-    username = kwargs['username']
+    package_owner = return_or_raise('package_owner', kwargs)
     scan_type = SCAN_TYPES['ERRATA_BASE']
-    nvr = kwargs['base']
-    task_label = nvr
-    options['brew_build'] = nvr
+    base = kwargs['base']
+    task_label = base
+    options['brew_build'] = base
 
     priority = kwargs.get('priority', settings.ET_SCAN_PRIORITY) + 1
     comment = 'Errata Tool Base scan of %s requested by %s' % \
-        (nvr, kwargs['nvr'])
+        (base, kwargs['target'])
 
     # Test if SRPM exists
-    check_brew_build(nvr)
+    check_brew_build(base)
 
-    mock_name = assign_mock_config(re.match(".+-.+-(.+)", nvr).group(1))
+    mock_name = assign_mock_config(re.match(".+-.+-(.+)", base).group(1))
     if mock_name:
         options['mock_config'] = mock_name
     else:
@@ -57,7 +57,8 @@ def create_errata_base_scan(kwargs, parent_task_id, package):
 
     check_and_create_dirs(task_dir)
 
-    scan = Scan.create_scan(scan_type=scan_type, nvr=nvr, username=username,
+    scan = Scan.create_scan(scan_type=scan_type, nvr=base,
+                            username=package_owner,
                             package=package, enabled=False)
 
     options["scan_id"] = scan.id
