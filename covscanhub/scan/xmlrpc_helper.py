@@ -55,7 +55,12 @@ def fail_scan(scan_id, reason=None):
     scan = Scan.objects.get(id=scan_id)
     scan.set_state(SCAN_STATES['FAILED'])
     if scan.is_errata_scan():
-        Scan.objects.filter(id=scan_id).update(enabled=False)
+        scan.enabled = False
+        scan.save()
+
         if reason:
             Task.objects.filter(id=scan.scanbinding.task.id).update(
                 result="Scan failed due to: %s" % reason)
+
+        #set last successfully finished scan as enabled
+        scan.enable_last_successfull()
