@@ -3,7 +3,7 @@
 import copy
 import re
 import logging
-
+from utils import depend_on
 from django.conf import settings
 #from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 
@@ -122,8 +122,11 @@ def check_package_eligibility(package, created):
     if not created and package.blocked:
         raise RuntimeError('Package %s is blacklisted' % (package.name))
     elif not created and not package.eligible:
-        raise RuntimeError('Package %s is not able to be scanned' %
+        raise RuntimeError('Package %s is not eligible for scanning' %
                            (package.name))
+    elif not depend_on(package.name, 'libc'):
+        raise RuntimeError('Package %s does not depend on glibc and thus \
+can\'t be scanned' % (package.name))
 
 
 def assign_mock_config(dist_tag):
