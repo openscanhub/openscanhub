@@ -107,6 +107,7 @@ def check_obsolete_scan(package, release):
         scan__scan_type=SCAN_TYPES['ERRATA'])
     for binding in bindings:
         if (binding.scan.state == SCAN_STATES['QUEUED'] or
+                binding.scan.state == SCAN_STATES['SCANNING'] or
                 binding.scan.state == SCAN_STATES['BASE_SCANNING']):
             binding.task.cancel_task(recursive=False)
             binding.scan.set_state(SCAN_STATES['CANCELED'])
