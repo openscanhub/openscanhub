@@ -53,6 +53,12 @@ SCAN_STATES_FINISHED = (
     SCAN_STATES['CANCELED'],
     SCAN_STATES['DISPUTED'],
 )
+SCAN_STATES_FINISHED_WELL = (
+    SCAN_STATES['NEEDS_INSPECTION'],
+    SCAN_STATES['WAIVED'],
+    SCAN_STATES['PASSED'],
+    SCAN_STATES['DISPUTED'],
+)
 SCAN_STATES_BASE = (
     SCAN_STATES['FINISHED'],
 )
@@ -359,6 +365,14 @@ counted in statistics.")
         else:
             return None
 
+    def enable_last_successfull(self):
+        last_finished = self
+        while last_finished:
+            if last_finished.state in SCAN_STATES_FINISHED_WELL:
+                last_finished.enabled = True
+                last_finished.save()
+                break
+            last_finished = last_finished.get_child_scan()
 
 class ScanBinding(models.Model):
     """
