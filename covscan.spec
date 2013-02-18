@@ -73,6 +73,7 @@ Requires: cyrus-sasl-gssapi
 
 Requires: csdiff
 Requires: python-bugzilla
+Requires: yum
 
 
 %description hub
