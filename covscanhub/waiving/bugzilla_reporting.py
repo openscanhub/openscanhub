@@ -5,7 +5,7 @@ import bugzilla
 from django.conf import settings
 from django.core.urlresolvers import reverse
 
-from models import Waiver, WAIVER_TYPES, Bugzilla
+from models import Waiver, WAIVER_TYPES, Bugzilla, ResultGroup
 
 from covscanhub.other.shortcuts import get_or_none
 
@@ -21,12 +21,17 @@ def get_unreported_bugs(package, release):
     """
     return IS_A_BUG waivers that weren't reported yet
     """
+    rgs = ResultGroup.objects.select_related().filter(
+        result__scanbinding__scan__package=package,
+        result__scanbinding__scan__tag__release=release,
+    )
     waivers = Waiver.objects.filter(
         result_group__result__scanbinding__scan__package=package,
         result_group__result__scanbinding__scan__tag__release=release,
         state=WAIVER_TYPES['IS_A_BUG'],
         bz__isnull=True,
         is_deleted=False,
+        id__in=[rg.has_waiver().id for rg in rgs if rg.has_waiver()]
     )
     if waivers:
         return waivers.order_by('date')
