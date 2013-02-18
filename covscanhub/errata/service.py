@@ -8,7 +8,7 @@ from django.conf import settings
 #from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 
 from covscanhub.scan.models import Scan, SCAN_STATES, SCAN_TYPES, Package, \
-    ScanBinding, MockConfig, ReleaseMapping, ETMapping
+    ScanBinding, MockConfig, ReleaseMapping, ETMapping, SCAN_STATES_IN_PROGRESS
 from covscanhub.scan.service import get_latest_sb_by_package, \
     get_latest_binding
 from covscanhub.other.shortcuts import check_brew_build, \
@@ -107,9 +107,7 @@ def check_obsolete_scan(package, release):
         scan__tag__release=release,
         scan__scan_type=SCAN_TYPES['ERRATA'])
     for binding in bindings:
-        if (binding.scan.state == SCAN_STATES['QUEUED'] or
-                binding.scan.state == SCAN_STATES['SCANNING'] or
-                binding.scan.state == SCAN_STATES['BASE_SCANNING']):
+        if binding.scan.state in SCAN_STATES_IN_PROGRESS:
             binding.task.cancel_task(recursive=False)
             binding.scan.set_state(SCAN_STATES['CANCELED'])
             Scan.objects.filter(id=binding.scan.id).update(
