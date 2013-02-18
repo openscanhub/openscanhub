@@ -321,22 +321,26 @@ counted in statistics.")
         scan.nvr = nvr
         scan.base = base
         scan.tag = tag
-        scan.state = SCAN_STATES["QUEUED"]
+
+        # default state, so we can set queued via scan.set_state and post
+        # message to bus
+        scan.state = SCAN_STATES["CANCELED"]
         scan.username = User.objects.get_or_create(username=username)[0]
         scan.last_access = datetime.datetime.now()
         scan.package = package
         scan.enabled = enabled
         scan.save()
+        scan.set_state(SCAN_STATES['QUEUED'])
         return scan
 
     def scan_state_notice(self):
-        if self.scanbinding.scan.state in SCAN_STATES_IN_PROGRESS:
+        if self.state in SCAN_STATES_IN_PROGRESS:
             key = 'unfinished'
         else:
             key = 'finished'
-        if self.scanbinding.scan.is_errata_base_scan():
+        if self.is_errata_base_scan():
             return
-        post_qpid_message(SCAN_STATES.get_value(self.scanbinding.scan.state),
+        post_qpid_message(SCAN_STATES.get_value(self.state),
                           ETMapping.objects.get(latest_run=self.scanbinding),
                           key)
 
