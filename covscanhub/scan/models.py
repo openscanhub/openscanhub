@@ -314,8 +314,8 @@ counted in statistics.")
         return self.state == SCAN_STATES['WAIVED']
 
     @classmethod
-    def create_scan(cls, scan_type, nvr, tag, username, package,
-                    enabled, base=None):
+    def create_scan(cls, scan_type, nvr, username, package,
+                    enabled, base=None, tag=None):
         scan = cls()
         scan.scan_type = scan_type
         scan.nvr = nvr
