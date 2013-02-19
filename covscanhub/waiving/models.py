@@ -19,6 +19,7 @@ DEFECT_STATES = Enum(
     # present in base, but no longer in actual version; good job
     EnumItem("FIXED", help_text="Defect fixed by this build."),
     EnumItem("UNKNOWN", help_text="Default value."),
+    EnumItem("PREVIOUSLY_WAIVED", help_text="Defect was waived in a past."),
 )
 
 WAIVER_TYPES = Enum(
@@ -231,7 +232,8 @@ associated with this group.")
                 return 'INFO'
             else:
                 return 'PASSED'
-        elif self.defect_type == DEFECT_STATES["NEW"]:
+        elif self.defect_type == DEFECT_STATES["NEW"] or \
+                self.defect_type == DEFECT_STATES["PREVIOUSLY_WAIVED"]:
             if self.defects_count > 0:
                 if self.is_marked_as_bug():
                     return 'IS_A_BUG'
