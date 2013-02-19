@@ -18,7 +18,12 @@ class ResultAdmin(admin.ModelAdmin):
 @add_link_field('checkergroup','checker_group',field_name='link2')
 @add_link_field('result','result')
 class ResultGroupAdmin(admin.ModelAdmin):
-    list_display = ("id", "state_display", 'defects_count', 'link', 'link2')
+    list_display = ("id", "state_display", 'defects_count',
+                    'defects_state_display', 'link', 'link2')
+
+    def defects_state_display(self, instance):
+        return DEFECT_STATES.get_value(instance.defect_type)
+    defects_state_display.short_description = 'Defects state'
 
     def state_display(self, instance):
         return instance.get_state_display()
