@@ -58,10 +58,15 @@ def get_result_context(request, sb):
         context['unreported_bugs_count'] = 0
 
     if sb.result:
-        context['output_new'] = get_five_tuple(get_waiving_data(
-            sb.result, DEFECT_STATES['NEW']))
-        context['output_fixed'] = get_five_tuple(get_waiving_data(
-            sb.result, DEFECT_STATES['FIXED']))
+        new_defects = get_tupled_data(get_waiving_data(
+            sb.result, defect_type=DEFECT_STATES['NEW']))
+        fixed_defects = get_tupled_data(get_waiving_data(
+            sb.result, defect_type=DEFECT_STATES['FIXED']))
+        old_defects = get_tupled_data(get_waiving_data(
+            sb.result, defect_type=DEFECT_STATES['PREVIOUSLY_WAIVED']))
+        context['output_new'] = new_defects
+        context['output_fixed'] = fixed_defects
+        context['output_old'] = old_defects
     elif sb.scan.state == SCAN_STATES['FAILED']:
         context['not_finished'] = "Scan failed. Please contact administrator."
     else:
@@ -88,6 +93,7 @@ def get_result_context(request, sb):
 
 
 def get_waiving_data(result_object, defect_type):
+    """return list of checker_groups with states and counts"""
     output = {}
 
     # checker_group: result_group
@@ -107,20 +113,26 @@ def get_waiving_data(result_object, defect_type):
     return output
 
 
-def get_five_tuple(output):
-    result_five_tuples = []
+def get_tupled_data(output):
+    result_tuples = []
     i = 0
+
+    # find best match: 6 is too much and 3 is too few
+    if len(output.keys()) % 4 == 0:
+        column_count = 4
+    else:
+        column_count = 5
     while True:
-        low_bound = 5 * i
-        high_bound = 5 * (i + 1)
+        low_bound = column_count * i
+        high_bound = column_count * (i + 1)
         if low_bound + 1 > len(output.keys()):
             break
         tmp = {}
         for k in output.keys()[low_bound:high_bound]:
             tmp[k] = output[k]
-        result_five_tuples.append(tmp)
+        result_tuples.append(tmp)
         i += 1
-    return result_five_tuples
+    return result_tuples
 
 
 def results_list(request):
@@ -245,6 +257,8 @@ def waiver(request, sb_id, result_group_id):
     logger.debug('Displaying waiver for sb %s, result-group %s',
                  sb, result_group_object)
 
+    context['defects_list_class'] = "new"
+
     return render_to_response("waiving/waiver.html",
                               context,
                               context_instance=RequestContext(request))
@@ -286,7 +300,30 @@ def fixed_defects(request, sb_id, result_group_id):
     context['display_waivers'] = False
     context['form_message'] = "This group can't be waived, because these \
 defects are already fixed."
+    context['fixed_selected'] = "selected"
+    context['defects_list_class'] = "fixed"
+    return render_to_response("waiving/waiver.html",
+                              context,
+                              context_instance=RequestContext(request))
 
+
+def previously_waived(request, sb_id, result_group_id):
+    """
+    Display fixed defects
+    """
+    sb = get_object_or_404(ScanBinding, id=sb_id)
+    context = get_result_context(request, sb)
+
+    context['active_group'] = ResultGroup.objects.get(id=result_group_id)
+    context['defects'] = Defect.objects.filter(result_group=result_group_id,
+                                               state=DEFECT_STATES['NEW']).\
+                                               order_by("order")
+    context['display_form'] = False
+    context['display_waivers'] = False
+    context['form_message'] = "This group can't be waived, because these \
+defects are already fixed."
+    context['old_selected'] = "selected"
+    context['defects_list_class'] = "old"
     return render_to_response("waiving/waiver.html",
                               context,
                               context_instance=RequestContext(request))
@@ -296,9 +333,12 @@ def result(request, sb_id):
     """
     Display all the tests for specified scan
     """
+    context = get_result_context(request, get_object_or_404(ScanBinding,
+                                                            id=sb_id))
+    context['new_selected'] = "selected"
     return render_to_response(
         "waiving/result.html",
-        get_result_context(request, get_object_or_404(ScanBinding, id=sb_id)),
+        context,
         context_instance=RequestContext(request)
     )
 
@@ -308,16 +348,15 @@ def newest_result(request, package_name, release_tag):
     Display latest result for specified package -- this is available on
      specific URL
     """
+    context = get_result_context(request, ScanBinding.objects.filter(
+        scan__package__name=package_name,
+        scan__tag__release__tag=release_tag,
+        scan__enabled=True).latest()
+    )
+    context['new_selected'] = "selected"
     return render_to_response(
         "waiving/result.html",
-        get_result_context(
-            request,
-            ScanBinding.objects.filter(
-                scan__package__name=package_name,
-                scan__tag__release__tag=release_tag,
-                scan__enabled=True
-            ).latest()
-        ),
+        context,
         context_instance=RequestContext(request)
     )
 
@@ -330,12 +369,14 @@ def etmapping_latest(request, etmapping_id):
 
     Display latest result for et_internal_covscan_id
     """
+    context = get_result_context(
+        request,
+        ETMapping.objects.get(id=etmapping_id).latest_run
+    )
+    context['new_selected'] = "selected"
     return render_to_response(
         "waiving/result.html",
-        get_result_context(
-            request,
-            ETMapping.objects.get(id=etmapping_id).latest_run
-        ),
+        context,
         context_instance=RequestContext(request)
     )
 
@@ -348,12 +389,14 @@ def et_latest(request, et_id):
 
     Display latest result for et_internal_covscan_id
     """
+    context = get_result_context(
+        request,
+        ETMapping.objects.get(et_scan_id=et_id).latest_run
+    )
+    context['new_selected'] = "selected"
     return render_to_response(
         "waiving/result.html",
-        get_result_context(
-            request,
-            ETMapping.objects.get(et_scan_id=et_id).latest_run
-        ),
+        context,
         context_instance=RequestContext(request)
     )
 

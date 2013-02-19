@@ -188,7 +188,9 @@ def create_results(scan, sb):
             )
             if w and compare_result_groups(rg, w.result_group):
                 rg.state = RESULT_GROUP_STATES['PREVIOUSLY_WAIVED']
+                rg.defect_type = DEFECT_STATES['PREVIOUSLY_WAIVED']
                 rg.save()
+
     return r
 
 
@@ -368,6 +370,12 @@ def get_defects_diff_display(response=None, checker_group=None,
             elif defects_diff < 0:
                 response['diff_state'] = 'defects_increased'
                 response['diff_count'] = "%d" % (defects_diff)
+        elif defect_type == DEFECT_STATES['PREVIOUSLY_WAIVED']:
+            response['diff_state'] = 'diff_state_neutral'
+            if defects_diff > 0:
+                response['diff_count'] = "%s%d" % ('+', defects_diff)
+            elif defects_diff < 0:
+                response['diff_count'] = "%d" % (defects_diff)
     return response
 
 
@@ -384,8 +392,8 @@ def display_in_result(rg):
     return data that are displayed in waiver
     """
     response = {'group_state': rg.get_state_to_display()}
-    response['defects_state'] = DEFECT_STATES.get_value(rg.defect_type)
     response['defects_count'] = rg.defects_count
+    response['defects_state'] = DEFECT_STATES.get_value(rg.defect_type)
     get_defects_diff_display_by_rg(response=response, rg=rg)
     return response
 

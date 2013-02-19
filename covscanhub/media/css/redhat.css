@@ -22,6 +22,18 @@ label {
     color: black;
 }
 
+.light_grey_bg {
+    background-color: #CCC;
+}
+
+.grey_bg {
+    background-color: #999;
+}
+
+.dark_grey_bg {
+    background-color: #555;
+}
+
 /* STATES */
 
 .bg_WAIVED {
@@ -29,15 +41,15 @@ label {
 }
 
 .bg_PASSED {
-    background-color: #BBFFAA;
+    background-color: #DDDDDD;
 }
 
 .bg_PREVIOUSLY_WAIVED {
-    background-color: #AAFFFF;
+    background-color: #AAFFAA;
 }
 
 .bg_NEEDS_INSPECTION {
-    background-color: #ffff66;
+    background-color: #AAFFAA;
 }
 
 .bg_IS_A_BUG {
@@ -45,7 +57,7 @@ label {
 }
 
 .bg_INFO {
-    background-color: #BBBBFF;
+    background-color: #AAFFAA;
 }
 
 .bg_SCANNING {
@@ -67,8 +79,6 @@ label {
 .bg_DISPUTED {
     background-color: #FFBB66;
 }
-
-
 
 /*title*/
 
@@ -108,11 +118,37 @@ label {
 }
 
 #bz_wrapper {
+    margin-bottom: 1.5em;
 }
 
 #bz_update, #bz_create {
     padding: 0.4em;
     background-color: #9E292B;
+}
+
+/*tabs*/
+
+#tabContainer ul {
+    font-size: 1.5em;
+    text-align: center;
+    margin: 0;
+}
+
+#tabContainer ul li {
+    padding: 7px 0;
+    width: 15em;
+    display:inline-block;
+    color:#000;
+    background: #EEE;
+    cursor:pointer;
+}
+
+#tabContainer ul li:hover{
+	background: #CCC;
+}
+
+#tabContainer ul li.selected {
+	background: #CCC;
 }
 
 /*waiver's summary table*/
@@ -126,10 +162,17 @@ label {
 }
 
 table.summary {
+    margin-top: -2px;
     font-size: 0.9em;
     border-spacing: 0px;
     border-collapse: separate;
     width: 100%;
+}
+
+table.summary th {
+    border: 2px solid #FFF;
+    font-size: 18pt;
+    height: 2em;
 }
 
 table.summary td {
@@ -137,6 +180,7 @@ table.summary td {
     /*border: 1px solid #999;*/
     border: 2px solid white;
     font-weight: bolder;
+    font-size: 11pt;
     /*width: 24em;*/
     min-width: 21em;
     height: 2.5em;
@@ -187,6 +231,14 @@ table span.defects_increased {
 
 table span.defects_decreased {
     background-color: #44FF25;
+    float: right;
+    padding: 0 0.3em;
+    text-align: right;
+    min-width: 3em;
+}
+
+table span.diff_state_neutral {
+    background-color: #BBB;
     float: right;
     padding: 0 0.3em;
     text-align: right;

@@ -4,6 +4,8 @@
 
 {% block waiver %}
 
+<div id="defects_container" class="{{ defects_list_class }}">
+
 <h2>{{ active_group.checker_group.name }}</h2>
 
 <div id="defects">
@@ -115,5 +117,7 @@
     </div>
     {% endfor %}
 {% endif %}
+
+</div>
 
 {% endblock %}

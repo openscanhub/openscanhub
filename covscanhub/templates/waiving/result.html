@@ -25,7 +25,7 @@
 </div>
 
 {% endif %}
-
+{% comment %}
 <div id="legend_wrapper">
     <h4>Legend</h4>
     <table class="legend">
@@ -51,17 +51,27 @@
         </tr>
     </table>
 </div>
+{% endcomment %}
 
 {% if sb.result %} {# display defects list only if scan finished #}
-
-<h3>Newly introduced defects</h3>
 
 {% if status_message %}
 <div id="status_messages">{{ status_message }}</div>
 {% endif %}
 
+<div id="tabContainer" >
+  <ul class="digiTabs" id="sidebarTabs">
+    <li id="tab1" class="{{ new_selected }}">New</li>
+    <li id="tab2" class="{{ fixed_selected }}">Fixed</li>
+    <li id="tab3" class="{{ old_selected }}">Old</li>
+  </ul>
+  <div id="tabContent"></div>
+</div>
+
+<div id="tab1Content" style="display:none;">
 {% if output_new %}
 <table class="summary">
+  <th class="light_grey_bg" colspan="{{ output_new.1|length }}">New defects</th>
 {% for five in output_new %}
   <tr>
     {% for group, data in five.items %}
@@ -94,10 +104,12 @@
 {% endfor %}
 </table>
 {% endif %}
+</div>
 
-<h3>Fixed defects</h3>
+<div id="tab2Content" style="display:none;">
 {% if output_fixed %}
 <table class="summary">
+  <th class="light_grey_bg" colspan="{{ output_fixed.1|length }}">Fixed defects</th>
 {% for five in output_fixed %}
   <tr>
     {% for group, data in five.items %}
@@ -130,6 +142,45 @@
 {% endfor %}
 </table>
 {% endif %}
+</div>
+
+<div id="tab3Content" style="display:none;">
+{% if output_old %}
+<table class="summary">
+  <th class="light_grey_bg" colspan="{{ output_old.1|length }}">Previously waived defects</th>
+{% for five in output_old %}
+  <tr>
+    {% for group, data in five.items %}
+        {% if data and data.id %}
+        <td class="bg_{{ data.group_state }}"
+            {% if active_group and active_group.id == data.id %}
+                id="active"
+            {% endif %}
+        >
+            <a href="{% url waiving/previously_waived sb.id data.id %}#defects">
+                {{ group.name }}
+            </a>
+            {% if data.defects_state %}
+            (<span class="{{ data.defects_state }}">{{ data.defects_count }}</span>)
+            {% endif %}
+            {% if data.diff_state %}
+            <span class="{{ data.diff_state }}">{{ data.diff_count }}</span>
+            {% endif %}
+        </td>
+        {% else %}
+        <td class="bg_PASSED">
+            {{ group.name }}
+            {% if data.diff_state %}
+            <span class="{{ data.diff_state }}">{{ data.diff_count }}</span>
+            {% endif %}
+        </td>
+        {% endif %}
+    {% endfor %}
+  </tr>
+{% endfor %}
+</table>
+{% endif %}
+</div>
 
 {% else %} {# sb.result #}
 
@@ -186,6 +237,94 @@
 {% endif %}
 
 {% block waiver %}
-{% endblock waiver %}
+{% endblock %}
 
-{% endblock content %}
+{% block js %}
+
+<script type="text/javascript">
+  function process_tabs(x)
+  {
+    var lis=document.getElementById("sidebarTabs").childNodes; //gets all the LI from the UL
+
+    for(i=0;i<lis.length;i++)
+    {
+      lis[i].className=""; //removes the classname from all the LI
+    }
+    x.className="selected"; //the clicked tab gets the classname selected
+
+    var tc = document.getElementById("tabContent");
+    var defects = document.getElementById("defects_container");
+    if (defects != null) {
+        //defects.parentNode.removeChild(defects);
+        defects.style.display = "none";
+    }
+    var tab = x.id;
+    switch(tab)
+    {
+      case "tab1":
+        tc.innerHTML=document.getElementById("tab1Content").innerHTML;
+        if (defects.className == "new") {
+          defects.style.display = "block";
+        }
+        break;
+      case "tab2":
+        tc.innerHTML=document.getElementById("tab2Content").innerHTML;
+        if (defects.className == "fixed") {
+          defects.style.display = "block";
+        }
+        break;
+      case "tab3":
+        tc.innerHTML=document.getElementById("tab3Content").innerHTML;
+        if (defects.className == "old") {
+          defects.style.display = "block";
+        }
+        break;
+      default:
+        tc.innerHTML=document.getElementById("tab1Content").innerHTML;
+        break;
+
+    }
+  }
+
+window.onload=function() {
+  var sel = document.querySelectorAll("#sidebarTabs .selected");
+  var res=document.getElementById("tabContent");
+  if (sel.length > 0) {
+    res.innerHTML=document.getElementById("tab" + sel[0].id[3] + "Content").innerHTML;
+  }
+  else {
+    res.innerHTML=document.getElementById("tab1Content").innerHTML;
+  }
+
+  //this adds click event to tabs
+  var tabs = document.querySelectorAll("#tabContainer ul li");
+  for (var i = 0; i < tabs.length; i++) {
+    tabs[i].onclick=(function(opt) {
+      return function() {
+        process_tabs(opt);
+      };
+    })(tabs[i]);
+  }
+/*
+  // get tab container
+  var container = document.getElementById("tabContainer");
+    // set current tab
+    var navitem = container.querySelector(".tabs ul li");
+    //store which tab we are on
+    var ident = navitem.id.split("_")[1];
+    navitem.parentNode.setAttribute("data-current",ident);
+    //set current tab with class of activetabheader
+    navitem.setAttribute("class","tabActiveHeader");
+
+    //hide two tab contents we don't need
+    var pages = container.querySelectorAll(".tabpage");
+    for (var i = 1; i < pages.length; i++) {
+      pages[i].style.display="none";
+    }
+*/
+}
+</script>
+
+{% endblock %}
+
+{% endblock %}
