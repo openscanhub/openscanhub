@@ -124,7 +124,7 @@ def check_package_eligibility(package, created):
     elif not created and not package.eligible:
         raise RuntimeError('Package %s is not eligible for scanning' %
                            (package.name))
-    elif not depend_on(package.name, 'libc'):
+    elif not depend_on(package.name, 'libc.so'):
         raise RuntimeError('Package %s does not depend on glibc and thus \
 can\'t be scanned' % (package.name))
 

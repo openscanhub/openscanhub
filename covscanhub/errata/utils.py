@@ -14,7 +14,14 @@ def depend_on(package_name, dependency):
     yb.setCacheDir()
     pkgs = yb.pkgSack.returnNewestByNameArch(patterns=[package_name])
     for pkg in pkgs:
-        for req in pkg.requires:
+        # alternative: for req in pkg.requires:
+        for req in pkg.returnPrco('requires'):
+            print req
             if req[0].startswith(dependency):
                 return True
     return False
+
+
+if __name__ == '__main__':
+    import sys
+    print depend_on(sys.argv[1], sys.argv[2])
