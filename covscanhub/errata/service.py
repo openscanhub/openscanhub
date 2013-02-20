@@ -119,14 +119,16 @@ def check_obsolete_scan(package, release):
 def check_package_eligibility(package, created):
     if created:
         logger.warn('Package %s was created', package)
+
+        depends_on = depend_on(package.name, 'libc.so')
+        package.eligible = depends_on
+        package.save()
+
     if not created and package.blocked:
         raise RuntimeError('Package %s is blacklisted' % (package.name))
-    elif not created and not package.eligible:
+    elif not package.eligible:
         raise RuntimeError('Package %s is not eligible for scanning' %
                            (package.name))
-    elif not depend_on(package.name, 'libc.so'):
-        raise RuntimeError('Package %s does not depend on glibc and thus \
-can\'t be scanned' % (package.name))
 
 
 def assign_mock_config(dist_tag):
@@ -150,8 +152,8 @@ def get_tag(release):
         tag = rm.get_tag(release)
         if tag:
             return tag
-    logger.critical("Unable to assign proper product and release.")
-    raise RuntimeError("Unable to assign proper product and release.")
+    logger.critical("Unable to assign proper product and release: %s" % release)
+    raise RuntimeError("This package is not suitable for scanning.")
 
 
 def return_or_raise(key, data):
@@ -227,14 +229,11 @@ def create_errata_scan(kwargs):
 )' % (target, pattern))
 
     # returns (mock config's name, tag object)
-    if release != "ASYNC":
-        tag = get_tag(release)
-    else:
-        tag = get_tag(rhel_version)
+    tag = get_tag(release)
     if tag:
         options['mock_config'] = tag.mock.name
     else:
-        raise RuntimeError("Unable to assign mock profile")
+        raise RuntimeError("Unable to assign mock profile.")
 
     check_obsolete_scan(package, tag.release)
 
