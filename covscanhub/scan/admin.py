@@ -142,6 +142,10 @@ class ETMappingAdmin(admin.ModelAdmin):
     list_display = ("id", "advisory_id", "et_scan_id", "latest")
 
 
+class AppSettingsAdmin(admin.ModelAdmin):
+    list_display = ("id", "key", "value")
+
+
 admin.site.register(ETMapping, ETMappingAdmin)
 admin.site.register(MockConfig, MockConfigAdmin)
 admin.site.register(Tag, TagAdmin)
@@ -150,3 +154,4 @@ admin.site.register(SystemRelease, SystemReleaseAdmin)
 admin.site.register(Package, PackageAdmin)
 admin.site.register(Scan, ScanAdmin)
 admin.site.register(ScanBinding, ScanBindingAdmin)
+admin.site.register(AppSettings, AppSettingsAdmin)
