@@ -307,14 +307,25 @@ def previously_waived(request, sb_id, result_group_id):
     Display fixed defects
     """
     sb = get_object_or_404(ScanBinding, id=sb_id)
-
-    context = get_result_context(request, sb)
-
     result_group_object = get_object_or_404(ResultGroup, id=result_group_id)
 
     if request.method == "POST":
+        result_group_object.defect_type = DEFECT_STATES['NEW']
+        result_group_object.save()
         return waiver_post(request, sb, result_group_object, "waiving/result",
                            'waiving/previously_waived', "old_selected", "old")
+
+    context = get_result_context(request, sb)
+
+    w = get_last_waiver(result_group_object.checker_group,
+                        sb.scan.package,
+                        sb.scan.tag.release)
+
+    place_string = w.result_group.result.scanbinding.scan.nvr
+
+    context['waivers_place'] = place_string
+    context['matching_waiver'] = w
+
     context['active_group'] = ResultGroup.objects.get(id=result_group_id)
     context['defects'] = Defect.objects.filter(result_group=result_group_id,
                                                state=DEFECT_STATES['NEW']).\
@@ -322,7 +333,7 @@ def previously_waived(request, sb_id, result_group_id):
     form = WaiverForm()
     context['form'] = form
     context['display_form'] = True
-    context['display_waivers'] = False
+    context['display_waivers'] = True
     context['old_selected'] = "selected"
     context['defects_list_class'] = "old"
     return render_to_response("waiving/waiver.html",
