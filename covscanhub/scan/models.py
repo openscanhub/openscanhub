@@ -336,9 +336,12 @@ counted in statistics.")
             key = 'finished'
         if self.is_errata_base_scan():
             return
-        post_qpid_message(SCAN_STATES.get_value(self.state),
-                          ETMapping.objects.get(latest_run=self.scanbinding),
-                          key)
+        if AppSettings.setting_send_bus_message():
+            post_qpid_message(
+                SCAN_STATES.get_value(self.state),
+                ETMapping.objects.get(latest_run=self.scanbinding),
+                key
+            )
 
     def set_state(self, state):
         if state == self.state:
@@ -373,6 +376,7 @@ counted in statistics.")
                 last_finished.save()
                 break
             last_finished = last_finished.get_child_scan()
+
 
 class ScanBinding(models.Model):
     """
@@ -439,3 +443,33 @@ class ETMapping(models.Model):
     def __unicode__(self):
         return u"#%d Advisory: %s %s" % (self.id, self.advisory_id,
                                          self.latest_run)
+
+
+class AppSettings(models.Model):
+    """
+    Settings for application, these might be tuned live.
+
+    SEND_EMAIL { Y, N }
+    SEND_BUS_MESSAGE { Y, N }
+    CHECK_USER_CAN_SUBMIT_SCAN { Y, N }
+    """
+    key = models.CharField(max_length=32, blank=False, null=False)
+    value = models.CharField(max_length=64, blank=True, null=True)
+
+    def __unicode__(self):
+        return u"%s = %s" % (self.key, self.value)
+
+    @classmethod
+    def setting_send_mail(cls):
+        """Should hub send mails when scan finishes?"""
+        return cls.objects.get(key="SEND_MAIL").value.upper() == "Y"
+
+    @classmethod
+    def setting_send_bus_message(cls):
+        """Should hub post messages to bus whenever scan's state changes?"""
+        return cls.objects.get(key="SEND_BUS_MESSAGE").value.upper() == "Y"
+
+    @classmethod
+    def setting_user_can_submit(cls):
+        """Should hub check whether user is permit to submit scan?"""
+        return cls.objects.get(key="CHECK_USER_CAN_SUBMIT_SCAN").value.upper() == "Y"

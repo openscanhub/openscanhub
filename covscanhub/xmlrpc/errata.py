@@ -5,7 +5,8 @@ import logging
 
 from covscanhub.errata.service import create_errata_scan
 from covscanhub.other.exceptions import BrewException
-from covscanhub.scan.models import SCAN_TYPES, SCAN_STATES, ETMapping
+from covscanhub.scan.models import SCAN_TYPES, SCAN_STATES, ETMapping, \
+    AppSettings
 
 from kobo.django.xmlrpc.decorators import login_required
 
@@ -50,7 +51,8 @@ def create_errata_diff_scan(request, kwargs):
      for more info see http://etherpad.corp.redhat.com/Covscan-ErrataTool-Integration
     """
     logger.info('[CREATE_SCAN] %s', kwargs)
-    if not request.user.has_perm('scan.errata_xmlrpc_scan'):
+    if not AppSettings.setting_user_can_submit or \
+            not request.user.has_perm('scan.errata_xmlrpc_scan'):
         response = {}
         response['status'] = 'ERROR'
         response['message'] = 'You are not authorized to execute this \

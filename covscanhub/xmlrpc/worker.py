@@ -10,7 +10,7 @@ from covscanhub.scan.service import extract_logs_from_tarball, \
     prepare_and_execute_diff
 from covscanhub.scan.notify import send_task_notification, \
     send_scan_notification
-from covscanhub.scan.models import SCAN_STATES, SCAN_TYPES, Scan
+from covscanhub.scan.models import SCAN_STATES, SCAN_TYPES, Scan, AppSettings
 from covscanhub.scan.xmlrpc_helper import finish_scan as h_finish_scan,\
     fail_scan as h_fail_scan
 
@@ -35,10 +35,12 @@ def email_task_notification(request, task_id):
 
 @validate_worker
 def email_scan_notification(request, scan_id):
-    scan = Scan.objects.get(id=scan_id)
-    if scan.scan_type == SCAN_TYPES['ERRATA']:
-        if scan.state not in (SCAN_STATES['FAILED'], SCAN_STATES['CANCELED']):
-            return send_scan_notification(request, scan_id)
+    if AppSettings.setting_send_mail():
+        scan = Scan.objects.get(id=scan_id)
+        if scan.scan_type == SCAN_TYPES['ERRATA']:
+            if scan.state not in (SCAN_STATES['FAILED'],
+                                  SCAN_STATES['CANCELED']):
+                return send_scan_notification(request, scan_id)
 
 
 @validate_worker

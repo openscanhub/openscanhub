@@ -19,7 +19,7 @@ from kobo.hub.models import Arch, Channel
 from covscanhub.waiving.models import Checker, CheckerGroup
 from covscanhub.stats.models import StatType
 from covscanhub.scan.models import Tag, SystemRelease, MockConfig, \
-    ReleaseMapping
+    ReleaseMapping, AppSettings
 from covscanhub.stats.service import get_mapping
 from covscanhub.other.constants import DEFAULT_CHECKER_GROUP
 
@@ -44,6 +44,9 @@ def set_options():
                       action="store_true", dest="mock", default=False)
     parser.add_option("-r", "--release", help="configure release hierarchy",
                       action="store_true", dest="release", default=False)
+    parser.add_option("-S", "--default-settings",
+                      help="set hub's default settings",
+                      action="store_true", dest="settings", default=False)
     (options, args) = parser.parse_args()
 
     return parser, options, args
@@ -159,6 +162,13 @@ def release_tree():
             tag.save()
 
 
+def set_default_settings():
+    AppSettings.objects.get_or_create(key="SEND_MAIL", value="N")
+    AppSettings.objects.get_or_create(key="SEND_BUS_MESSAGE", value="N")
+    AppSettings.objects.get_or_create(key="CHECK_USER_CAN_SUBMIT_SCAN",
+                                      value="N")
+
+
 def set_statistics():
     # function = (key, description)
     for desc in get_mapping().itervalues():
@@ -167,8 +177,6 @@ def set_statistics():
             key=desc[0], short_comment=desc[1], comment=desc[2],
             group=desc[3], order=desc[4], is_release_specific=(
                 'RELEASE' in desc[0]))
-        if created:
-            s.save()
 
 
 def main():
@@ -183,6 +191,8 @@ couple of seconds, please be patient.'
         set_statistics()
     if options.release:
         release_tree()
+    if options.settings:
+        set_default_settings()
     if options.mock:
         download_mock_configs()
 
