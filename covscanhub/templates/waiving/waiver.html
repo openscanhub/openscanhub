@@ -90,10 +90,20 @@
 {% if user.is_authenticated %}
 
 {% if display_form %}
-<form action="{% url waiving/waiver sb.id active_group.id %}" method="post">{% csrf_token %}
+<form action=
+    {% if defects_list_class == "new" %}
+    "{% url waiving/waiver sb.id active_group.id %}"
+    {% else %}
+    "{% url waiving/previously_waived sb.id active_group.id %}"
+    {% endif %}
+ method="post">{% csrf_token %}
 {{ form.as_p }}
 <input type="submit" value="Submit" name="submit" />
+
+{% if defects_list_class == "new" %}
 <input type="submit" value="Submit and show next" name="submit_next" />
+{% endif %}
+
 </form>
 {% else %}{% if form_message %}
 <h3>{{ form_message }}</h3>
