@@ -188,6 +188,7 @@ html body div#content div#result_links {
     border: 1px solid #FFCC33;
     padding: 1em;
     text-align: center;
+    margin: 0 5em 1em;
 }
 
 table.summary {
