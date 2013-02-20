@@ -9,6 +9,11 @@ __all__ = (
 
 
 def depend_on(package_name, dependency):
+    """
+    TODO: check dependency from other side: check what depends on glibc and
+          find out if `package_name` is in there, because this might not work
+          for parent meta packages etc.
+    """
     yb = yum.YumBase()
     yb.preconf.debuglevel = 0
     yb.setCacheDir()
@@ -16,7 +21,6 @@ def depend_on(package_name, dependency):
     for pkg in pkgs:
         # alternative: for req in pkg.requires:
         for req in pkg.returnPrco('requires'):
-            print req
             if req[0].startswith(dependency):
                 return True
     return False
