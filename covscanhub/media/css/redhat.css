@@ -22,6 +22,26 @@ label {
     color: black;
 }
 
+.red_font {
+    color: #EE0000;
+}
+
+.light_green_font {
+    color: #00DD00;
+}
+
+.green_font {
+    color: #007700;
+}
+
+.light_green_bg {
+    background-color: #00DD00;
+}
+
+.green_bg {
+    background-color: #007700;
+}
+
 .light_grey_bg {
     background-color: #CCC;
 }
@@ -36,12 +56,16 @@ label {
 
 /* STATES */
 
+.empty {
+    background-color: #DDDDDD;
+}
+
 .bg_WAIVED {
     background-color: #00FF00;
 }
 
 .bg_PASSED {
-    background-color: #DDDDDD;
+    background-color: #AAFFAA;
 }
 
 .bg_PREVIOUSLY_WAIVED {
@@ -49,7 +73,7 @@ label {
 }
 
 .bg_NEEDS_INSPECTION {
-    background-color: #AAFFAA;
+    background-color: #FFEB66;
 }
 
 .bg_IS_A_BUG {
@@ -82,48 +106,41 @@ label {
 
 /*title*/
 
-.result_target_nvr {
-    color: #00DD00;
-}
-
-.result_base_nvr {
-    color: #EE0000;
-}
-
 .info_box {
     font-weight: bold;
     padding: 0.5em;
 }
 
+/* scan state & product release */
+
 #scan_state {
-    float: right;
-    margin-right: 0.5em;
+    margin-right: 1.5em;
 }
 
 #scan_release {
-    float: right;
-    background-color: #FF3333;
+    margin-right: 1.5em;
 }
 
 /*bugzilla*/
 
-#bz_wrapper a:link, #bz_wrapper a:visited {
-    color: white;
+#box_wrapper a:link, #box_wrapper a:visited {
+    background-color: #EEE;
 }
 
-#bz_number {
-    font-weight: bold;
-    background-color: #9E292B;
-    padding: 0.4em;
+#box_wrapper a:hover {
+    background-color: #CCC;
 }
 
-#bz_wrapper {
+#bz_number, #bz_update, #bz_bugs_count {
+    background-color: #EEE;
+}
+
+#bz_bugs_count {
+    margin-right: 1.5em;
+}
+
+#box_wrapper {
     margin-bottom: 1.5em;
-}
-
-#bz_update, #bz_create {
-    padding: 0.4em;
-    background-color: #9E292B;
 }
 
 /*tabs*/
@@ -135,20 +152,33 @@ label {
 }
 
 #tabContainer ul li {
+    border-left: 2px solid #CCCCCC;
+    border-right: 2px solid #CCCCCC;
+    border-top: 2px solid #CCCCCC;
     padding: 7px 0;
     width: 15em;
     display:inline-block;
     color:#000;
     background: #EEE;
     cursor:pointer;
+    font-weight: 500;
 }
 
 #tabContainer ul li:hover{
-	background: #CCC;
+    background: #CCC;
 }
 
 #tabContainer ul li.selected {
-	background: #CCC;
+    background: #CCC;
+    font-weight: 900;
+}
+
+/* links to other runs */
+
+html body div#content div#result_links {
+    font-size: 11pt;
+    margin: 2em 0;
+    text-align: center;
 }
 
 /*waiver's summary table*/
@@ -156,14 +186,13 @@ label {
 #status_messages {
     background-color: #FFFFBB;
     border: 1px solid #FFCC33;
-    color: red;
     padding: 1em;
     text-align: center;
 }
 
 table.summary {
     margin-top: -2px;
-    font-size: 0.9em;
+    font-size: 11pt;
     border-spacing: 0px;
     border-collapse: separate;
     width: 100%;
@@ -171,17 +200,13 @@ table.summary {
 
 table.summary th {
     border: 2px solid #FFF;
-    font-size: 18pt;
-    height: 2em;
+    font-size: 16pt;
+    height: 1.8em;
 }
 
 table.summary td {
     padding: 0em 0em 0em 0.6em;
-    /*border: 1px solid #999;*/
     border: 2px solid white;
-    font-weight: bolder;
-    font-size: 11pt;
-    /*width: 24em;*/
     min-width: 21em;
     height: 2.5em;
     line-height: 2.5em;
@@ -210,7 +235,8 @@ table.legend td {
 }
 
 table #active {
-    border: 2px solid #0000FF;
+    font-weight: bolder;
+    border: 2px solid #666666;
 }
 
 table span.FIXED {
@@ -218,7 +244,7 @@ table span.FIXED {
 }
 
 table span.NEW {
-    color: #FF0000;
+    color: #EE0000;
 }
 
 table span.defects_increased {

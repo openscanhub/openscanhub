@@ -2,26 +2,27 @@
 {% load i18n %}
 
 {% block content %}
-<span id="scan_release" class="info_box white_font">{{ sb.scan.tag.release.product }} release {{ sb.scan.tag.release.release }}</span>
-<span id="scan_state" class="info_box black_font bg_{{ sb.scan.get_state_display }}">{{ sb.scan.get_state_display }}</span>
 <h1>{{ compare_title }}</h1>
-
 
 {% if sb.result %} {# display BZ related info only if scan finished #}
 
-<div id="bz_wrapper">
+<div id="box_wrapper">
     {% if not bugzilla %}
         {% if unreported_bugs_count > 0 %}
-    <a id="bz_create" href="{% url waiving/new_bz sb.scan.package.id sb.scan.tag.release.id %}">Create Bugzilla</a>
-    <span id="bz_bugs_count">{{ unreported_bugs_count }}</span>
+    <a id="bz_create" class="info_box" href="{% url waiving/new_bz sb.scan.package.id sb.scan.tag.release.id %}">Create Bugzilla</a>
+    <span id="bz_bugs_count" class="info_box">{{ unreported_bugs_count }}</span>
         {% endif %}
     {% else %}
-    <a id="bz_number" href="https://bugzilla.redhat.com/show_bug.cgi?id={{ bugzilla.number }}">BZ#{{ bugzilla.number }}</a>
+    <a id="bz_number" class="info_box"  href="https://bugzilla.redhat.com/show_bug.cgi?id={{ bugzilla.number }}">BZ#{{ bugzilla.number }}</a>
         {% if unreported_bugs_count > 0 %}
-        <a id="bz_update" href="{% url waiving/update_bz sb.scan.package.id sb.scan.tag.release.id %}">Update Bugzilla</a>
-        <span id="bz_bugs_count">{{ unreported_bugs_count }}</span>
+        <a id="bz_update" class="info_box" href="{% url waiving/update_bz sb.scan.package.id sb.scan.tag.release.id %}">Update Bugzilla</a>
+        <span id="bz_bugs_count" class="info_box">{{ unreported_bugs_count }}</span>
         {% endif %}
     {% endif %}
+
+    <span id="scan_release" class="info_box black_font light_grey_bg">{{ sb.scan.tag.release.product }} release {{ sb.scan.tag.release.release }}</span>
+    <span id="scan_state" class="info_box black_font bg_{{ sb.scan.get_state_display }}">{{ sb.scan.get_state_display }}</span>
+
 </div>
 
 {% endif %}
@@ -56,14 +57,14 @@
 {% if sb.result %} {# display defects list only if scan finished #}
 
 {% if status_message %}
-<div id="status_messages">{{ status_message }}</div>
+<div id="status_messages" class="red_font">{{ status_message }}</div>
 {% endif %}
 
 <div id="tabContainer" >
   <ul class="digiTabs" id="sidebarTabs">
     <li id="tab1" class="{{ new_selected }}">New</li>
     <li id="tab2" class="{{ fixed_selected }}">Fixed</li>
-    <li id="tab3" class="{{ old_selected }}">Old</li>
+    <li id="tab3" class="{{ old_selected }}">Previously waived</li>
   </ul>
   <div id="tabContent"></div>
 </div>
@@ -92,7 +93,7 @@
             {% endif %}
         </td>
         {% else %}
-        <td class="bg_PASSED">
+        <td class="empty">
             {{ group.name }}
             {% if data.diff_state %}
             <span class="{{ data.diff_state }}">{{ data.diff_count }}</span>
@@ -130,7 +131,7 @@
             {% endif %}
         </td>
         {% else %}
-        <td class="bg_PASSED">
+        <td class="empty">
             {{ group.name }}
             {% if data.diff_state %}
             <span class="{{ data.diff_state }}">{{ data.diff_count }}</span>
@@ -168,7 +169,7 @@
             {% endif %}
         </td>
         {% else %}
-        <td class="bg_PASSED">
+        <td class="empty">
             {{ group.name }}
             {% if data.diff_state %}
             <span class="{{ data.diff_state }}">{{ data.diff_count }}</span>

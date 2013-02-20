@@ -42,8 +42,8 @@ def get_compare_title(nvr, base_nvr):
         base_numbers = re_base.group(outer_index).split('.')
         # mark rest if diff was already found
         if diff_found:
-            result_nvr += display_diff('result_target_nvr', nvr_numbers)
-            result_base += display_diff('result_base_nvr', base_numbers)
+            result_nvr += display_diff('light_green_font', nvr_numbers)
+            result_base += display_diff('red_font', base_numbers)
         else:
             while True:
                 try:
@@ -58,13 +58,13 @@ def get_compare_title(nvr, base_nvr):
                         diff_found = True
                         try:
                             result_nvr += display_diff(
-                                'result_target_nvr',
+                                'light_green_font',
                                 nvr_numbers[inner_index:len(nvr_numbers)])
                         except IndexError:
                             pass
                         try:
                             result_base += display_diff(
-                                'result_base_nvr',
+                                'red_font',
                                 base_numbers[inner_index:len(base_numbers)])
                         except IndexError:
                             pass
@@ -81,9 +81,9 @@ def get_compare_title(nvr, base_nvr):
                 else:
                     # we have found diff, mark rest
                     diff_found = True
-                    result_nvr += display_diff('result_target_nvr',
+                    result_nvr += display_diff('light_green_font',
                                                nvr_numbers[inner_index:],)
-                    result_base += display_diff('result_base_nvr',
+                    result_base += display_diff('red_font',
                                                 base_numbers[inner_index:])
                     break
                 inner_index += 1

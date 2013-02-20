@@ -154,7 +154,8 @@ def results_list(request):
     return object_list(request, **args)
 
 
-def waiver_post(request, sb, result_group_object):
+def waiver_post(request, sb, result_group_object, url_name, url_name_next,
+                active_tab, defects_list_class):
     form = WaiverForm(request.POST)
     if form.is_valid():
         wl = WaivingLog()
@@ -191,22 +192,26 @@ def waiver_post(request, sb, result_group_object):
             "Waiver (%s) successfully submitted." % (
             w.message[:50].rstrip() + '... ' if len(w.message) > 50
             else w.message)
+
+        prim_url = reverse(url_name, args=(sb.id, ),
+                           kwargs={'active_tab': active_tab,
+                                   "defects_list_class": defects_list_class})
+
         rgs = get_unwaived_rgs(result_group_object.result)
         if not rgs:
             request.session['status_message'] += " Everything is waived."
         if 'submit_next' in request.POST:
             if rgs:
-                return HttpResponseRedirect(reverse('waiving/waiver',
-                    args=(sb.id, rgs[0].id)))
-        return HttpResponseRedirect(reverse('waiving/result',
-                                            args=(sb.id,)))
+                return HttpResponseRedirect(reverse(url_name_next,
+                                                    args=(sb.id, rgs[0].id)))
+        return HttpResponseRedirect(prim_url)
     else:
         request.session['status_message'] = "You have entered invalid data."
-        return HttpResponseRedirect(reverse('waiving/result',
-                                    args=(sb.id,)))
+        return HttpResponseRedirect(prim_url)
 
 
-def waiver(request, sb_id, result_group_id):
+def waiver(request, sb_id, result_group_id, active_tab="new_selected",
+           defects_list_class="new"):
     """
     Display waiver (for new defects) for specified result & group
     """
@@ -216,32 +221,21 @@ def waiver(request, sb_id, result_group_id):
     result_group_object = get_object_or_404(ResultGroup, id=result_group_id)
 
     if request.method == "POST":
-        return waiver_post(request, sb, result_group_object)
+        return waiver_post(request, sb, result_group_object, "waiving/result",
+                           'waiving/waiver', "new_selected", "new")
 
-    if result_group_object.is_previously_waived():
-        w = get_last_waiver(result_group_object.checker_group,
-                            sb.scan.package,
-                            sb.scan.tag.release)
-
-        place_string = w.result_group.result.scanbinding.scan.nvr
-
-        context['waivers_place'] = place_string
-        context['matching_waiver'] = w
-        context['display_form'] = False
-        context['display_waivers'] = False
+    # this could help user to determine if this is FP or not
+    previous_waivers = result_group_object.previous_waivers()
+    if previous_waivers:
+        context['previous_waivers'] = previous_waivers
+    context['display_waivers'] = True
+    if sb.scan.enabled:
+        form = WaiverForm()
+        context['form'] = form
+        context['display_form'] = True
     else:
-        # this could help user to determine if this is FP or not
-        previous_waivers = result_group_object.previous_waivers()
-        if previous_waivers:
-            context['previous_waivers'] = previous_waivers
-        context['display_waivers'] = True
-        if sb.scan.enabled:
-            form = WaiverForm()
-            context['form'] = form
-            context['display_form'] = True
-        else:
-            context['display_form'] = False
-            context['form_message'] = 'This is not the newest scan.'
+        context['display_form'] = False
+        context['form_message'] = 'This is not the newest scan.'
 
     # merge already created context with result context
     context = dict(context.items() + get_result_context(request, sb).items())
@@ -257,7 +251,8 @@ def waiver(request, sb_id, result_group_id):
     logger.debug('Displaying waiver for sb %s, result-group %s',
                  sb, result_group_object)
 
-    context['defects_list_class'] = "new"
+    context['defects_list_class'] = defects_list_class
+    context[active_tab] = "selected"
 
     return render_to_response("waiving/waiver.html",
                               context,
@@ -312,16 +307,22 @@ def previously_waived(request, sb_id, result_group_id):
     Display fixed defects
     """
     sb = get_object_or_404(ScanBinding, id=sb_id)
+
     context = get_result_context(request, sb)
 
+    result_group_object = get_object_or_404(ResultGroup, id=result_group_id)
+
+    if request.method == "POST":
+        return waiver_post(request, sb, result_group_object, "waiving/result",
+                           'waiving/previously_waived', "old_selected", "old")
     context['active_group'] = ResultGroup.objects.get(id=result_group_id)
     context['defects'] = Defect.objects.filter(result_group=result_group_id,
                                                state=DEFECT_STATES['NEW']).\
                                                order_by("order")
-    context['display_form'] = False
+    form = WaiverForm()
+    context['form'] = form
+    context['display_form'] = True
     context['display_waivers'] = False
-    context['form_message'] = "This group can't be waived, because these \
-defects are already fixed."
     context['old_selected'] = "selected"
     context['defects_list_class'] = "old"
     return render_to_response("waiving/waiver.html",
