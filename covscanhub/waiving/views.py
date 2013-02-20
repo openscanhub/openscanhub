@@ -193,10 +193,11 @@ def waiver_post(request, sb, result_group_object, url_name, url_name_next,
             w.message[:50].rstrip() + '... ' if len(w.message) > 50
             else w.message)
 
-        prim_url = reverse(url_name, args=(sb.id, ),
-                           kwargs={'active_tab': active_tab,
-                                   "defects_list_class": defects_list_class})
-
+        request.session['active_tab'] = active_tab
+        print "active_tab set to: ", request.session.get('active_tab')
+        request.session['defects_list_class'] = defects_list_class
+        print "defects_list_class set to: ", request.session.get('defects_list_class')
+        prim_url = reverse(url_name, args=(sb.id, ))
         rgs = get_unwaived_rgs(result_group_object.result)
         if not rgs:
             request.session['status_message'] += " Everything is waived."
@@ -210,8 +211,7 @@ def waiver_post(request, sb, result_group_object, url_name, url_name_next,
         return HttpResponseRedirect(prim_url)
 
 
-def waiver(request, sb_id, result_group_id, active_tab="new_selected",
-           defects_list_class="new"):
+def waiver(request, sb_id, result_group_id):
     """
     Display waiver (for new defects) for specified result & group
     """
@@ -251,8 +251,8 @@ def waiver(request, sb_id, result_group_id, active_tab="new_selected",
     logger.debug('Displaying waiver for sb %s, result-group %s',
                  sb, result_group_object)
 
-    context['defects_list_class'] = defects_list_class
-    context[active_tab] = "selected"
+    context['defects_list_class'] = 'new'
+    context['active_tab'] = "selected"
 
     return render_to_response("waiving/waiver.html",
                               context,
@@ -310,6 +310,7 @@ def previously_waived(request, sb_id, result_group_id):
     result_group_object = get_object_or_404(ResultGroup, id=result_group_id)
 
     if request.method == "POST":
+        print "POST"
         result_group_object.defect_type = DEFECT_STATES['NEW']
         result_group_object.save()
         return waiver_post(request, sb, result_group_object, "waiving/result",
@@ -345,9 +346,12 @@ def result(request, sb_id):
     """
     Display all the tests for specified scan
     """
+    #print "defects_list_class: ", request.session.get('defects_list_class')
+    active_tab = request.session.pop("active_tab", "new_selected")
+    #defects_list_class = request.session.pop("defects_list_class", "new")
     context = get_result_context(request, get_object_or_404(ScanBinding,
                                                             id=sb_id))
-    context['new_selected'] = "selected"
+    context[active_tab] = "selected"
     return render_to_response(
         "waiving/result.html",
         context,
