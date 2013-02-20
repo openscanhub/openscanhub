@@ -124,13 +124,13 @@ def release_tree():
     r = ReleaseMapping()
     r.template = "RHEL-%s.%s"
     r.priority = 1
-    r.release_tag = "^RHEL-(\d+).(\d+)"
+    r.release_tag = "^RHEL-(\d+)\.(\d+)\.0$"
     r.save()
 
     r = ReleaseMapping()
     r.template = "RHEL-%s.%s"
     r.priority = 2
-    r.release_tag = "^FAST(\d+).(\d+)"
+    r.release_tag = "^FAST(\d+)\.(\d+)$"
     r.save()
 
     x_list = [5, 6, 7]
