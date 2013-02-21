@@ -194,10 +194,9 @@ def waiver_post(request, sb, result_group_object, url_name, url_name_next,
             else w.message)
 
         request.session['active_tab'] = active_tab
-        print "active_tab set to: ", request.session.get('active_tab')
         request.session['defects_list_class'] = defects_list_class
-        print "defects_list_class set to: ", request.session.get('defects_list_class')
-        prim_url = reverse(url_name, args=(sb.id, ))
+
+        prim_url = reverse("waiving/result", args=(sb.id, ))
         rgs = get_unwaived_rgs(result_group_object.result)
         if not rgs:
             request.session['status_message'] += " Everything is waived."
@@ -221,7 +220,7 @@ def waiver(request, sb_id, result_group_id):
     result_group_object = get_object_or_404(ResultGroup, id=result_group_id)
 
     if request.method == "POST":
-        return waiver_post(request, sb, result_group_object, "waiving/result",
+        return waiver_post(request, sb, result_group_object,
                            'waiving/waiver', "new_selected", "new")
 
     # this could help user to determine if this is FP or not
@@ -304,16 +303,15 @@ defects are already fixed."
 
 def previously_waived(request, sb_id, result_group_id):
     """
-    Display fixed defects
+    Display previously waived defects
     """
     sb = get_object_or_404(ScanBinding, id=sb_id)
     result_group_object = get_object_or_404(ResultGroup, id=result_group_id)
 
     if request.method == "POST":
-        print "POST"
-        result_group_object.defect_type = DEFECT_STATES['NEW']
+        result_group_object.defect_type = DEFECT_STATES['PREVIOUSLY_WAIVED']
         result_group_object.save()
-        return waiver_post(request, sb, result_group_object, "waiving/result",
+        return waiver_post(request, sb, result_group_object,
                            'waiving/previously_waived', "old_selected", "old")
 
     context = get_result_context(request, sb)
@@ -329,7 +327,7 @@ def previously_waived(request, sb_id, result_group_id):
 
     context['active_group'] = ResultGroup.objects.get(id=result_group_id)
     context['defects'] = Defect.objects.filter(result_group=result_group_id,
-                                               state=DEFECT_STATES['NEW']).\
+                                               state=DEFECT_STATES['PREVIOUSLY_WAIVED']).\
                                                order_by("order")
     form = WaiverForm()
     context['form'] = form
