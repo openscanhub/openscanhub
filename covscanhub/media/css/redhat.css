@@ -418,8 +418,22 @@ div#content div#defects div h3 {
     box-shadow: 0 0 5px #FFB0B0;
 }
 
+#content div#defects div.PREVIOUSLY_WAIVED {
+    background-color: #DDDDDD;
+    border: 2px solid #BBBBBB;
+    box-shadow: 0 0 5px #BBBBBB;
+}
+
 div#content div#defects div.NEW h3 {
     background-color: #FFEEEE;
+}
+
+div#content div#defects div.PREVIOUSLY_WAIVED h3 {
+    background-color: #EEEEEE;
+}
+
+div#defects div.FIXED h3 {
+    background-color: #EEFFEE;
 }
 
 /**/
