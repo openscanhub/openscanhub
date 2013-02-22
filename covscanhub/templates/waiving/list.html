@@ -4,6 +4,12 @@
 {% block content %}
 <h2>{% trans title %}</h2>
 
+<form method="GET" target="" style="float: left;">
+{{ search_form.search }}
+<input type="submit" value="{% trans "Search" %}" />
+{% if user.is_authenticated %}<br />{{ search_form.my }} Show only my scans{% endif %}
+</form>
+
 {% include "pagination.html" %}
 {% include "waiving/list_include.html" %}
 {% include "pagination.html" %}

@@ -22,7 +22,7 @@ from covscanhub.other.shortcuts import get_or_none
 from covscanhub.waiving.bugzilla_reporting import create_bugzilla, \
     get_unreported_bugs, update_bugzilla
 from covscanhub.waiving.models import *
-from covscanhub.waiving.forms import WaiverForm
+from covscanhub.waiving.forms import WaiverForm, ScanListSearchForm
 from covscanhub.waiving.service import get_unwaived_rgs, get_last_waiver, \
     display_in_result, get_defects_diff_display, waiver_condition
 
@@ -139,16 +139,21 @@ def results_list(request):
     """
     Display list of all target results
     """
+    search_form = ScanListSearchForm(request.GET)
+
     args = {
         # order by scan__date, because result might not exist
         "queryset": ScanBinding.objects.exclude(
-            scan__base__isnull=True).order_by('-scan__date_submitted'),
+            scan__base__isnull=True).filter(
+                search_form.get_query(request)).order_by(
+                    '-scan__date_submitted'),
         "allow_empty": True,
         "paginate_by": 50,
         "template_name": "waiving/list.html",
         "template_object_name": "scanbinding",
         "extra_context": {
             "title": "List of all results",
+            "search_form": search_form,
         }
     }
     return object_list(request, **args)
