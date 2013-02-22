@@ -66,13 +66,22 @@ MIDDLEWARE_CLASSES = (
     # kobo related middleware:
     'kobo.hub.middleware.WorkerMiddleware',
     'kobo.django.menu.middleware.MenuMiddleware',
+    # require login for every view
+#    'covscanhub.middleware.LoginRequiredMiddleware',
 )
 
 ROOT_URLCONF = 'covscanhub.urls'
 ROOT_MENUCONF = 'covscanhub.menu'
 
-TEMPLATE_CONTEXT_PROCESSORS = (
+LOGIN_URL = '/auth/krb5login?next=/waiving'
+"""
+LOGIN_EXEMPT_URLS = (
+ r'^about\.html$',
+ r'^legal/', # allow any URL under /legal/*
+)
+"""
 
+TEMPLATE_CONTEXT_PROCESSORS = (
     #   django.core.context_processors
     # was moved to
     #   django.contrib.auth.context_processors
