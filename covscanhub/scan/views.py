@@ -30,23 +30,6 @@ def mock_config_list(request):
     return object_list(request, **args)
 
 
-def scan_list(request):
-
-    args = {
-        "queryset": ScanBinding.objects.exclude(scan__base__isnull=True).\
-            order_by('-scan__date_submitted'),
-        "allow_empty": True,
-        "paginate_by": 50,
-        "template_name": "scan/list.html",
-        "template_object_name": "sb",
-        "extra_context": {
-            "title": "List errata scans",
-        }
-    }
-
-    return object_list(request, **args)
-
-
 def scan_detail(request, id):
 
     args = {
