@@ -306,7 +306,7 @@ window.onload=function() {
       };
     })(tabs[i]);
   }
-/*
+{% block comment %}
   // get tab container
   var container = document.getElementById("tabContainer");
     // set current tab
@@ -322,7 +322,7 @@ window.onload=function() {
     for (var i = 1; i < pages.length; i++) {
       pages[i].style.display="none";
     }
-*/
+{% endblock %}
 }
 </script>
 
