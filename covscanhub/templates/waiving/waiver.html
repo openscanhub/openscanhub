@@ -11,7 +11,7 @@
 <div id="defects">
 
 {% for defect in defects %}
-    <div name="defects" class="{{ defect.get_state_display }}">
+    <div class="{{ defect.get_state_display }}">
         <h3>{{ defect.order }}.
             Defect type: <a href="http://cov01.lab.eng.brq.redhat.com:8080/docs/en/cov_checker_ref.html#static_c_checker_{{ defect.checker.name }}">{{ defect.checker.name }}</a>
         </h3>
