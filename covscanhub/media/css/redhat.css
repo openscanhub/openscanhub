@@ -14,6 +14,65 @@ label {
 
 /* SHORTCUTS */
 
+.margin_left {
+    margin-left: 1em;
+}
+
+.hide_text {
+    display: none;
+}
+
+.show_text {
+    display: inline;
+}
+
+.currently_hiding .hide_text {
+    display: inline;
+}
+
+.currently_hiding .show_text {
+    display: none;
+}
+
+.float_right {
+    float: right;
+}
+
+.padding_1em {
+    padding: 1em;
+}
+
+.margin_1em {
+    margin: 1em;
+}
+
+.btn {
+    -moz-border-bottom-colors: none;
+    -moz-border-left-colors: none;
+    -moz-border-right-colors: none;
+    -moz-border-top-colors: none;
+    background-color: #F5F5F5;
+    background-image: -moz-linear-gradient(center top , #FFFFFF, #E6E6E6);
+    background-repeat: repeat-x;
+    border-color: #E6E6E6 #E6E6E6 #B3B3B3;
+    border-image: none;
+    border-radius: 4px 4px 4px 4px;
+    border-style: solid;
+    border-width: 1px;
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.2) inset, 0 1px 2px rgba(0, 0, 0, 0.05);
+    color: #333333;
+    cursor: pointer;
+    /*display: inline-block;*/
+    font-size: 13px;
+    line-height: 18px;
+    margin-bottom: 0;
+    padding: 4px 10px;
+    text-align: center;
+    text-decoration: none;
+    text-shadow: 0 1px 1px rgba(255, 255, 255, 0.75);
+    vertical-align: middle;
+}
+
 .white_font {
     color: white;
 }
@@ -186,7 +245,6 @@ html body div#content div#result_links {
 #status_messages {
     background-color: #FFFFBB;
     border: 1px solid #FFCC33;
-    padding: 1em;
     text-align: center;
     margin: 0 5em 1em;
 }
@@ -315,17 +373,25 @@ table span.diff_state_neutral {
     padding: 2px 3px 1px;
 }
 
-div.waiver span.IS_A_BUG {
+.button_line {
+    line-height: 30px;
+}
+
+.transparent {
+    opacity: 0.7;
+}
+
+div.waiving_log span.IS_A_BUG {
     background-color: #FFB7B7;
     color: #DD0000;
 }
 
-div.waiver span.NOT_A_BUG {
+div.waiving_log span.NOT_A_BUG {
     background-color: #AAFFAA;
     color: #009900;
 }
 
-div.waiver span.FIX_LATER {
+div.waiving_log span.FIX_LATER {
     background-color: #F5F500;
     color: #AA6600;
 }
@@ -350,11 +416,6 @@ div.waiving_log span.change {
 }
 
 .delete_link {
-    float: right;
-    padding: 0.3em;
-    border: 1px solid red;
-    background-color: #FFBBBB;
-    text-decoration: none;
     color: red;
 }
 
@@ -387,19 +448,26 @@ div.waiving_log span.change {
 
 /*defects presentation*/
 
-#content div#defects ul {
+div#content div#defects div.events_list {
     font-family: "Courier New",monospace;
     margin: 1em;
     padding-left: 1.5em;
 }
 
-#content div#defects div {
+#content div#defects div.defect {
     margin: 1em 3em 1em 2em;
 }
 
 div#content div#defects div h3 {
     margin: 0;
-    padding: 1em;
+}
+
+div#content div#defects div.key_event {
+    border-bottom: 1px solid #666666;
+    border-top: 1px solid #666666;
+    font-weight: bold;
+    margin: 3px 0;
+    padding: 3px 0;
 }
 
 #content div#defects div.FIXED {
@@ -425,15 +493,15 @@ div#content div#defects div h3 {
 }
 
 div#content div#defects div.NEW h3 {
-    background-color: #FFEEEE;
+    /*background-color: #FFEEEE;*/
 }
 
 div#content div#defects div.PREVIOUSLY_WAIVED h3 {
-    background-color: #EEEEEE;
+    /*background-color: #EEEEEE;*/
 }
 
 div#defects div.FIXED h3 {
-    background-color: #EEFFEE;
+    /*background-color: #EEFFEE;*/
 }
 
 /**/

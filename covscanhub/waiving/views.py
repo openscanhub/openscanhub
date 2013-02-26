@@ -225,7 +225,7 @@ def waiver(request, sb_id, result_group_id):
     result_group_object = get_object_or_404(ResultGroup, id=result_group_id)
 
     if request.method == "POST":
-        return waiver_post(request, sb, result_group_object,
+        return waiver_post(request, sb, result_group_object, 'waiving/waiver',
                            'waiving/waiver', "new_selected", "new")
 
     # this could help user to determine if this is FP or not
@@ -278,6 +278,11 @@ def remove_waiver(request, waiver_id):
         ResultGroup.objects.filter(id=waiver.result_group.id).update(
             state=RESULT_GROUP_STATES['NEEDS_INSPECTION'])
         sb.scan.set_state(SCAN_STATES['DISPUTED'])
+    request.session['status_message'] = \
+        "Waiver (%s) invalidated." % (
+        waiver.message[:50].rstrip() + '... ' if len(waiver.message) > 50
+        else waiver.message)
+
     return HttpResponseRedirect(
         reverse('waiving/result',
                 args=(waiver.result_group.result.scanbinding.id,))
@@ -317,7 +322,8 @@ def previously_waived(request, sb_id, result_group_id):
         result_group_object.defect_type = DEFECT_STATES['PREVIOUSLY_WAIVED']
         result_group_object.save()
         return waiver_post(request, sb, result_group_object,
-                           'waiving/previously_waived', "old_selected", "old")
+                           'waiving/previously_waived', 'waiving/waiver',
+                           "old_selected", "old")
 
     context = get_result_context(request, sb)
 

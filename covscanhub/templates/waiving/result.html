@@ -9,13 +9,13 @@
 <div id="box_wrapper">
     {% if not bugzilla %}
         {% if unreported_bugs_count > 0 %}
-    <a id="bz_create" class="info_box" href="{% url waiving/new_bz sb.scan.package.id sb.scan.tag.release.id %}">Create Bugzilla</a>
+    <a id="bz_create" class="btn" href="{% url waiving/new_bz sb.scan.package.id sb.scan.tag.release.id %}">Create Bugzilla</a>
     <span id="bz_bugs_count" class="info_box">{{ unreported_bugs_count }}</span>
         {% endif %}
     {% else %}
     <a id="bz_number" class="info_box"  href="https://bugzilla.redhat.com/show_bug.cgi?id={{ bugzilla.number }}">BZ#{{ bugzilla.number }}</a>
         {% if unreported_bugs_count > 0 %}
-        <a id="bz_update" class="info_box" href="{% url waiving/update_bz sb.scan.package.id sb.scan.tag.release.id %}">Update Bugzilla</a>
+        <a id="bz_update" class="btn" href="{% url waiving/update_bz sb.scan.package.id sb.scan.tag.release.id %}">Update Bugzilla</a>
         <span id="bz_bugs_count" class="info_box">{{ unreported_bugs_count }}</span>
         {% endif %}
     {% endif %}
@@ -57,7 +57,7 @@
 {% if sb.result %} {# display defects list only if scan finished #}
 
 {% if status_message %}
-<div id="status_messages" class="red_font">{{ status_message }}</div>
+<div id="status_messages" class="red_font padding_1em">{{ status_message }}</div>
 {% endif %}
 
 <div id="tabContainer" >
@@ -306,7 +306,7 @@ window.onload=function() {
       };
     })(tabs[i]);
   }
-{% block comment %}
+{% comment %}
   // get tab container
   var container = document.getElementById("tabContainer");
     // set current tab
@@ -322,7 +322,7 @@ window.onload=function() {
     for (var i = 1; i < pages.length; i++) {
       pages[i].style.display="none";
     }
-{% endblock %}
+{% endcomment %}
 }
 </script>
 

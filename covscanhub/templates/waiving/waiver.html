@@ -11,26 +11,36 @@
 <div id="defects">
 
 {% for defect in defects %}
-    <div class="{{ defect.get_state_display }}">
-        <h3>{{ defect.order }}.
-            Defect type: <a href="http://cov01.lab.eng.brq.redhat.com:8080/docs/en/cov_checker_ref.html#static_c_checker_{{ defect.checker.name }}">{{ defect.checker.name }}</a>
-        </h3>
+    <div id="defect_{{ defect.id }}" class="{{ defect.get_state_display }} defect">
+        <div id="defect_header_{{ defect.id }}">
+            <span id="btn_toggle_{{ defect.id }}" onclick="
+                $(&quot;#events_list_{{ defect.id }} .defect_event&quot;).toggle();
+                $(&quot;#btn_toggle_{{ defect.id }}&quot;).toggleClass(&quot;currently_hiding&quot;);
+            " class="btn float_right margin_1em">
+                <span class="show_text">Expand</span>
+                <span class="hide_text">Collapse</span>
+            </span>
+            <h3 class="padding_1em">{{ defect.order }}.
+                Defect type: <a href="http://cov01.lab.eng.brq.redhat.com:8080/docs/en/cov_checker_ref.html#static_c_checker_{{ defect.checker.name }}">{{ defect.checker.name }}</a>
+            </h3>
+        </div>
     {% comment %}
     {% if check.annotation %}
-        <a href="http://cwe.mitre.org/data/definitions/{{ checker }}.html">{{ checker.annotation }}</a>
+        <a href="http://cwe.mitre.org/data/definitions/{{ checker.annotation }}.html">{{ checker.annotation }}</a>
     {% endif %}
     {% endcomment %}
-        <ul>
+        <div id="events_list_{{ defect.id }}" class="events_list">
     {% for event in defect.events %}
-            <li>
+            <div
         {% if defect.key_event == forloop.counter0 %}
-            <b>{{ event.file_name }}:{{ event|line_and_column }}:{{ event.event }} -- {{ event.message }}</b>
+                class="key_event">
         {% else %}
-            {{ event.file_name }}:{{ event|line_and_column }}:{{ event.event }} -- {{ event.message }}
+                class="defect_event" style="display: none;">
         {% endif %}
-            </li>
+                {{ forloop.counter }}. {{ event.file_name }}:{{ event|line_and_column }}:{{ event.event }} &#8211; {{ event.message }}
+            </div>
     {% endfor %}
-        </ul>
+        </div>
     </div>
 {% endfor %}
 
@@ -43,31 +53,57 @@
 <div>
     {% for wl in waiving_logs %}
         {% if wl.waiver.is_deleted %}
-    <div class="waiving_log wl_type_DELETE">
+    <div class="waiving_log wl_type_DELETE transparent">
         {% else %}
+            {% if wl.waiver.result_group.has_waiver and wl.waiver.result_group.has_waiver.id == wl.waiver.id %}
     <div class="waiving_log wl_type_{{ wl.get_state_display }}">
+            {% else %}
+    <div class="waiving_log wl_type_{{ wl.get_state_display }} transparent">
+            {% endif %}
         {% endif %}
-        User {{ wl.user }}
-        {% if wl.get_state_display == "NEW" %}
-            submitted <span class="wl_type new">new</span> waiver.
+
+        <span class="button_line">
+            <span class="waiver_type {{ wl.waiver.get_state_display }}">{{ wl.waiver.get_display_type }}</span> waiver submitted by {{ wl.waiver.user }} at {{ wl.waiver.date|date:"Y-m-d H:i:s" }}.
+        </span>
+
+        <span id="btn_toggle_{{ wl.id }}" onclick="
+            $(&quot;#waiver_{{ wl.id }}&quot;).toggle();
+            $(&quot;#btn_toggle_{{ wl.id }}&quot;).toggleClass(&quot;currently_hiding&quot;);
+        " class="btn float_right margin_left">
+        {% if wl.waiver.is_deleted %}
+            <span class="show_text">Expand</span>
+            <span class="hide_text">Collapse</span>
+        {% else %}
+            <span class="show_text">Collapse</span>
+            <span class="hide_text">Expand</span>
         {% endif %}
-        {% if wl.get_state_display == "REWAIVE" %}
-            <span class="wl_type change">changed</span> current waiver.
-        {% endif %}
+        </span>
+
         {% if wl.get_state_display != "DELETE" and not wl.waiver.is_deleted and user.is_authenticated %}
-            <a class="delete_link" href="{% url waiving/waiver/remove wl.waiver.id %}">⨯</a>
+            <a class="btn float_right delete_link" href="{% url waiving/waiver/remove wl.waiver.id %}">Invalidate</a>
         {% endif %}
-        <div class="small grey waiver">
-            <span class="waiver_type {{ wl.waiver.get_state_display }}">{{ wl.waiver.get_display_type }}</span> waiver submitted by {{ wl.waiver.user }} at {{ wl.waiver.date|date:"Y-m-d H:i:s" }}:
+
+        {% if wl.waiver.is_deleted %}
+        <div id="waiver_{{ wl.id }}" class="small grey waiver" style="display: none;">
+        {% else %}
+        <div id="waiver_{{ wl.id }}" class="small grey waiver">
+        {% endif %}
+            User {{ wl.user }}
+            {% if wl.get_state_display == "NEW" %}
+                submitted <span class="wl_type new">new</span> waiver:
+            {% endif %}
+            {% if wl.get_state_display == "REWAIVE" %}
+                <span class="wl_type change">changed</span> current waiver:
+            {% endif %}
             <div class="message_box">
             {#<div class="message">{{ wl.waiver.message|linebreaks }}</div>#}
             <div class="message">{{ wl.waiver.message }}</div>
             </div>
         </div>
         {% if wl.waiver.is_deleted %}
-        <span class="small grey">
-            This waiver has been <span class="wl_type delete">deleted</span> by user {{ wl.waiver.get_delete_waiving_log.user }} on {{ wl.waiver.get_delete_waiving_log.date|date:"Y-m-d H:i:s" }}.
-        </span>
+        <div class="small grey">
+            This waiver has been <span class="wl_type delete">invalidated</span> by user {{ wl.waiver.get_delete_waiving_log.user }} on {{ wl.waiver.get_delete_waiving_log.date|date:"Y-m-d H:i:s" }}.
+        </div>
         {% endif %}
     </div>
     {% endfor %}
