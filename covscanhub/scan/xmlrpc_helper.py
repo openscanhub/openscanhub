@@ -51,7 +51,6 @@ def finish_scan(scan_id, task_id):
 
 def fail_scan(scan_id, reason=None):
     """analysis didn't finish successfully, so process it appropriately"""
-    # TODO fail parent task/fail target scan if this is base
     scan = Scan.objects.get(id=scan_id)
     scan.set_state(SCAN_STATES['FAILED'])
     if scan.is_errata_scan():
@@ -64,3 +63,29 @@ def fail_scan(scan_id, reason=None):
 
         #set last successfully finished scan as enabled
         scan.enable_last_successfull()
+    else:
+        scan.scanbinding.task.parent.cancel_task()
+        fail_scan(scan.scanbinding.task.parent.scanbinding.scan.id,
+                  "Base scan failed.")
+
+
+def cancel_scan_tasks(task):
+    if task.state in (TASK_STATES['OPEN'], TASK_STATES['FREE'],
+                      TASK_STATES['CREATED']):
+        task.cancel_task(recursive=False)
+        if task.parent:
+            task.parent.cancel_task(recursive=False)
+
+
+def cancel_scan(scan_id):
+    binding = ScanBinding.objects.get(scan__id=scan_id)
+    binding.scan.set_state(SCAN_STATES['CANCELED'])
+    cancel_scan_tasks(binding.task)
+    if binding.scan.is_errata_scan():
+        Scan.objects.filter(id=binding.scan.id).update(
+            enabled=False,
+        )
+        binding.scan.enable_last_successfull()
+    else:
+        cancel_scan(binding.task.parent.scanbinding.scan.id)
+    return binding.scan

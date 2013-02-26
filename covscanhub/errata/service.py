@@ -11,6 +11,7 @@ from covscanhub.scan.models import Scan, SCAN_STATES, SCAN_TYPES, Package, \
     ScanBinding, MockConfig, ReleaseMapping, ETMapping, SCAN_STATES_IN_PROGRESS
 from covscanhub.scan.service import get_latest_sb_by_package, \
     get_latest_binding
+from covscanhub.scan.xmlrpc_helper import cancel_scan
 from covscanhub.other.shortcuts import check_brew_build, \
     check_and_create_dirs
 from covscanhub.other.exceptions import ScanException
@@ -109,11 +110,7 @@ def check_obsolete_scan(package, release):
         scan__scan_type=SCAN_TYPES['ERRATA'])
     for binding in bindings:
         if binding.scan.state in SCAN_STATES_IN_PROGRESS:
-            binding.task.cancel_task(recursive=False)
-            binding.scan.set_state(SCAN_STATES['CANCELED'])
-            Scan.objects.filter(id=binding.scan.id).update(
-                enabled=False,
-            )
+            cancel_scan(binding.scan.id)
 
 
 def check_package_eligibility(package, created):

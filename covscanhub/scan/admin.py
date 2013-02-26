@@ -8,7 +8,7 @@ from covscanhub.scan.notify import send_scan_notification
 from covscanhub.errata.service import rescan
 
 from covscanhub.scan.xmlrpc_helper import finish_scan as h_finish_scan, \
-    fail_scan as h_fail_scan
+    fail_scan as h_fail_scan, cancel_scan as h_cancel_scan, cancel_scan_tasks
 
 from django.template import RequestContext
 from django.conf.urls.defaults import patterns
@@ -43,6 +43,7 @@ class ScanAdmin(admin.ModelAdmin):
         my_urls = patterns('',
             (r'(?P<scan_id>\d+)/notify/$', self.admin_site.admin_view(self.notify)),
             (r'(?P<scan_id>\d+)/fail/$', self.admin_site.admin_view(self.fail_scan)),
+            (r'(?P<scan_id>\d+)/cancel/$', self.admin_site.admin_view(self.cancel_scan)),
             (r'(?P<scan_id>\d+)/finish/$', self.admin_site.admin_view(self.finish_scan)),
             (r'(?P<scan_id>\d+)/rescan/$', self.admin_site.admin_view(self.rescan)),
         )
@@ -61,7 +62,8 @@ class ScanAdmin(admin.ModelAdmin):
         }, context_instance=RequestContext(request))
 
     def fail_scan(self, request, scan_id):
-        ScanBinding.objects.get(scan__id=scan_id).task.fail_task()
+        sb = ScanBinding.objects.get(scan__id=scan_id)
+        cancel_scan_tasks(sb.task)
         h_fail_scan(scan_id, "set as failed from admin interface.")
         scan = Scan.objects.get(id=scan_id)
 
@@ -101,9 +103,16 @@ class ScanAdmin(admin.ModelAdmin):
             'root_path': self.admin_site.root_path,
         }, context_instance=RequestContext(request))
 
-    def cancel(self, request, scan_id):
-        #TODO
-        pass
+    def cancel_scan(self, request, scan_id):
+        scan = h_cancel_scan(scan_id)
+        return render_to_response('admin/scan/scan/state_change.html', {
+            'title': 'Cancelation of scan: %s' % scan,
+            'entry': scan,
+            'opts': self.model._meta,
+            'result': "Scan %s cancelled." % (scan),
+            'root_path': self.admin_site.root_path,
+        }, context_instance=RequestContext(request))
+
 
 class PackageAdmin(admin.ModelAdmin):
     list_display = ("id", "name", "blocked")
