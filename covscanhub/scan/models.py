@@ -60,6 +60,10 @@ SCAN_STATES_FINISHED_WELL = (
     SCAN_STATES['PASSED'],
     SCAN_STATES['DISPUTED'],
 )
+SCAN_STATES_FINISHED_BAD = (
+    SCAN_STATES['FAILED'],
+    SCAN_STATES['CANCELED'],
+)
 SCAN_STATES_BASE = (
     SCAN_STATES['FINISHED'],
 )
@@ -376,6 +380,15 @@ counted in statistics.")
                 last_finished.save()
                 break
             last_finished = last_finished.get_child_scan()
+
+    def all_scans_in_release(self):
+        scans = Scan.objects.filter(
+            package=self.package,
+            tag__release=self.tag.release
+        ).exclude(
+            state__in=SCAN_STATES_FINISHED_BAD
+        ).order_by('date_submitted')
+        return scans
 
 
 class ScanBinding(models.Model):
