@@ -125,7 +125,7 @@ def create_log_dict(title, icon, icon_link, files, logs_list):
 def add_logs_to_context(sb):
     logs = []
     logs_list = sb.task.logs.list
-    log_prefix = os.path.join('run1', sb.scan.nvr)
+    log_prefix = os.path.join(sb.scan.nvr, 'run1', sb.scan.nvr)
 
     logs.append(create_log_dict('Added defects', 'new_defects_icon.png',
                                 ERROR_HTML_FILE,
@@ -138,9 +138,9 @@ def add_logs_to_context(sb):
                                  (FIXED_HTML_FILE, 'HTML'),
                                  (FIXED_DIFF_FILE, 'JSON')], logs_list))
     logs.append(create_log_dict('All defects', 'all_defects_icon.png',
-                                log_prefix + '.html',
+                                sb.scan.nvr + '.html',
                                 [(log_prefix + '.err', 'TXT'),
-                                 (log_prefix + '.html', 'HTML'),
+                                 (sb.scan.nvr + '.html', 'HTML'),
                                  (log_prefix + '.js', 'JSON')], logs_list))
     logs.append(create_log_dict('Scan Log', 'logs.png',
                                 'stdout.log',
@@ -420,9 +420,7 @@ def result(request, sb_id):
     """
     Display all the tests for specified scan
     """
-    #print "defects_list_class: ", request.session.get('defects_list_class')
     active_tab = request.session.pop("active_tab", "new_selected")
-    #defects_list_class = request.session.pop("defects_list_class", "new")
     context = get_result_context(request, get_object_or_404(ScanBinding,
                                                             id=sb_id))
     context[active_tab] = "selected"

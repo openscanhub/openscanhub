@@ -333,6 +333,10 @@ div#content div#logs span#logs_title {
     border: 1px solid #333;
 }
 
+div#logs span.log_type a:hover img {
+    opacity: 0.5;
+}
+
 .log_title {
     font-weight: bold;
     padding: 0.5em;
