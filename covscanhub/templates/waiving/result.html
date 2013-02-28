@@ -346,12 +346,12 @@
   }
 
 window.onload=function() {
-  var sel = document.querySelectorAll("#sidebarTabs .selected");
+  var sel=document.querySelectorAll("#sidebarTabs .selected");
   var res=document.getElementById("tabContent");
-  if (sel.length > 0) {
+  if (res != null && sel != null && sel.length > 0) {
     res.innerHTML=document.getElementById("tab" + sel[0].id[3] + "Content").innerHTML;
   }
-  else {
+  else if (res != null) {
     res.innerHTML=document.getElementById("tab1Content").innerHTML;
   }
 
