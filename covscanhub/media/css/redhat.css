@@ -86,6 +86,10 @@ label {
     color: #007700;
 }
 
+.bold_font {
+    font-weight: bold;
+}
+
 .light_green_bg {
     background-color: #00DD00;
 }
@@ -149,7 +153,7 @@ label {
 }
 
 .bg_BASE_SCANNING {
-    background-color: #6666FF;
+    background-color: #C5C5FF;
 }
 
 .bg_FAILED {
@@ -157,11 +161,11 @@ label {
 }
 
 .bg_CANCELED {
-    background-color: #FFFF88;
+    background-color: #FFD570;
 }
 
 .bg_DISPUTED {
-    background-color: #FFBB66;
+    background-color: #D8F953;
 }
 
 /* BUTTONS & BOXES */
@@ -216,7 +220,7 @@ label {
 }
 
 #box_wrapper {
-    margin-bottom: 1.5em;
+    margin-bottom: 2.5em;
 }
 
 /*tabs*/
@@ -304,15 +308,14 @@ div#result_links a:hover span.tooltip {
 /*logs*/
 
 div#content div#logs {
-    padding: 0.5em;
-    /*border: 1px solid #666;*/
-    background-color: #EEE;
+    padding: 0 0.5em;
+    background-color: #DDD;
 }
 
 div#content div#logs span#logs_title {
     font-weight: bold;
     font-size: 14pt;
-    margin-right: 1em;
+    margin-left: 0.5em;
 }
 
 #logs span {
@@ -345,7 +348,7 @@ div#content div#logs span#logs_title {
 }
 
 .first_log {
-    border-left: 1px solid #333;
+    border-left: 4px solid #FFF;
 }
 
 /*waiver's summary table*/

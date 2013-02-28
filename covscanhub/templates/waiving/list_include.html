@@ -7,15 +7,17 @@
     <th>{% trans "State" %}</th>
     <th>{% trans "Date accessed" %}</th>
     <th>{% trans "Owner" %}</th>
+    <th>{% trans "Release" %}</th>
   </tr>
 {% for scanbinding in scanbinding_list %}
   <tr>
     <td><a href="{% url waiving/result scanbinding.id %}">{{ scanbinding.id }}</a></td>
     <td>{{ scanbinding.scan.nvr }}</td>
     <td>{{ scanbinding.scan.base.nvr }}</td>
-    <td class="bg_{{ scanbinding.scan.get_state_display }} black_font">{{ scanbinding.scan.get_state_display }}</td>
+    <td class="bg_{{ scanbinding.scan.get_state_display }} black_font bold_font">{{ scanbinding.scan.get_state_display }}</td>
     <td>{{ scanbinding.scan.last_access|date:"Y-m-d H:i:s" }}</td>
     <td>{{ scanbinding.scan.username }}</td>
+    <td>{{ scanbinding.scan.tag.release.tag }}</td>
   </tr>
 {% endfor %}
 </table>
