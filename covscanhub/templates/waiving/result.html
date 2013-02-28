@@ -10,18 +10,18 @@
     {% if not bugzilla %}
         {% if unreported_bugs_count > 0 %}
     <a id="bz_create" class="btn" href="{% url waiving/new_bz sb.scan.package.id sb.scan.tag.release.id %}">Create Bugzilla</a>
-    <span id="bz_bugs_count" class="info_box">{{ unreported_bugs_count }}</span>
+    <span id="bz_bugs_count" class="info_box margin_right">{{ unreported_bugs_count }}</span>
         {% endif %}
     {% else %}
-    <a id="bz_number" class="info_box"  href="https://bugzilla.redhat.com/show_bug.cgi?id={{ bugzilla.number }}">BZ#{{ bugzilla.number }}</a>
+    <a id="bz_number" class="info_box" href="https://bugzilla.redhat.com/show_bug.cgi?id={{ bugzilla.number }}">BZ#{{ bugzilla.number }}</a>
         {% if unreported_bugs_count > 0 %}
         <a id="bz_update" class="btn" href="{% url waiving/update_bz sb.scan.package.id sb.scan.tag.release.id %}">Update Bugzilla</a>
-        <span id="bz_bugs_count" class="info_box">{{ unreported_bugs_count }}</span>
+        <span id="bz_bugs_count" class="info_box margin_right">{{ unreported_bugs_count }}</span>
         {% endif %}
     {% endif %}
 
-    <span id="scan_release" class="info_box black_font light_grey_bg">{{ sb.scan.tag.release.product }} release {{ sb.scan.tag.release.release }}</span>
-    <span id="scan_state" class="info_box black_font bg_{{ sb.scan.get_state_display }}">{{ sb.scan.get_state_display }}</span>
+    <span id="scan_release" class="info_box black_font light_grey_bg margin_right">{{ sb.scan.tag.release.product }} release {{ sb.scan.tag.release.release }}</span>
+    <span id="scan_state" class="info_box black_font bg_{{ sb.scan.get_state_display }} margin_right">{{ sb.scan.get_state_display }}</span>
 
 </div>
 
@@ -62,9 +62,9 @@
 
 <div id="tabContainer" >
   <ul class="digiTabs" id="sidebarTabs">
-    <li id="tab1" class="{{ new_selected }}">New</li>
-    <li id="tab2" class="{{ fixed_selected }}">Fixed</li>
-    <li id="tab3" class="{{ old_selected }}">Previously waived</li>
+    <li id="tab1" class="{{ new_selected }}">New ({{ new_count }})</li>
+    <li id="tab2" class="{{ fixed_selected }}">Fixed ({{ fixed_count }})</li>
+    <li id="tab3" class="{{ old_selected }}">Previously waived ({{ old_count }})</li>
   </ul>
   <div id="tabContent"></div>
 </div>
@@ -72,7 +72,7 @@
 <div id="tab1Content" style="display:none;">
 {% if output_new %}
 <table class="summary">
-  <th class="light_grey_bg" colspan="{{ output_new.1|length }}">New defects</th>
+  <th class="light_grey_bg" colspan="{{ output_new.1|length }}"> </th>
 {% for five in output_new %}
   <tr>
     {% for group, data in five.items %}
@@ -110,7 +110,7 @@
 <div id="tab2Content" style="display:none;">
 {% if output_fixed %}
 <table class="summary">
-  <th class="light_grey_bg" colspan="{{ output_fixed.1|length }}">Fixed defects</th>
+  <th class="light_grey_bg" colspan="{{ output_fixed.1|length }}"> </th>
 {% for five in output_fixed %}
   <tr>
     {% for group, data in five.items %}
@@ -148,7 +148,7 @@
 <div id="tab3Content" style="display:none;">
 {% if output_old %}
 <table class="summary">
-  <th class="light_grey_bg" colspan="{{ output_old.1|length }}">Previously waived defects</th>
+  <th class="light_grey_bg" colspan="{{ output_old.1|length }}"> </th>
 {% for five in output_old %}
   <tr>
     {% for group, data in five.items %}
@@ -203,37 +203,95 @@
 </div>
 {% endif %}
 
-{% if previous_sb or next_sb %}
 <div id="result_links">
     {% if first_sb %}
-        <span><a href="{% url waiving/result first_sb.id %}">First scan ({{ first_sb.scan.nvr }})</a></span>
+        <span class="link">
+            <a href="{% url waiving/result first_sb.id %}">
+                <span class="link_icon">&#171;</span> {# « &#171; {left double angle quote} #}
+                <span class="tooltip">{{ first_sb.scan.nvr }}</span>
+                {% trans "First" %}
+            </a>
+        </span>
     {% else %}
-        {% trans "no first scan" %}
+        <span class="no_link">
+            <span class="link_icon">&#171;</span>
+            {% trans "First" %}
+        </span>
     {% endif %}
 
-    |
-
+    {% if previous_sb or next_sb %}
     {% if previous_sb %}
-    <span><a href="{% url waiving/result previous_sb.id %}">Previous scan ({{ previous_sb.scan.nvr }})</a></span>
+        <span class="link">
+            <a href="{% url waiving/result previous_sb.id %}">
+                <span class="link_icon">&lsaquo;</span> {# ‹ &lsaquo; &#139; &#8249; {left single angle quote} #}
+                <span class="tooltip">{{ previous_sb.scan.nvr }}</span>
+                {% trans "Previous" %}
+            </a>
+        </span>
     {% else %}
-        {% trans "no previous scan" %}
+        <span class="no_link">
+            <span class="link_icon">&lsaquo;</span>
+            {% trans "Previous" %}
+        </span>
+    {% endif %}
     {% endif %}
 
-    |
+    <span class="nav_box">
+        Scan {{ scan_order }} of {{ scans_count }}
+    </span>
 
+    {% if previous_sb or next_sb %}
     {% if next_sb %}
-    <span><a href="{% url waiving/result next_sb.id %}">Next scan ({{ next_sb.scan.nvr }})</a></span>
+        <span class="link">
+            <a href="{% url waiving/result next_sb.id %}">
+                <span class="tooltip">{{ next_sb.scan.nvr }}</span>
+                {% trans "Next" %}
+                <span class="link_icon">&rsaquo;</span> {# › &rsaquo; &#155; &#8250; {right single angle quote} #}
+            </a>
+        </span>
     {% else %}
-        {% trans "no next scan" %}
+        <span class="no_link">
+            {% trans "Next" %}
+            <span class="link_icon">&rsaquo;</span>
+        </span>
     {% endif %}
-
-    |
+    {% endif %}
 
     {% if newest_sb %}
-    <span><a href="{% url waiving/result newest_sb.id %}">Newest scan ({{ newest_sb.scan.nvr }})</a></span>
+        <span class="link">
+            <a href="{% url waiving/result newest_sb.id %}">
+                <span class="tooltip">{{ newest_sb.scan.nvr }}</span>
+                {% trans "Latest" %}
+                <span class="link_icon">&#187;</span> {# » &#187; {right double angle quote} #}
+            </a>
+        </span>
     {% else %}
-        {% trans "no latest scan" %}
+        <span class="no_link">
+            {% trans "Latest" %}
+            <span class="link_icon">&#187;</span>
+        </span>
     {% endif %}
+</div>
+
+{% if logs %}
+<div id="logs">
+    <span id="logs_title">Additional info</span>
+    {% for log in logs %}
+    <span class="log_type">
+        <a href="{% url task/log sb.task.id log.icon_link %}">
+            <img src="{{ MEDIA_URL }}{{ log.icon }}" width="48" height="48" />
+        </a>
+        <div class="log_title">{{ log.title }}</div>
+        <div class="log_links">
+        {% for f in log.files %}
+            <a href="{% url task/log sb.task.id f.path %}?format=raw">{{ f.title }}</a>
+            {% if forloop.counter < files|length %}
+                &nbsp;|&nbsp;
+            {% endif %}
+        {% endfor %}
+        </div>
+    </span>
+    {% endfor %}
 </div>
 {% endif %}
 

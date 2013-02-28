@@ -18,6 +18,7 @@ from covscanhub.scan.compare import get_compare_title
 from covscanhub.scan.service import get_latest_sb_by_package
 
 from covscanhub.other.shortcuts import get_or_none
+from covscanhub.other.constants import *
 
 from covscanhub.waiving.bugzilla_reporting import create_bugzilla, \
     get_unreported_bugs, update_bugzilla
@@ -31,24 +32,13 @@ logger = logging.getLogger(__name__)
 
 
 def get_result_context(request, sb):
-    logs = {}
-    context = {}
+    #logs = {}
+    #context = {}
     package = sb.scan.package
     release = sb.scan.tag.release
     unrep_waivers = get_unreported_bugs(package, release)
 
-    file_labels = {
-        'csdiff.html': 'Added defects',
-        'csdiff_fixed.html': 'Fixed defects',
-        '.err': 'Complete defects output',
-        'stdout.log': 'Log',
-    }
-    for i in sb.task.logs.list:
-        basename = os.path.basename(i)
-        for path, label in file_labels.iteritems():
-            if basename.endswith(path):
-                logs[i] = label
-    #logs.sort(lambda x, y: cmp(os.path.split(x), os.path.split(y)))
+    context = add_logs_to_context(sb)
     context['bugzilla'] = get_or_none(Bugzilla,
                                       package=package,
                                       release=release)
@@ -58,21 +48,32 @@ def get_result_context(request, sb):
         context['unreported_bugs_count'] = 0
 
     if sb.result:
-        new_defects = get_tupled_data(get_waiving_data(
-            sb.result, defect_type=DEFECT_STATES['NEW']))
-        fixed_defects = get_tupled_data(get_waiving_data(
-            sb.result, defect_type=DEFECT_STATES['FIXED']))
-        old_defects = get_tupled_data(get_waiving_data(
-            sb.result, defect_type=DEFECT_STATES['PREVIOUSLY_WAIVED']))
+        n_out, n_count = get_waiving_data(sb.result,
+                                          defect_type=DEFECT_STATES['NEW'])
+        new_defects = get_tupled_data(n_out)
+
+        f_out, f_count = get_waiving_data(sb.result,
+                                          defect_type=DEFECT_STATES['FIXED'])
+        fixed_defects = get_tupled_data(f_out)
+
+        o_out, o_count = get_waiving_data(sb.result,
+                                          defect_type=DEFECT_STATES['PREVIOUSLY_WAIVED'])
+        old_defects = get_tupled_data(o_out)
         context['output_new'] = new_defects
         context['output_fixed'] = fixed_defects
         context['output_old'] = old_defects
+
+        # number of active groups in each tab
+        context['new_count'] = n_count
+        context['fixed_count'] = f_count
+        context['old_count'] = o_count
     elif sb.scan.state == SCAN_STATES['FAILED']:
         context['not_finished'] = "Scan failed. Please contact administrator."
+    elif sb.scan.state == SCAN_STATES['CANCELED']:
+        context['not_finished'] = "Scan is canceled (is superseded by newer one)."
     else:
         context['not_finished'] = "Scan not complete."
     context['sb'] = sb
-    context['logs'] = logs
     context['compare_title'] = get_compare_title(
         sb.scan.nvr,
         sb.scan.base.nvr,
@@ -83,19 +84,83 @@ def get_result_context(request, sb):
         sb.scan.nvr,
         sb.scan.base.nvr,
     )
+
+    # links for other runs
     context['first_sb'] = sb.scan.get_first_scan_binding()
     context['newest_sb'] = \
         get_latest_sb_by_package(sb.scan.tag, sb.scan.package)
     context['previous_sb'] = getattr(sb.scan.get_child_scan(),
                                      'scanbinding', None)
     context['next_sb'] = getattr(sb.scan.parent, 'scanbinding', None)
+    ids = list(sb.scan.all_scans_in_release().values_list('id', flat=True))
+    if sb.scan.id not in ids:
+        context['scan_order'] = '#'
+    else:
+        context['scan_order'] = ids.index(sb.scan.id) + 1
+    context['scans_count'] = sb.scan.all_scans_in_release().count()
+
     return context
+
+
+def create_log_dict(title, icon, icon_link, files, logs_list):
+    """
+    create log -- dict; files is a list of tuples:
+        [(path, title, ), ]
+    """
+    f = []
+    for t in files:
+        if t[0] in logs_list:
+            f.append({'path': t[0], 'title': t[1]})
+    if not f:
+        return {}
+    log = {
+        'title': title,
+        'icon': icon,
+        'icon_link': icon_link,
+        'files': f,
+    }
+    return log
+
+
+def add_logs_to_context(sb):
+    logs = []
+    logs_list = sb.task.logs.list
+    log_prefix = os.path.join('run1', sb.scan.nvr)
+
+    logs.append(create_log_dict('Added defects', 'new_defects_icon.png',
+                                ERROR_HTML_FILE,
+                                [(ERROR_TXT_FILE, 'TXT'),
+                                 (ERROR_HTML_FILE, 'HTML'),
+                                 (ERROR_DIFF_FILE, 'JSON')], logs_list))
+    logs.append(create_log_dict('Fixed defects', 'fixed_defects_icon.png',
+                                FIXED_HTML_FILE,
+                                [(FIXED_TXT_FILE, 'TXT'),
+                                 (FIXED_HTML_FILE, 'HTML'),
+                                 (FIXED_DIFF_FILE, 'JSON')], logs_list))
+    logs.append(create_log_dict('All defects', 'all_defects_icon.png',
+                                log_prefix + '.html',
+                                [(log_prefix + '.err', 'TXT'),
+                                 (log_prefix + '.html', 'HTML'),
+                                 (log_prefix + '.js', 'JSON')], logs_list))
+    logs.append(create_log_dict('Scan Log', 'logs.png',
+                                'stdout.log',
+                                [('stdout.log', 'TXT')], logs_list))
+
+    """
+    for i in sb.task.logs.list:
+        basename = os.path.basename(i)
+        for path, label in file_labels.iteritems():
+            if basename.endswith(path):
+                logs[i] = label
+    context['logs'] = logs
+    """
+    return {'logs': logs}
 
 
 def get_waiving_data(result_object, defect_type):
     """return list of checker_groups with states and counts"""
     output = {}
-
+    count = 0
     # checker_group: result_group
     for group in CheckerGroup.objects.filter(enabled=True):
         try:
@@ -107,10 +172,11 @@ def get_waiving_data(result_object, defect_type):
                                                      result=result_object,
                                                      defect_type=defect_type)
         else:
+            count += 1
             view_data = display_in_result(rg)
             view_data['id'] = rg.id
             output[group] = view_data
-    return output
+    return output, count
 
 
 def get_tupled_data(output):
