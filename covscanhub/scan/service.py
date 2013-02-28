@@ -18,8 +18,7 @@ from models import SCAN_STATES, SCAN_TYPES, ScanBinding
 from covscanhub.other.exceptions import ScanException
 from covscanhub.other.shortcuts import get_mock_by_name, check_brew_build,\
     check_and_create_dirs
-from covscanhub.other.constants import ERROR_DIFF_FILE, FIXED_DIFF_FILE,\
-    ERROR_HTML_FILE, FIXED_HTML_FILE
+from covscanhub.other.constants import *
 
 import django.utils.simplejson as json
 from django.core.exceptions import ObjectDoesNotExist
@@ -61,7 +60,9 @@ def run_diff(task_dir, base_task_dir, nvr, base_nvr):
     fixed_diff_file_path = os.path.join(task_dir, FIXED_DIFF_FILE)
     html_file_path = os.path.join(task_dir, ERROR_HTML_FILE)
     fixed_html_file_path = os.path.join(task_dir, FIXED_HTML_FILE)
-
+    txt_file_path = os.path.join(task_dir, ERROR_TXT_FILE)
+    fixed_txt_file_path = os.path.join(task_dir, FIXED_TXT_FILE)
+    compl_html_file_path = os.path.join(task_dir, nvr + '.html')
     #<task_dir>/<nvr>/run1/<nvr>.js
     old_err = os.path.join(base_task_dir, base_nvr, 'run1', base_nvr + '.js')
     new_err = os.path.join(task_dir, nvr, 'run1', nvr + '.js')
@@ -73,14 +74,6 @@ old: %s new: %s', old_err, new_err)
 old: %s new: %s', old_err, new_err)
 
     #csdiff [options] old.err new.err
-    """
-      -c [ --coverity-output ]  write the result in Coverity format
-      -x [ --fixed ]            print fixed defects (just swaps the arguments)
-      -z [ --ignore-path ]      ignore directory structure when matching
-      -j [ --json-output ]      write the result in JSON format
-      -q [ --quiet ]            do not report any parsing errors
-      --help                    produce help message
-    """
     #whole csdiff call must be in one string, because character '>' cannot be
     #enclosed into quotes -- command '"csdiff" "-j" "old.err" "new.err" ">"
     #"csdiff.out"' does not work
@@ -98,6 +91,8 @@ old: %s new: %s', old_err, new_err)
                           show_cmd=False)
     #command wasn't successfull -- handle this somehow
     if retcode != 0:
+        logger.critical("'%s' wasn't successfull; path: %s, code: %s",
+                        diff_cmd, task_dir, retcode)
         raise RuntimeError("'%s' wasn't successfull; path: %s, code: %s" %
                            (diff_cmd, task_dir, retcode))
     else:
@@ -109,8 +104,10 @@ old: %s new: %s', old_err, new_err)
                               return_stdout=False,
                               show_cmd=False)
         if retcode != 0:
+            logger.critical("'%s' wasn't successfull; path: %s, code: %s",
+                            fixed_diff_cmd, task_dir, retcode)
             raise RuntimeError("'%s' wasn't successfull; path: %s, code: %s" %
-                               (diff_cmd, task_dir, retcode))
+                               (fixed_diff_cmd, task_dir, retcode))
 
         add_title_to_json(diff_file_path, 'Newly introduced defects')
         add_title_to_json(fixed_diff_file_path, 'Fixed defects')
@@ -120,6 +117,15 @@ old: %s new: %s', old_err, new_err)
             workdir=task_dir, can_fail=True)
         run('cshtml --scan-props-placement bottom %s > %s' %
             (fixed_diff_file_path, fixed_html_file_path),
+            workdir=task_dir, can_fail=True)
+        run('cshtml --scan-props-placement bottom %s > %s' %
+            (new_err, compl_html_file_path),
+            workdir=task_dir, can_fail=True)
+        run('csgrep %s > %s' %
+            (diff_file_path, txt_file_path),
+            workdir=task_dir, can_fail=True)
+        run('csgrep %s > %s' %
+            (fixed_diff_file_path, fixed_txt_file_path),
             workdir=task_dir, can_fail=True)
 
 
