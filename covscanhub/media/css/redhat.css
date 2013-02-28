@@ -12,11 +12,41 @@ label {
     vertical-align:top;
 }
 
-/* SHORTCUTS */
+/*
+ * INLINES *
+           */
+
+/* PLACE & SIZE */
 
 .margin_left {
     margin-left: 1em;
 }
+
+.margin_right {
+    margin-right: 1.5em;
+}
+
+.float_right {
+    float: right;
+}
+
+.padding_1em {
+    padding: 1em;
+}
+
+.margin_1em {
+    margin: 1em;
+}
+
+.small {
+    font-size: 12px;
+}
+
+.button_line {
+    line-height: 30px;
+}
+
+/* COLLAPSE / EXPAND */
 
 .hide_text {
     display: none;
@@ -34,44 +64,7 @@ label {
     display: none;
 }
 
-.float_right {
-    float: right;
-}
-
-.padding_1em {
-    padding: 1em;
-}
-
-.margin_1em {
-    margin: 1em;
-}
-
-.btn {
-    -moz-border-bottom-colors: none;
-    -moz-border-left-colors: none;
-    -moz-border-right-colors: none;
-    -moz-border-top-colors: none;
-    background-color: #F5F5F5;
-    background-image: -moz-linear-gradient(center top , #FFFFFF, #E6E6E6);
-    background-repeat: repeat-x;
-    border-color: #E6E6E6 #E6E6E6 #B3B3B3;
-    border-image: none;
-    border-radius: 4px 4px 4px 4px;
-    border-style: solid;
-    border-width: 1px;
-    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.2) inset, 0 1px 2px rgba(0, 0, 0, 0.05);
-    color: #333333;
-    cursor: pointer;
-    /*display: inline-block;*/
-    font-size: 13px;
-    line-height: 18px;
-    margin-bottom: 0;
-    padding: 4px 10px;
-    text-align: center;
-    text-decoration: none;
-    text-shadow: 0 1px 1px rgba(255, 255, 255, 0.75);
-    vertical-align: middle;
-}
+/* COLORS */
 
 .white_font {
     color: white;
@@ -111,6 +104,14 @@ label {
 
 .dark_grey_bg {
     background-color: #555;
+}
+
+.grey {
+    color: #888;
+}
+
+.transparent {
+    opacity: 0.7;
 }
 
 /* STATES */
@@ -163,21 +164,38 @@ label {
     background-color: #FFBB66;
 }
 
-/*title*/
+/* BUTTONS & BOXES */
 
 .info_box {
     font-weight: bold;
     padding: 0.5em;
 }
 
-/* scan state & product release */
-
-#scan_state {
-    margin-right: 1.5em;
-}
-
-#scan_release {
-    margin-right: 1.5em;
+.btn {
+    -moz-border-bottom-colors: none;
+    -moz-border-left-colors: none;
+    -moz-border-right-colors: none;
+    -moz-border-top-colors: none;
+    background-color: #F5F5F5;
+    background-image: -moz-linear-gradient(center top , #FFFFFF, #E6E6E6);
+    background-repeat: repeat-x;
+    border-color: #E6E6E6 #E6E6E6 #B3B3B3;
+    border-image: none;
+    border-radius: 4px 4px 4px 4px;
+    border-style: solid;
+    border-width: 1px;
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.2) inset, 0 1px 2px rgba(0, 0, 0, 0.05);
+    color: #333333;
+    cursor: pointer;
+    /*display: inline-block;*/
+    font-size: 13px;
+    line-height: 18px;
+    margin-bottom: 0;
+    padding: 4px 10px;
+    text-align: center;
+    text-decoration: none;
+    text-shadow: 0 1px 1px rgba(255, 255, 255, 0.75);
+    vertical-align: middle;
 }
 
 /*bugzilla*/
@@ -195,7 +213,6 @@ label {
 }
 
 #bz_bugs_count {
-    margin-right: 1.5em;
 }
 
 #box_wrapper {
@@ -240,6 +257,91 @@ html body div#content div#result_links {
     text-align: center;
 }
 
+div#result_links .nav_box {
+    font-weight: bold;
+    margin: 0 1em;
+}
+
+div#result_links a, div#result_links .no_link {
+    border: 1px solid #666;
+    color: #000000;
+    text-decoration: none;
+    margin: 2em 0.5em;
+    padding: 3px 6px;
+}
+
+div#result_links .no_link {
+    color: #AAA;
+    border-color: #AAA;
+}
+
+div#result_links .tooltip {
+    margin-left: -999em;
+    position: absolute;
+}
+
+div#result_links a {
+    position: relative;
+}
+
+div#result_links a:hover {
+    border: 1px solid #00AA00;
+    color: #00AA00;
+}
+
+div#result_links a:hover span.tooltip {
+    margin-left: 0;
+    position: absolute;
+    top: -3.35em;
+    left: -1px;
+    z-index: 99;
+    color: black;
+    background-color: #CCC;
+    padding: 0.5em;
+    font-weight: bold;
+}
+
+/*logs*/
+
+div#content div#logs {
+    padding: 0.5em;
+    border: 1px solid #666;
+}
+
+div#content div#logs span#logs_title {
+    font-weight: bold;
+    font-size: 14pt;
+}
+
+#logs span {
+    vertical-align: middle;
+}
+
+.log_type {
+    display: inline-block;
+    margin-left: 3em;
+    padding: 1em;
+    text-align: center;
+}
+
+.log_type img {
+    border: 1px solid #333;
+}
+
+.log_title {
+    font-weight: bold;
+    padding: 0.5em;
+}
+
+.log_type:hover {
+    background-color: #EEE;
+}
+
+
+.log_links > a {
+    padding: 0 0.1em;
+}
+
 /*waiver's summary table*/
 
 #status_messages {
@@ -259,8 +361,6 @@ table.summary {
 
 table.summary th {
     border: 2px solid #FFF;
-    font-size: 16pt;
-    height: 1.8em;
 }
 
 table.summary td {
@@ -373,14 +473,6 @@ table span.diff_state_neutral {
     padding: 2px 3px 1px;
 }
 
-.button_line {
-    line-height: 30px;
-}
-
-.transparent {
-    opacity: 0.7;
-}
-
 div.waiving_log span.IS_A_BUG {
     background-color: #FFB7B7;
     color: #DD0000;
@@ -430,14 +522,6 @@ div.waiving_log span.change {
     margin: 0 0 0.5em 0.5em;
     padding: 10px 8px;
     color: #000;
-}
-
-.small {
-    font-size: 12px;
-}
-
-.grey {
-    color: #888;
 }
 
 .waiver {
