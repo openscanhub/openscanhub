@@ -73,7 +73,8 @@ MIDDLEWARE_CLASSES = (
 ROOT_URLCONF = 'covscanhub.urls'
 ROOT_MENUCONF = 'covscanhub.menu'
 
-LOGIN_URL = '/auth/krb5login?next=/waiving'
+LOGIN_URL = 'auth/krb5login'
+#covscan/auth/krb5login?next=covscan/waiving
 LOGIN_EXEMPT_URLS = ('^xmlrpc/')
 
 
