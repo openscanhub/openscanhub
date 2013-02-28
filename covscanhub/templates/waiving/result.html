@@ -277,7 +277,7 @@
 <div id="logs">
     <span id="logs_title">Additional info</span>
     {% for log in logs %}
-    <span class="log_type">
+    <span class="log_type {% if forloop.counter == 1 %}first_log{% endif %}">
         <a href="{% url task/log sb.task.id log.icon_link %}">
             <img src="{{ MEDIA_URL }}{{ log.icon }}" width="48" height="48" />
         </a>
@@ -285,8 +285,8 @@
         <div class="log_links">
         {% for f in log.files %}
             <a href="{% url task/log sb.task.id f.path %}?format=raw">{{ f.title }}</a>
-            {% if forloop.counter < files|length %}
-                &nbsp;|&nbsp;
+            {% if forloop.counter < log.files|length %}
+                |
             {% endif %}
         {% endfor %}
         </div>

@@ -154,7 +154,7 @@ def add_logs_to_context(sb):
                 logs[i] = label
     context['logs'] = logs
     """
-    return {'logs': logs}
+    return {'logs': [x for x in logs if x]}
 
 
 def get_waiving_data(result_object, defect_type):
@@ -322,8 +322,7 @@ def waiver(request, sb_id, result_group_id):
                  sb, result_group_object)
 
     context['defects_list_class'] = 'new'
-    context['active_tab'] = "selected"
-
+    context['new_selected'] = "selected"
     return render_to_response("waiving/waiver.html",
                               context,
                               context_instance=RequestContext(request))
