@@ -74,12 +74,8 @@ ROOT_URLCONF = 'covscanhub.urls'
 ROOT_MENUCONF = 'covscanhub.menu'
 
 LOGIN_URL = '/auth/krb5login?next=/waiving'
-"""
-LOGIN_EXEMPT_URLS = (
- r'^about\.html$',
- r'^legal/', # allow any URL under /legal/*
-)
-"""
+LOGIN_EXEMPT_URLS = ('^xmlrpc/')
+
 
 TEMPLATE_CONTEXT_PROCESSORS = (
     #   django.core.context_processors
