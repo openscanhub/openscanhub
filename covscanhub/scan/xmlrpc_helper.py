@@ -64,7 +64,7 @@ def fail_scan(scan_id, reason=None):
         #set last successfully finished scan as enabled
         scan.enable_last_successfull()
     else:
-        scan.scanbinding.task.parent.cancel_task()
+        scan.scanbinding.task.parent.cancel_task(recursive=False)
         fail_scan(scan.scanbinding.task.parent.scanbinding.scan.id,
                   "Base scan failed.")
 
