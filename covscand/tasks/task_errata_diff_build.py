@@ -11,6 +11,8 @@ from kobo.rpmlib import get_rpm_header
 from kobo.worker import TaskBase
 import kobo.tback
 
+kobo.tback.set_except_hook()
+
 
 class ErrataDiffBuild(TaskBase):
     """
