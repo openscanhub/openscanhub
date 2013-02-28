@@ -303,6 +303,7 @@ div#result_links a:hover span.tooltip {
     background-color: #CCC;
     padding: 0.5em;
     font-weight: bold;
+    white-space: nowrap;
 }
 
 /*logs*/
