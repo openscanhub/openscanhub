@@ -305,12 +305,14 @@ div#result_links a:hover span.tooltip {
 
 div#content div#logs {
     padding: 0.5em;
-    border: 1px solid #666;
+    /*border: 1px solid #666;*/
+    background-color: #EEE;
 }
 
 div#content div#logs span#logs_title {
     font-weight: bold;
     font-size: 14pt;
+    margin-right: 1em;
 }
 
 #logs span {
@@ -319,7 +321,7 @@ div#content div#logs span#logs_title {
 
 .log_type {
     display: inline-block;
-    margin-left: 3em;
+    margin-left: 1em;
     padding: 1em;
     text-align: center;
 }
@@ -334,12 +336,16 @@ div#content div#logs span#logs_title {
 }
 
 .log_type:hover {
-    background-color: #EEE;
+    background-color: #FFF;
 }
 
 
 .log_links > a {
     padding: 0 0.1em;
+}
+
+.first_log {
+    border-left: 1px solid #333;
 }
 
 /*waiver's summary table*/
