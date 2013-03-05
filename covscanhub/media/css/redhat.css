@@ -421,11 +421,16 @@ table span.NEW {
     color: #EE0000;
 }
 
+table .defects_count {
+    float: right;
+    padding: 0 1em;
+}
+
 table span.defects_increased {
     background-color: #FF9282;
     float: right;
     padding: 0 0.3em;
-    text-align: right;
+    text-align: center;
     min-width: 3em;
 }
 
@@ -433,7 +438,7 @@ table span.defects_decreased {
     background-color: #44FF25;
     float: right;
     padding: 0 0.3em;
-    text-align: right;
+    text-align: center;
     min-width: 3em;
 }
 
@@ -441,7 +446,7 @@ table span.diff_state_neutral {
     background-color: #BBB;
     float: right;
     padding: 0 0.3em;
-    text-align: right;
+    text-align: center;
     min-width: 3em;
 }
 
