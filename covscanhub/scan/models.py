@@ -67,6 +67,10 @@ SCAN_STATES_FINISHED_BAD = (
 SCAN_STATES_BASE = (
     SCAN_STATES['FINISHED'],
 )
+SCAN_STATES_PROCESSED = (
+    SCAN_STATES['PASSED'],
+    SCAN_STATES['WAIVED'],
+)
 
 SCAN_TYPES = Enum(
     "ERRATA",           # this scan was submitted from ET
@@ -283,8 +287,8 @@ class Scan(models.Model):
     #date when there was last access to scan
     #should change when:
     #   - scan has finished
-    #   - user opens waiving page
-    #   - anytime user changes something (waive something, etc.)
+    #   - waiver added
+    #   - waiver invalidated
     last_access = models.DateTimeField(blank=True, null=True)
 
     date_submitted = models.DateTimeField(auto_now_add=True)
@@ -317,6 +321,18 @@ counted in statistics.")
 
     def is_waived(self):
         return self.state == SCAN_STATES['WAIVED']
+
+    @property
+    def overdue(self):
+        """Return CSS class name if scan is overdue -- not waived on time"""
+        if self.state not in SCAN_STATES_FINISHED_BAD and \
+                not self.waived_on_time():
+            return u"red_font bold_font"
+        else:
+            return u""
+
+    def waived_on_time(self):
+        return self.state in SCAN_STATES_PROCESSED
 
     @classmethod
     def create_scan(cls, scan_type, nvr, username, package,

@@ -335,7 +335,7 @@ div#content div#logs span#logs_title {
 }
 
 div#logs span.log_type a:hover img {
-    opacity: 0.5;
+    border: 1px solid #00FF00;
 }
 
 .log_title {

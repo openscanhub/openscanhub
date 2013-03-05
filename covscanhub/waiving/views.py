@@ -330,6 +330,7 @@ def waiver(request, sb_id, result_group_id):
 
 def remove_waiver(request, waiver_id):
     waiver = get_object_or_404(Waiver, id=waiver_id)
+    sb = waiver.result_group.result.scanbinding
     wl = WaivingLog()
     wl.date = datetime.datetime.now()
     wl.state = WAIVER_LOG_ACTIONS['DELETE']
@@ -338,8 +339,10 @@ def remove_waiver(request, waiver_id):
     wl.save()
     waiver.is_deleted = True
     waiver.save()
+    Scan.objects.filter(id=sb.scan.id).update(
+        last_access=datetime.datetime.now())
     if not waiver_condition(waiver.result_group):
-        sb = waiver.result_group.result.scanbinding
+
         ResultGroup.objects.filter(id=waiver.result_group.id).update(
             state=RESULT_GROUP_STATES['NEEDS_INSPECTION'])
         sb.scan.set_state(SCAN_STATES['DISPUTED'])
