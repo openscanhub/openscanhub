@@ -316,19 +316,19 @@
     {
       case "tab1":
         tc.innerHTML=document.getElementById("tab1Content").innerHTML;
-        if (defects.className == "new") {
+        if (defects != null && defects.className == "new") {
           defects.style.display = "block";
         }
         break;
       case "tab2":
         tc.innerHTML=document.getElementById("tab2Content").innerHTML;
-        if (defects.className == "fixed") {
+        if (defects != null && defects.className == "fixed") {
           defects.style.display = "block";
         }
         break;
       case "tab3":
         tc.innerHTML=document.getElementById("tab3Content").innerHTML;
-        if (defects.className == "old") {
+        if (defects != null && defects.className == "old") {
           defects.style.display = "block";
         }
         break;
