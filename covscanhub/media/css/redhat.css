@@ -391,6 +391,10 @@ table.summary td {
     margin: 0px 0px 0px 0px;
 }
 
+#legend_wrapper {
+    margin-bottom: 3em;
+}
+
 table.legend {
     font-size: 0.9em;
     border-spacing: 0px;
@@ -423,7 +427,7 @@ table span.NEW {
 
 table .defects_count {
     float: right;
-    padding: 0 1em;
+    padding-right: 1em;
 }
 
 table span.defects_increased {

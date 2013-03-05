@@ -26,7 +26,7 @@
 </div>
 
 {% endif %}
-{% comment %}
+
 <div id="legend_wrapper">
     <h4>Legend</h4>
     <table class="legend">
@@ -35,24 +35,22 @@
                 Is a bug
             </td>
             <td class="bg_NEEDS_INSPECTION">
-                Needs Inspection (<span class="NEW">defects count</span>)
+                Needs Inspection <span class="defects_count NEW">defects count</span>
             </td>
             <td class="bg_INFO">
-                Info (<span class="FIXED">defects count</span>)
+                Info <span class="defects_count FIXED">defects count</span>
             </td>
             <td class="bg_WAIVED">
-                Waived <span class="defects_increased">diff count</span>
-            </td>
-            <td class="bg_PASSED">
-                Passed <span class="defects_decreased">diff count</span>
+                Waived <span class="defects_increased">difference</span>
+                <span class="defects_count FIXED">defects count</span>
             </td>
             <td id="active" class="bg_PREVIOUSLY_WAIVED">
                 Previously Waived (active)
+                <span class="defects_decreased">difference</span>
             </td>
         </tr>
     </table>
 </div>
-{% endcomment %}
 
 {% if sb.result %} {# display defects list only if scan finished #}
 

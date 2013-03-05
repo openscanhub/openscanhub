@@ -217,7 +217,7 @@ def results_list(request):
         'state': 'scan__state',
         'access': 'scan__last_access',
         'user': 'scan__username',
-        'release': 'scan__tag__release_tag',
+        'release': 'scan__tag__release__tag',
     }
 
     # custom sort or default one?
