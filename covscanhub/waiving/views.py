@@ -13,7 +13,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from kobo.django.views.generic import object_list
 
 from covscanhub.scan.models import SCAN_STATES, ScanBinding, Package,\
-    SystemRelease, ETMapping
+    SystemRelease, ETMapping, Scan
 from covscanhub.scan.compare import get_compare_title
 from covscanhub.scan.service import get_latest_sb_by_package
 
@@ -206,13 +206,17 @@ def results_list(request):
     Display list of all target results
     """
     search_form = ScanListSearchForm(request.GET)
+    # order by scan__date, because result might not exist
+    q = ScanBinding.objects.exclude(
+        scan__base__isnull=True).filter(
+            search_form.get_query(request)).order_by(
+                '-scan__date_submitted')
+    if search_form.extra_query():
+        q_ids = search_form.objects_satisfy(q)
+        q = q.filter(id__in=q_ids)
 
     args = {
-        # order by scan__date, because result might not exist
-        "queryset": ScanBinding.objects.exclude(
-            scan__base__isnull=True).filter(
-                search_form.get_query(request)).order_by(
-                    '-scan__date_submitted'),
+        "queryset": q,
         "allow_empty": True,
         "paginate_by": 50,
         "template_name": "waiving/list.html",

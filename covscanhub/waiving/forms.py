@@ -19,11 +19,13 @@ class WaiverForm(forms.Form):
 class ScanListSearchForm(forms.Form):
     search = forms.CharField(required=False)
     my = forms.BooleanField(required=False)
+    overdue = forms.BooleanField(required=False)
 
     def get_query(self, request):
         self.is_valid()
         search = self.cleaned_data["search"]
         my = self.cleaned_data["my"]
+        self.overdue_filled = self.cleaned_data["overdue"]
 
         query = Q()
 
@@ -42,3 +44,16 @@ class ScanListSearchForm(forms.Form):
             query &= Q(owner=request.user)
 
         return query
+
+    def objects_satisfy(self, q):
+        if self.overdue_filled:
+            # DO NOT USE `if not o.sca...`, because `scan.wai...` may return
+            # False and None which are two completely different states:
+            #    - False -- scan haven't been processed on time
+            #    - None -- scan failed or was cancelled
+            return [o.id for o in q if o.scan.waived_on_time() is False]
+        else:
+            return q
+
+    def extra_query(self):
+        return self.overdue_filled
