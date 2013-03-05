@@ -4,6 +4,7 @@
 import re
 import datetime
 import logging
+import cPickle as pickle
 
 from covscanhub.scan.messaging import post_qpid_message
 
@@ -501,4 +502,11 @@ class AppSettings(models.Model):
     @classmethod
     def setting_user_can_submit(cls):
         """Should hub check whether user is permit to submit scan?"""
-        return cls.objects.get(key="CHECK_USER_CAN_SUBMIT_SCAN").value.upper() == "Y"
+        return cls.objects.get(key="CHECK_USER_CAN_SUBMIT_SCAN").\
+            value.upper() == "Y"
+
+    @classmethod
+    def setting_waiver_is_overdue(cls):
+        """Time period when run is marked as not processed"""
+        return pickle.loads(
+            str(cls.objects.get(key="WAIVER_IS_OVERDUE").value))

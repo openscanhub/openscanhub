@@ -4,6 +4,8 @@
 import sys
 import os
 import re
+import cPickle as pickle
+import datetime
 
 
 PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.dirname
@@ -167,7 +169,8 @@ def set_default_settings():
     AppSettings.objects.get_or_create(key="SEND_BUS_MESSAGE", value="N")
     AppSettings.objects.get_or_create(key="CHECK_USER_CAN_SUBMIT_SCAN",
                                       value="N")
-
+    AppSettings.objects.get_or_create(key="WAIVER_IS_OVERDUE",
+                                      value=pickle.dumps(datetime.timedelta(days=-7)))
 
 def set_statistics():
     # function = (key, description)
