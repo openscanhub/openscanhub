@@ -127,22 +127,22 @@ def add_logs_to_context(sb):
     logs_list = sb.task.logs.list
     log_prefix = os.path.join(sb.scan.nvr, 'run1', sb.scan.nvr)
 
-    logs.append(create_log_dict('Added defects', 'new_defects_icon.png',
+    logs.append(create_log_dict('Added defects', 'Add_32.png',
                                 ERROR_HTML_FILE,
                                 [(ERROR_TXT_FILE, 'TXT'),
                                  (ERROR_HTML_FILE, 'HTML'),
                                  (ERROR_DIFF_FILE, 'JSON')], logs_list))
-    logs.append(create_log_dict('Fixed defects', 'fixed_defects_icon.png',
+    logs.append(create_log_dict('Fixed defects', 'Ok_32.png',
                                 FIXED_HTML_FILE,
                                 [(FIXED_TXT_FILE, 'TXT'),
                                  (FIXED_HTML_FILE, 'HTML'),
                                  (FIXED_DIFF_FILE, 'JSON')], logs_list))
-    logs.append(create_log_dict('All defects', 'all_defects_icon.png',
+    logs.append(create_log_dict('All defects', 'Document_content_32.png',
                                 sb.scan.nvr + '.html',
                                 [(log_prefix + '.err', 'TXT'),
                                  (sb.scan.nvr + '.html', 'HTML'),
                                  (log_prefix + '.js', 'JSON')], logs_list))
-    logs.append(create_log_dict('Scan Log', 'logs.png',
+    logs.append(create_log_dict('Scan Log', 'Message_log_32.png',
                                 'stdout.log',
                                 [('stdout.log', 'TXT')], logs_list))
 
