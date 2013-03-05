@@ -3,6 +3,7 @@
 import datetime
 import os
 import logging
+import urllib
 
 from django.template import RequestContext
 from django.shortcuts import render_to_response, get_object_or_404
@@ -203,14 +204,51 @@ def get_tupled_data(output):
 
 def results_list(request):
     """
-    Display list of all target results
+    Display list of all target results; request['GET'] may contain order_by
     """
+    order_by = request.GET.get('order_by', None)
+    order_prefix = ''
+
+    # mapping between ?order_by=name and .order_by(...) -- nicer URLs
+    order_by_mapping = {
+        'id': 'id',
+        'target': 'scan__nvr',
+        'base': 'scan__base__nvr',
+        'state': 'scan__state',
+        'access': 'scan__last_access',
+        'user': 'scan__username',
+        'release': 'scan__tag__release_tag',
+    }
+
+    # custom sort or default one?
+    if order_by:
+        # will it be asc or desc sort?
+        if order_by.startswith('-'):
+            order_prefix = '-'
+            order_by = order_by[1:]
+
+        order = order_prefix + order_by_mapping[order_by]
+    else:
+        order = '-scan__date_submitted'
+
+    # link definitions to template
+    table_sort = {}
+    for o in order_by_mapping.iterkeys():
+        t = request.GET.copy()
+        if order_by == o and not order_prefix:
+            t[u'order_by'] = '-' + o
+            url = urllib.urlencode(t)
+            table_sort[o] = u'?' + url if url else u'', 'down'
+        else:
+            t[u'order_by'] = o
+            url = urllib.urlencode(t)
+            table_sort[o] = u'?' + url if url else u'', 'up'
+
     search_form = ScanListSearchForm(request.GET)
     # order by scan__date, because result might not exist
     q = ScanBinding.objects.exclude(
         scan__base__isnull=True).filter(
-            search_form.get_query(request)).order_by(
-                '-scan__date_submitted')
+            search_form.get_query(request)).order_by(order)
     if search_form.extra_query():
         q_ids = search_form.objects_satisfy(q)
         q = q.filter(id__in=q_ids)
@@ -224,6 +262,7 @@ def results_list(request):
         "extra_context": {
             "title": "List of all results",
             "search_form": search_form,
+            "table_sort": table_sort,
         }
     }
     return object_list(request, **args)
