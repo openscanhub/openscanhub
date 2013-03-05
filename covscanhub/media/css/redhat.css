@@ -345,7 +345,7 @@ div#logs span.log_type a:hover img {
 }
 
 .log_type:hover {
-    background-color: #FFF;
+    /*background-color: #FFF;*/
 }
 
 
