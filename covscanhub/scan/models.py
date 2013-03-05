@@ -329,7 +329,7 @@ counted in statistics.")
         Return CSS class name if scan's overdue state -- not waived on time
         """
         if self.waived_on_time() is False:
-            return u"red_font bold_font"
+            return u"red_font"
         else:
             return u""
 
