@@ -512,7 +512,11 @@ class AppSettings(models.Model):
 
     @classmethod
     def setting_user_can_submit(cls):
-        """Should hub check whether user is permit to submit scan?"""
+        """
+        Should hub check whether user is permit to submit scan?
+         "Y" => hub does not have to check
+         "N" => hub has to check user perm 'scan.errata_xmlrpc_scan'
+        """
         return cls.objects.get(key="CHECK_USER_CAN_SUBMIT_SCAN").\
             value.upper() == "Y"
 

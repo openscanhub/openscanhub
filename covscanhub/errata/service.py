@@ -154,9 +154,11 @@ def get_tag(release):
 
 
 def return_or_raise(key, data):
+    """Custom function for retrieving data from dict (mainly for logging)"""
     try:
         return data[key]
     except KeyError:
+        logger.error("Key '%s' is missing from dict '%s'" % (key, data))
         raise RuntimeError("Key '%s' is missing from %s" % (key, data))
 
 
