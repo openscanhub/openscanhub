@@ -15,7 +15,7 @@ from django.utils.safestring import mark_safe
 from django.core.urlresolvers import reverse
 
 from kobo.hub.models import Task
-from kobo.types import Enum
+from kobo.types import Enum, EnumItem
 from kobo.client.constants import TASK_STATES
 
 logger = logging.getLogger(__name__)
@@ -74,10 +74,16 @@ SCAN_STATES_PROCESSED = (
 )
 
 SCAN_TYPES = Enum(
-    "ERRATA",           # this scan was submitted from ET
-    # base scan for ERRATA does not exist (this is basicly just mock build)
-    "ERRATA_BASE",
-    "USER",             # some user posted this scan
+    # regular ET scan (not rebase, not new pkg, etc.)
+    EnumItem("ERRATA", help_text="Regular"),
+    # base scan (this is basicly just mock build)
+    EnumItem("ERRATA_BASE", help_text="Base Scan"),
+    # some user posted this scan (for future)
+    EnumItem("USER", help_text="User Scan"),
+    # base.nvr.version != target.nvr.version
+    EnumItem("REBASE", help_text="Rebase"),
+    # just an informational mock build; base == None
+    EnumItem("NEWPKG", help_text="New Package"),
 )
 
 
@@ -270,6 +276,10 @@ class Scan(models.Model):
                                             choices=SCAN_TYPES.get_mapping(),
                                             help_text="Scan Type")
 
+    state = models.PositiveIntegerField(default=SCAN_STATES["INIT"],
+                                        choices=SCAN_STATES.get_mapping(),
+                                        help_text="Current scan state")
+
     #information for differential scan -- which version of package we are
     #diffing to
     base = models.ForeignKey('self', verbose_name="Base Scan",
@@ -280,9 +290,7 @@ class Scan(models.Model):
     tag = models.ForeignKey(Tag, verbose_name="Tag",
                             blank=True, null=True,
                             help_text="Tag from brew")
-    state = models.PositiveIntegerField(default=SCAN_STATES["INIT"],
-                                        choices=SCAN_STATES.get_mapping(),
-                                        help_text="Current scan state")
+
     username = models.ForeignKey(User)
 
     #date when there was last access to scan
@@ -311,8 +319,15 @@ counted in statistics.")
         else:
             return u"#%s [%s, Base: %s]" % (self.id, self.nvr, self.base.nvr)
 
+    def can_have_base(self):
+        return self.scan_type in (SCAN_TYPES['ERRATA'], SCAN_TYPES['REBASE'])
+
+    def is_newpkg_scan(self):
+        return self.scan_type == SCAN_TYPES['NEW_PKG']
+
     def is_errata_scan(self):
-        return self.scan_type == SCAN_TYPES['ERRATA']
+        return self.scan_type in (SCAN_TYPES['ERRATA'], SCAN_TYPES['REBASE'],
+                                  SCAN_TYPES['NEWPKG'], )
 
     def is_errata_base_scan(self):
         return self.scan_type == SCAN_TYPES['ERRATA_BASE']

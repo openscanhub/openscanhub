@@ -88,6 +88,17 @@ def load_defects_from_json(json_dict, result,
             d.save()
 
 
+def load_defects_from_file(file_path, result, defect_state):
+    try:
+        fd = open(file_path, 'r')
+    except IOError:
+        logger.critical('Unable to open file %s', file_path)
+        return
+    js = json.load(fd)
+    load_defects_from_json(js, result, defect_state)
+    fd.close()
+
+
 def update_analyzer(result, json_dict):
     """
     fills object result with information about which analyzer performed scan
@@ -155,23 +166,22 @@ def create_results(scan, sb):
     f.close()
 
     if scan.is_errata_scan():
-        try:
-            fixed_file = open(fixed_file_path, 'r')
-        except IOError:
-            logger.critical('Unable to open file %s', fixed_file_path)
-            return
-        fixed_json_dict = json.load(fixed_file)
-        load_defects_from_json(fixed_json_dict, r, DEFECT_STATES['FIXED'])
-        fixed_file.close()
+        if scan.is_newpkg_scan():
+            load_defects_from_file(defects_path, r, DEFECT_STATES['NEW'])
+        else:
+            load_defects_from_file(fixed_file_path, r, DEFECT_STATES['FIXED'])
+            load_defects_from_file(diff_file_path, r, DEFECT_STATES['NEW'])
 
-        try:
-            diff_file = open(diff_file_path, 'r')
-        except IOError:
-            logger.critical('Unable to open file %s', diff_file_path)
-            return
-        diff_json_dict = json.load(diff_file)
-        load_defects_from_json(diff_json_dict, r, DEFECT_STATES['NEW'])
-        diff_file.close()
+            for rg in get_unwaived_rgs(r):
+                w = get_last_waiver(
+                    rg.checker_group,
+                    rg.result.scanbinding.scan.package,
+                    rg.result.scanbinding.scan.tag.release,
+                )
+                if w and compare_result_groups(rg, w.result_group):
+                    rg.state = RESULT_GROUP_STATES['PREVIOUSLY_WAIVED']
+                    rg.defect_type = DEFECT_STATES['PREVIOUSLY_WAIVED']
+                    rg.save()
 
         for rg in ResultGroup.objects.filter(result=r):
             counter = 1
@@ -179,18 +189,6 @@ def create_results(scan, sb):
                 defect.order = counter
                 defect.save()
                 counter += 1
-
-        for rg in get_unwaived_rgs(r):
-            w = get_last_waiver(
-                rg.checker_group,
-                rg.result.scanbinding.scan.package,
-                rg.result.scanbinding.scan.tag.release,
-            )
-            if w and compare_result_groups(rg, w.result_group):
-                rg.state = RESULT_GROUP_STATES['PREVIOUSLY_WAIVED']
-                rg.defect_type = DEFECT_STATES['PREVIOUSLY_WAIVED']
-                rg.save()
-
     return r
 
 

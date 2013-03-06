@@ -382,15 +382,16 @@ def prepare_and_execute_diff(task, base_task, nvr, base_nvr):
     return run_diff(task_dir, base_task_dir, nvr, base_nvr)
 
 
-def get_latest_sb_by_package(tag, package):
+def get_latest_sb_by_package(release, package):
     """
-    return latest scan for specified package and tag. This function should be
-    called when creating new scan and setting this one as a child
+    return latest scan for specified package and release.
+    This function should be called when creating new scan and setting this one
+    as a child
     """
     bindings = ScanBinding.objects.filter(scan__package=package,
-                               scan__tag__release=tag.release,
-                               task__state=TASK_STATES['CLOSED'],
-                               scan__scan_type=SCAN_TYPES['ERRATA'])
+                                          scan__tag__release=release,
+                                          task__state=TASK_STATES['CLOSED'],
+                                          scan__scan_type=SCAN_TYPES['ERRATA'])
     if bindings:
         return bindings.latest()
 

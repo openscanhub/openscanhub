@@ -66,7 +66,6 @@ function.'
         response['message'] = 'Provided dictionary (map/Hash) is empty.'
         return response
 
-    kwargs['scan_type'] = SCAN_TYPES['ERRATA']
     kwargs['task_user'] = request.user.username
 
     response = {}

@@ -23,7 +23,7 @@ def finish_scan(scan_id, task_id):
         fail_scan(scan_id, "Task failed.")
         return
     else:
-        if scan.is_errata_scan() and scan.base:
+        if not scan.is_newpkg_scan() and scan.is_errata_scan() and scan.base:
             try:
                 prepare_and_execute_diff(
                     sb.task,
@@ -39,7 +39,7 @@ def finish_scan(scan_id, task_id):
         if scan.is_errata_scan():
             # if there are no missing waivers = there are some newly added
             # unwaived defects
-            if not get_unwaived_rgs(result):
+            if scan.is_newpkg_scan() or not get_unwaived_rgs(result):
                 scan.set_state(SCAN_STATES['PASSED'])
             else:
                 scan.set_state(SCAN_STATES['NEEDS_INSPECTION'])

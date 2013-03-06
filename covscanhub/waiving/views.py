@@ -89,7 +89,7 @@ def get_result_context(request, sb):
     # links for other runs
     context['first_sb'] = sb.scan.get_first_scan_binding()
     context['newest_sb'] = \
-        get_latest_sb_by_package(sb.scan.tag, sb.scan.package)
+        get_latest_sb_by_package(sb.scan.tag.release, sb.scan.package)
     context['previous_sb'] = getattr(sb.scan.get_child_scan(),
                                      'scanbinding', None)
     context['next_sb'] = getattr(sb.scan.parent, 'scanbinding', None)

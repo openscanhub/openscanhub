@@ -1,68 +1,67 @@
 # -*- coding: utf-8 -*-
 
-import copy
 import re
 import logging
-from utils import depend_on
+from utils import depend_on, spawn_scan_task, _spawn_scan_task
 from django.conf import settings
+from kobo.rpmlib import parse_nvr
 #from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 
 from covscanhub.scan.models import Scan, SCAN_STATES, SCAN_TYPES, Package, \
     ScanBinding, MockConfig, ReleaseMapping, ETMapping, SCAN_STATES_IN_PROGRESS
-from covscanhub.scan.service import get_latest_sb_by_package, \
-    get_latest_binding
 from covscanhub.scan.xmlrpc_helper import cancel_scan
 from covscanhub.other.shortcuts import check_brew_build, \
     check_and_create_dirs
 from covscanhub.other.exceptions import ScanException
+from covscanhub.scan.service import get_latest_sb_by_package, \
+    get_latest_binding
 
 from kobo.hub.models import Task, TASK_STATES
 
 logger = logging.getLogger(__name__)
 
+######
+# BASE
+######
 
-def create_errata_base_scan(kwargs, parent_task_id, package):
+
+def create_errata_base_scan(kwargs, parent_task_id):
+    """Create base scan according to dict kwargs"""
     options = {}
+    d = kwargs.copy()
 
-    task_user = kwargs['task_user']
-    package_owner = return_or_raise('package_owner', kwargs)
-    scan_type = SCAN_TYPES['ERRATA_BASE']
-    base = kwargs['base']
-    task_label = base
-    options['brew_build'] = base
+    d['scan_type'] = SCAN_TYPES['ERRATA_BASE']
+    # kwargs['target'] = TARGET, d['target'] = BASE
+    d['target'] = d['base']
+    del d['base']
 
-    priority = kwargs.get('priority', settings.ET_SCAN_PRIORITY) + 1
-    comment = 'Errata Tool Base scan of %s requested by %s' % \
-        (base, kwargs['target'])
+    d['task_label'] = d['target']
+    options['brew_build'] = d['target']
+
+    d.setdefault('priority', settings.ET_SCAN_PRIORITY + 1)
+    d['comment'] = 'Errata Tool Base scan of %s requested by %s' % \
+        (d['target'], kwargs['target'])
 
     # Test if SRPM exists
-    check_brew_build(base)
+    check_brew_build(d['target'])
 
-    mock_name = assign_mock_config(re.match(".+-.+-(.+)", base).group(1))
+    mock_name = assign_mock_config(re.match(".+-.+-(.+)",
+                                            d['target']).group(1))
     if mock_name:
         options['mock_config'] = mock_name
     else:
-        raise RuntimeError("Unable to assign mock profile")
+        logger.error("Unable to assign mock profile to base scan %s of \
+%s", d['target'], kwargs['target'])
+        raise RuntimeError("Unable to assign mock profile to base scan %s of \
+%s" % (d['target'], kwargs['target']))
 
-    task_id = Task.create_task(
-        owner_name=task_user,
-        label=task_label,
-        method='ErrataDiffBuild',
-        args={},  # I want to add scan's id here, so I update it later
-        comment=comment,
-        state=TASK_STATES["CREATED"],
-        priority=priority,
-        parent_id=parent_task_id,
-    )
-    task_dir = Task.get_task_dir(task_id)
-
-    check_and_create_dirs(task_dir)
-
-    scan = Scan.create_scan(scan_type=scan_type, nvr=base,
-                            username=package_owner,
-                            package=package, enabled=False)
+    d['method'] = 'ErrataDiffBuild'
+    d['parent_id'] = parent_task_id
+    d['scan_enabled'] = False
+    task_id, scan = _spawn_scan_task(d)
 
     options["scan_id"] = scan.id
+
     # DO NOT USE filter...update() -- invalid json is filled in db
     task = Task.objects.get(id=task_id)
     task.args = options
@@ -77,8 +76,12 @@ def create_errata_base_scan(kwargs, parent_task_id, package):
     return scan
 
 
-def obtain_base(base, task_id, kwargs, package):
-    binding = get_latest_binding(base)
+def obtain_base(d, task_id):
+    """
+    @type task_id - int (parent task ID)
+    @type d - dict (dict with scan settings)
+    """
+    binding = get_latest_binding(d['base'])
     found = bool(binding)
     if found:
         if (binding.scan.state == SCAN_STATES['QUEUED'] or
@@ -92,8 +95,7 @@ def obtain_base(base, task_id, kwargs, package):
             found = False
     if not found:
         parent_task = Task.objects.get(id=task_id)
-        base_obj = create_errata_base_scan(copy.deepcopy(kwargs), task_id,
-                                           package)
+        base_obj = create_errata_base_scan(d, task_id)
 
         # wait has to be after creation of new subtask
         # TODO wait should be executed in one transaction with creation of
@@ -149,7 +151,7 @@ def get_tag(release):
         tag = rm.get_tag(release)
         if tag:
             return tag
-    logger.critical("Unable to assign proper product and release: %s" % release)
+    logger.critical("Unable to assign proper product and release: %s", release)
     raise RuntimeError("This package is not suitable for scanning.")
 
 
@@ -158,8 +160,9 @@ def return_or_raise(key, data):
     try:
         return data[key]
     except KeyError:
-        logger.error("Key '%s' is missing from dict '%s'" % (key, data))
-        raise RuntimeError("Key '%s' is missing from %s" % (key, data))
+        logger.error("Key '%s' is missing from dict '%s'", key, data)
+        raise RuntimeError("Key '%s' is missing from %s, invalid scan \
+submission!" % (key, data))
 
 
 def create_errata_scan(kwargs):
@@ -179,16 +182,22 @@ def create_errata_scan(kwargs):
 
     return ETMapping
     """
+    # dict stored in Task.args and used by task in worker
     options = {}
 
-    #from request.user
-    task_user = kwargs['task_user']
+    # dict for creation of Scan and Task objects
+    d = kwargs.copy()
 
-    scan_type = kwargs['scan_type']
+    # be sure that dict contains all necessary data
+    return_or_raise('package_owner', kwargs)
+    return_or_raise('target', kwargs)
+    return_or_raise('base', kwargs)
 
-    package_owner = return_or_raise('package_owner', kwargs)
-    target = return_or_raise('target', kwargs)
-    base = return_or_raise('base', kwargs)
+    try:
+        target_nvre_dict = parse_nvr(kwargs['target'])
+    except ValueError:
+        logger.error('%s is not a correct N-V-R', kwargs['target'])
+        raise RuntimeError('%s is not a correct N-V-R' % kwargs['target'])
 
     etm = ETMapping()
     # ET internal id for the scan record in ET
@@ -200,32 +209,27 @@ def create_errata_scan(kwargs):
     # one of RHEL-6.2.0, RHEL-6.2.z, etc.
     rhel_version = return_or_raise('rhel_version', kwargs)
     # The advisory's release (mainly for knowledge of advisory being 'ASYNC')
+    # values: RHEL-6.2.0, RHEL-6.2.z, ASYNC
     release = return_or_raise('release', kwargs)
 
-    options['brew_build'] = target
+    options['brew_build'] = kwargs['target']
 
     #Label, description or any reason for this task.
-    task_label = target
+    d['task_label'] = kwargs['target']
 
-    priority = kwargs.get('priority', settings.ET_SCAN_PRIORITY)
-
-    comment = 'Errata Tool Scan of %s' % target
+    d.setdefault('priority', settings.ET_SCAN_PRIORITY)
+    d['comment'] = 'Errata Tool Scan of %s' % kwargs['target']
 
     # Test if build exists
     # TODO: add check if SRPM exist:
     #    GET /brewroot/.../package/version-release/...src.rpm
-    check_brew_build(target)
+    check_brew_build(kwargs['target'])
 
     # validation of nvr, creating appropriate package object
-    pattern = '(.*)-(.*)-(.*)'
-    m = re.match(pattern, target)
-    if m is not None:
-        package_name = m.group(1)
-        package, created = Package.objects.get_or_create(name=package_name)
-        check_package_eligibility(package, created)
-    else:
-        raise RuntimeError('%s is not a correct N-V-R (does not match "%s"\
-)' % (target, pattern))
+    package, created = Package.objects.get_or_create(
+        name=target_nvre_dict['name'])
+    check_package_eligibility(package, created)
+    d['package'] = package
 
     # returns (mock config's name, tag object)
     tag = get_tag(release)
@@ -233,32 +237,18 @@ def create_errata_scan(kwargs):
         options['mock_config'] = tag.mock.name
     else:
         raise RuntimeError("Unable to assign mock profile.")
-
     check_obsolete_scan(package, tag.release)
+    d['tag'] = tag
 
-    task_id = Task.create_task(
-        owner_name=task_user,
-        label=task_label,
-        method='ErrataDiffBuild',
-        args={},  # I want to add scan's id here, so I update it later
-        comment=comment,
-        state=TASK_STATES["CREATED"],
-        priority=priority,
-    )
-    task_dir = Task.get_task_dir(task_id)
+    child = get_latest_sb_by_package(d['tag'].release, d['package'])
 
-    check_and_create_dirs(task_dir)
+    # is it rebase? new pkg? or ordinary scan? spawn appropriate models to DB
+    task_id, scan = spawn_scan_task(d, target_nvre_dict)
 
-    # if base is specified, try to fetch it; if it doesn't exist, create
-    # new scan for it
-    base_obj = obtain_base(base, task_id, kwargs, package)
-
-    child = get_latest_sb_by_package(tag, package)
-
-    scan = Scan.create_scan(scan_type=scan_type, nvr=target,
-                            username=package_owner,
-                            tag=tag, package=package, base=base_obj,
-                            enabled=True)
+    if scan.can_have_base():
+        base = obtain_base(d, task_id)
+        scan.base = base
+        scan.save()
 
     if child and child.scan:
         child_scan = Scan.objects.get(id=child.scan.id)
