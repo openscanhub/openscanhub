@@ -80,7 +80,7 @@ def spawn_classic(d):
 
 def is_rebase(base, target_d):
     base_d = parse_nvr(base)
-    return target_d['version'] == base_d['version']
+    return target_d['version'] != base_d['version']
 
 
 def spawn_scan_task(d, target):

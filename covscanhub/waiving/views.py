@@ -247,7 +247,9 @@ def results_list(request):
     search_form = ScanListSearchForm(request.GET)
     # order by scan__date, because result might not exist
     q = ScanBinding.objects.exclude(
-        scan__base__isnull=True).filter(
+        scan__scan_type__in=(
+            SCAN_TYPES['NEWPKG'], SCAN_TYPES['ERRATA'], SCAN_TYPES['REBASE']
+        )).filter(
             search_form.get_query(request)).order_by(order)
     if search_form.extra_query():
         q_ids = search_form.objects_satisfy(q)

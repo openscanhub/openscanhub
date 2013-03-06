@@ -74,7 +74,7 @@ ROOT_URLCONF = 'covscanhub.urls'
 ROOT_MENUCONF = 'covscanhub.menu'
 
 LOGIN_URL_NAME = 'auth/krb5login'
-LOGIN_EXEMPT_URLS = ('^xmlrpc/')
+LOGIN_EXEMPT_URLS = ('.*xmlrpc/.*')
 
 
 TEMPLATE_CONTEXT_PROCESSORS = (

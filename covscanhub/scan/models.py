@@ -323,7 +323,7 @@ counted in statistics.")
         return self.scan_type in (SCAN_TYPES['ERRATA'], SCAN_TYPES['REBASE'])
 
     def is_newpkg_scan(self):
-        return self.scan_type == SCAN_TYPES['NEW_PKG']
+        return self.scan_type == SCAN_TYPES['NEWPKG']
 
     def is_errata_scan(self):
         return self.scan_type in (SCAN_TYPES['ERRATA'], SCAN_TYPES['REBASE'],
