@@ -39,6 +39,7 @@ class ScanListSearchForm(forms.Form):
             query |= Q(scan__nvr__icontains=search)
             query |= Q(scan__base__nvr__icontains=search)
             query |= Q(scan__username__username__icontains=search)
+            query |= Q(scan__tag__release__tag__icontains=search)
 
         if my and request.user.is_authenticated():
             query &= Q(owner=request.user)
