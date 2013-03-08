@@ -115,11 +115,11 @@ def check_obsolete_scan(package, release):
             cancel_scan(binding.scan.id)
 
 
-def check_package_eligibility(package, created):
+def check_package_eligibility(package, nvr, created):
     if created:
         logger.warn('Package %s was created', package)
 
-        depends_on = depend_on(package.name, 'libc.so')
+        depends_on = depend_on(nvr, 'libc.so')
         package.eligible = depends_on
         package.save()
 
@@ -228,7 +228,7 @@ def create_errata_scan(kwargs):
     # validation of nvr, creating appropriate package object
     package, created = Package.objects.get_or_create(
         name=target_nvre_dict['name'])
-    check_package_eligibility(package, created)
+    check_package_eligibility(package, kwargs['target'], created)
     d['package'] = package
 
     # returns (mock config's name, tag object)

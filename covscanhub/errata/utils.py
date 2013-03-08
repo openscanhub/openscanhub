@@ -3,7 +3,7 @@
 import yum
 import brew
 import koji
-#import itertools
+import logging
 
 #from pprint import pprint
 
@@ -21,6 +21,13 @@ __all__ = (
     "spawn_scan_task",
     "_spawn_scan_task",
 )
+
+logger = logging.getLogger(__name__)
+
+try:
+    s = brew.ClientSession(settings.BREW_HUB)
+except ImportError:
+    s = brew.ClientSession("http://brewhub.devel.redhat.com/brewhub")
 
 
 def _spawn_scan_task(d):
@@ -104,21 +111,31 @@ def spawn_scan_task(d, target):
 ###########
 
 
-def depend_on(package_name, dependency):
+def depend_on(nvr, dependency):
     """
-    TODO: check dependency from other side: check what depends on glibc and
-          find out if `package_name` is in there, because this might not work
-          for parent meta packages etc.
+    find out if binary packages built from `nvr` are dependant on `dependency`
     """
+    # get build from brew
+    build = s.getBuild(nvr)
+    # list all binary packages built from srpm
+    rpms = s.listRPMs(buildID=build['id'])
+    # we do care only about x86_64
+    valid_rpms = filter(lambda x: x['arch'] == 'x86_64', rpms)
+    if not valid_rpms:
+        return False
+    # find out dependency using yum
     yb = yum.YumBase()
     yb.preconf.debuglevel = 0
     yb.setCacheDir()
-    pkgs = yb.pkgSack.returnNewestByNameArch(patterns=[package_name])
+    packages = [rpm['name'] for rpm in valid_rpms]
+    pkgs = yb.pkgSack.returnNewestByNameArch(patterns=packages)
     for pkg in pkgs:
         # alternative: for req in pkg.requires:
         for req in pkg.returnPrco('requires'):
             if req[0].startswith(dependency):
+                logger.info("%s depends on %s", pkg.name, dependency)
                 return True
+    logger.info("%s do not depend on %s", packages, dependency)
     return False
 
 ######
@@ -136,6 +153,8 @@ def get_build_tuple(nvr):
     build = s.getBuild(nvr)
     task = s.getTaskInfo(build['task_id'], request=True)
     target_name = task['request'][1]
+
+    # this can be None
     target = s.getBuildTarget(target_name)
     return (s, s.getRepo(target['build_tag_name']), target, task)
 
@@ -192,8 +211,12 @@ def get_overrides(nvr):
     return diff2
 
 
+def test_depend_on():
+    assert(depend_on('openldap-2.4.23-33.el6', 'libc.so'))
+    assert(depend_on('wget-1.11.4-4.el6', 'libc.so'))
+    assert(depend_on('hardlink-1.0-9.el6', 'libc.so'))
+    assert(depend_on('coreutils-8.4-5.el6', 'libc.so'))
+    assert(depend_on('libssh2-1.4.2-1.el6', 'libc.so'))
+
 if __name__ == '__main__':
-    import sys
-    #print depend_on(sys.argv[1], sys.argv[2])
-    #print retrieve_mock_for_build(sys.argv[1])
-    get_overrides(sys.argv[1])
+    test_depend_on()
