@@ -13,7 +13,7 @@
     <span id="bz_bugs_count" class="info_box margin_right">{{ unreported_bugs_count }}</span>
         {% endif %}
     {% else %}
-    <a id="bz_number" class="info_box" href="https://bugzilla.redhat.com/show_bug.cgi?id={{ bugzilla.number }}">BZ#{{ bugzilla.number }}</a>
+    <a id="bz_number" class="info_box {% if unreported_bugs_count == 0 %}margin_right{% endif %}" href="https://bugzilla.redhat.com/show_bug.cgi?id={{ bugzilla.number }}">BZ#{{ bugzilla.number }}</a>
         {% if unreported_bugs_count > 0 %}
         <a id="bz_update" class="btn" href="{% url waiving/update_bz sb.scan.package.id sb.scan.tag.release.id %}">Update Bugzilla</a>
         <span id="bz_bugs_count" class="info_box margin_right">{{ unreported_bugs_count }}</span>

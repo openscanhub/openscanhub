@@ -19,6 +19,7 @@ urlpatterns = patterns('',
 
     #url(r"^$", 'covscanhub.home.views.index_redirect', name="task/list"),
     url(r"^$", "django.views.generic.simple.direct_to_template", kwargs={"template": "index.html"}, name="index"),
+    url(r"^$", "django.views.generic.simple.direct_to_template", kwargs={"template": "index.html"}, name="home/index"),
     url(r"^auth/", include("kobo.hub.urls.auth")),
     url(r"^task/", include("covscanhub.scan.task_urls")),
     url(r"^info/arch/", include("kobo.hub.urls.arch")),

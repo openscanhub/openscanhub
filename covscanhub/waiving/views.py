@@ -14,7 +14,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from kobo.django.views.generic import object_list
 
 from covscanhub.scan.models import SCAN_STATES, ScanBinding, Package,\
-    SystemRelease, ETMapping, Scan
+    SystemRelease, ETMapping, Scan, SCAN_TYPES
 from covscanhub.scan.compare import get_compare_title
 from covscanhub.scan.service import get_latest_sb_by_package
 
@@ -75,16 +75,21 @@ def get_result_context(request, sb):
     else:
         context['not_finished'] = "Scan not complete."
     context['sb'] = sb
-    context['compare_title'] = get_compare_title(
-        sb.scan.nvr,
-        sb.scan.base.nvr,
-    )
+    if sb.scan.base:
+        context['compare_title'] = get_compare_title(
+            sb.scan.nvr,
+            sb.scan.base.nvr,
+        )
+        context['title'] = "%s compared to %s" % (
+            sb.scan.nvr,
+            sb.scan.base.nvr,
+        )
+    else:
+        context['compare_title'] = sb.scan.nvr
+        context['title'] = sb.scan.nvr
+
     if 'status_message' in request.session:
         context['status_message'] = request.session.pop('status_message')
-    context['title'] = "%s compared to %s" % (
-        sb.scan.nvr,
-        sb.scan.base.nvr,
-    )
 
     # links for other runs
     context['first_sb'] = sb.scan.get_first_scan_binding()
@@ -246,7 +251,7 @@ def results_list(request):
 
     search_form = ScanListSearchForm(request.GET)
     # order by scan__date, because result might not exist
-    q = ScanBinding.objects.exclude(
+    q = ScanBinding.objects.filter(
         scan__scan_type__in=(
             SCAN_TYPES['NEWPKG'], SCAN_TYPES['ERRATA'], SCAN_TYPES['REBASE']
         )).filter(
