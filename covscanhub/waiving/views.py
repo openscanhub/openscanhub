@@ -133,7 +133,7 @@ def add_logs_to_context(sb):
     logs_list = sb.task.logs.list
     log_prefix = os.path.join(sb.scan.nvr, 'run1', sb.scan.nvr)
 
-    logs.append(create_log_dict('Added defects', 'Add_32.png',
+    logs.append(create_log_dict('Added defects', 'Warning_32.png',
                                 ERROR_HTML_FILE,
                                 [(ERROR_TXT_FILE, 'TXT'),
                                  (ERROR_HTML_FILE, 'HTML'),
