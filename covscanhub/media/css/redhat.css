@@ -454,6 +454,15 @@ table span.diff_state_neutral {
     min-width: 3em;
 }
 
+/* list (table) of runs */
+
+table#run_list.list tbody tr th.down:after {
+    content: "▲";
+}
+
+table#run_list.list tbody tr th.up:after {
+    content: "▼";
+}
 /**/
 
 /*waivers presentation*/

@@ -237,18 +237,28 @@ def results_list(request):
         # order by scan__date, because result might not exist
         order = '-scan__date_submitted'
 
+    def generate_url(args, order_key):
+        """args = request.GET, order_key = "name" | "-user" """
+        args[u'order_by'] = order_key
+        url = urllib.urlencode(args)
+        if url:
+            return u'?' + url
+        else:
+            return u""
+
     # link sort URLs to template
     table_sort = {}
     for o in order_by_mapping.iterkeys():
         t = request.GET.copy()
-        if order_by == o and not order_prefix:
-            t[u'order_by'] = '-' + o
-            url = urllib.urlencode(t)
-            table_sort[o] = u'?' + url if url else u'', 'down'
+
+        # generate URL + CSS style for clicked sorter
+        if order_by == o:
+            if not order_prefix:
+                table_sort[o] = generate_url(t, '-' + o), 'down'
+            else:
+                table_sort[o] = generate_url(t, o), 'up'
         else:
-            t[u'order_by'] = o
-            url = urllib.urlencode(t)
-            table_sort[o] = u'?' + url if url else u'', 'up'
+            table_sort[o] = generate_url(t, o), 'undef'
 
     search_form = ScanListSearchForm(request.GET)
 

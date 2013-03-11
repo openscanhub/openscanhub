@@ -1,25 +1,25 @@
 {% load i18n %}
-<table class="list" width="100%">
+<table id="run_list" class="list" width="100%">
   <tr>
-    <th class="table_sort.id.1">
+    <th class="{{ table_sort.id.1 }}">
         <a href="{{ request.path }}{{ table_sort.id.0 }}">{% trans "ID" %}</a>
     </th>
-    <th class="table_sort.target.1">
+    <th class="{{ table_sort.target.1 }}">
         <a href="{{ request.path }}{{ table_sort.target.0 }}">{% trans "Target" %}</a>
     </th>
-    <th class="table_sort.base.1">
+    <th class="{{ table_sort.base.1 }}">
         <a href="{{ request.path }}{{ table_sort.base.0 }}">{% trans "Base" %}</a>
     </th>
-    <th class="table_sort.state.1">
+    <th class="{{ table_sort.state.1 }}">
         <a href="{{ request.path }}{{ table_sort.state.0 }}">{% trans "State" %}</a>
     </th>
-    <th class="table_sort.access.1">
+    <th class="{{ table_sort.access.1 }}">
         <a href="{{ request.path }}{{ table_sort.access.0 }}">{% trans "Date accessed" %}</a>
     </th>
-    <th class="table_sort.user.1">
+    <th class="{{ table_sort.user.1 }}">
         <a href="{{ request.path }}{{ table_sort.user.0 }}">{% trans "Owner" %}</a>
     </th>
-    <th class="table_sort.release.1">
+    <th class="{{ table_sort.release.1 }}">
         <a href="{{ request.path }}{{ table_sort.release.0 }}">{% trans "Release" %}</a>
     </th>
   </tr>
