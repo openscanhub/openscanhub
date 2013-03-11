@@ -14,10 +14,11 @@ from kobo.shortcuts import run
 from kobo.django.upload.models import FileUpload
 from kobo.client.constants import TASK_STATES
 
-from models import SCAN_STATES, SCAN_TYPES, ScanBinding
+from models import SCAN_STATES, SCAN_TYPES, ScanBinding, Scan
 from covscanhub.other.exceptions import ScanException
 from covscanhub.other.shortcuts import get_mock_by_name, check_brew_build,\
     check_and_create_dirs
+from covscanhub.other.decorators import public
 from covscanhub.other.constants import *
 
 import django.utils.simplejson as json
@@ -25,18 +26,6 @@ from django.core.exceptions import ObjectDoesNotExist
 
 
 logger = logging.getLogger(__name__)
-
-__all__ = (
-    "run_diff",
-    "extract_logs_from_tarball",
-    "create_diff_task",
-    'prepare_and_execute_diff',
-    'diff_fixed_defects_in_package',
-    "get_latest_sb_by_package",
-    "get_latest_binding",
-    "diff_fixed_defects_between_releases",
-    "diff_new_defects_between_releases",
-)
 
 
 def add_title_to_json(path, title):
@@ -49,6 +38,7 @@ def add_title_to_json(path, title):
     fd.close()
 
 
+@public
 def run_diff(task_dir, base_task_dir, nvr, base_nvr):
     """
         Runs 'csdiff' and 'csdiff -x' command for results of scan with id
@@ -129,6 +119,7 @@ old: %s new: %s', old_err, new_err)
             workdir=task_dir, can_fail=True)
 
 
+@public
 def extract_logs_from_tarball(task_id, name=None):
     """
         Extracts files from tarball for specified task.
@@ -279,6 +270,7 @@ def create_base_diff_task(kwargs, parent_id):
         upload.delete()
 
 
+@public
 def create_diff_task(kwargs):
     """
         create scan of a package and perform diff on results against specified
@@ -375,6 +367,7 @@ def create_diff_task(kwargs):
     return task_id
 
 
+@public
 def prepare_and_execute_diff(task, base_task, nvr, base_nvr):
     task_dir = Task.get_task_dir(task.id)
     base_task_dir = Task.get_task_dir(base_task.id)
@@ -382,6 +375,7 @@ def prepare_and_execute_diff(task, base_task, nvr, base_nvr):
     return run_diff(task_dir, base_task_dir, nvr, base_nvr)
 
 
+@public
 def get_latest_sb_by_package(release, package):
     """
     return latest scan for specified package and release.
@@ -396,6 +390,7 @@ def get_latest_sb_by_package(release, package):
         return bindings.latest()
 
 
+@public
 def diff_fixed_defects_in_package(sb):
     try:
         return sb.result.fixed_defects_count()\
@@ -407,6 +402,7 @@ def diff_fixed_defects_in_package(sb):
         return 0
 
 
+@public
 def diff_defects_between_releases(sb, d_type):
     try:
         previous = ScanBinding.objects.get(scan__enabled=True,
@@ -425,14 +421,17 @@ def diff_defects_between_releases(sb, d_type):
         return 0
 
 
+@public
 def diff_fixed_defects_between_releases(scan):
     return diff_defects_between_releases(scan, 'f')
 
 
+@public
 def diff_new_defects_between_releases(scan):
     return diff_defects_between_releases(scan, 'n')
 
 
+@public
 def get_latest_binding(scan_nvr):
     query = ScanBinding.objects.filter(
         scan__nvr=scan_nvr,
@@ -449,3 +448,9 @@ def get_latest_binding(scan_nvr):
             return query.latest()
     else:
         return None
+
+
+@public
+def get_used_releases():
+    """ return tuple of used releases for search form """
+    return list(Scan.objects.all().values_list('tag__release__id', 'tag__release__tag').distinct())
