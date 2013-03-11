@@ -453,4 +453,5 @@ def get_latest_binding(scan_nvr):
 @public
 def get_used_releases():
     """ return tuple of used releases for search form """
-    return list(Scan.objects.all().values_list('tag__release__id', 'tag__release__tag').distinct())
+    return list(Scan.objects.all().values_list('tag__release__id',
+                'tag__release__product', 'tag__release__release').distinct())

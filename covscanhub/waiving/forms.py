@@ -24,7 +24,7 @@ class ScanListSearchForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
         super(ScanListSearchForm, self).__init__(*args, **kwargs)
-        choices = get_used_releases()
+        choices = [(item[0], item[1] + '.' + unicode(item[2])) for item in get_used_releases() ]
         # first option searches in every release
         choices.insert(0, ('', 'All'))
         self.fields['release'] = forms.ChoiceField(
