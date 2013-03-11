@@ -209,7 +209,7 @@ def get_tupled_data(output):
 
 def results_list(request):
     """
-    Display list of all target results; request['GET'] may contain order_by
+    Display list of runs; request['GET'] may contain order_by
     """
     order_by = request.GET.get('order_by', None)
     order_prefix = ''
@@ -234,9 +234,10 @@ def results_list(request):
 
         order = order_prefix + order_by_mapping[order_by]
     else:
+        # order by scan__date, because result might not exist
         order = '-scan__date_submitted'
 
-    # link definitions to template
+    # link sort URLs to template
     table_sort = {}
     for o in order_by_mapping.iterkeys():
         t = request.GET.copy()
@@ -250,15 +251,17 @@ def results_list(request):
             table_sort[o] = u'?' + url if url else u'', 'up'
 
     search_form = ScanListSearchForm(request.GET)
-    # order by scan__date, because result might not exist
+
     q = ScanBinding.objects.filter(
         scan__scan_type__in=(
             SCAN_TYPES['NEWPKG'], SCAN_TYPES['ERRATA'], SCAN_TYPES['REBASE']
-        )).filter(
-            search_form.get_query(request)).order_by(order)
-    if search_form.extra_query():
-        q_ids = search_form.objects_satisfy(q)
-        q = q.filter(id__in=q_ids)
+        ))
+    if search_form.is_valid():
+        q = q.filter(search_form.get_query(request))
+        if search_form.extra_query():
+            q_ids = search_form.objects_satisfy(q)
+            q = q.filter(id__in=q_ids)
+    q = q.order_by(order)
 
     args = {
         "queryset": q,

@@ -5,6 +5,7 @@
 <h2>{% trans title %}</h2>
 
 <form method="GET" target="" style="float: left;">
+{{ search_form.release.label }} {{ search_form.release }}
 {{ search_form.search }}
 <input type="submit" value="{% trans "Search" %}" />
 {% if user.is_authenticated %}<br />{{ search_form.my }} Show only my scans{% endif %}
