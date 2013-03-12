@@ -86,6 +86,12 @@ SCAN_TYPES = Enum(
     EnumItem("NEWPKG", help_text="New Package"),
 )
 
+SCAN_TYPES_TARGET = (
+    SCAN_TYPES['ERRATA'],
+    SCAN_TYPES['REBASE'],
+    SCAN_TYPES['NEWPKG'],
+)
+
 
 class Permissions(models.Model):
     """
