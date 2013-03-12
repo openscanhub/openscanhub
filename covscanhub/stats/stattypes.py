@@ -14,7 +14,7 @@ import datetime
 
 from kobo.hub.models import Task
 
-from covscanhub.scan.models import Scan, SystemRelease, SCAN_TYPES,
+from covscanhub.scan.models import Scan, SystemRelease,\
     ScanBinding, SCAN_TYPES_TARGET
 from covscanhub.scan.service import diff_fixed_defects_in_package,\
     diff_fixed_defects_between_releases, diff_new_defects_between_releases
@@ -251,8 +251,7 @@ def get_total_missing_waivers():
     """
     return ResultGroup.objects.filter(
         result__scanbinding__scan__enabled=True,
-        state__in=(RESULT_GROUP_STATES['NEEDS_INSPECTION'],
-                   RESULT_GROUP_STATES['DISPUTED'],)).count()
+        state=RESULT_GROUP_STATES['NEEDS_INSPECTION']).count()
 get_total_missing_waivers.group = "WAIVERS"
 get_total_missing_waivers.order = 2
 
@@ -267,8 +266,7 @@ def get_missing_waivers_by_release():
     result = {}
     for r in releases:
         result[r] = ResultGroup.objects.filter(
-            state__in=(RESULT_GROUP_STATES['NEEDS_INSPECTION'],
-                       RESULT_GROUP_STATES['DISPUTED'],),
+            state=RESULT_GROUP_STATES['NEEDS_INSPECTION'],
             result__scanbinding__scan__tag__release=r.id,
             result__scanbinding__scan__enabled=True,
         ).count()
