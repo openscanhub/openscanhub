@@ -164,13 +164,45 @@ def release_tree():
             tag.save()
 
 
+def db_set_default(key, value):
+    s, created = AppSettings.objects.get_or_create(key="SEND_MAIL")
+    if created:
+        s.value = value
+        s.save()
+
+
 def set_default_settings():
-    AppSettings.objects.get_or_create(key="SEND_MAIL", value="N")
-    AppSettings.objects.get_or_create(key="SEND_BUS_MESSAGE", value="N")
-    AppSettings.objects.get_or_create(key="CHECK_USER_CAN_SUBMIT_SCAN",
-                                      value="N")
-    AppSettings.objects.get_or_create(key="WAIVER_IS_OVERDUE",
-                                      value=pickle.dumps(datetime.timedelta(days=-7)))
+    """If object exists in DB, DO NOT TOUCH IT"""
+    db_set_default("SEND_MAIL", "N")
+    db_set_default("SEND_BUS_MESSAGE", "N")
+    db_set_default("CHECK_USER_CAN_SUBMIT_SCAN", "N")
+
+    # run is overdue -- default
+    db_set_default("WAIVER_IS_OVERDUE",
+                   pickle.dumps(datetime.timedelta(days=-7)))
+
+    # release specific, structure: tuple('short_tag', timedelta)
+    bindings = (
+        ('rhel-6.4', datetime.timedelta(days=-13)),
+    )
+    # structure: tuple(model_object, 'short_tag', timedelta
+    overdue_relspec = (
+        (o, pickle.loads(str(o.value))[0], pickle.loads(str(o.value))[1])
+        for o in AppSettings.objects.filter(key="WAIVER_IS_OVERDUE_RELSPEC")
+    )
+    # if it exists, update it, if not, create it
+    for b in bindings:
+        updated = False
+        for spec in overdue_relspec:
+            if b[0] == spec[1]:
+                if b[1] != spec[2]:
+                    spec[0].value = pickle.dumps(b)
+                    spec[0].save()
+                updated = True
+                continue
+        if not updated:
+            AppSettings.objects.get_or_create(key="WAIVER_IS_OVERDUE_RELSPEC",
+                                              value=pickle.dumps(b))
 
 def set_statistics():
     # function = (key, description)

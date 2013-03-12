@@ -351,15 +351,27 @@ counted in statistics.")
     def waived_on_time(self):
         """
         either scan is processed (passed/waived) or user still has time to
-        process it
+        process it; use release specific setting if exist, fallback to default
 
         Return:
             - None -- scan does not need to be waived
+            - True -- processed on time/still has time to process it
+            - False -- do not processed on time
         """
         if self.state not in SCAN_STATES_FINISHED_BAD:
+            try:
+                d = AppSettings.settings_waiver_overdue_by_release(
+                    self.tag.release.tag)
+            except KeyError:
+                d = AppSettings.setting_waiver_is_overdue()
+            except Exception, e:
+                logger.error('Failed to get release specific waiver overdue \
+setting: %s', e)
             return self.state in SCAN_STATES_PROCESSED or \
-                self.last_access > datetime.datetime.now() + \
-                AppSettings.setting_waiver_is_overdue()
+                self.last_access > datetime.datetime.now() + d
+        else:
+            return None
+
 
     @classmethod
     def create_scan(cls, scan_type, nvr, username, package,
@@ -503,7 +515,7 @@ class ETMapping(models.Model):
 
 class AppSettings(models.Model):
     """
-    Settings for application, these might be tuned live.
+    Settings for application, these might be tuned once live.
 
     SEND_EMAIL { Y, N }
     SEND_BUS_MESSAGE { Y, N }
@@ -537,6 +549,23 @@ class AppSettings(models.Model):
 
     @classmethod
     def setting_waiver_is_overdue(cls):
-        """Time period when run is marked as not processed"""
+        """Time period when run is marked as not processed -- default value"""
         return pickle.loads(
             str(cls.objects.get(key="WAIVER_IS_OVERDUE").value))
+
+    @classmethod
+    def settings_waiver_is_overdue_relspec(cls):
+        """
+        Release specific overdue values
+        The are stored in DB like this:
+            pickle.dumps('release__tag', 'timedelta')
+        """
+        q = cls.objects.filter(key="WAIVER_IS_OVERDUE_RELSPEC")
+        return dict(pickle.loads(str(o.value)) for o in q)
+
+    @classmethod
+    def settings_waiver_overdue_by_release(cls, short_tag):
+        """
+        Return release specific overdue value for provided release shorttag
+        """
+        return cls.settings_waiver_is_overdue_relspec()[short_tag]
