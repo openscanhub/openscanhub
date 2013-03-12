@@ -14,7 +14,8 @@ import datetime
 
 from kobo.hub.models import Task
 
-from covscanhub.scan.models import Scan, SystemRelease, SCAN_TYPES, ScanBinding
+from covscanhub.scan.models import Scan, SystemRelease, SCAN_TYPES,
+    ScanBinding, SCAN_TYPES_TARGET
 from covscanhub.scan.service import diff_fixed_defects_in_package,\
     diff_fixed_defects_between_releases, diff_new_defects_between_releases
 
@@ -35,9 +36,10 @@ def get_total_scans():
 
         Number of all submitted scans.
     """
-    return Scan.objects.filter(scan_type=SCAN_TYPES['ERRATA']).count()
+    return Scan.objects.filter(scan_type__in=SCAN_TYPES_TARGET).count()
 get_total_scans.group = "SCANS"
 get_total_scans.order = 1
+
 
 def get_scans_by_release():
     """
@@ -48,8 +50,8 @@ def get_scans_by_release():
     releases = SystemRelease.objects.filter(active=True)
     result = {}
     for r in releases:
-        result[r] = Scan.objects.filter(scan_type=SCAN_TYPES['ERRATA'],
-                                           tag__release=r.id).count()
+        result[r] = Scan.objects.filter(scan_type__in=SCAN_TYPES_TARGET,
+                                        tag__release=r.id).count()
     return result
 get_scans_by_release.group = "SCANS"
 get_scans_by_release.order = 1
@@ -217,7 +219,7 @@ def get_total_waivers_submitted():
     """
         Waivers submitted
 
-        Number of waivers submitted.
+        Number of waivers submitted. (including invalidated)
     """
     return Waiver.objects.all().count()
 get_total_waivers_submitted.order = 1
@@ -228,7 +230,7 @@ def get_waivers_submitted_by_release():
     """
         Waivers submitted
 
-        Number of waivers submitted by release.
+        Number of waivers submitted by release. (including invalidated)
     """
     releases = SystemRelease.objects.filter(active=True)
     result = {}
@@ -245,10 +247,12 @@ def get_total_missing_waivers():
     """
         Missing waivers
 
-        Number of tests that were not waived, but should have been.
+        Number of groups that were not waived, but should have been.
     """
     return ResultGroup.objects.filter(
-        state=RESULT_GROUP_STATES['NEEDS_INSPECTION']).count()
+        result__scanbinding__scan__enabled=True,
+        state__in=(RESULT_GROUP_STATES['NEEDS_INSPECTION'],
+                   RESULT_GROUP_STATES['DISPUTED'],)).count()
 get_total_missing_waivers.group = "WAIVERS"
 get_total_missing_waivers.order = 2
 
@@ -257,14 +261,16 @@ def get_missing_waivers_by_release():
     """
         Missing waivers
 
-        Number of tests that were not waived by release.
+        Number of groups that were not waived by release.
     """
     releases = SystemRelease.objects.filter(active=True)
     result = {}
     for r in releases:
         result[r] = ResultGroup.objects.filter(
-            state=RESULT_GROUP_STATES['NEEDS_INSPECTION'],
+            state__in=(RESULT_GROUP_STATES['NEEDS_INSPECTION'],
+                       RESULT_GROUP_STATES['DISPUTED'],),
             result__scanbinding__scan__tag__release=r.id,
+            result__scanbinding__scan__enabled=True,
         ).count()
     return result
 get_missing_waivers_by_release.group = "WAIVERS"
@@ -277,7 +283,8 @@ def get_total_is_a_bug_waivers():
 
         Number of waivers with type IS_A_BUG.
     """
-    return Waiver.objects.filter(state=WAIVER_TYPES['IS_A_BUG']).count()
+    return Waiver.objects.filter(state=WAIVER_TYPES['IS_A_BUG'],
+                                 is_deleted=False).count()
 get_total_is_a_bug_waivers.group = "WAIVERS"
 get_total_is_a_bug_waivers.order = 3
 
@@ -294,6 +301,7 @@ def get_is_a_bug_waivers_by_release():
         result[r] = Waiver.objects.filter(
             state=WAIVER_TYPES['IS_A_BUG'],
             result_group__result__scanbinding__scan__tag__release=r.id,
+            is_deleted=False,
         ).count()
     return result
 get_is_a_bug_waivers_by_release.group = "WAIVERS"
@@ -306,7 +314,8 @@ def get_total_not_a_bug_waivers():
 
         Number of waivers with type NOT_A_BUG.
     """
-    return Waiver.objects.filter(state=WAIVER_TYPES['NOT_A_BUG']).count()
+    return Waiver.objects.filter(state=WAIVER_TYPES['NOT_A_BUG'],
+                                 is_deleted=False,).count()
 get_total_not_a_bug_waivers.group = "WAIVERS"
 get_total_not_a_bug_waivers.order = 4
 
@@ -323,6 +332,7 @@ def get_not_a_bug_waivers_by_release():
         result[r] = Waiver.objects.filter(
             state=WAIVER_TYPES['NOT_A_BUG'],
             result_group__result__scanbinding__scan__tag__release=r.id,
+            is_deleted=False,
         ).count()
     return result
 get_not_a_bug_waivers_by_release.group = "WAIVERS"
@@ -335,7 +345,8 @@ def get_total_fix_later_waivers():
 
         Number of waivers with type FIX_LATER.
     """
-    return Waiver.objects.filter(state=WAIVER_TYPES['FIX_LATER']).count()
+    return Waiver.objects.filter(state=WAIVER_TYPES['FIX_LATER'],
+                                 is_deleted=False,).count()
 get_total_fix_later_waivers.group = "WAIVERS"
 get_total_fix_later_waivers.order = 5
 
@@ -352,6 +363,7 @@ def get_fix_later_waivers_by_release():
         result[r] = Waiver.objects.filter(
             state=WAIVER_TYPES['FIX_LATER'],
             result_group__result__scanbinding__scan__tag__release=r.id,
+            is_deleted=False,
         ).count()
     return result
 get_fix_later_waivers_by_release.group = "WAIVERS"
@@ -378,6 +390,7 @@ def get_busy_minutes():
 get_busy_minutes.order = 1
 get_busy_minutes.group = "TIME"
 
+
 def get_minutes_spent_scanning():
     """
         Scanning minutes
@@ -388,6 +401,6 @@ def get_minutes_spent_scanning():
     if not result:
         return 0
     else:
-        return result.aggregate(Sum('scanning_time'))['scanning_time__sum']
+        return result.aggregate(Sum('scanning_time'))['scanning_time__sum'] / 60
 get_minutes_spent_scanning.group = "TIME"
 get_minutes_spent_scanning.order = 2
