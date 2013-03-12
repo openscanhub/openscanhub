@@ -388,6 +388,25 @@ setting: %s', e)
         scan.save()
         return scan
 
+    def clone_scan(self, base=None):
+        scan = Scan()
+        scan.scan_type = self.scan_type
+        scan.nvr = self.nvr
+        scan.tag = self.tag
+        if self.is_errata_base_scan():
+            scan.base = None
+            scan.enabled = False
+        else:
+            scan.enabled = True
+            # base shouldn't be None
+            # I'm not adding get_latest_binding here because of reference lock
+            scan.base = base
+        scan.username = self.username
+        scan.last_access = datetime.datetime.now()
+        scan.package = self.package
+        scan.save()
+        return scan
+
     def scan_state_notice(self):
         if self.state in SCAN_STATES_IN_PROGRESS:
             key = 'unfinished'

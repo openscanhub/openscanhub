@@ -25,15 +25,16 @@ logger = logging.getLogger(__name__)
 ######
 
 
-def create_errata_base_scan(kwargs, parent_task_id):
+def create_errata_base_scan(d, parent_task_id):
     """Create base scan according to dict kwargs"""
     options = {}
-    d = kwargs.copy()
 
     d['scan_type'] = SCAN_TYPES['ERRATA_BASE']
     # kwargs['target'] = TARGET, d['target'] = BASE
     d['target'] = d['base']
     del d['base']
+    # we don't want bases tagged
+    d['tag'] = None
 
     d['task_label'] = d['target']
     options['brew_build'] = d['target']
@@ -246,7 +247,7 @@ def create_errata_scan(kwargs):
     task_id, scan = spawn_scan_task(d, target_nvre_dict)
 
     if scan.can_have_base():
-        base = obtain_base(d, task_id)
+        base = obtain_base(d.copy(), task_id)
         scan.base = base
         scan.save()
 
@@ -275,44 +276,37 @@ def create_errata_scan(kwargs):
     return etm
 
 
-def rescan(scan):
+def rescan(scan, user):
     """
         Rescan supplied scan.
 
         @param scan - scan to be rescanned
-        @type scan - covscanhub.scan,models.Scan
+        @type scan - covscanhub.scan.models.Scan
+        @param user - user that triggered resubmit
+        @type scan - django...User
     """
     latest_binding = get_latest_binding(scan.nvr, show_failed=True)
 
     if latest_binding.scan.state != SCAN_STATES['FAILED']:
-        raise ScanException("You are trying to rescan a scan that haven't \
-failed. This is not supported.")
+        raise ScanException("Latest run of %s haven't \
+failed. This is not supported." % scan.nvr)
 
     #scan is base scan
-    if scan.is_errata_base_scan() or (Scan.objects.filter(nvr=scan.nvr)):
-        task_id = Task.create_task(
-            owner_name=latest_binding.task.owner.username,
-            label=latest_binding.task.label,
-            method='ErrataDiffBuild',
-            args={},
-            comment=latest_binding.task.comment,
+    if latest_binding.scan.is_errata_base_scan():
+        task_id = latest_binding.task.clone_task(
+            user,
             state=TASK_STATES["CREATED"],
-            priority=latest_binding.task.priority,
+            args={},
+            comment="Rescan of base %s" % latest_binding.scan.nvr,
         )
+
         task_dir = Task.get_task_dir(task_id)
 
         check_and_create_dirs(task_dir)
-
-        scan = Scan.create_scan(
-            scan_type=latest_binding.scan.scan_type,
-            nvr=latest_binding.scan.nvr,
-            username=latest_binding.scan.username.username,
-            tag=latest_binding.scan.tag,
-            package=latest_binding.scan.package,
-            enabled=False)
+        new_scan = latest_binding.scan.clone_scan()
 
         options = latest_binding.task.args
-        options.update({'scan_id': scan.id})
+        options.update({'scan_id': new_scan.id})
         task = Task.objects.get(id=task_id)
         task.args = options
         task.save()
@@ -330,28 +324,21 @@ failed. This is not supported.")
         if latest_binding.task.parent:
             raise ScanException('You want to rescan a scan that has a parent. \
 Unsupported.')
-        task_id = Task.create_task(
-            owner_name=latest_binding.task.owner.username,
-            label=latest_binding.task.label,
-            method='ErrataDiffBuild',
-            args={},
-            comment=latest_binding.task.comment,
+        task_id = latest_binding.task.clone_task(
+            user,
             state=TASK_STATES["CREATED"],
-            priority=latest_binding.task.priority,
+            args={},
+            comment="Rescan of %s" % latest_binding.scan.nvr,
         )
+
         task_dir = Task.get_task_dir(task_id)
 
         check_and_create_dirs(task_dir)
 
+        # update child
         child = scan.get_child_scan()
 
-        scan = Scan.create_scan(
-            scan_type=latest_binding.scan.scan_type,
-            nvr=latest_binding.scan.nvr,
-            username=latest_binding.scan.username.username,
-            tag=latest_binding.scan.tag,
-            package=latest_binding.scan.package,
-            enabled=True,
+        new_scan = latest_binding.scan.clone_scan(
             base=get_latest_binding(scan.base.nvr).scan)
 
         if child:

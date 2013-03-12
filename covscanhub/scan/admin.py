@@ -93,7 +93,7 @@ class ScanAdmin(admin.ModelAdmin):
 
     def rescan(self, request, scan_id):
         scan = Scan.objects.get(id=scan_id)
-        new_scan = rescan(scan)
+        new_scan = rescan(scan, request.user)
 
         return render_to_response('admin/scan/scan/state_change.html', {
             'title': 'Rescan of package: %s' % scan.nvr,
