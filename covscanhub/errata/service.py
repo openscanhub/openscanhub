@@ -282,7 +282,7 @@ def rescan(scan):
         @param scan - scan to be rescanned
         @type scan - covscanhub.scan,models.Scan
     """
-    latest_binding = get_latest_binding(scan.nvr)
+    latest_binding = get_latest_binding(scan.nvr, show_failed=True)
 
     if latest_binding.scan.state != SCAN_STATES['FAILED']:
         raise ScanException("You are trying to rescan a scan that haven't \
