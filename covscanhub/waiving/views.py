@@ -381,9 +381,6 @@ def waiver(request, sb_id, result_group_id):
         waiver__result_group=result_group_id).exclude(
         state=WAIVER_LOG_ACTIONS['DELETE'])
 
-    logger.debug('Displaying waiver for sb %s, result-group %s',
-                 sb, result_group_object)
-
     context['defects_list_class'] = 'new'
     context['new_selected'] = "selected"
     return render_to_response("waiving/waiver.html",
