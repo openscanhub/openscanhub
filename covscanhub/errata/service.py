@@ -297,7 +297,7 @@ failed. This is not supported." % (latest_binding.scan.id, scan.nvr))
     if latest_binding.scan.is_errata_base_scan():
         #clone does not support cloning of child tasks only
         task_id = Task.create_task(
-            owner_name=latest_binding.task.username,
+            owner_name=latest_binding.task.owner.name,
             label=latest_binding.task.label,
             method=latest_binding.task.method,
             args={},
