@@ -27,31 +27,6 @@
 
 {% endif %}
 
-<div id="legend_wrapper">
-    <h4>Legend</h4>
-    <table class="legend">
-        <tr>
-            <td class="bg_IS_A_BUG">
-                Is a bug
-            </td>
-            <td class="bg_NEEDS_INSPECTION">
-                Needs Inspection <span class="defects_count NEW">defects count</span>
-            </td>
-            <td class="bg_INFO">
-                Info <span class="defects_count FIXED">defects count</span>
-            </td>
-            <td class="bg_WAIVED">
-                Waived <span class="defects_increased">difference</span>
-                <span class="defects_count FIXED">defects count</span>
-            </td>
-            <td id="active" class="bg_PREVIOUSLY_WAIVED">
-                Previously Waived (active)
-                <span class="defects_decreased">difference</span>
-            </td>
-        </tr>
-    </table>
-</div>
-
 {% if sb.result %} {# display defects list only if scan finished #}
 
 {% if status_message %}
@@ -253,16 +228,41 @@
         <span class="link">
             <a href="{% url waiving/result newest_sb.id %}">
                 <span class="tooltip">{{ newest_sb.scan.nvr }}</span>
-                {% trans "Latest" %}
+                {% trans "Last" %}
                 <span class="link_icon">&#187;</span> {# » &#187; {right double angle quote} #}
             </a>
         </span>
     {% else %}
         <span class="no_link">
-            {% trans "Latest" %}
+            {% trans "Last" %}
             <span class="link_icon">&#187;</span>
         </span>
     {% endif %}
+</div>
+
+<div id="legend_wrapper">
+    <h4>Legend</h4>
+    <table class="legend">
+        <tr>
+            <td class="bg_IS_A_BUG">
+                Is a bug
+            </td>
+            <td class="bg_NEEDS_INSPECTION">
+                Needs Inspection <span class="defects_count NEW">defects count</span>
+            </td>
+            <td class="bg_INFO">
+                Info <span class="defects_count FIXED">defects count</span>
+            </td>
+            <td class="bg_WAIVED">
+                Waived <span class="defects_increased">difference</span>
+                <span class="defects_count FIXED">defects count</span>
+            </td>
+            <td id="active" class="bg_PREVIOUSLY_WAIVED">
+                Previously Waived (active)
+                <span class="defects_decreased">difference</span>
+            </td>
+        </tr>
+    </table>
 </div>
 
 {% if logs %}
