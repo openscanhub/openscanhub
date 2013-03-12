@@ -290,16 +290,22 @@ def rescan(scan, user):
                 scan.nvr, latest_binding)
 
     if latest_binding.scan.state != SCAN_STATES['FAILED']:
-        raise ScanException("Latest run of %s haven't \
-failed. This is not supported." % scan.nvr)
+        raise ScanException("Latest run %d of %s haven't \
+failed. This is not supported." % (latest_binding.scan.id, scan.nvr))
 
     #scan is base scan
     if latest_binding.scan.is_errata_base_scan():
-        task_id = latest_binding.task.clone_task(
-            user,
-            state=TASK_STATES["CREATED"],
+        #clone does not support cloning of child tasks only
+        task_id = Task.create_task(
+            owner_name=latest_binding.task.username,
+            label=latest_binding.task.label,
+            method=latest_binding.task.method,
             args={},
             comment="Rescan of base %s" % latest_binding.scan.nvr,
+            state=TASK_STATES["CREATED"],
+            priority=latest_binding.task.priority,
+            resubmitted_by=user,
+            resubmitted_from=latest_binding.task,
         )
 
         task_dir = Task.get_task_dir(task_id)
