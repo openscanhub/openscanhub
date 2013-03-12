@@ -287,7 +287,7 @@ def rescan(scan, user):
     """
     latest_binding = get_latest_binding(scan.nvr, show_failed=True)
     logger.info('Rescheduling scan with nvr %s, latest binding %s',
-                scan.nvr, latest_base_binding)
+                scan.nvr, latest_binding)
 
     if latest_binding.scan.state != SCAN_STATES['FAILED']:
         raise ScanException("Latest run of %s haven't \
@@ -316,7 +316,7 @@ failed. This is not supported." % scan.nvr)
 
         sb = ScanBinding()
         sb.task = task
-        sb.scan = scan
+        sb.scan = new_scan
         sb.save()
 
         return sb
@@ -330,7 +330,10 @@ Unsupported.')
         latest_base_binding = get_latest_binding(scan.base.nvr)
         if not latest_base_binding:
             raise RuntimeError('It looks like that any of base scans of %s \
-did not finish successfully; reschedule that one' % scan.base.nvr)
+did not finish successfully; reschedule base (latest base: %s)' % (
+                scan.base.nvr,
+                get_latest_binding(scan.base.nvr, show_failed=True))
+            )
 
         task_id = latest_binding.task.clone_task(
             user,
@@ -362,7 +365,7 @@ did not finish successfully; reschedule that one' % scan.base.nvr)
 
         sb = ScanBinding()
         sb.task = task
-        sb.scan = scan
+        sb.scan = new_scan
         sb.save()
 
         ETMapping.objects.filter(
