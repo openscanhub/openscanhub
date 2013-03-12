@@ -3,11 +3,11 @@
 import types
 import re
 import datetime
-
+import logging
 import stattypes
 from models import StatType, StatResults
 
-#from django.utils.safestring import mark_safe
+logger = logging.getLogger(__name__)
 
 
 def get_last_stat_result(stat_type, release=None):
@@ -60,6 +60,7 @@ def update():
     """
     Refresh statistics data.
     """
+    logger.info('Update statistics.')
     for func, desc in get_mapping().iteritems():
         stat_data = func()
         if isinstance(stat_data, int):
