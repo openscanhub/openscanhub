@@ -286,6 +286,8 @@ def rescan(scan, user):
         @type scan - django...User
     """
     latest_binding = get_latest_binding(scan.nvr, show_failed=True)
+    logger.info('Rescheduling scan with nvr %s, latest binding %s',
+                scan.nvr, latest_base_binding)
 
     if latest_binding.scan.state != SCAN_STATES['FAILED']:
         raise ScanException("Latest run of %s haven't \
@@ -324,6 +326,12 @@ failed. This is not supported." % scan.nvr)
         if latest_binding.task.parent:
             raise ScanException('You want to rescan a scan that has a parent. \
 Unsupported.')
+
+        latest_base_binding = get_latest_binding(scan.base.nvr)
+        if not latest_base_binding:
+            raise RuntimeError('It looks like that any of base scans of %s \
+did not finish successfully; reschedule that one' % scan.base.nvr)
+
         task_id = latest_binding.task.clone_task(
             user,
             state=TASK_STATES["CREATED"],
@@ -339,7 +347,7 @@ Unsupported.')
         child = scan.get_child_scan()
 
         new_scan = latest_binding.scan.clone_scan(
-            base=get_latest_binding(scan.base.nvr).scan)
+            base=latest_base_binding.scan)
 
         if child:
             child.parent = scan
