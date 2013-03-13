@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% load i18n %}
 {% load filters %}
+{% load humanize %}
 
 {% block head %}
 <script type="text/javascript" src="{{ MEDIA_URL }}js/morris.min.js"></script>
@@ -49,7 +50,7 @@ $(document).ready(function() {
 {% for date, value in results|sort %}
     <tr>
         <td>{{ date|date:"Y-m-d H:i:s" }}</td>
-        <td>{{ value }}</td>
+        <td>{{ value|intcomma }}</td>
     </tr>
 {% endfor %}
 </table>
