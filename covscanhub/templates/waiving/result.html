@@ -48,11 +48,7 @@
   <tr>
     {% for group, data in five.items %}
         {% if data and data.id %}
-        <td class="bg_{{ data.group_state }}"
-            {% if active_group and active_group.id == data.id %}
-                id="active"
-            {% endif %}
-        >
+        <td class="bg_{{ data.group_state }} {% if active_group and active_group.id == data.id %} active {% endif %}">
             <a href="{% url waiving/waiver sb.id data.id %}#defects">{{ group.name }}</a>
             {% if data.diff_state %}
             <span class="{{ data.diff_state }}">{{ data.diff_count }}</span>
@@ -84,11 +80,7 @@
   <tr>
     {% for group, data in five.items %}
         {% if data and data.id %}
-        <td class="bg_{{ data.group_state }}"
-            {% if active_group and active_group.id == data.id %}
-                id="active"
-            {% endif %}
-        >
+        <td class="bg_{{ data.group_state }} {% if active_group and active_group.id == data.id %} active {% endif %}">
             <a href="{% url waiving/fixed_defects sb.id data.id %}#defects">{{ group.name }}</a>
             {% if data.diff_state %}
             <span class="{{ data.diff_state }}">{{ data.diff_count }}</span>
@@ -120,11 +112,7 @@
   <tr>
     {% for group, data in five.items %}
         {% if data and data.id %}
-        <td class="bg_{{ data.group_state }}"
-            {% if active_group and active_group.id == data.id %}
-                id="active"
-            {% endif %}
-        >
+        <td class="bg_{{ data.group_state }} {% if active_group and active_group.id == data.id %} active {% endif %}">
             <a href="{% url waiving/previously_waived sb.id data.id %}#defects">{{ group.name }}</a>
             {% if data.diff_state %}
             <span class="{{ data.diff_state }}">{{ data.diff_count }}</span>
@@ -239,28 +227,30 @@
 </div>
 
 <div id="legend_wrapper">
-    <h4>Legend</h4>
-    <table class="legend">
-        <tr>
-            <td class="bg_IS_A_BUG">
-                Is a bug
-            </td>
-            <td class="bg_NEEDS_INSPECTION">
-                Needs Inspection <span class="defects_count NEW">defects count</span>
-            </td>
-            <td class="bg_INFO">
-                Info <span class="defects_count FIXED">defects count</span>
-            </td>
-            <td class="bg_WAIVED">
-                Waived <span class="defects_increased">difference</span>
-                <span class="defects_count FIXED">defects count</span>
-            </td>
-            <td id="active" class="bg_PREVIOUSLY_WAIVED">
-                Previously Waived (active)
-                <span class="defects_decreased">difference</span>
-            </td>
-        </tr>
-    </table>
+    <div id="legend_center_wrapper">
+    <h3>Legend</h3>
+        <table class="legend">
+            <tr>
+                <td class="bg_IS_A_BUG" style="padding-right: 0.6em;">
+                    Is a bug
+                </td>
+                <td class="bg_NEEDS_INSPECTION">
+                    Needs Inspection <span class="defects_count NEW italic margin_left">defects count</span>
+                </td>
+                <td class="bg_INFO">
+                    Info <span class="defects_count FIXED italic margin_left">defects count</span>
+                </td>
+                <td class="bg_WAIVED">
+                    Waived <span class="defects_increased italic">difference</span>
+                    <span class="defects_count FIXED italic margin_left">defects count</span>
+                </td>
+                <td class="bg_PREVIOUSLY_WAIVED active">
+                    Previously Waived (active)
+                    <span class="defects_decreased italic margin_left">difference</span>
+                </td>
+            </tr>
+        </table>
+    </div>
 </div>
 
 {% if logs %}

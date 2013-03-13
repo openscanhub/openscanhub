@@ -46,6 +46,10 @@ label {
     font-size: 12px;
 }
 
+.italic {
+    font-style:italic;
+}
+
 .button_line {
     line-height: 30px;
 }
@@ -400,33 +404,40 @@ table.summary td {
     line-height: 2.5em;
 }
 
-#legend_wrapper h4 {
+#legend_wrapper h3 {
     text-align: center;
     margin: 0px 0px 0px 0px;
+    display: inline;
 }
 
 #legend_wrapper {
     margin-bottom: 3em;
+    text-align: center;
+}
+
+div#legend_center_wrapper {
+    border: 2px solid #CCC;
+    display: inline-block;
+    padding: 0.5em;
 }
 
 table.legend {
-    font-size: 0.9em;
+    font-size: 1em;
     border-spacing: 2px;
     border-collapse: separate;
-    width: 100%;
+    /*width: 100%;*/
     margin-top: 0.3em;
 }
 
 table.legend td {
     padding: 0em 0em 0em 0.6em;
     border: 2px solid white;
-    font-weight: bolder;
-    min-width: 17em;
+    /*min-width: 17em;*/
     height: 2.5em;
     line-height: 2.5em;
 }
 
-table #active {
+table td.active {
     font-weight: bolder;
     border: 2px solid #666666;
 }
