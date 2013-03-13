@@ -26,6 +26,10 @@ label {
     margin-right: 1.5em;
 }
 
+.margin_right_big {
+    margin-right: 3em;
+}
+
 .float_right {
     float: right;
 }
@@ -202,6 +206,14 @@ label {
     vertical-align: middle;
 }
 
+.btn:hover {
+    background-color: #E6E6E6;
+    background-position: 0 -15px;
+    color: #333333;
+    text-decoration: none;
+    transition: background-position 0.1s linear 0s;
+}
+
 /*bugzilla*/
 
 #box_wrapper a:link, #box_wrapper a:visited {
@@ -212,12 +224,14 @@ label {
     background-color: #CCC;
 }
 
-#bz_number, #bz_update, #bz_bugs_count {
+#bz_number, #bz_update {
     background-color: #EEE;
 }
 
+/*
 #bz_bugs_count {
 }
+*/
 
 #box_wrapper {
     margin-bottom: 2.5em;
@@ -397,7 +411,7 @@ table.summary td {
 
 table.legend {
     font-size: 0.9em;
-    border-spacing: 0px;
+    border-spacing: 2px;
     border-collapse: separate;
     width: 100%;
     margin-top: 0.3em;

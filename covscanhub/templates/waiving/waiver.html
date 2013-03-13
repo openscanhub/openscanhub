@@ -6,17 +6,24 @@
 
 <div id="defects_container" class="{{ defects_list_class }}">
 
+<a id="toggle_all" class="btn float_right margin_left toggle_all">
+    <span class="show_text">Expand all</span>
+    <span class="hide_text">Collapse all</span>
+</a>
+<a class="btn float_right">Show all trace events</a>
+
 <h2>{{ active_group.checker_group.name }}</h2>
 
-<div id="defects">
+<div style="clear:both;"></div>
 
+<div id="defects">
 {% for defect in defects %}
     <div id="defect_{{ defect.id }}" class="{{ defect.get_state_display }} defect">
         <div id="defect_header_{{ defect.id }}">
             <span id="btn_toggle_{{ defect.id }}" onclick="
                 $(&quot;#events_list_{{ defect.id }} .defect_event&quot;).toggle();
                 $(&quot;#btn_toggle_{{ defect.id }}&quot;).toggleClass(&quot;currently_hiding&quot;);
-            " class="btn float_right margin_1em">
+            " class="btn float_right margin_1em event_collapse_btn">
                 <span class="show_text">Expand</span>
                 <span class="hide_text">Collapse</span>
             </span>
@@ -43,7 +50,11 @@
         </div>
     </div>
 {% endfor %}
-
+<a class="btn float_right margin_left toggle_all">
+    <span class="show_text">Expand all</span>
+    <span class="hide_text">Collapse all</span>
+</a>
+<a href="#header" class="btn float_right">Go to top</a>
 </div>
 
 {% if display_waivers %}

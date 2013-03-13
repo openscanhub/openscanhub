@@ -9,14 +9,12 @@
 <div id="box_wrapper">
     {% if not bugzilla %}
         {% if unreported_bugs_count > 0 %}
-    <a id="bz_create" class="btn" href="{% url waiving/new_bz sb.scan.package.id sb.scan.tag.release.id %}">Create Bugzilla</a>
-    <span id="bz_bugs_count" class="info_box margin_right">{{ unreported_bugs_count }}</span>
+    <a id="bz_create" class="btn margin_right" href="{% url waiving/new_bz sb.scan.package.id sb.scan.tag.release.id %}">Create Bugzilla ({{ unreported_bugs_count }})</a>
         {% endif %}
     {% else %}
     <a id="bz_number" class="info_box {% if unreported_bugs_count == 0 %}margin_right{% endif %}" href="https://bugzilla.redhat.com/show_bug.cgi?id={{ bugzilla.number }}">BZ#{{ bugzilla.number }}</a>
         {% if unreported_bugs_count > 0 %}
-        <a id="bz_update" class="btn" href="{% url waiving/update_bz sb.scan.package.id sb.scan.tag.release.id %}">Update Bugzilla</a>
-        <span id="bz_bugs_count" class="info_box margin_right">{{ unreported_bugs_count }}</span>
+        <a id="bz_update" class="btn margin_right" href="{% url waiving/update_bz sb.scan.package.id sb.scan.tag.release.id %}">Update Bugzilla ({{ unreported_bugs_count }})</a>
         {% endif %}
     {% endif %}
 
@@ -356,6 +354,23 @@ window.onload=function() {
       };
     })(tabs[i]);
   }
+
+  var tabs = document.querySelectorAll("#tabContainer ul li");
+  // add it to both buttons
+  $(".toggle_all").click(function() {
+      // check state only on first one
+      var toggle_all=$("#toggle_all");
+      if (toggle_all.hasClass("currently_hiding")) {
+        $(".events_list .defect_event").hide();
+        $(".event_collapse_btn").removeClass("currently_hiding");
+      } else {
+        $(".events_list .defect_event").show();
+        $(".event_collapse_btn").addClass("currently_hiding");
+      }
+      // apply change to both
+      $(".toggle_all").toggleClass("currently_hiding");
+  });
+
 {% comment %}
   // get tab container
   var container = document.getElementById("tabContainer");
@@ -375,7 +390,6 @@ window.onload=function() {
 {% endcomment %}
 }
 </script>
-
 {% endblock %}
 
 {% endblock %}
