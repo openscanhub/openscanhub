@@ -1,12 +1,8 @@
 {% extends "layout.html" %}
 {% load i18n %}
 
-{% block head %}
-<script type="text/javascript" src="{{ MEDIA_URL }}js/jquery-1.8.3.min.js"></script>
-{% endblock %}
-
 {% block css %}
-  {# change href according to your project or remove following line completely #}
+  <script type="text/javascript" src="{{ MEDIA_URL }}js/jquery-1.8.3.min.js"></script>
   <link rel="stylesheet" href="{{ MEDIA_URL }}css/redhat.css" type="text/css" media="screen" />
 {% endblock %}
 

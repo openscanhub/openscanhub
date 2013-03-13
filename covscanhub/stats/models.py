@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import django.db.models as models
+from django.core.urlresolvers import reverse
 
 from covscanhub.scan.models import SystemRelease
 
@@ -22,9 +23,29 @@ describes value of this stat.")
         if not results:
             return 0
         if self.is_release_specific and release:
-            return results.filter(release=release).latest().value
+            try:
+                return results.filter(release=release).latest().value
+            except Exception:
+                return 0
         else:
             return results.latest().value
+
+    def detail_url(self, release=None):
+        if self.is_release_specific:
+            return reverse(
+                'stats/release/detail',
+                kwargs={
+                    'release_id': release.id,
+                    'stat_id': self.id
+                }
+            )
+        else:
+            return reverse(
+                'stats/detail',
+                kwargs={
+                    'stat_id': self.id
+                }
+            )
 
 
 class StatResults(models.Model):

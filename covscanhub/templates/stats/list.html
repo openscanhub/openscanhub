@@ -1,22 +1,25 @@
 {% extends "base.html" %}
 {% load i18n %}
+{% load humanize %}
 
 {% block content %}
 <h2>{% trans "Statistics" %}</h2>
 
-{% for r in releases %}
-    <a href="{% url stats/release/list r.id %}">{{ r.tag }}</a>
-{% endfor %}
+{% if releases %}
+    {% for r in releases %}
+        <a href="{% url stats/release/list r.id %}">{{ r.tag }}</a>
+    {% endfor %}
+{% endif %}
 
 <table class="list" width="100%">
   <tr>
     <th>{% trans "Name" %}</th>
     <th>{% trans "Last Value" %}</th>
   </tr>
-{% for stat_type, value in results.iteritems %}
+{% for stat_type, data_tuple in results.iteritems %}
   <tr>
-    <td><a href="{% url stats/detail stat_type.id %}">{{ stat_type.short_comment }}</a></td>
-    <td>{{ value }}</td>
+    <td><a href="{{ data_tuple.1 }}">{{ stat_type.short_comment }}</a></td>
+    <td>{{ data_tuple.0|intword }}</td>
   </tr>
 {% endfor %}
 </table>

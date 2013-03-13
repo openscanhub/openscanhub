@@ -105,6 +105,7 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.admin',
+    'django.contrib.humanize', # nice numbers and dates
     # kobo apps:
     'kobo.django.upload',
     'kobo.hub',
