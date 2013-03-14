@@ -74,7 +74,7 @@
         {% endif %}
 
         <span class="button_line">
-            <span class="waiver_type {{ wl.waiver.get_state_display }}">{{ wl.waiver.get_display_type }}</span> waiver submitted by {{ wl.waiver.user }} at {{ wl.waiver.date|date:"Y-m-d H:i:s" }}.
+            <span class="waiver_type {{ wl.waiver.get_state_display }}">{{ wl.waiver.get_display_type }}</span> waiver submitted by {{ wl.waiver.user }} {{ wl.waiver.date|naturaltime }} ({{ wl.waiver.date|date:"Y-m-d H:i:s" }}).
         </span>
 
         <span id="btn_toggle_{{ wl.id }}" onclick="
@@ -113,7 +113,7 @@
         </div>
         {% if wl.waiver.is_deleted %}
         <div class="small grey">
-            This waiver has been <span class="wl_type delete">invalidated</span> by user {{ wl.waiver.get_delete_waiving_log.user }} on {{ wl.waiver.get_delete_waiving_log.date|date:"Y-m-d H:i:s" }}.
+            This waiver has been <span class="wl_type delete">invalidated</span> by user {{ wl.waiver.get_delete_waiving_log.user }} {{ wl.waiver.get_delete_waiving_log.date|naturaltime }} ({{ wl.waiver.get_delete_waiving_log.date|date:"Y-m-d H:i:s" }}).
         </div>
         {% endif %}
     </div>
@@ -166,8 +166,7 @@
 <h3>This group has been waived in a past with these waivers:</h3>
     {% for w in previous_waivers %}
     <div class="waiving_log wl_type_PAST_WAIVERS">
-        Waiver for build <a href="{% url waiving/waiver w.result_group.result.scanbinding.id w.result_group.id %}">{{ w.result_group.result.scanbinding.scan.nvr}}</a> submitted on
-        {{ w.date|date:"Y-m-d H:i:s" }}:
+        Waiver for build <a href="{% url waiving/waiver w.result_group.result.scanbinding.id w.result_group.id %}">{{ w.result_group.result.scanbinding.scan.nvr}}</a> submitted {{ w.date|naturaltime }} ({{ w.date|date:"Y-m-d H:i:s" }}):
         <div class="message">
         {{ w.message }}
         </div>
