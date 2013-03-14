@@ -29,6 +29,7 @@
             </span>
             <h3 class="padding_1em">{{ defect.order }}.
                 Defect type: <a href="http://cov01.lab.eng.brq.redhat.com:8080/docs/en/cov_checker_ref.html#static_c_checker_{{ defect.checker.name }}">{{ defect.checker.name }}</a>
+                <a title="Permalink to this defect" href="#defect_{{ defect.id }}" class="indoc_link">¶</a>
             </h3>
         </div>
     {% comment %}
@@ -67,18 +68,20 @@
 <h2>Waiving log ({{ waiving_logs.count }})</h2>
 <div>
     {% for wl in waiving_logs %}
+    <div id="waiver_{{ wl.id }}"
         {% if wl.waiver.is_deleted %}
-    <div class="waiving_log wl_type_DELETE transparent">
+    class="waiving_log wl_type_DELETE transparent">
         {% else %}
             {% if wl.waiver.result_group.has_waiver and wl.waiver.result_group.has_waiver.id == wl.waiver.id %}
-    <div class="waiving_log wl_type_{{ wl.get_state_display }}">
+    class="waiving_log wl_type_{{ wl.get_state_display }}">
             {% else %}
-    <div class="waiving_log wl_type_{{ wl.get_state_display }} transparent">
+    class="waiving_log wl_type_{{ wl.get_state_display }} transparent">
             {% endif %}
         {% endif %}
 
         <span class="button_line">
             <span class="waiver_type {{ wl.waiver.get_state_display }}">{{ wl.waiver.get_display_type }}</span> waiver submitted by {{ wl.waiver.user }} {{ wl.waiver.date|naturaltime }} ({{ wl.waiver.date|date:"Y-m-d H:i:s" }}).
+            <a title="Permalink to this waiver" href="#waiver_{{ wl.id }}" class="indoc_link">¶</a>
         </span>
 
         <span id="btn_toggle_{{ wl.id }}" onclick="

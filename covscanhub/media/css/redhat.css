@@ -586,9 +586,28 @@ div.waiving_log span.change {
     padding-top: 1.5em;
 }
 
-/**/
+/* In document linking */
+
+div#content *:hover > a.indoc_link {
+    visibility: visible;
+}
+
+div#content a.indoc_link {
+    padding: 0 4px;
+    text-decoration: none;
+    visibility: hidden;
+    color: #000;
+}
+
+div#content a.indoc_link:hover {
+    background-color: #CCC;
+}
 
 /*defects presentation*/
+
+div#content div#defects {
+    color: #000;
+}
 
 div#content div#defects div.events_list {
     font-family: "Courier New",monospace;
