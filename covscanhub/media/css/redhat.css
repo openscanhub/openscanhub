@@ -612,6 +612,15 @@ div#content div#defects div.key_event {
     padding: 3px 0;
 }
 
+div#content div#defects div.level_1 {
+    display: none;
+}
+
+div#content div#defects div.level_2 {
+    display: none;
+    color: #DDD;
+}
+
 #content div#defects div.FIXED {
     background-color: #DDFFCC;
 }

@@ -81,6 +81,7 @@ def load_defects_from_json(json_dict, result,
             d.annotation = defect.get('annotation', None)
             d.defect_identifier = defect.get('defect_id', None)
             d.function = defect.get('function', None)
+            d.cwe = defect.get('cwe', None)
             d.result = result
             d.state = defect_state
             d.key_event = defect['key_event_idx']
@@ -167,21 +168,31 @@ def create_results(scan, sb):
 
     if scan.is_errata_scan():
         if scan.is_newpkg_scan():
+            # load all the defects -- information only
             load_defects_from_file(defects_path, r, DEFECT_STATES['NEW'])
         else:
             load_defects_from_file(fixed_file_path, r, DEFECT_STATES['FIXED'])
             load_defects_from_file(diff_file_path, r, DEFECT_STATES['NEW'])
 
+            # get all RGs, that does not have waiver
             for rg in get_unwaived_rgs(r):
+                # was RG waived in past?
                 w = get_last_waiver(
                     rg.checker_group,
                     rg.result.scanbinding.scan.package,
                     rg.result.scanbinding.scan.tag.release,
                 )
+                # compare defects in these 2 result groups using pycsdiff
                 if w and compare_result_groups(rg, w.result_group):
+                    # they match! -- change states
                     rg.state = RESULT_GROUP_STATES['PREVIOUSLY_WAIVED']
                     rg.defect_type = DEFECT_STATES['PREVIOUSLY_WAIVED']
                     rg.save()
+
+                    #also changes states for defects
+                    for d in Defect.objects.filter(result_group=rg):
+                        d.state = DEFECT_STATES['PREVIOUSLY_WAIVED']
+                        d.save()
 
         for rg in ResultGroup.objects.filter(result=r):
             counter = 1

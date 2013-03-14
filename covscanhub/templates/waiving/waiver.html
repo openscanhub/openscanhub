@@ -32,8 +32,8 @@
             </h3>
         </div>
     {% comment %}
-    {% if check.annotation %}
-        <a href="http://cwe.mitre.org/data/definitions/{{ checker.annotation }}.html">{{ checker.annotation }}</a>
+    {% if check.cwe %}
+        <a href="http://cwe.mitre.org/data/definitions/{{ checker.cwe }}.html">{{ checker.cwe }}</a>
     {% endif %}
     {% endcomment %}
         <div id="events_list_{{ defect.id }}" class="events_list">
@@ -42,7 +42,11 @@
         {% if defect.key_event == forloop.counter0 %}
                 class="key_event">
         {% else %}
+            {% if event.verbosity_level %}
+                class="level_{{ event.verbosity_level }}">
+            {% else %}
                 class="defect_event" style="display: none;">
+            {% endif %}
         {% endif %}
                 {{ forloop.counter }}. {{ event.file_name }}:{{ event|line_and_column }}:{{ event.event }} &#8211; {{ event.message }}
             </div>

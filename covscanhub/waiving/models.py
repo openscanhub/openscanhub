@@ -131,9 +131,12 @@ class Defect(models.Model):
     #                                    choices=DEFECT_STATES.get_mapping(),
     #                                    help_text="Defect state")
 
-    #CWE-xxx
+    #practically anything
     annotation = models.CharField("Annotation", max_length=32,
                                   blank=True, null=True)
+
+    cwe = models.IntegerField("CWE", blank=True, null=True)
+
     key_event = models.IntegerField(verbose_name="Key event",
                                     help_text="Event that resulted in defect")
     function = models.CharField("Function", max_length=128,
