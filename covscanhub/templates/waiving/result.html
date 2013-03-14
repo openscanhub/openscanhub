@@ -369,6 +369,7 @@ window.onload=function() {
     var toggle_all=$("#toggle_all");
     if (toggle_all.hasClass("currently_hiding")) {
       $(".events_list .level_1").removeClass("level_1_show");
+      $(".events_list .level_2").removeClass("level_2_show");
       $(".event_collapse_btn").removeClass("currently_hiding");
     } else {
       if (!$(".events_list .defect_event").hasClass("level_1_show")) {
