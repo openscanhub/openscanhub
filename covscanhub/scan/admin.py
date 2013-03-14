@@ -93,13 +93,17 @@ class ScanAdmin(admin.ModelAdmin):
 
     def rescan(self, request, scan_id):
         scan = Scan.objects.get(id=scan_id)
-        new_scan = rescan(scan, request.user)
-
+        try:
+            new_scan = rescan(scan, request.user)
+        except Exception, e:
+            result = "Unable to rescan: %s" % e
+        else:
+            result = "New scan #%s submitted." % (new_scan.scan.id)
         return render_to_response('admin/scan/scan/state_change.html', {
             'title': 'Rescan of package: %s' % scan.nvr,
             'entry': scan,
             'opts': self.model._meta,
-            'result': "New scan #%s submitted." % (new_scan.scan.id),
+            'result': result,
             'root_path': self.admin_site.root_path,
         }, context_instance=RequestContext(request))
 
