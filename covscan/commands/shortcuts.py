@@ -11,6 +11,7 @@ from xmlrpclib import Fault
 __all__ = (
     "verify_brew_koji_build",
     "verify_mock",
+    "handle_perm_denied",
 )
 
 
@@ -53,7 +54,10 @@ def verify_brew_koji_build(build, brew_url, koji_url):
     if srpm.endswith(".src.rpm"):
         srpm = srpm[:-8]
 
-    dist_tag = re.search('.*-.*-(.*)', srpm).group(1)
+    try:
+        dist_tag = re.search('.*-.*-(.*)', srpm).group(1)
+    except AttributeError:
+        return 'Invalid N-V-R: %s' % srpm
 
     error_template = "Build %s does not exist in koji nor in brew, or has its \
 files deleted, or did not finish successfully." % build
@@ -86,7 +90,7 @@ def verify_mock(mock, hub):
 
 
 def handle_perm_denied(e, parser):
-    """"DRY"""
+    """DRY"""
     if 'PermissionDenied: Login required.' in e.faultString:
         parser.error('You are not authenticated. Please \
 obtain Kerberos ticket or specify username and password.')
