@@ -4,7 +4,8 @@
 import covscan
 from xmlrpclib import Fault
 from kobo.shortcuts import random_string
-from shortcuts import verify_brew_koji_build, verify_mock, upload_file
+from shortcuts import verify_brew_koji_build, verify_mock, upload_file, \
+    handle_perm_denied
 from common import *
 from covscan.utils.conf import get_default_mockconfig
 
