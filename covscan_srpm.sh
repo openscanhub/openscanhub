@@ -1,11 +1,11 @@
 #!/bin/bash
 
 PKG_VER="covscan-0.2.2"
-NVR=$PKG_VER"-2.fc17"
+NVR=$PKG_VER"-2.fc18"
 TARBALL=$PKG_VER".tar.bz2"
 SRPM=$NVR".src.rpm"
-PROFILE1="epel-6-x86_64"
-#PROFILE2="fedora-17-x86_64"
+#PROFILE1="epel-6-x86_64"
+PROFILE2="fedora-18-x86_64"
 DST="`readlink -f "$PWD"`"
 
 make source
@@ -18,5 +18,5 @@ rpmbuild -bs "covscan.spec"                     \
     --define "_srcrpmdir $DST"                  \
 
 
-mock -r $PROFILE1 ./$SRPM
+mock -r $PROFILE2 ./$SRPM
 #mock -r $PROFILE2 ./SRPMS/$SRPM
