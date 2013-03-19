@@ -1,12 +1,18 @@
 # -*- coding: utf-8 -*-
 """
-This is a config file with instance-specific settings.
-Make sure it doesn't get overwritten during package installation.
-Uncoment and use whatever is needed.
+Instance-specific settings.
+
+Devel instance
 """
 
-import os
+import sys
 
+KOBO_DIR = '/home/ttomecek/dev/kobo'
+if KOBO_DIR not in sys.path:
+    sys.path.insert(0, KOBO_DIR)
+
+import kobo
+import os
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
@@ -14,16 +20,19 @@ TEMPLATE_DEBUG = DEBUG
 ADMINS = (
     ('Tomas Tomecek', 'ttomecek@redhat.com'),
 )
+
+PROJECT_DIR = os.path.dirname(__file__)
+
 MANAGERS = ADMINS
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': '/var/covscanhub/db.sqlite',                      # Or path to database file if using sqlite3.
-        'USER': '',                      # Not used with sqlite3.
-        'PASSWORD': '',                  # Not used with sqlite3.
-        'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
-        'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': '/var/covscanhub/db.sqlite',
+        'USER': '',
+        'PASSWORD': '',
+        'HOST': '',
+        'PORT': '',
     }
 }
 
@@ -66,43 +75,28 @@ LOGGING = {
 # system time zone.
 TIME_ZONE = 'Europe/Prague'
 
+# URL that handles the media served from MEDIA_ROOT. Make sure to use a
+# trailing slash if there is a path component (optional in other cases).
+# Examples: "http://media.lawrence.com", "http://example.com/media/"
+MEDIA_URL = '/media/'
+
+# URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
+# trailing slash.
+# Examples: "http://foo.com/media/", "/media/".
+ADMIN_MEDIA_PREFIX = '/admin/media/'
+
+TEMPLATE_DIRS = (
+    # directories with templates
+    os.path.join(PROJECT_DIR, "templates"),
+    os.path.join(os.path.dirname(kobo.__file__), "hub", "templates"),
+)
+
 ###############################################################################
 # COVSCAN SPECIFIC
 ###############################################################################
 
-# kobo XML-RPC API calls
-# If you define additional methods, you have to list them there.
-XMLRPC_METHODS = {
-    # 'handler':
-    'client': (
-        # module with rpc methods     prefix which is added to all methods from
-        #                             the module
-        ('kobo.hub.xmlrpc.auth',      'auth'),
-        ('kobo.hub.xmlrpc.client',    'client'),
-        ('kobo.hub.xmlrpc.system',    'system'),
-        ('kobo.django.upload.xmlrpc', 'upload'),
-        ('covscanhub.xmlrpc.mock_config', 'mock_config'),
-        ('covscanhub.xmlrpc.scan', 'scan'),
-    ),
-    'worker': (
-        ('kobo.hub.xmlrpc.auth',      'auth'),
-        ('kobo.hub.xmlrpc.system',    'system'),
-        ('kobo.hub.xmlrpc.worker',    'worker'),
-        ('kobo.django.upload.xmlrpc', 'upload'),
-        ('kobo.hub.xmlrpc.client',    'client'),
-        ('covscanhub.xmlrpc.worker',  'worker'),
-    ),
-    'kerbauth': (
-        ('covscanhub.xmlrpc.errata', 'errata'),
-        ('covscanhub.xmlrpc.test', 'test'),
-        ('kobo.hub.xmlrpc.auth',      'auth'),
-    ),
-
-}
-
 # Absolute path to task logs and other files
 FILES_PATH = '/var/covscanhub'
-#FILES_PATH = '/var/lib/covscanhub'
 
 # Files for kobo tasks with predefined structure
 TASK_DIR = os.path.join(FILES_PATH, 'tasks')
@@ -110,10 +104,10 @@ TASK_DIR = os.path.join(FILES_PATH, 'tasks')
 # Root directory for uploaded files
 UPLOAD_DIR = os.path.join(FILES_PATH, 'upload')
 
-BREW_HUB = 'http://brewhub.devel.redhat.com/brewhub'
-ET_SCAN_PRIORITY = 20
-
 ACTUAL_SCANNER = ('coverity', '6.5.0')
+
+LOGIN_URL_NAME = 'auth/krb5login'
+LOGIN_EXEMPT_URLS = ['.*xmlrpc/.*']
 
 # BZ 4.2
 BZ_URL = 'https://partner-bugzilla.redhat.com/xmlrpc.cgi'
@@ -125,14 +119,15 @@ BZ_URL = 'https://partner-bugzilla.redhat.com/xmlrpc.cgi'
 BZ_USER = "ttomecek@redhat.com"
 BZ_PSWD = "roflcopter" # not my actual passwd on live bz
 
-VALID_TASK_LOG_EXTENSIONS = ['.log', '.ini', '.err', '.out', '.js', '.txt']
-
 #if not DEBUG:
 QPID_CONNECTION = {
     'broker': "qpid-stage.app.eng.bos.redhat.com",
     'address': "eso.topic",
     'mechanism': "GSSAPI",
 }
+
+QPID_CONNECTION['routing_key'] = 'covscan.scan'
+
 #else:
 #    QPID_CONNECTION = {
 #        'broker': "localhost:5672",
@@ -140,4 +135,4 @@ QPID_CONNECTION = {
 #        'mechanism': 'ANONYMOUS',
 #    }
 
-QPID_CONNECTION['routing_key'] = 'covscan.scan'
+
