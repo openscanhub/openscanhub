@@ -93,13 +93,12 @@ def send_scan_notification(request, scan_id):
         "Scan of a package %s have finished:" % scan.package.name,
         # "Waiver ID: %s" % scan.scanbinding.id,
         "Scan state: %s" % state,
-        "",
         "Waiver URL: %s" % request.build_absolute_uri(
             reverse('waiving/result', args=(scan.scanbinding.id, ))
         ),
     ]
     message = "\n".join(message)
-    message += """
+    message += """\n\n
 There is possibility that some of the issues might be false positives. So \
 please mark them accordingly:
     Is a bug -- defect is true positive and you are going to fix it (with \
