@@ -165,7 +165,7 @@ def release_tree():
 
 
 def db_set_default(key, value):
-    s, created = AppSettings.objects.get_or_create(key="SEND_MAIL")
+    s, created = AppSettings.objects.get_or_create(key=key)
     if created:
         s.value = value
         s.save()
