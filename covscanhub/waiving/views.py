@@ -402,7 +402,6 @@ def remove_waiver(request, waiver_id):
     Scan.objects.filter(id=sb.scan.id).update(
         last_access=datetime.datetime.now())
     if not waiver_condition(waiver.result_group):
-
         ResultGroup.objects.filter(id=waiver.result_group.id).update(
             state=RESULT_GROUP_STATES['NEEDS_INSPECTION'])
         sb.scan.set_state(SCAN_STATES['DISPUTED'])
