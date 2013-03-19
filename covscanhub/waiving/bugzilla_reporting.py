@@ -78,20 +78,33 @@ def create_bugzilla(request, package, release):
     waivers = get_unreported_bugs(package, release)
 
     comment = """
-Coverity has found defect(s) in package %s\n
-== Reported groups ==
-%s
-== Notes ==
-You may find waivers that you marked as bugs bellow. These records contain \
-date, message and link to actual waiver.\n
-If you have any questions, feel free to ask at #coverity or coverity-users@redhat.com\n
-== Marked waivers ==
-""" % (
-    package.name,
-    get_checker_groups(waivers)
-    )
+Coverity has found defect(s) in package %(package)s
 
-    summary = '[Coverity] %d waivers for %s' % (waivers.count(), release.tag)
+Package was scanned as differential scan:
+
+    %(target)s <= %(base)s
+
+== Reported groups ==
+%(groups)s
+== Notes ==
+You may find issues that you marked as bugs bellow. These records contain \
+date, message and link to actual waiver.
+
+If you have any questions, feel free to ask at #coverity or \
+coverity-users@redhat.com
+
+== Marked waivers ==
+""" % {
+        'package': package.name,
+        'target': waivers[0].result_group.result.scanbinding.scan.nvr,
+        'base': waivers[0].result_group.result.scanbinding.scan.base.nvr,
+        'groups': get_checker_groups(waivers),
+    }
+
+    if waivers.count() <= 1:
+        summary = '[Coverity] %d defect (%s)' % (waivers.count(), release.tag)
+    else:
+        summary = '[Coverity] %d defects (%s)' % (waivers.count(), release.tag)
     comment += format_waivers(waivers, request)
 
     data = {
