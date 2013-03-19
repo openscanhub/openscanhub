@@ -181,6 +181,9 @@ def set_default_settings():
     db_set_default("WAIVER_IS_OVERDUE",
                    pickle.dumps(datetime.timedelta(days=-7)))
 
+    db_set_default("ACTUAL_SCANNER",
+                   pickle.dumps(('coverity', '6.5.0')))
+
     # release specific, structure: tuple('short_tag', timedelta)
     bindings = (
         ('rhel-6.4', datetime.timedelta(days=-13)),

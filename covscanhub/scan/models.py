@@ -545,9 +545,15 @@ class AppSettings(models.Model):
     SEND_EMAIL { Y, N }
     SEND_BUS_MESSAGE { Y, N }
     CHECK_USER_CAN_SUBMIT_SCAN { Y, N }
+    WAIVER_IS_OVERDUE pickled datetime.delta
+    WAIVER_IS_OVERDUE_RELSPEC release specific ^^
+    ACTUAL_SCANNER tuple('coverity', '6.5.0')
     """
     key = models.CharField(max_length=32, blank=False, null=False)
     value = models.CharField(max_length=64, blank=True, null=True)
+
+    class Meta:
+        verbose_name_plural = "AppSettings"
 
     def __unicode__(self):
         return u"%s = %s" % (self.key, self.value)
@@ -594,3 +600,12 @@ class AppSettings(models.Model):
         Return release specific overdue value for provided release shorttag
         """
         return cls.settings_waiver_is_overdue_relspec()[short_tag]
+
+    @classmethod
+    def settings_actual_scanner(cls):
+        """
+        Return tuple (FUTURE: list of tuples) with scanner name and version
+        """
+        return pickle.loads(
+            str(cls.objects.get(key="ACTUAL_SCANNER").value)
+        )

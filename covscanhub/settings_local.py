@@ -104,8 +104,6 @@ TASK_DIR = os.path.join(FILES_PATH, 'tasks')
 # Root directory for uploaded files
 UPLOAD_DIR = os.path.join(FILES_PATH, 'upload')
 
-ACTUAL_SCANNER = ('coverity', '6.5.0')
-
 LOGIN_URL_NAME = 'auth/krb5login'
 LOGIN_EXEMPT_URLS = ['.*xmlrpc/.*']
 

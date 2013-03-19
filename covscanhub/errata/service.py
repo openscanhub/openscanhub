@@ -8,7 +8,8 @@ from kobo.rpmlib import parse_nvr
 #from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 
 from covscanhub.scan.models import Scan, SCAN_STATES, SCAN_TYPES, Package, \
-    ScanBinding, MockConfig, ReleaseMapping, ETMapping, SCAN_STATES_IN_PROGRESS
+    ScanBinding, MockConfig, ReleaseMapping, ETMapping, \
+    SCAN_STATES_IN_PROGRESS, AppSettings
 from covscanhub.scan.xmlrpc_helper import cancel_scan
 from covscanhub.other.shortcuts import check_brew_build, \
     check_and_create_dirs
@@ -85,14 +86,15 @@ def obtain_base(d, task_id):
     binding = get_latest_binding(d['base'])
     found = bool(binding)
     if found:
+        actual_scanner = AppSettings.settings_actual_scanner()
         if (binding.scan.state == SCAN_STATES['QUEUED'] or
             binding.scan.state == SCAN_STATES['SCANNING']) and \
                 binding.result is None:
             return binding.scan
         elif binding.result is None:
             found = False
-        elif binding.result.scanner_version != settings.ACTUAL_SCANNER[1] or \
-                binding.result.scanner != settings.ACTUAL_SCANNER[0]:
+        elif binding.result.scanner_version != actual_scanner[1] or \
+                binding.result.scanner != actual_scanner[0]:
             found = False
     if not found:
         parent_task = Task.objects.get(id=task_id)
