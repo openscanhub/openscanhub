@@ -294,7 +294,8 @@ def compare_result_groups(rg1, rg2):
 
 def get_last_waiver(checker_group, package, release):
     """
-    Try to get base waiver for specific checkergroup, package, release
+    Try to get base waiver for specific checkergroup, package, release;
+     return None if there is newer run with change in waiving
     """
     waivers = Waiver.objects.filter(
         result_group__checker_group=checker_group,
@@ -303,7 +304,23 @@ def get_last_waiver(checker_group, package, release):
         is_deleted=False,
     )
     if waivers:
-        return waivers.latest()
+        latest_waiver = waivers.latest()
+
+        # return all RGs newer that latest_waiver's run, if these are changed
+        # it means that last waiver is not valid
+        rgs = ResultGroup.objects.filter(
+            result__date_submitted__gt=
+                latest_waiver.result_group__result__date_submitted,
+            checker_group=latest_waiver.result_group.checker_group,
+            result__scanbinding__scan__package=
+                latest_waiver.result_group.result.scanbinding.scan.package,
+            result__scanbinding__scan__tag__release=
+                latest_waiver.result_group.result.scanbinding.scan.tag.release,
+        ).values_list('state', flat=True).distinct()
+        if RESULT_GROUP_STATES['NEEDS_INSPECTION'] in rgs:
+            return None
+        else:
+            return latest_waiver
     else:
         return None
 
