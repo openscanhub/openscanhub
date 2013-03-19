@@ -12,6 +12,11 @@ __all__ = (
 )
 
 
+class ETM(object):
+    """dummy class"""
+    pass
+
+
 @login_required
 def send_message(request):
     """
@@ -32,7 +37,7 @@ def send_message(request):
             'et_id': string, # random ID
         }
     """
-    etm = True
+    etm = ETM()
     etm.id = random.randint(1, 10000)
     etm.et_scan_id = random.randint(1, 10000)
     scan_state = random.choice([value for (key, value)
