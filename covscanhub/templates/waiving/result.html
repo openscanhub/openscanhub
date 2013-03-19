@@ -361,6 +361,7 @@ window.onload=function() {
       $(".event_collapse_btn").addClass("currently_hiding");
     }
     toggle_trace_all.toggleClass("currently_hiding");
+    $(".toggle_all").toggleClass("currently_hiding");
   });
 
   // add it to both buttons
@@ -377,6 +378,10 @@ window.onload=function() {
       }
       $(".event_collapse_btn").addClass("currently_hiding");
     }
+    if ($("#toggle_trace_all").hasClass("currently_hiding")) {
+        $("#toggle_trace_all").removeClass("currently_hiding");
+    }
+
     // apply change to both
     $(".toggle_all").toggleClass("currently_hiding");
   });
