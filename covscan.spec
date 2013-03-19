@@ -6,8 +6,8 @@
 
 
 Name:           covscan
-Version:        0.2.2
-Release:        2%{?dist}
+Version:        0.2.3
+Release:        1%{?dist}
 License:        Commercial
 Summary:        Coverity scan scheduler
 Group:          Applications/Engineering
@@ -155,8 +155,12 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Fri Mar 15 2013 Tomas Tomecek <ttomecek@redhat.com> - 0.2.3-1
+- Let client depend on brewkoji
+- new version
+
 * Thu Jan 24 2013 Tomas Tomecek <ttomecek@redhat.com> - 0.2.2-2
-- tarball extraction fix
+- Tarball extraction fix
 
 * Wed Jan 09 2013 Tomas Tomecek <ttomecek@redhat.com> - 0.2.2-1
 - Added support for multiple new options (CLI)

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-PKG_VER="covscan-0.2.2"
+PKG_VER="covscan-0.2.3"
 NVR=$PKG_VER"-2.fc18"
 TARBALL=$PKG_VER".tar.bz2"
 SRPM=$NVR".src.rpm"
@@ -18,5 +18,5 @@ rpmbuild -bs "covscan.spec"                     \
     --define "_srcrpmdir $DST"                  \
 
 
-mock -r $PROFILE2 ./$SRPM
+#mock -r $PROFILE2 ./$SRPM
 #mock -r $PROFILE2 ./SRPMS/$SRPM
