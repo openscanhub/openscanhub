@@ -193,7 +193,7 @@ supported by your scanner.")
 
     def calculateScanNumbers(self):
         return Scan.objects.filter(package=self,
-                                   scan_type=SCAN_TYPES['ERRATA']).count()
+                                   scan_type__in=SCAN_TYPES_TARGET).count()
 
     scans_number = property(calculateScanNumbers)
 
@@ -256,7 +256,7 @@ package')
         for release in releases:
             scans_package = scans.filter(
                 tag__release__id=release['tag__release'],
-                scan_type=SCAN_TYPES['ERRATA'])
+                scan_type__=SCAN_TYPES_TARGET)
             if not scans_package:
                 response += u"No scans in this release.<hr/ >\n"
                 continue
@@ -332,8 +332,7 @@ counted in statistics.")
         return self.scan_type == SCAN_TYPES['NEWPKG']
 
     def is_errata_scan(self):
-        return self.scan_type in (SCAN_TYPES['ERRATA'], SCAN_TYPES['REBASE'],
-                                  SCAN_TYPES['NEWPKG'], )
+        return self.scan_type in SCAN_TYPES_TARGET
 
     def is_errata_base_scan(self):
         return self.scan_type == SCAN_TYPES['ERRATA_BASE']
@@ -445,7 +444,7 @@ setting: %s', e)
             scan__package=self.package,
             scan__tag__release=self.tag.release,
             task__state=TASK_STATES['CLOSED'],
-            scan__scan_type=SCAN_TYPES['ERRATA']).\
+            scan__scan_type__in=SCAN_TYPES_TARGET).\
             order_by('result__date_submitted')
         if related_scans:
             return related_scans[0]

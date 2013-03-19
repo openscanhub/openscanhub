@@ -14,7 +14,9 @@ from kobo.shortcuts import run
 from kobo.django.upload.models import FileUpload
 from kobo.client.constants import TASK_STATES
 
-from models import SCAN_STATES, SCAN_TYPES, ScanBinding, Scan
+from models import SCAN_STATES, ScanBinding, Scan, SCAN_TYPES_TARGET, \
+    SCAN_STATES_FINISHED_WELL
+
 from covscanhub.other.exceptions import ScanException
 from covscanhub.other.shortcuts import get_mock_by_name, check_brew_build,\
     check_and_create_dirs
@@ -382,10 +384,12 @@ def get_latest_sb_by_package(release, package):
     This function should be called when creating new scan and setting this one
     as a child
     """
-    bindings = ScanBinding.objects.filter(scan__package=package,
-                                          scan__tag__release=release,
-                                          task__state=TASK_STATES['CLOSED'],
-                                          scan__scan_type=SCAN_TYPES['ERRATA'])
+    bindings = ScanBinding.objects.filter(
+        scan__package=package,
+        scan__tag__release=release,
+        scan__state__in=SCAN_STATES_FINISHED_WELL,
+        scan__scan_type__in=SCAN_TYPES_TARGET,
+    )
     if bindings:
         return bindings.latest()
 

@@ -305,12 +305,11 @@ def get_last_waiver(checker_group, package, release):
     )
     if waivers:
         latest_waiver = waivers.latest()
-
         # return all RGs newer that latest_waiver's run, if these are changed
         # it means that last waiver is not valid
         rgs = ResultGroup.objects.filter(
             result__date_submitted__gt=
-                latest_waiver.result_group__result__date_submitted,
+                latest_waiver.result_group.result.date_submitted,
             checker_group=latest_waiver.result_group.checker_group,
             result__scanbinding__scan__package=
                 latest_waiver.result_group.result.scanbinding.scan.package,

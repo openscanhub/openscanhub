@@ -14,7 +14,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from kobo.django.views.generic import object_list
 
 from covscanhub.scan.models import SCAN_STATES, ScanBinding, Package,\
-    SystemRelease, ETMapping, Scan, SCAN_TYPES
+    SystemRelease, ETMapping, Scan, SCAN_TYPES_TARGET
 from covscanhub.scan.compare import get_compare_title
 from covscanhub.scan.service import get_latest_sb_by_package
 
@@ -263,9 +263,7 @@ def results_list(request):
     search_form = ScanListSearchForm(request.GET)
 
     q = ScanBinding.objects.filter(
-        scan__scan_type__in=(
-            SCAN_TYPES['NEWPKG'], SCAN_TYPES['ERRATA'], SCAN_TYPES['REBASE']
-        ))
+        scan__scan_type__in=SCAN_TYPES_TARGET)
     if search_form.is_valid():
         q = q.filter(search_form.get_query(request))
         if search_form.extra_query():
@@ -467,6 +465,9 @@ def previously_waived(request, sb_id, result_group_id):
     context['defects'] = Defect.objects.filter(result_group=result_group_id,
                                                state=DEFECT_STATES['PREVIOUSLY_WAIVED']).\
                                                order_by("order")
+    context['waiving_logs'] = WaivingLog.objects.filter(
+        waiver__result_group=result_group_id).exclude(
+        state=WAIVER_LOG_ACTIONS['DELETE'])
     form = WaiverForm()
     context['form'] = form
     context['display_form'] = True

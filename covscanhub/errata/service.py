@@ -9,7 +9,7 @@ from kobo.rpmlib import parse_nvr
 
 from covscanhub.scan.models import Scan, SCAN_STATES, SCAN_TYPES, Package, \
     ScanBinding, MockConfig, ReleaseMapping, ETMapping, \
-    SCAN_STATES_IN_PROGRESS, AppSettings
+    SCAN_STATES_IN_PROGRESS, AppSettings, SCAN_TYPES_TARGET
 from covscanhub.scan.xmlrpc_helper import cancel_scan
 from covscanhub.other.shortcuts import check_brew_build, \
     check_and_create_dirs
@@ -112,7 +112,7 @@ def check_obsolete_scan(package, release):
     bindings = ScanBinding.objects.filter(
         scan__package=package,
         scan__tag__release=release,
-        scan__scan_type=SCAN_TYPES['ERRATA'])
+        scan__scan_type__in=SCAN_TYPES_TARGET)
     for binding in bindings:
         if binding.scan.state in SCAN_STATES_IN_PROGRESS:
             cancel_scan(binding.scan.id)

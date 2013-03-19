@@ -26,7 +26,8 @@ from django.contrib.auth.models import User
 
 from covscanhub.xmlrpc.worker import finish_scan, fail_scan, \
     email_scan_notification
-from covscanhub.scan.models import Scan, ScanBinding, SCAN_TYPES, SCAN_STATES
+from covscanhub.scan.models import Scan, ScanBinding, SCAN_TYPES, SCAN_STATES,\
+    SCAN_TYPES_TARGET
 from covscanhub.scan.service import extract_logs_from_tarball
 
 from kobo.client.constants import TASK_STATES
@@ -108,7 +109,7 @@ def m_finish_all_scans():
                                      state=SCAN_STATES['QUEUED'])
     for base in base_scans:
         m_finish_scan(base.id)
-    target_scans = Scan.objects.filter(scan_type=SCAN_TYPES['ERRATA'],
+    target_scans = Scan.objects.filter(scan_type__in=SCAN_TYPES_TARGET,
                                        state=SCAN_STATES['QUEUED'])
     for target in target_scans:
         m_finish_scan(target.id)
