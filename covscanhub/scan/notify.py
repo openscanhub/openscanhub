@@ -11,6 +11,7 @@ from kobo.hub.models import Task
 from kobo.client.constants import TASK_STATES
 
 from covscanhub.scan.models import Scan, SCAN_STATES
+from covscanhub.scan.models import AppSettings
 
 
 __all__ = (
@@ -83,7 +84,10 @@ def send_task_notification(request, task_id):
 def send_scan_notification(request, scan_id):
     scan = Scan.objects.get(id=scan_id)
     state = SCAN_STATES.get_value(scan.state)
-    recipient = get_recipient(scan.username.username)
+    if AppSettings.setting_send_mail():
+        recipient = get_recipient(scan.username.username)
+    else:
+        recipient = "ttomecek@redhat.com"
 
     message = [
         "Scan of package %s have finished:" % scan.package.name,
