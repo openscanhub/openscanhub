@@ -55,7 +55,7 @@ def format_waivers(waivers, request):
             )
         )
         if w != waivers.reverse()[0]:
-            comment += "-" * 80 + "\n\n"
+            comment += "-" * 79 + "\n\n"
     return comment
 
 
