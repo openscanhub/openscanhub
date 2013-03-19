@@ -90,8 +90,8 @@ def send_scan_notification(request, scan_id):
         recipient = "ttomecek@redhat.com"
 
     message = [
-        "Scan of package %s have finished:" % scan.package.name,
-        "Waiver ID: %s" % scan.scanbinding.id,
+        "Scan of a package %s have finished:" % scan.package.name,
+        # "Waiver ID: %s" % scan.scanbinding.id,
         "Scan state: %s" % state,
         "",
         "Waiver URL: %s" % request.build_absolute_uri(
@@ -99,6 +99,20 @@ def send_scan_notification(request, scan_id):
         ),
     ]
     message = "\n".join(message)
+    message += """
+There is possibility that some of the issues might be false positives. So \
+please mark them accordingly:
+    Is a bug -- defect is true positive and you are going to fix it (with \
+next build)
+    Fix later -- defect is true positive, but fix is postponed to next release
+    Not a bug -- issue is false positive, so you are waiving it
+
+You can find documentation of covscan's workflow at \
+http://cov01.lab.eng.brq.redhat.com/covscan_documentation.html
+
+If you have any questions, feel free to ask at #coverity or \
+coverity-users@redhat.com
+"""
     subject = "Scan of %s finished, state: %s" % (scan.nvr, state)
 
     headers = {
