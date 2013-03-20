@@ -456,10 +456,11 @@ def previously_waived(request, sb_id, result_group_id):
                         sb.scan.package,
                         sb.scan.tag.release)
 
-    place_string = w.result_group.result.scanbinding.scan.nvr
+    if w:
+        place_string = w.result_group.result.scanbinding.scan.nvr
 
-    context['waivers_place'] = place_string
-    context['matching_waiver'] = w
+        context['waivers_place'] = place_string
+        context['matching_waiver'] = w
 
     context['active_group'] = ResultGroup.objects.get(id=result_group_id)
     context['defects'] = Defect.objects.filter(result_group=result_group_id,
