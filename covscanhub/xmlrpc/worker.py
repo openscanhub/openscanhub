@@ -36,6 +36,7 @@ def email_task_notification(request, task_id):
 @validate_worker
 def email_scan_notification(request, scan_id):
     scan = Scan.objects.get(id=scan_id)
+    logger.info("Send e-mail for scan scan %s", scan)
     if scan.is_errata_scan():
         # TODO: handle this better
         if scan.state not in (SCAN_STATES['FAILED'],
