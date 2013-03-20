@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 
-from kobo.hub.models import Task
+from kobo.hub.models import Task, TASK_STATES
 
 from covscanhub.other.shortcuts import add_link_field
 from covscanhub.scan.notify import send_scan_notification
@@ -14,13 +14,12 @@ from django.template import RequestContext
 from django.conf.urls.defaults import patterns
 from django.shortcuts import render_to_response
 from django.utils.safestring import mark_safe
-import django.contrib.admin as admin
+from django.contrib import admin
 
-from models import *
+from covscanhub.scan.models import Scan, ScanBinding, SCAN_STATES
+from covscanhub.other.admin import register_admin_module
 
-
-class MockConfigAdmin(admin.ModelAdmin):
-    list_display = ("id", "name", "enabled")
+register_admin_module('covscanhub.scan.models', exclude=['Scan'])
 
 
 @add_link_field('scanbinding', 'scanbinding', field_label="Binding",
@@ -40,12 +39,18 @@ class ScanAdmin(admin.ModelAdmin):
 
     def get_urls(self):
         urls = super(ScanAdmin, self).get_urls()
-        my_urls = patterns('',
-            (r'(?P<scan_id>\d+)/notify/$', self.admin_site.admin_view(self.notify)),
-            (r'(?P<scan_id>\d+)/fail/$', self.admin_site.admin_view(self.fail_scan)),
-            (r'(?P<scan_id>\d+)/cancel/$', self.admin_site.admin_view(self.cancel_scan)),
-            (r'(?P<scan_id>\d+)/finish/$', self.admin_site.admin_view(self.finish_scan)),
-            (r'(?P<scan_id>\d+)/rescan/$', self.admin_site.admin_view(self.rescan)),
+        my_urls = patterns(
+            '',
+            (r'(?P<scan_id>\d+)/notify/$',
+             self.admin_site.admin_view(self.notify)),
+            (r'(?P<scan_id>\d+)/fail/$',
+             self.admin_site.admin_view(self.fail_scan)),
+            (r'(?P<scan_id>\d+)/cancel/$',
+             self.admin_site.admin_view(self.cancel_scan)),
+            (r'(?P<scan_id>\d+)/finish/$',
+             self.admin_site.admin_view(self.finish_scan)),
+            (r'(?P<scan_id>\d+)/rescan/$',
+             self.admin_site.admin_view(self.rescan)),
         )
         return my_urls + urls
 
@@ -86,8 +91,10 @@ class ScanAdmin(admin.ModelAdmin):
             'title': 'Finish scan: %s' % scan.nvr,
             'entry': scan,
             'opts': self.model._meta,
-            'result': "Scan #%s set to %s" % (scan_id,
-                SCAN_STATES.get_value(scan.state)),
+            'result': "Scan #%s set to %s" % (
+                scan_id,
+                SCAN_STATES.get_value(scan.state)
+            ),
             'root_path': self.admin_site.root_path,
         }, context_instance=RequestContext(request))
 
@@ -117,54 +124,4 @@ class ScanAdmin(admin.ModelAdmin):
             'root_path': self.admin_site.root_path,
         }, context_instance=RequestContext(request))
 
-
-class PackageAdmin(admin.ModelAdmin):
-    list_display = ("id", "name", "blocked")
-
-
-@add_link_field('task', 'task', 'hub', field_name='link_task',
-                field_label="Task")
-@add_link_field('scan', 'scan', field_name='link_scan', field_label="Scan")
-@add_link_field('result', 'result', 'waiving', field_name='link_result',
-                field_label="Result")
-class ScanBindingAdmin(admin.ModelAdmin):
-    list_display = ("id", "link_scan", "link_task", "link_result",)
-
-
-@add_link_field('systemrelease', 'parent', field_name='parent_link',
-                field_label="Parent")
-class SystemReleaseAdmin(admin.ModelAdmin):
-    list_display = ("id", "tag", "product", "release", "active", "parent_link")
-
-
-@add_link_field('mockconfig', 'mock', field_name='mock_link',
-                field_label="Mock Profile")
-@add_link_field('systemrelease', 'release', field_name='release_link',
-                field_label="Release")
-class TagAdmin(admin.ModelAdmin):
-    list_display = ("id", "name", "mock_link", "release_link")
-
-
-class ReleaseMappingAdmin(admin.ModelAdmin):
-    list_display = ("id", "release_tag", "template", "priority")
-
-
-@add_link_field('scanbinding', 'latest_run', field_name='latest',
-                field_label="Latest")
-class ETMappingAdmin(admin.ModelAdmin):
-    list_display = ("id", "advisory_id", "et_scan_id", "latest")
-
-
-class AppSettingsAdmin(admin.ModelAdmin):
-    list_display = ("id", "key", "value")
-
-
-admin.site.register(ETMapping, ETMappingAdmin)
-admin.site.register(MockConfig, MockConfigAdmin)
-admin.site.register(Tag, TagAdmin)
-admin.site.register(ReleaseMapping, ReleaseMappingAdmin)
-admin.site.register(SystemRelease, SystemReleaseAdmin)
-admin.site.register(Package, PackageAdmin)
 admin.site.register(Scan, ScanAdmin)
-admin.site.register(ScanBinding, ScanBindingAdmin)
-admin.site.register(AppSettings, AppSettingsAdmin)
