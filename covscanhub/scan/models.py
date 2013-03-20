@@ -320,10 +320,13 @@ counted in statistics.")
         get_latest_by = "date_submitted"
 
     def __unicode__(self):
-        if self.base is None:
-            return u"#%s [%s]" % (self.id, self.nvr)
+        prefix = u"#%s %s %s" % (self.id,
+                                 self.nvr,
+                                 self.get_state_display())
+        if self.base:
+            return u"%s Base: %s" % (prefix, self.base.nvr)
         else:
-            return u"#%s [%s, Base: %s]" % (self.id, self.nvr, self.base.nvr)
+            return prefix
 
     def can_have_base(self):
         return self.scan_type in (SCAN_TYPES['ERRATA'], SCAN_TYPES['REBASE'])
