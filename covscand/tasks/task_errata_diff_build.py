@@ -137,4 +137,4 @@ class ErrataDiffBuild(TaskBase):
 
     @classmethod
     def notification(cls, hub, conf, task_info):
-        hub.worker.email_scan_notification(task_info["scan_id"])
+        hub.worker.email_scan_notification(task_info['args']['scan_id'])
