@@ -181,6 +181,7 @@ def create_results(scan, sb):
                     rg.checker_group,
                     rg.result.scanbinding.scan.package,
                     rg.result.scanbinding.scan.tag.release,
+                    exclude=rg.id,
                 )
                 # compare defects in these 2 result groups using pycsdiff
                 if w and compare_result_groups(rg, w.result_group):
@@ -292,10 +293,11 @@ def compare_result_groups(rg1, rg2):
     return not (r_s1['defects'] or r_s2['defects'])
 
 
-def get_last_waiver(checker_group, package, release):
+def get_last_waiver(checker_group, package, release, exclude=None):
     """
     Try to get base waiver for specific checkergroup, package, release;
-     return None if there is newer run with change in waiving
+     return None if there is newer run with change in waiving;
+    exclude specified resultgroup
     """
     waivers = Waiver.objects.filter(
         result_group__checker_group=checker_group,
@@ -315,7 +317,7 @@ def get_last_waiver(checker_group, package, release):
                 latest_waiver.result_group.result.scanbinding.scan.package,
             result__scanbinding__scan__tag__release=
                 latest_waiver.result_group.result.scanbinding.scan.tag.release,
-        ).values_list('state', flat=True).distinct()
+        ).exclude(id=exclude).values_list('state', flat=True).distinct()
         if RESULT_GROUP_STATES['NEEDS_INSPECTION'] in rgs:
             return None
         else:
