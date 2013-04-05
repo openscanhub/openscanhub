@@ -26,8 +26,16 @@ def add_link_field(admin_class, field):
             app_name,
             field.related.parent_model._meta.module_name
         )
-        url = reverse(reverse_path, args=(instance.id,))
-        return mark_safe("<a href='%s'>%s</a>" % (url, unicode(instance)))
+        related_instance = getattr(instance, field.name)
+        # it might point to None (foreignKey(null=True))
+        if related_instance:
+            url = reverse(reverse_path, args=(related_instance.id,))
+            return mark_safe("<a href='%s'>%s</a>" % (
+                url,
+                unicode(related_instance))
+            )
+        else:
+            return unicode(related_instance)
     link.allow_tags = True
     link.short_description = field.name + ' link'
     setattr(admin_class, field_name, link)
