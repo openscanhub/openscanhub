@@ -20,7 +20,8 @@ from covscanhub.scan.models import Scan, ScanBinding, SCAN_STATES
 from covscanhub.other.admin import register_admin_module
 
 register_admin_module('covscanhub.scan.models', exclude=['Scan'])
-
+register_admin_module('django.contrib.admin.models')
+#from django.contrib.admin.models import LogEntry
 
 @add_link_field('scanbinding', 'scanbinding', field_label="Binding",
                 field_name="link_bind")
