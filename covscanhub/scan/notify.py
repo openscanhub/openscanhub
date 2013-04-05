@@ -33,20 +33,29 @@ def send_mail(message, recipient, subject, recipients, headers, bcc=None):
                         headers=headers, connection=connection).send()
 
 
-def get_recipient(recipient):
-    if "@" not in recipient:
-        if recipient == "admin" or recipient == "test":
+def get_recipient(user):
+    """
+    parameter: django's User model,
+    return e-mail address to send e-mail to
+    """
+    if "@" not in user.username:
+        if user.username == "admin" or user.username == "test":
             recipient = None
         else:
-            # XXX: hardcoded
-            recipient += "@redhat.com"
+            if user.email:
+                recipient = user.email
+            else:
+                # XXX: hardcoded
+                recipient = user.username + "@redhat.com"
+    else:
+        recipient = user.username
     return recipient
 
 
 def send_task_notification(request, task_id):
     task = Task.objects.get(id=task_id)
     state = TASK_STATES.get_value(task.state)
-    recipient = get_recipient(task.owner.username)
+    recipient = get_recipient(task.owner)
     hostname = socket.gethostname()
     task_url = kobo.hub.xmlrpc.client.task_url(request, task_id)
     message = [
@@ -85,7 +94,7 @@ def send_scan_notification(request, scan_id):
     scan = Scan.objects.get(id=scan_id)
     state = SCAN_STATES.get_value(scan.state)
     if AppSettings.setting_send_mail():
-        recipient = get_recipient(scan.username.username)
+        recipient = get_recipient(scan.username)
     else:
         recipient = "ttomecek@redhat.com"
 
