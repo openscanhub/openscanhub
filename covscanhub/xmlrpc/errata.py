@@ -51,7 +51,7 @@ def create_errata_diff_scan(request, kwargs):
      for more info see http://etherpad.corp.redhat.com/Covscan-ErrataTool-Integration
     """
     logger.info('[CREATE_SCAN] %s', kwargs)
-    if not AppSettings.setting_user_can_submit() or \
+    if not AppSettings.setting_user_can_submit() and \
             not request.user.has_perm('scan.errata_xmlrpc_scan'):
         response = {}
         response['status'] = 'ERROR'
