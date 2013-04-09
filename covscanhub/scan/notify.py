@@ -58,9 +58,20 @@ def send_task_notification(request, task_id):
     recipient = get_recipient(task.owner)
     hostname = socket.gethostname()
     task_url = kobo.hub.xmlrpc.client.task_url(request, task_id)
+
+    try:
+        nvr = task.args['brew_build']
+        source = "Brew Build"
+        package = task.args['brew_build']
+    except KeyError:
+        nvr = task.args['srpm_name'][:-8]
+        source = "SRPM"
+        package = task.args['srpm_name']
+
     message = [
         "Hostname: %s" % hostname,
         "Task ID: %s" % task_id,
+        "%s: %s" % (source, package),
         "Task state: %s" % state,
         "Task owner: %s" % task.owner.username,
         "Task method: %s" % task.method,
@@ -69,7 +80,8 @@ def send_task_notification(request, task_id):
         "Comment: %s" % task.comment or "",
     ]
     message = "\n".join(message)
-    subject = "Task [#%s] finished, state: %s" % (task_id, state)
+
+    subject = "Task [#%s] %s finished, state: %s" % (task_id, nvr, state)
 
     to = task.args.get("email_to", []) or []
     bcc = task.args.get("email_bcc", []) or []
