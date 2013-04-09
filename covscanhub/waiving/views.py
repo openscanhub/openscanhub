@@ -213,7 +213,6 @@ def results_list(request):
     """
     order_by = request.GET.get('order_by', None)
     order_prefix = ''
-
     # mapping between ?order_by=name and .order_by(...) -- nicer URLs
     order_by_mapping = {
         'id': 'id',
