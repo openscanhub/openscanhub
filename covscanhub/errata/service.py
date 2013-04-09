@@ -42,7 +42,7 @@ def create_errata_base_scan(d, parent_task_id):
 
     d.setdefault('priority', settings.ET_SCAN_PRIORITY + 1)
     d['comment'] = 'Errata Tool Base scan of %s requested by %s' % \
-        (d['target'], kwargs['target'])
+        (d['target'], d['target'])
 
     # Test if SRPM exists
     check_brew_build(d['target'])
@@ -53,9 +53,9 @@ def create_errata_base_scan(d, parent_task_id):
         options['mock_config'] = mock_name
     else:
         logger.error("Unable to assign mock profile to base scan %s of \
-%s", d['target'], kwargs['target'])
+%s", d['target'], d['target'])
         raise RuntimeError("Unable to assign mock profile to base scan %s of \
-%s" % (d['target'], kwargs['target']))
+%s" % (d['target'], d['target']))
 
     d['method'] = 'ErrataDiffBuild'
     d['parent_id'] = parent_task_id
