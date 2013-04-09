@@ -260,7 +260,8 @@ if __name__ == '__main__':
     elif options.hub_prod:
         #rpc_url = "https://releng-test1.englab.brq.redhat.com/covscan\
 #/xmlrpc/client/"
-        rpc_url = "https://cov01.lab.eng.brq.redhat.com/covscan/xmlrpc/client/"
+        rpc_url = "http://cov01.lab.eng.brq.redhat.com/covscanhub/xmlrpc/kerbauth/"
+        #rpc_url = "https://cov01.lab.eng.brq.redhat.com/covscan/xmlrpc/client/"
     elif options.hub_staging:
         rpc_url = "http://uqtm.lab.eng.brq.redhat.com/covscan/xmlrpc/client/"
 
