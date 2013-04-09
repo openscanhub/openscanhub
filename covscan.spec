@@ -6,7 +6,7 @@
 
 
 Name:           covscan
-Version:        0.2.3
+Version:        0.3.0
 Release:        1%{?dist}
 License:        Commercial
 Summary:        Coverity scan scheduler
@@ -155,6 +155,10 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Fri Apr 5 2013 Tomas Tomecek <ttomecek@redhat.com> - 0.3.0-1
+- Update for hub and worker
+- ET pilot
+
 * Fri Mar 15 2013 Tomas Tomecek <ttomecek@redhat.com> - 0.2.3-1
 - Let client depend on brewkoji
 - new version
