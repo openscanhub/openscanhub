@@ -144,7 +144,7 @@ def release_tree():
     # tags and system releases
     for x in x_list:
         previous = None
-        mock = MockConfig.objects.get(name="rhel-%d-x86_64" % x)
+        mock, created = MockConfig.objects.get_or_create(name="rhel-%d-x86_64" % x)
         product = "Red Hat Enterprise Linux %d" % x
         for y in y_list:
             sr = SystemRelease()
