@@ -256,7 +256,7 @@ package')
         for release in releases:
             scans_package = scans.filter(
                 tag__release__id=release['tag__release'],
-                scan_type__=SCAN_TYPES_TARGET)
+                scan_type__in=SCAN_TYPES_TARGET)
             if not scans_package:
                 response += u"No scans in this release.<hr/ >\n"
                 continue
