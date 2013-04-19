@@ -17,6 +17,7 @@ from django.core.urlresolvers import reverse
 from kobo.hub.models import Task
 from kobo.types import Enum, EnumItem
 from kobo.client.constants import TASK_STATES
+from kobo.django.fields import JSONField
 
 logger = logging.getLogger(__name__)
 
@@ -611,3 +612,11 @@ class AppSettings(models.Model):
         return pickle.loads(
             str(cls.objects.get(key="ACTUAL_SCANNER").value)
         )
+
+
+class TaskExtension(models.Model):
+    task = models.OneToOneField(Task)
+    secret_args = JSONField(default={})
+
+    def __unicode__(self):
+        return u"%s %s" % (self.task, self.secret_args)
