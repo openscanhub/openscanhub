@@ -102,6 +102,6 @@ def upload_file(hub, srpm, target_dir, parser):
     """Upload file to hub, catch PermDenied exception"""
     try:
         #returns (upload_id, err_code, err_msg)
-        return hub.upload_file(srpm, target_dir)
+        return hub.upload_file(os.path.expanduser(srpm), target_dir)
     except Fault, e:
         handle_perm_denied(e, parser)
