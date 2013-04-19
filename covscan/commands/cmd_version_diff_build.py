@@ -6,6 +6,7 @@ from kobo.shortcuts import random_string
 from shortcuts import verify_brew_koji_build, verify_mock, upload_file, \
     handle_perm_denied
 from common import *
+from covscan.utils.conf import get_conf
 from xmlrpclib import Fault
 
 
@@ -109,6 +110,7 @@ local file"
 
     def run(self, *args, **kwargs):
         # optparser output is passed via *args (args) and **kwargs (opts)
+        local_conf = get_conf(self.conf)
         options = {}
         username = kwargs.pop("username", None)
         password = kwargs.pop("password", None)
@@ -177,10 +179,24 @@ a SRPM")
                 self.parser.error(result)
 
         if not base_config:
-            self.parser.error("please specify a mock config for base")
+            base_config = local_conf.get_default_mockconfig()
+            if not base_config:
+                self.parser.error("You haven't specified mock config, there \
+is not even one in your user configuration file \
+(~/.config/covscan/covscan.conf) nor in system configuration file \
+(/etc/covscan/covscan.conf)")
+            print "Mock config for base not specified, using default one: %s" \
+                % base_config
 
         if not config:
-            self.parser.error("please specify a mock config for target")
+            config = local_conf.get_default_mockconfig()
+            if not config:
+                self.parser.error("You haven't specified mock config, there \
+is not even one in your user configuration file \
+(~/.config/covscan/covscan.conf) nor in system configuration file \
+(/etc/covscan/covscan.conf)")
+            print "Mock config for target not specified, using default one: %s" \
+                % config
 
         # login to the hub
         self.set_hub(username, password)
