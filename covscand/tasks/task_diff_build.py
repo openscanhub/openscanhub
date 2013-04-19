@@ -15,7 +15,7 @@ from kobo.worker import TaskBase
 
 import kobo.tback
 
-from common import downloadSRPM
+from common import downloadSRPM, construct_cim_string
 
 
 class DiffBuild(TaskBase):
@@ -69,12 +69,17 @@ class DiffBuild(TaskBase):
         cov_cmd.append(pipes.quote(tmp_dir))
         cov_cmd.append(";")
 
+        # fetch additional arguments from hub
+        add_args = self.hub.worker.get_additional_arguments(self.task_id)
+
         # $program [-fit] MOCK_PROFILE my-package.src.rpm [COV_OPTS]
         cov_cmd.append(program)
         if keep_covdata:
             cov_cmd.append("-i")
         if cppcheck:
             cov_cmd.append("-c")
+        if add_args:
+            cov_cmd.append("-m %s" % construct_cim_string(add_args))
         cov_cmd.append(pipes.quote(mock_config))
         cov_cmd.append(pipes.quote(srpm_path))
         if all_checks:
