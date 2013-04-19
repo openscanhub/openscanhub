@@ -54,6 +54,10 @@ def get_recipient(user):
 
 def send_task_notification(request, task_id):
     task = Task.objects.get(id=task_id)
+
+    # return if task has some parent and send e-mail only from parent task
+    if task.parent:
+        return
     state = TASK_STATES.get_value(task.state)
     recipient = get_recipient(task.owner)
     hostname = socket.gethostname()
