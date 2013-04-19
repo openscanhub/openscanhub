@@ -64,7 +64,9 @@ class Conf(object):
         if not os.path.exists(config_path):
             config = SafeConfigParser()
             config.add_section('General')
-            config.set('General', 'DefaultMockConfig', 'fedora-rawhide-x86_64')
+            # fedora-rawhide-x86_64 is set at /etc/covscan/covscan.conf
+            # user should decide what does he want at his own conf file
+            config.set('General', 'DefaultMockConfig', '')
 
             config.add_section('CIM')
             config.set('CIM', 'user', '')
