@@ -7,7 +7,8 @@ from kobo.shortcuts import random_string
 from shortcuts import verify_brew_koji_build, verify_mock, upload_file, \
     handle_perm_denied
 from common import *
-from covscan.utils.conf import get_default_mockconfig
+from covscan.utils.conf import get_conf
+from covscan.utils.cim import extract_cim_data
 
 
 class Diff_Build(covscan.CovScanCommand):
@@ -88,7 +89,19 @@ class Diff_Build(covscan.CovScanCommand):
             help="turn security checkers on"
         )
 
+        self.parser.add_option(
+            "-m",
+            dest="commit_string",
+            metavar="user:passwd@host:port/stream",
+            help="""Commit the results to Integrity Manager. You can specify \
+the target host/stream as an optional argument using the
+following format: "user:passwd@host:port/stream". User and password might be \
+stored in configuration file "~/.config/covscan/covscan.conf"."""
+        )
+
     def run(self, *args, **kwargs):
+        local_conf = get_conf(self.conf)
+
         # optparser output is passed via *args (args) and **kwargs (opts)
         username = kwargs.pop("username", None)
         password = kwargs.pop("password", None)
@@ -105,6 +118,7 @@ class Diff_Build(covscan.CovScanCommand):
         all_option = kwargs.pop("all")
         security = kwargs.pop("security")
         concurrency = kwargs.pop("concurrency")
+        commit_string = kwargs.pop("commit_string", None)
 
         if len(args) != 1:
             self.parser.error("please specify exactly one SRPM")
@@ -120,8 +134,12 @@ class Diff_Build(covscan.CovScanCommand):
                 self.parser.error(result)
 
         if not config:
-            config = get_default_mockconfig()
-            #self.parser.error("please specify a mock config")
+            config = local_conf.get_default_mockconfig()
+            if not config:
+                self.parser.error("You haven't specified mock config, there \
+is not even one in your user configuration file \
+(~/.config/covscan/covscan.conf) nor in system configuration file \
+(/etc/covscan/covscan.conf)")
 
         # login to the hub
         self.set_hub(username, password)
@@ -130,11 +148,18 @@ class Diff_Build(covscan.CovScanCommand):
         if result is not None:
             self.parser.error(result)
 
-        # end of CLI options handling
+        # options setting
 
         options = {
             "keep_covdata": keep_covdata,
         }
+        # check CIM string, it might be empty, so `if commit_string` is
+        #  a bad idea
+        if commit_string is not None:
+            try:
+                options['CIM'] = extract_cim_data(commit_string)
+            except RuntimeError, ex:
+                parser.error(ex.message)
         if email_to:
             options["email_to"] = email_to
         if priority is not None:
