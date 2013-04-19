@@ -12,7 +12,7 @@ from kobo.hub.models import Task, TASK_STATES
 from kobo.django.upload.models import FileUpload
 from kobo.django.xmlrpc.decorators import login_required, admin_required
 
-from covscanhub.scan.models import MockConfig, Package, Tag
+from covscanhub.scan.models import MockConfig, Package, Tag, TaskExtension
 from covscanhub.scan.service import create_diff_task
 from covscanhub.errata.service import create_errata_base_scan
 
@@ -84,8 +84,17 @@ class DiffBuild(object):
             options["brew_build"] = brew_build
             task_label = options["brew_build"]
 
+        # remove sensitive data from options['CIM'] if they exists
+        cim_conf = options.pop("CIM", None)
+
         task_id = Task.create_task(request.user.username, task_label, self.get_task_class_name(), options, comment=comment, state=TASK_STATES["CREATED"], priority=priority)
         task_dir = Task.get_task_dir(task_id)
+
+        task = Task.objects.get(id=task_id)
+
+        # check CIM settings
+        if cim_conf:
+            TaskExtension(task=task, secret_args=cim_conf).save()
 
         if not os.path.isdir(task_dir):
             try:
@@ -101,7 +110,7 @@ class DiffBuild(object):
             upload.delete()
 
         # set the task state to FREE
-        Task.objects.get(id=task_id).free_task()
+        task.free_task()
         return task_id
 
 
