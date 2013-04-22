@@ -79,7 +79,8 @@ class DiffBuild(TaskBase):
         if cppcheck:
             cov_cmd.append("-c")
         if add_args:
-            cov_cmd.append("-m %s" % construct_cim_string(add_args))
+            cov_cmd.append("-m")
+            cov_cmd.append(pipes.quote(construct_cim_string(add_args)))
         cov_cmd.append(pipes.quote(mock_config))
         cov_cmd.append(pipes.quote(srpm_path))
         if all_checks:
