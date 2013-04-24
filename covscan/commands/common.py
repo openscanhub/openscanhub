@@ -28,3 +28,12 @@ def add_concurrency_option(parser):
         action="store_true",
         help="turn on concurrency-related checkers"
     )
+
+
+def add_download_results_option(parser):
+    parser.add_option(
+        "-d",
+        "--download-results",
+        dest="results_file",
+        help="file for storing results (leave blank for default name)"
+    )
