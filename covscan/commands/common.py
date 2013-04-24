@@ -35,5 +35,5 @@ def add_download_results_option(parser):
         "-d",
         "--download-results",
         dest="results_file",
-        help="file for storing results (leave blank for default name)"
+        help="directory for storing results (leave blank for working directory)"
     )

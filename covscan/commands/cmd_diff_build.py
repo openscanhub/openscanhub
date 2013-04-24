@@ -23,6 +23,8 @@ class Diff_Build(covscan.CovScanCommand):
         # normalized name contains a lower-case class name with underscores
         # converted to dashes
         self.parser.usage = "%%prog %s [options] <args>" % self.normalized_name
+        self.parser.epilog = "User configuration file is located at: \
+~/.config/covscan/covscan.conf"
 
         self.parser.add_option(
             "--config",
@@ -100,7 +102,7 @@ if not specified)"
             help="""Commit the results to Integrity Manager. You can specify \
 the target host/stream as an optional argument using the
 following format: "user:passwd@host:port/stream". User and password might be \
-stored in configuration file "~/.config/covscan/covscan.conf"."""
+stored in user configuration file."""
         )
 
     def validate_results_store_file(self):

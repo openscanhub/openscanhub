@@ -20,6 +20,8 @@ class Version_Diff_Build(covscan.CovScanCommand):
         # normalized name contains a lower-case class name with underscores
         #  converted to dashes
         self.parser.usage = "%%prog %s [options] <args>" % self.normalized_name
+        self.parser.epilog = "User configuration file is located at: \
+~/.config/covscan/covscan.conf"
 
         add_cppcheck_option(self.parser)
         add_aggressive_option(self.parser)
