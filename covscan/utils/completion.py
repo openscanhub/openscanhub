@@ -5,14 +5,14 @@ import os
 import xmlrpclib
 import datetime
 import cPickle as pickle
-from conf import get_conf_dir
+from conf import get_conf
 
 
 def get_can_path():
     """
     Return path to can with pickles
     """
-    return os.path.join(get_conf_dir(), 'bash_compl.pickle')
+    return os.path.join(get_conf().get_conf_dir(), 'bash_compl.pickle')
 
 
 def get_configs_from_hub():
