@@ -45,11 +45,10 @@ def set_options():
                       action="store_true", dest="init", default=False)
     parser.add_option("-b", "--base", action="store", type="string",
                       dest="base",
-                      help="fill database with checker groups specified in \
-'file checker_groups.txt'")
+                      help="nvr of base package to scan")
     parser.add_option("-t", "--target", action="store", type="string",
                       dest="target",
-                      help="write statistics definition into database",)
+                      help="nvr of target package to scan",)
     parser.add_option("-f", "--file", help="create base scans from this file",
                       action="store", type="string", dest="file")
     parser.add_option("-T", "--tag", help="name of tag for mass prescan",
@@ -59,6 +58,9 @@ def set_options():
 
     parser.add_option("-S", "--get-state", help="get scan's state",
                       action="store", type="int", dest="scan_state")
+
+    parser.add_option("--info", help="get task's info",
+                      action="store", type="int", dest="task_info")
 
     (options, args) = parser.parse_args()
 
@@ -281,6 +283,8 @@ if __name__ == '__main__':
         mass_prescan(client, options.file, parser, options.tag_name)
     elif options.scan_state:
         print call_get_scan_state(client, options.scan_state)
+    elif options.task_info:
+        call_task_info(client, options.task_info)
     #except Exception, ex:
     #    print '---EXCEPTION---\n\n\n%s\n\n\n' % ex
     #    t = Traceback()
