@@ -6,7 +6,7 @@
 
 
 Name:           covscan
-Version:        0.3.0
+Version:        0.3.1
 Release:        1%{?dist}
 License:        Commercial
 Summary:        Coverity scan scheduler
@@ -94,7 +94,7 @@ python setup.py install --root=${RPM_BUILD_ROOT}
 
 # tweak python paths in config files
 sed -i 's@/lib/python2.[0-9]@/lib/python%{py_version}@g' ${RPM_BUILD_ROOT}/etc/httpd/conf.d/covscanhub-httpd.conf
- 
+
 # create symlink /etc/covscan/covscanhub.conf -> .../site-packages/covscanhub/settings.py
 ln -s %{py_sitedir}/covscanhub/settings_local.py ${RPM_BUILD_ROOT}/etc/covscan/covscanhub.conf
 
@@ -155,6 +155,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Wed Apr 24 2013 Tomas Tomecek <ttomecek@redhat.com> - 0.3.1-1
+- Update to version 0.3.1
+
 * Fri Apr 5 2013 Tomas Tomecek <ttomecek@redhat.com> - 0.3.0-1
 - Update for hub and worker
 - ET pilot
