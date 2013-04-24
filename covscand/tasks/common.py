@@ -24,7 +24,7 @@ def construct_cim_string(cim_dict):
     """
     # user wants default options, we have to suply empty string
     if cim_dict['user'] is None:
-        return '""'
+        return ''
     else:
         result_string = "%s:%s" % (cim_dict['user'], cim_dict['passwd'])
         if cim_dict['server'] is not None:
