@@ -2,7 +2,7 @@
 
 import re
 import logging
-from utils import depend_on, spawn_scan_task, _spawn_scan_task
+from covscanhub.errata.utils import depend_on, spawn_scan_task, _spawn_scan_task
 from django.conf import settings
 from kobo.rpmlib import parse_nvr
 #from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
