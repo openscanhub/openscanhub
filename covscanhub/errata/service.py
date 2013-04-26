@@ -47,15 +47,8 @@ def create_errata_base_scan(d, parent_task_id):
     # Test if SRPM exists
     check_brew_build(d['target'])
 
-    mock_name = assign_mock_config(re.match(".+-.+-(.+)",
-                                            d['target']).group(1))
-    if mock_name:
-        options['mock_config'] = mock_name
-    else:
-        logger.error("Unable to assign mock profile to base scan %s of \
-%s", d['target'], d['target'])
-        raise RuntimeError("Unable to assign mock profile to base scan %s of \
-%s" % (d['target'], d['target']))
+    # set profile to be same as target's
+    options['mock_config'] = d['mock_config']
 
     d['method'] = 'ErrataDiffBuild'
     d['parent_id'] = parent_task_id
@@ -135,6 +128,8 @@ def check_package_eligibility(package, nvr, created):
 
 def assign_mock_config(dist_tag):
     """
+        NOT USED:, base scan inherits mock profile from target
+
         Assign appropriate mock config according to 'dist_tag', if this fails
         fallback to rhel-6 -- there is at least some output
     """
@@ -228,16 +223,11 @@ def create_errata_scan(kwargs):
     #    GET /brewroot/.../package/version-release/...src.rpm
     check_brew_build(kwargs['target'])
 
-    # validation of nvr, creating appropriate package object
-    package, created = Package.objects.get_or_create(
-        name=target_nvre_dict['name'])
-    check_package_eligibility(package, kwargs['target'], created)
-    d['package'] = package
-
     # returns (mock config's name, tag object)
     tag = get_tag(release)
     if tag:
         options['mock_config'] = tag.mock.name
+        d['mock_config'] = tag.mock.name
     else:
         raise RuntimeError("Unable to assign mock profile.")
     check_obsolete_scan(package, tag.release)
