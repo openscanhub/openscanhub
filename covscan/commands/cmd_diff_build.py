@@ -99,7 +99,7 @@ if not specified)"
             "-m",
             dest="commit_string",
             metavar="user:passwd@host:port/stream",
-            help="""Commit the results to Integrity Manager. You can specify \
+            help="""Commit results to Integrity Manager. You can specify \
 the target host/stream as an optional argument using the
 following format: "user:passwd@host:port/stream". User and password might be \
 stored in user configuration file."""
