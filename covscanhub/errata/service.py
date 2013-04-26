@@ -197,6 +197,12 @@ def create_errata_scan(kwargs):
         logger.error('%s is not a correct N-V-R', kwargs['target'])
         raise RuntimeError('%s is not a correct N-V-R' % kwargs['target'])
 
+    # validation of nvr, creating appropriate package object
+    package, created = Package.objects.get_or_create(
+        name=target_nvre_dict['name'])
+    check_package_eligibility(package, kwargs['target'], created)
+    d['package'] = package
+
     etm = ETMapping()
     # ET internal id for the scan record in ET
     etm.et_scan_id = return_or_raise('id', kwargs)
