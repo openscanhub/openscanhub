@@ -151,7 +151,7 @@ exist." % self.results_store_file)
         security = kwargs.pop("security")
         concurrency = kwargs.pop("concurrency")
         commit_string = kwargs.pop("commit_string", None)
-        self.results_store_file = kwargs.pop("results_file", None)
+        self.results_store_file = kwargs.pop("results_dir", None)
 
         if len(args) != 1:
             self.parser.error("please specify exactly one SRPM")
