@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import re
 import yum
 import brew
 import koji
@@ -10,10 +11,10 @@ import logging
 from kobo.rpmlib import parse_nvr
 from kobo.hub.models import Task, TASK_STATES
 
-from django.conf import settings
-
 from covscanhub.scan.models import SCAN_TYPES, Scan
 from covscanhub.other.shortcuts import check_and_create_dirs
+
+from django.conf import settings
 
 
 __all__ = (
@@ -111,8 +112,25 @@ def spawn_scan_task(d, target):
 ###########
 
 
-def depend_on(nvr, dependency):
+def get_mocks_repo(mock_profile):
+    """return repo acoording to $(grep "baseurl" /etc/mock/`mock_profile`)"""
+    f = open('/etc/mock/%s.cfg' % mock_profile, 'r')
+    url = None
+    with f:
+        f.seek(0)
+        for line in f:
+            m = re.search(r'baseurl=([^\\]+)', line)
+            if m:
+                url = m.group(1)
+    print repr(url)
+    return url.strip()
+
+
+def depend_on(nvr, dependency, mock_profile):
     """
+    for q in `repoquery -s --alldeps --whatrequires libc.so*` ; do
+       echo $q | rev | cut -d'-' -f3- | rev
+
     find out if binary packages built from `nvr` are dependant on `dependency`
     """
     # get build from brew
@@ -123,12 +141,32 @@ def depend_on(nvr, dependency):
     valid_rpms = filter(lambda x: x['arch'] == 'x86_64', rpms)
     if not valid_rpms:
         return False
+
     # find out dependency using yum
     yb = yum.YumBase()
     yb.preconf.debuglevel = 0
     yb.setCacheDir()
+
+    # get data only from mock profile's repo
+    repo_url = get_mocks_repo(mock_profile)
+    if repo_url:
+        for repo in yb.repos.findRepos('*'):
+            repo.disable()
+        mock_repo = yb.add_enable_repo(mock_profile, baseurls=[repo_url])
+        try:
+            mock_repo.check()
+        except Exception:
+            for repo in yb.repos.findRepos('*'):
+                repo.enable()
+            mock_repo.disable()
+
     packages = [rpm['name'] for rpm in valid_rpms]
-    pkgs = yb.pkgSack.returnNewestByNameArch(patterns=packages)
+    try:
+        pkgs = yb.pkgSack.returnNewestByNameArch(patterns=packages)
+    except Exception, ex:
+        logger.info("depend_on %s %s", packages, ex)
+        return False
+
     for pkg in pkgs:
         # alternative: for req in pkg.requires:
         for req in pkg.returnPrco('requires'):
@@ -212,11 +250,13 @@ def get_overrides(nvr):
 
 
 def test_depend_on():
-    assert(depend_on('openldap-2.4.23-33.el6', 'libc.so'))
-    assert(depend_on('wget-1.11.4-4.el6', 'libc.so'))
-    assert(depend_on('hardlink-1.0-9.el6', 'libc.so'))
-    assert(depend_on('coreutils-8.4-5.el6', 'libc.so'))
-    assert(depend_on('libssh2-1.4.2-1.el6', 'libc.so'))
+    depend_on('aspell-0.60.3-13', 'libc.so', 'rhel-5-x86_64')
+    depend_on('redhat-release-5Server-5.10.0.2', 'libc.so', 'rhel-5-x86_64')
+    assert(depend_on('openldap-2.4.23-33.el6', 'libc.so', 'rhel-6-x86_64'))
+    assert(depend_on('wget-1.11.4-4.el6', 'libc.so', 'rhel-6-x86_64'))
+    assert(depend_on('hardlink-1.0-9.el6', 'libc.so', 'rhel-6-x86_64'))
+    assert(depend_on('coreutils-8.4-5.el6', 'libc.so', 'rhel-6-x86_64'))
+    assert(depend_on('libssh2-1.4.2-1.el6', 'libc.so', 'rhel-6-x86_64'))
 
 if __name__ == '__main__':
     test_depend_on()

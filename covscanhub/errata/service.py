@@ -111,11 +111,11 @@ def check_obsolete_scan(package, release):
             cancel_scan(binding.scan.id)
 
 
-def check_package_eligibility(package, nvr, created):
+def check_package_eligibility(package, nvr, created, mock_profile):
     if created:
         logger.warn('Package %s was created', package)
 
-        depends_on = depend_on(nvr, 'libc.so')
+        depends_on = depend_on(nvr, 'libc.so', mock_profile)
         package.eligible = depends_on
         package.save()
 
@@ -191,16 +191,31 @@ def create_errata_scan(kwargs):
     return_or_raise('target', kwargs)
     return_or_raise('base', kwargs)
 
+    # first thing, create entry in DB about provided package
     try:
         target_nvre_dict = parse_nvr(kwargs['target'])
     except ValueError:
         logger.error('%s is not a correct N-V-R', kwargs['target'])
         raise RuntimeError('%s is not a correct N-V-R' % kwargs['target'])
-
-    # validation of nvr, creating appropriate package object
     package, created = Package.objects.get_or_create(
         name=target_nvre_dict['name'])
-    check_package_eligibility(package, kwargs['target'], created)
+
+    # The advisory's release (mainly for knowledge of advisory being 'ASYNC')
+    # values: RHEL-6.2.0, RHEL-6.2.z, ASYNC
+    release = return_or_raise('release', kwargs)
+    # returns (mock config's name, tag object)
+    tag = get_tag(release)
+    if tag:
+        options['mock_config'] = tag.mock.name
+        d['mock_config'] = tag.mock.name
+    else:
+        raise RuntimeError("Unable to assign mock profile.")
+    check_obsolete_scan(package, tag.release)
+    d['tag'] = tag
+
+    # validation of nvr, creating appropriate package object
+    check_package_eligibility(package, kwargs['target'],
+                              created, options['mock_config'])
     d['package'] = package
 
     etm = ETMapping()
@@ -212,10 +227,6 @@ def create_errata_scan(kwargs):
 
     ## one of RHEL-6.2.0, RHEL-6.2.z, etc.
     #rhel_version = return_or_raise('rhel_version', kwargs)
-
-    # The advisory's release (mainly for knowledge of advisory being 'ASYNC')
-    # values: RHEL-6.2.0, RHEL-6.2.z, ASYNC
-    release = return_or_raise('release', kwargs)
 
     options['brew_build'] = kwargs['target']
 
@@ -229,16 +240,6 @@ def create_errata_scan(kwargs):
     # TODO: add check if SRPM exist:
     #    GET /brewroot/.../package/version-release/...src.rpm
     check_brew_build(kwargs['target'])
-
-    # returns (mock config's name, tag object)
-    tag = get_tag(release)
-    if tag:
-        options['mock_config'] = tag.mock.name
-        d['mock_config'] = tag.mock.name
-    else:
-        raise RuntimeError("Unable to assign mock profile.")
-    check_obsolete_scan(package, tag.release)
-    d['tag'] = tag
 
     child = get_latest_sb_by_package(d['tag'].release, d['package'])
 
