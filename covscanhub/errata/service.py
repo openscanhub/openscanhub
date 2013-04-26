@@ -210,8 +210,9 @@ def create_errata_scan(kwargs):
     etm.advisory_id = return_or_raise('errata_id', kwargs)
     etm.save()
 
-    # one of RHEL-6.2.0, RHEL-6.2.z, etc.
-    rhel_version = return_or_raise('rhel_version', kwargs)
+    ## one of RHEL-6.2.0, RHEL-6.2.z, etc.
+    #rhel_version = return_or_raise('rhel_version', kwargs)
+
     # The advisory's release (mainly for knowledge of advisory being 'ASYNC')
     # values: RHEL-6.2.0, RHEL-6.2.z, ASYNC
     release = return_or_raise('release', kwargs)
