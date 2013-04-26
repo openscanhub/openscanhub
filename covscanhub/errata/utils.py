@@ -7,7 +7,6 @@ import koji
 import logging
 
 #from pprint import pprint
-
 from kobo.rpmlib import parse_nvr
 from kobo.hub.models import Task, TASK_STATES
 
@@ -122,7 +121,6 @@ def get_mocks_repo(mock_profile):
             m = re.search(r'baseurl=([^\\]+)', line)
             if m:
                 url = m.group(1)
-    print repr(url)
     return url.strip()
 
 
@@ -150,15 +148,18 @@ def depend_on(nvr, dependency, mock_profile):
     # get data only from mock profile's repo
     repo_url = get_mocks_repo(mock_profile)
     if repo_url:
+        disabled_repos = []
         for repo in yb.repos.findRepos('*'):
             repo.disable()
+            disabled_repos.append(repo)
         mock_repo = yb.add_enable_repo(mock_profile, baseurls=[repo_url])
-        try:
-            mock_repo.check()
-        except Exception:
-            for repo in yb.repos.findRepos('*'):
-                repo.enable()
-            mock_repo.disable()
+        ## check if repo is okay; if not, use default repositories
+        #try:
+        #    mock_repo.check()
+        #except Exception:
+        #    for repo in disabled_repos:
+        #        repo.enable()
+        #    mock_repo.disable()
 
     packages = [rpm['name'] for rpm in valid_rpms]
     try:
