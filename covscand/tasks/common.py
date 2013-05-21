@@ -40,7 +40,10 @@ def downloadSRPM(tmp_dir, srpm_name):
     if it starts with 'el', use brew, if build is not there, use koji.
     """
     path = os.path.join(tmp_dir, "%s.src.rpm" % srpm_name)
-    dist_tag = re.search('.*-.*-(.*)', srpm_name).group(1)
+    dist_tag = ''
+    dist_tag_search = re.search('.*-.*-(.*)', srpm_name)
+    if dist_tag_search:
+        dist_tag = dist_tag_search.group(1)
     downloaded = True
     builder = 'brew'
     if 'fc' in dist_tag:
@@ -48,11 +51,11 @@ def downloadSRPM(tmp_dir, srpm_name):
     cmd = [builder, "download-build", "--quiet", "--arch=src", srpm_name]
     try:
         run(cmd, workdir=tmp_dir, can_fail=False)
-        if os.path.exists(path):
-            return path
-        else:
-            downloaded = False
     except RuntimeError:
+        downloaded = False
+    if os.path.exists(path):
+        return path
+    else:
         downloaded = False
     if not downloaded:
         if builder == 'brew':
