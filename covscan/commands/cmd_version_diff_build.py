@@ -71,7 +71,7 @@ class Version_Diff_Build(covscan.CovScanCommand):
         self.parser.add_option(
             "--priority",
             type="int",
-            help="task priority (20+ is admin only)"
+            help="task priority (20+ is admin only), default is 10"
         )
 
         self.parser.add_option(

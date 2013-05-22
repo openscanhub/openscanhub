@@ -6,7 +6,7 @@ import covscan
 
 
 class Download_Results(covscan.CovScanCommand):
-    """analyze a SRPM without and with patches, return diff"""
+    """download tarball with results of specified task"""
     enabled = True
     admin = False  # admin type account required
 
