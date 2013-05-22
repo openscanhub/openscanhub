@@ -126,12 +126,26 @@ mock_build_obj = MockBuild("http://brewhub.devel.redhat.com/brewhub")
 
 @login_required
 def diff_build(*args, **kwargs):
+    """
+    diff_build(mock_config, comment=None, options=None) -> task_id
+    Create diff-build task. `options` is a dictionary with:
+     * "srpm_name" - name of srpm
+     * "brew_build" - nvr of package, downloaded from brew
+     * "upload_id" - id of place where the srpm is upladed
+    """
     global diff_build_obj
     return diff_build_obj(*args, **kwargs)
 
 
 @login_required
 def mock_build(*args, **kwargs):
+    """
+    mock_build(mock_config, comment=None, options=None) -> task_id
+    Create mock-build task. `options` is a dictionary with:
+     * "srpm_name" - name of srpm
+     * "brew_build" - nvr of package, downloaded from brew
+     * "upload_id" - id of place where the srpm is upladed
+    """
     global mock_build_obj
     return mock_build_obj(*args, **kwargs)
 
