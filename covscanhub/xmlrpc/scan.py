@@ -22,6 +22,7 @@ __all__ = (
     "mock_build",
     "create_user_diff_task",
     "create_base_scans",
+    "get_task_info",
 )
 
 
@@ -181,3 +182,20 @@ def create_base_scans(request, nvrs_list, tag_name):
         else:
             response.append('%s is not a valid NVR' % nvr)
     return response
+
+
+def get_task_info(request, task_id):
+    """
+    get_task_info(task_id) -> {...}
+
+    provide info about specified task, if task does not exist,
+    return empty dict (map/hash)
+    """
+    result = {}
+    try:
+        task = Task.objects.get(pk=task_id)
+        result = task.export()
+    except ObjectDoesNotExist:
+        pass
+    return result
+
