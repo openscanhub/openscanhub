@@ -124,6 +124,27 @@ def get_mocks_repo(mock_profile):
     return url.strip()
 
 
+def depend_on_brew(valid_rpms, dependency):
+    """
+    Check with brew if one of `valid_rpms[:]['name']` depends on `dependency`
+    """
+    def check_if_dep_match(item):
+        try:
+            dep_name = item['name']
+        except KeyError:
+            return False
+        return dep_name.startswith(dependency)
+    for rpm in valid_rpms:
+        # get requires from brew, second arg is dependency type
+        requires = s.getRPMDeps(valid_rpms[0]['id'], brew.DEP_REQUIRE)
+        if filter(check_if_dep_match, requires):
+            logger.info("depend_on_brew, %s depends on %s",
+                        rpm['name'], dependency)
+            return True
+    logger.info("depend_on_brew, no RPM depends on %s", dependency)
+    return False
+
+
 def depend_on(nvr, dependency, mock_profile):
     """
     for q in `repoquery -s --alldeps --whatrequires libc.so*` ; do
@@ -138,6 +159,7 @@ def depend_on(nvr, dependency, mock_profile):
     # we do care only about x86_64
     valid_rpms = filter(lambda x: x['arch'] == 'x86_64', rpms)
     if not valid_rpms:
+        logger.error("no valid RPMs for %s", nvr)
         return False
 
     # find out dependency using yum
@@ -164,9 +186,17 @@ def depend_on(nvr, dependency, mock_profile):
     packages = [rpm['name'] for rpm in valid_rpms]
     try:
         pkgs = yb.pkgSack.returnNewestByNameArch(patterns=packages)
+    except yum.Errors.PackageSackError, ex:
+        # package was not found in repo, try brew instead
+        logger.warning("depend_on, package not found in repo (%s) %s",
+                       ex, packages)
+        return depend_on_brew(valid_rpms, dependency)
     except Exception, ex:
-        logger.info("depend_on %s %s", packages, ex)
-        return False
+        # there was some problem with search of package in repo using yum
+        # use brew instead
+        logger.warning("depend_on, yum exception %s, packages %s",
+                       ex, packages)
+        return depend_on_brew(valid_rpms, dependency)
 
     for pkg in pkgs:
         # alternative: for req in pkg.requires:
@@ -251,13 +281,14 @@ def get_overrides(nvr):
 
 
 def test_depend_on():
-    depend_on('aspell-0.60.3-13', 'libc.so', 'rhel-5-x86_64')
-    depend_on('redhat-release-5Server-5.10.0.2', 'libc.so', 'rhel-5-x86_64')
-    assert(depend_on('openldap-2.4.23-33.el6', 'libc.so', 'rhel-6-x86_64'))
-    assert(depend_on('wget-1.11.4-4.el6', 'libc.so', 'rhel-6-x86_64'))
-    assert(depend_on('hardlink-1.0-9.el6', 'libc.so', 'rhel-6-x86_64'))
-    assert(depend_on('coreutils-8.4-5.el6', 'libc.so', 'rhel-6-x86_64'))
-    assert(depend_on('libssh2-1.4.2-1.el6', 'libc.so', 'rhel-6-x86_64'))
+    #assert(depend_on('aspell-0.60.3-13', 'libc.so', 'rhel-5-x86_64'))
+    #assert(depend_on('redhat-release-5Server-5.10.0.2', 'libc.so', 'rhel-5-x86_64') == False)
+    assert(depend_on('mysql55-mysql-5.5.31-9.el5', 'libc.so', 'rhel-5-x86_64'))
+    #assert(depend_on('openldap-2.4.23-33.el6', 'libc.so', 'rhel-6-x86_64'))
+    #assert(depend_on('wget-1.11.4-4.el6', 'libc.so', 'rhel-6-x86_64'))
+    #assert(depend_on('hardlink-1.0-9.el6', 'libc.so', 'rhel-6-x86_64'))
+    #assert(depend_on('coreutils-8.4-5.el6', 'libc.so', 'rhel-6-x86_64'))
+    #assert(depend_on('libssh2-1.4.2-1.el6', 'libc.so', 'rhel-6-x86_64'))
 
 if __name__ == '__main__':
     test_depend_on()
