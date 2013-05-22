@@ -283,7 +283,7 @@ def rescan(scan, user):
         @param scan - scan to be rescanned
         @type scan - covscanhub.scan.models.Scan
         @param user - user that triggered resubmit
-        @type scan - django...User
+        @type user - django...User
     """
     latest_binding = get_latest_binding(scan.nvr, show_failed=True)
     logger.info('Rescheduling scan with nvr %s, latest binding %s',
@@ -297,7 +297,7 @@ failed. This is not supported." % (latest_binding.scan.id, scan.nvr))
     if latest_binding.scan.is_errata_base_scan():
         #clone does not support cloning of child tasks only
         task_id = Task.create_task(
-            owner_name=latest_binding.task.owner.name,
+            owner_name=latest_binding.task.owner.username,
             label=latest_binding.task.label,
             method=latest_binding.task.method,
             args={},
@@ -363,7 +363,7 @@ did not finish successfully; reschedule base (latest base: %s)' % (
             child.save()
 
         options = latest_binding.task.args
-        options.update({'scan_id': scan.id})
+        options.update({'scan_id': new_scan.id})
         task = Task.objects.get(id=task_id)
         task.args = options
         task.save()
