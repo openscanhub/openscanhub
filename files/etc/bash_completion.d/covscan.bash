@@ -37,7 +37,7 @@ _covscan()
     prev2="${COMP_WORDS[COMP_CWORD-2]}"
  
     # basic commands
-    opts="list-mock-configs cancel-tasks mock-build diff-build version-diff-build"
+    opts="cancel-tasks diff-build download-results find-tasks list-mock-configs mock-build task-info version-diff-build"
 
     # complete for --config=<mock_config>
     if [ "${prev2}" == "--config" -a "${prev}" == "=" ] ; then
