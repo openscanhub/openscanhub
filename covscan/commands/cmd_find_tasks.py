@@ -30,21 +30,21 @@ these options: --regex, --package, --nvr"
             "--regex",
             default=False,
             action="store_true",
-            help="query by specified regex",
+            help="query by regular expression (python, module: re)",
         )
         self.parser.add_option(
             "-p",
             "--package",
             default=False,
             action="store_true",
-            help="return only scans of provided package",
+            help="query by package name",
         )
         self.parser.add_option(
             "-n",
             "--nvr",
             default=False,
             action="store_true",
-            help="show scans of specific build, specified by NVR (default one)"
+            help="query by NVR (default one)"
         )
 
     def run(self, *args, **kwargs):
@@ -60,7 +60,7 @@ these options: --regex, --package, --nvr"
 
         if len(args) != 1:
             self.parser.error("please specify exactly one query string \
-(in case of regex, enclose it in quotes please])")
+(in case of regex, enclose it in quotes please)")
 
         query_string = args[0]
 
