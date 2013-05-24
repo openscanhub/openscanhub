@@ -28,14 +28,16 @@ _covscan_configs()
 #    return 1
 #}
 
-_covscan() 
+_covscan()
 {
     local cur prev prev2 opts
     COMPREPLY=()
-    cur="${COMP_WORDS[COMP_CWORD]}"
-    prev="${COMP_WORDS[COMP_CWORD-1]}"
-    prev2="${COMP_WORDS[COMP_CWORD-2]}"
- 
+    {
+        cur="${COMP_WORDS[COMP_CWORD]}"
+        prev="${COMP_WORDS[COMP_CWORD-1]}"
+        prev2="${COMP_WORDS[COMP_CWORD-2]}"
+    } 2>/dev/null
+
     # basic commands
     opts="cancel-tasks diff-build download-results find-tasks list-mock-configs mock-build task-info version-diff-build"
 
