@@ -84,6 +84,5 @@ these options: --regex, --package, --nvr"
                 for task_id in task_ids:
                     print task_id
         else:
-            print 'There were no tasks found.'
             sys.exit(1)
         sys.exit(0)
