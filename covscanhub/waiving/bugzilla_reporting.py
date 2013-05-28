@@ -66,7 +66,6 @@ def get_checker_groups(waivers):
     return s
 
 
-
 def create_bugzilla(request, package, release):
     """
     create bugzilla for package/release and fill it with all IS_A_BUG waivers
