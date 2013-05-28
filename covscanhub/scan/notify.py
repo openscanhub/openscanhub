@@ -23,8 +23,7 @@ __all__ = (
 def send_mail(message, recipient, subject, recipients, headers, bcc=None):
     connection = get_connection(fail_silently=False)
 
-    # XXX: hardcoded
-    from_addr = "Coverity Results mailing list <coverity-results@redhat.com>"
+    from_addr = "<covscan-auto@redhat.com>"
 
     headers["X-Application-ID"] = "covscan"
     headers["X-Hostname"] = socket.gethostname()
@@ -115,16 +114,17 @@ def send_scan_notification(request, scan_id):
         recipient = "ttomecek@redhat.com"
 
     message = [
-        "Scan of a package %s have finished:" % scan.package.name,
-        # "Waiver ID: %s" % scan.scanbinding.id,
+        "Automatic scan of build %s submitted from Errata Tool has \
+finished." % (scan.nvr),
+        "",
         "Scan state: %s" % state,
         "Waiver URL: %s" % request.build_absolute_uri(
             reverse('waiving/result', args=(scan.scanbinding.id, ))
         ),
     ]
     message = "\n".join(message)
-    message += """\n\n
-There is possibility that some of the issues might be false positives. So \
+    message += """\n
+There is a possibility that some of the issues might be false positives. So \
 please mark them accordingly:
     Is a bug -- defect is true positive and you are going to fix it (with \
 next build)
