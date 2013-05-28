@@ -83,7 +83,7 @@ Package was scanned as differential scan:
 
     %(target)s <= %(base)s
 
-== Reported groups ==
+== Reported groups of defects ==
 %(groups)s
 == Notes ==
 You may find issues that you marked as bugs bellow. These records contain \
@@ -101,9 +101,9 @@ coverity-users@redhat.com
     }
 
     if waivers.count() <= 1:
-        summary = '[Coverity] %d defect (%s)' % (waivers.count(), release.tag)
+        summary = '[Coverity] %d defect found (%s)' % (waivers.count(), release.tag)
     else:
-        summary = '[Coverity] %d defects (%s)' % (waivers.count(), release.tag)
+        summary = '[Coverity] %d defects found (%s)' % (waivers.count(), release.tag)
     comment += format_waivers(waivers, request)
 
     data = {
@@ -116,6 +116,8 @@ coverity-users@redhat.com
         'priority': 'high',
         'rep_platform': 'All',
         'op_sys': 'Linux',
+        'groups': ['private'],  # others are devel, qa
+        'cf_devel_whiteboard': 'CoverityScan'
     }
     # set bug as private?
     b = bz.createbug(**data)
