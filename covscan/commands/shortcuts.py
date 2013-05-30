@@ -83,9 +83,9 @@ files deleted, or did not finish successfully." % build
 def verify_mock(mock, hub):
     mock_conf = hub.mock_config.get(mock)
     if not mock_conf:
-        return "Unknown mock config: %s" % mock_conf
+        return "Mock config %s does not exist." % mock
     if not mock_conf["enabled"]:
-        return "Mock config is not enabled: %s" % mock_conf
+        return "Mock config %s is not enabled." % mock
     return None
 
 
