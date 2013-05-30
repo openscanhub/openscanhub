@@ -113,8 +113,6 @@ class Result(models.Model):
                                  self.scanbinding.scan)
 
 
-
-
 class Defect(models.Model):
     """
     One Result is composed of several Defects, each Defect is defined by
