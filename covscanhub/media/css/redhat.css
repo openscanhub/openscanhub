@@ -488,6 +488,10 @@ table#run_list.list tbody tr th.down:after {
 table#run_list.list tbody tr th.up:after {
     content: "▼";
 }
+
+span.bugs_count {
+    float: right;
+}
 /**/
 
 /*waivers presentation*/

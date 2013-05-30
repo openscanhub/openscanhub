@@ -104,6 +104,25 @@ class Result(models.Model):
     def fixed_defects_count(self):
         return self.get_defects_count(DEFECT_STATES['FIXED'])
 
+    @property
+    def display_title(self):
+        new = self.resultgroup_set.filter(defect_type=DEFECT_STATES['NEW'])
+        rpr = new.values('state').annotate(count=models.Count("state"))
+        result = []
+        for state in rpr:
+            result.append("%s = %d" % (
+                RESULT_GROUP_STATES.get_value(state['state']),
+                state['count'],
+            ))
+        return u"\n".join(result)
+
+    @property
+    def bugs_count(self):
+        return self.resultgroup_set.filter(
+            waiver__is_active=True,
+            state__in=[WAIVER_TYPES['IS_A_BUG'], WAIVER_TYPES['FIX_LATER']]
+        ).count()
+
     def __unicode__(self):
         try:
             self.scanbinding
