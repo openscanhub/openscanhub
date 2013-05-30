@@ -210,7 +210,8 @@ class ResultGroup(models.Model):
 associated with this group.")
 
     def is_previously_waived(self):
-        return self.state == RESULT_GROUP_STATES['PREVIOUSLY_WAIVED']
+        return self.state == RESULT_GROUP_STATES['PREVIOUSLY_WAIVED'] or \
+            self.defect_type == DEFECT_STATES['PREVIOUSLY_WAIVED']
 
     def get_new_defects(self):
         return Defect.objects.filter(result_group=self.id,
