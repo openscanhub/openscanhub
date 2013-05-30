@@ -306,7 +306,7 @@ class Bugzilla(models.Model):
 
 class Waiver(models.Model):
     """
-    User acknowledges that he processed this defect
+    User acknowledges that he processed associated defect group
     """
     date = models.DateTimeField()  # date submitted
     message = models.TextField("Message")
