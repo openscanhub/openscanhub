@@ -55,7 +55,7 @@ def format_waivers(waivers, request):
             )
         )
         if w != waivers.reverse()[0]:
-            comment += "-" * 79 + "\n\n"
+            comment += "-" * 78 + "\n\n"
     return comment
 
 
@@ -89,8 +89,8 @@ Package was scanned as differential scan:
 You may find issues that you marked as bugs bellow. These records contain \
 date, message and link to actual waiver.
 
-If you have any questions, feel free to ask at #coverity or \
-coverity-users@redhat.com
+If you have any questions, feel free to ask at Red Hat IRC channel \
+#coverity or coverity-users@redhat.com .
 
 == Marked waivers ==
 """ % {
