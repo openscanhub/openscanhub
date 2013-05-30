@@ -320,6 +320,8 @@ waived for specific Result")
     bz = models.ForeignKey(Bugzilla, blank=True, null=True)
     is_deleted = models.BooleanField(default=False)
 
+    is_active = models.BooleanField(default=False)
+
     class Meta:
         get_latest_by = "date"
 

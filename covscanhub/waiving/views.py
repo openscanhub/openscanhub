@@ -296,11 +296,19 @@ def waiver_post(request, sb, result_group_object, url_name, url_name_next,
             wl.state = WAIVER_LOG_ACTIONS['REWAIVE']
         else:
             wl.state = WAIVER_LOG_ACTIONS['NEW']
+
+        lws = Waiver.objects.filter(result_group=result_group_object)
+        if lws:
+            lw = lws.latest()
+            lw.is_active = False
+            lw.save()
+
         w = Waiver()
         w.date = datetime.datetime.now()
         w.message = form.cleaned_data['message']
         w.result_group = result_group_object
         w.user = request.user
+        w.is_active = True
         w.state = WAIVER_TYPES[form.cleaned_data['waiver_type']]
         w.save()
 
