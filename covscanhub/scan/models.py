@@ -332,6 +332,9 @@ counted in statistics.")
     def can_have_base(self):
         return self.scan_type in (SCAN_TYPES['ERRATA'], SCAN_TYPES['REBASE'])
 
+    def is_rebase_scan(self):
+        return self.scan_type == SCAN_TYPES['REBASE']
+
     def is_newpkg_scan(self):
         return self.scan_type == SCAN_TYPES['NEWPKG']
 
@@ -346,6 +349,12 @@ counted in statistics.")
 
     def is_waived(self):
         return self.state == SCAN_STATES['WAIVED']
+
+    def is_failed(self):
+        return self.state == SCAN_STATES['FAILED']
+
+    def is_disputed(self):
+        return self.state == SCAN_STATES['DISPUTED']
 
     @property
     def overdue(self):
