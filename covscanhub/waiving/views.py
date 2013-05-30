@@ -317,6 +317,11 @@ def waiver_post(request, sb, result_group_object, url_name, url_name_next,
         wl.save()
 
         s = sb.scan
+
+        if result_group_object.is_previously_waived():
+            result_group_object.defect_type = DEFECT_STATES['NEW']
+            result_group_object.save()
+
         # set RG as waived when condition is met
         # set run as waived if everything is okay
         if waiver_condition(result_group_object):
