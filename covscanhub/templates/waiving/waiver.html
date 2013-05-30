@@ -86,7 +86,7 @@
         </span>
 
         <span id="btn_toggle_{{ wl.id }}" onclick="
-            $(&quot;#waiver_{{ wl.id }}&quot;).toggle();
+            $(&quot;#waiver_text_{{ wl.id }}&quot;).toggle();
             $(&quot;#btn_toggle_{{ wl.id }}&quot;).toggleClass(&quot;currently_hiding&quot;);
         " class="btn float_right margin_left">
         {% if wl.waiver.is_deleted %}
@@ -103,9 +103,9 @@
         {% endif %}
 
         {% if wl.waiver.is_deleted %}
-        <div id="waiver_{{ wl.id }}" class="small grey waiver" style="display: none;">
+        <div id="waiver_text_{{ wl.id }}" class="small grey waiver" style="display: none;">
         {% else %}
-        <div id="waiver_{{ wl.id }}" class="small grey waiver">
+        <div id="waiver_text_{{ wl.id }}" class="small grey waiver">
         {% endif %}
             User {{ wl.user }}
             {% if wl.get_state_display == "NEW" %}
