@@ -74,7 +74,8 @@ def email_scan_notification(request, scan_id):
     if scan.is_errata_scan():
         # TODO: handle this better
         if scan.state not in (SCAN_STATES['FAILED'],
-                              SCAN_STATES['CANCELED']):
+                              SCAN_STATES['CANCELED'],
+                              SCAN_STATES['PASSED'],):
             return send_scan_notification(request, scan_id)
 
 
