@@ -29,7 +29,7 @@ class ScanListSearchForm(forms.Form):
         # first option searches in every release
         choices.insert(0, ('', 'All'))
         self.fields['release'] = forms.ChoiceField(
-            choices=choices, label=u'RHEL Release')
+            choices=choices, label=u'RHEL Release', required=False)
         # The thing is that we want to mark first option as default -- initial
         # FIXME This is actually happening, *somehow*; this doesn't work:
         #   self.initial['release'] = choices[2][0]
@@ -43,7 +43,6 @@ class ScanListSearchForm(forms.Form):
             my = self.cleaned_data["my"]
             self.overdue_filled = self.cleaned_data["overdue"]
             release = self.cleaned_data["release"]
-            print release
             query = Q()
 
             if search:
