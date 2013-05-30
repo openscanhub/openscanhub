@@ -12,7 +12,7 @@ from kobo.client.constants import TASK_STATES
 
 from covscanhub.scan.models import Scan, SCAN_STATES
 from covscanhub.scan.models import AppSettings
-
+from covscanhub.waiving.service import get_scans_new_defects_count
 
 __all__ = (
     "send_task_notification",
@@ -105,43 +105,113 @@ def send_task_notification(request, task_id):
     return send_mail(message, recipient, subject, recipients, headers, bcc)
 
 
-def send_scan_notification(request, scan_id):
-    scan = Scan.objects.get(id=scan_id)
-    state = SCAN_STATES.get_value(scan.state)
-    if AppSettings.setting_send_mail():
-        recipient = get_recipient(scan.username)
-    else:
-        recipient = "ttomecek@redhat.com"
+class MailGenerator(object):
+    def __init__(self, request, scan):
+        self.request = request
+        self.scan = scan
+        self.scan_state = SCAN_STATES.get_value(scan.state)
 
-    message = [
-        "Automatic scan of build %s submitted from Errata Tool has \
-finished." % (scan.nvr),
-        "",
-        "Scan state: %s" % state,
-        "Waiver URL: %s" % request.build_absolute_uri(
-            reverse('waiving/result', args=(scan.scanbinding.id, ))
-        ),
-    ]
-    message = "\n".join(message)
-    message += """\n
-There is a possibility that some of the issues might be false positives. So \
-please mark them accordingly:
+    def get_scans_url(self):
+        """Return complete URL to waiver of provided scan"""
+        return self.request.build_absolute_uri(
+            reverse('waiving/result', args=(self.scan.scanbinding.id, )))
+
+    def generate_failed_scan_text(self):
+        """return e-mail's message for failed scans"""
+        return """Scan of %(nvr)s failed.
+
+URL: %(url)s""" % {'url': self.get_scans_url(), 'nvr': self.scan.nvr}
+
+    def generate_general_text(self):
+        message = [
+            "%(firstline)s",
+            "",
+            "Scan state: %s" % self.scan_state,
+            "Waiver URL: %s" % self.get_scans_url(),
+            "Defects count: %d" % get_scans_new_defects_count(self.scan.id),
+            "",
+            "%(guide_message)s",
+        ]
+        message = "\n".join(message)
+        message += """
     Is a bug -- defect is true positive and you are going to fix it (with \
 next build)
     Fix later -- defect is true positive, but fix is postponed to next release
     Not a bug -- issue is false positive, so you are waiving it
 
 You can find documentation of covscan's workflow at \
-http://cov01.lab.eng.brq.redhat.com/covscan_documentation.html
+http://cov01.lab.eng.brq.redhat.com/covscan_documentation.html .
 
-If you have any questions, feel free to ask at #coverity or \
-coverity-users@redhat.com
+If you have any questions, feel free to ask at Red Hat IRC channel #coverity \
+or coverity-users@redhat.com .
 """
-    subject = "Scan of %s finished, state: %s" % (scan.nvr, state)
+        return message
+
+    def generate_rebase_scan_text(self):
+        return self.generate_general_text() % {
+            'firstline': "Automatic static analysis scan of build %s \
+submitted from Errata Tool has finished." % (self.scan.nvr),
+            'guide_message': "You've been doing rebase, this means that \
+number of newly added defects might be high and it would take too long to \
+check (and fix) them all. Please fix most serious ones and/or discuss the \
+results with upstream. Here is a description of states:"
+        }
+
+    def generate_regular_scan_text(self):
+        return self.generate_general_text() % {
+            'firstline': "Automatic static analysis scan of build %s \
+submitted from Errata Tool has finished." % (self.scan.nvr),
+            'guide_message': "There were found some issues by differential \
+scan. These were probably introduced by some patch and should be fixed right \
+away. There is a possibility that some of the issues might be false \
+positives, so please mark or waive the defect groups. Here is a description \
+of states:"
+        }
+
+    def generate_disputed_scan_text(self):
+        return self.generate_general_text() % {
+            'firstline': "Someone has disputed a scan of %s, which you \
+ownq. It means that one of the waivers was invalidated. If you have done \
+it, consider this e-mail as informational. If this was done by someone else, \
+please check the run." % (self.scan.nvr),
+            'guide_message': "Please, check the invalidated group of defects \
+and waive it. Here is a description of states:"
+        }
+
+
+def send_scan_notification(request, scan_id):
+    scan = Scan.objects.get(id=scan_id)
+    mg = MailGenerator(request, scan)
+
+    # recipient setting
+    if scan.is_failed():
+        recipient = "covscan-auto@redhat.com"
+    elif AppSettings.setting_send_mail():
+        recipient = get_recipient(scan.username)
+    else:
+        recipient = "ttomecek@redhat.com"
+
+    # message setting
+    if scan.is_failed():
+        message = mg.generate_failed_scan_text()
+    elif scan.is_disputed():
+        message = mg.generate_disputed_scan_text()
+    elif scan.is_rebase_scan():
+        # rebase should be after disputed, so 'disputing' e-mails are being
+        # sent for rebases
+        message = mg.generate_rebase_scan_text()
+    else:
+        message = mg.generate_regular_scan_text()
+
+    # subject setting
+    if scan.is_disputed():
+        subject = "[covscan] Scan of %s has been disputed" % (scan.nvr)
+    else:
+        subject = "[covscan] Scan of %s finished, state: %s" % (scan.nvr,
+                                                                mg.scan_state)
 
     headers = {
         "X-Scan-ID": scan.scanbinding.id,
-        "X-Scan-State": state,
+        "X-Scan-State": mg.scan_state,
     }
-
     return send_mail(message, recipient, subject, [recipient], headers=headers)

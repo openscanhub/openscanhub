@@ -16,6 +16,7 @@ import pycsdiff
 
 import django.utils.simplejson as json
 from django.core.exceptions import ObjectDoesNotExist
+from django.db.models import Sum
 
 from covscanhub.other.constants import ERROR_DIFF_FILE, FIXED_DIFF_FILE,\
     DEFAULT_CHECKER_GROUP
@@ -428,6 +429,17 @@ def display_in_result(rg):
 def waiver_condition(result_group):
     """placeholder for custom waiving conditions"""
     return bool(result_group.get_waivers())
+
+
+def get_scans_new_defects_count(scan_id):
+    """Return number of newly introduced bugs for particular scan"""
+    rgs = ResultGroup.objects.filter(result__scanbinding__scan__id=scan_id,
+                                     defect_type=DEFECT_STATES['NEW'])
+    try:
+        count = rgs.aggregate(Sum("defects_count"))['defects_count__sum']
+    except KeyError:
+        count = 0
+    return count
 
 
 """
