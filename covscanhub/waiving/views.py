@@ -287,6 +287,7 @@ def results_list(request):
 
 def waiver_post(request, sb, result_group_object, url_name, url_name_next,
                 active_tab, defects_list_class):
+    """adding new waiver/marking group as TP"""
     form = WaiverForm(request.POST)
     if form.is_valid():
         wl = WaivingLog()
@@ -316,6 +317,8 @@ def waiver_post(request, sb, result_group_object, url_name, url_name_next,
         wl.save()
 
         s = sb.scan
+        # set RG as waived when condition is met
+        # set run as waived if everything is okay
         if waiver_condition(result_group_object):
             result_group_object.state = RESULT_GROUP_STATES['WAIVED']
             result_group_object.save()
