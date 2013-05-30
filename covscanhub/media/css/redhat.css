@@ -157,7 +157,15 @@ label {
 }
 
 .bg_SCANNING {
-    background-color: #8888FF;
+    background-color: #AACCFF;
+}
+
+.bg_QUEUED {
+    background-color: #C8EEFF;
+}
+
+.bg_INIT {
+    background-color: #EAEAEA;
 }
 
 .bg_BASE_SCANNING {
