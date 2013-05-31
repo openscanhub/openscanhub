@@ -140,6 +140,10 @@ label {
     background-color: #AAFFAA;
 }
 
+.bg_BUG_CONFIRMED {
+    background-color: #FF7777;
+}
+
 .bg_PREVIOUSLY_WAIVED {
     background-color: #AAFFAA;
 }

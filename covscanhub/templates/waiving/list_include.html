@@ -28,7 +28,11 @@
     <td><a href="{% url waiving/result scanbinding.id %}">{{ scanbinding.id }}</a></td>
     <td>{{ scanbinding.scan.nvr }}</td>
     <td>{{ scanbinding.scan.base.nvr }}</td>
-    <td class="bg_{{ scanbinding.scan.get_state_display }} black_font bold_font" title="{{ scanbinding.result.display_title }}">{{ scanbinding.scan.get_state_display }}
+    {% if scanbinding.result.bugs_count > 0 and scanbinding.scan.get_state_display == "WAIVED" %}
+        <td class="bg_BUG_CONFIRMED black_font bold_font" title="{{ scanbinding.result.display_title }}">BUG_CONFIRMED
+    {% else %}
+        <td class="bg_{{ scanbinding.scan.get_state_display }} black_font bold_font" title="{{ scanbinding.result.display_title }}">{{ scanbinding.scan.get_state_display }}
+    {% endif %}
     {% if scanbinding.result.bugs_count %}
     <span class="bugs_count">{{ scanbinding.result.bugs_count }}</span>
     {% endif %}
