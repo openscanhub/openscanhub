@@ -53,7 +53,7 @@ def create_errata_diff_scan(request, kwargs):
     logger.info('[CREATE_SCAN] %s', kwargs)
     # either there is no need to check user or user has to have permission to
     # submit scans
-    if not AppSettings.setting_user_can_submit() or \
+    if AppSettings.setting_check_user_can_submit() and \
             not request.user.has_perm('scan.errata_xmlrpc_scan'):
         response = {}
         response['status'] = 'ERROR'
