@@ -289,21 +289,20 @@ def handle_scan(kwargs):
         etm.save()
 
         create_errata_scan(kwargs, etm)
-    except koji.GenericError, ex:
-        response['status'] = 'ERROR'
-        response['message'] = 'Requested build does not exist in brew: %s' % ex
-    except BrewException, ex:
+    except (koji.GenericError, BrewException,
+            PackageBlacklistedException, PackageNotEligibleException), ex:
         response['status'] = 'ERROR'
         response['message'] = '%s' % ex
-    except (PackageBlacklistedException, PackageNotEligibleException), ex:
-        response['status'] = 'ERROR'
-        response['message'] = '%s' % ex
+        etm.comment = unicode(ex)
     except RuntimeError, ex:
         response['status'] = 'ERROR'
-        response['message'] = 'Unable to submit the scan, error: %s' % ex
+        message = u'Unable to submit the scan, error: %s' % ex
+        response['message'] = message
+        etm.comment = message
     except Exception, ex:
         response['status'] = 'ERROR'
         response['message'] = '%s' % ex
+        etm.comment = unicode(ex)
     else:
         response['status'] = 'OK'
 
