@@ -33,51 +33,11 @@ from covscanhub.waiving.service import get_unwaived_rgs, get_last_waiver, \
 logger = logging.getLogger(__name__)
 
 
-def get_result_context(request, sb):
-    #logs = {}
-    #context = {}
-    package = sb.scan.package
-    release = sb.scan.tag.release
-    unrep_waivers = get_unreported_bugs(package, release)
-
+def get_common_context(request, sb):
+    """
+    Return common context data
+    """
     context = add_logs_to_context(sb)
-    context['bugzilla'] = get_or_none(Bugzilla,
-                                      package=package,
-                                      release=release)
-    if unrep_waivers:
-        context['unreported_bugs_count'] = unrep_waivers.count()
-    else:
-        context['unreported_bugs_count'] = 0
-
-    # numbers
-    if sb.result:
-        n_out, n_count = get_waiving_data(sb.result,
-                                          defect_type=DEFECT_STATES['NEW'])
-        new_defects = get_tupled_data(n_out)
-
-        f_out, f_count = get_waiving_data(sb.result,
-                                          defect_type=DEFECT_STATES['FIXED'])
-        fixed_defects = get_tupled_data(f_out)
-
-        o_out, o_count = get_waiving_data(sb.result,
-                                          defect_type=DEFECT_STATES['PREVIOUSLY_WAIVED'])
-        old_defects = get_tupled_data(o_out)
-        context['output_new'] = new_defects
-        context['output_fixed'] = fixed_defects
-        context['output_old'] = old_defects
-
-        # number of active groups in each tab
-        context['new_count'] = n_count
-        context['fixed_count'] = f_count
-        context['old_count'] = o_count
-    elif sb.scan.state == SCAN_STATES['FAILED']:
-        context['not_finished'] = "Scan failed. Please contact administrator."
-    elif sb.scan.state == SCAN_STATES['CANCELED']:
-        context['not_finished'] = "Scan is canceled (is superseded by newer one)."
-    else:
-        context['not_finished'] = "Scan not complete."
-    context['sb'] = sb
-
     # title
     if sb.scan.base:
         context['compare_title'] = get_compare_title(
@@ -91,10 +51,62 @@ def get_result_context(request, sb):
     else:
         context['compare_title'] = sb.scan.nvr
         context['title'] = sb.scan.nvr
-
+    # link to ET
+    mappings = sb.etmapping_set.all()
+    if mappings:
+        context['advisory_link'] = sb.etmapping_set.all()[0].advisory_id
     if 'status_message' in request.session:
         context['status_message'] = request.session.pop('status_message')
 
+    return context
+
+
+def get_result_context(request, sb):
+    """
+    Get all the common data for waiver
+    """
+    context = get_common_context(request, sb)
+    package = sb.scan.package
+    release = sb.scan.tag.release
+
+    unrep_waivers = get_unreported_bugs(package, release)
+    context['bugzilla'] = get_or_none(Bugzilla,
+                                      package=package,
+                                      release=release)
+    if unrep_waivers:
+        context['unreported_bugs_count'] = unrep_waivers.count()
+    else:
+        context['unreported_bugs_count'] = 0
+    # numbers
+    if sb.result:
+        n_out, n_count = get_waiving_data(sb.result,
+                                          defect_type=DEFECT_STATES['NEW'])
+        new_defects = get_tupled_data(n_out)
+
+        f_out, f_count = get_waiving_data(sb.result,
+                                          defect_type=DEFECT_STATES['FIXED'])
+        fixed_defects = get_tupled_data(f_out)
+
+        o_out, o_count = get_waiving_data(
+            sb.result,
+            defect_type=DEFECT_STATES['PREVIOUSLY_WAIVED'])
+        old_defects = get_tupled_data(o_out)
+        context['output_new'] = new_defects
+        context['output_fixed'] = fixed_defects
+        context['output_old'] = old_defects
+
+        # number of active groups in each tab
+        context['new_count'] = n_count
+        context['fixed_count'] = f_count
+        context['old_count'] = o_count
+    elif sb.scan.state == SCAN_STATES['FAILED']:
+        context['not_finished'] = "Scan failed. Please contact administrator."
+    elif sb.scan.state == SCAN_STATES['CANCELED']:
+        context['not_finished'] = "Scan is canceled (is superseded by newer \
+one)."
+    else:
+        context['not_finished'] = "Scan not complete."
+    context['sb'] = sb
     # links for other runs
     context['first_sb'] = sb.scan.get_first_scan_binding()
     context['newest_sb'] = \
@@ -108,11 +120,6 @@ def get_result_context(request, sb):
     else:
         context['scan_order'] = ids.index(sb.scan.id) + 1
     context['scans_count'] = sb.scan.all_scans_in_release().count()
-
-    # link to ET
-    mappings = sb.etmapping_set.all()
-    if mappings:
-        context['advisory_link'] = sb.etmapping_set.all()[0].advisory_id
 
     return context
 
@@ -544,13 +551,17 @@ def etmapping_latest(request, etmapping_id):
         "covscanhub.waiving.views.etmapping_latest",
         name="waiving/etmapping_id"),
 
-    Display latest result for et_internal_covscan_id
+    Display latest result for etm_id
     """
-    context = get_result_context(
-        request,
-        ETMapping.objects.get(id=etmapping_id).latest_run
-    )
-    context['new_selected'] = "selected"
+    etm = ETMapping.objects.get(id=etmapping_id)
+    if etm.latest_run:
+        context = get_result_context(
+            request,
+            etm.latest_run,
+        )
+        context['new_selected'] = "selected"
+    else:
+        context = {'not_finished': etm.comment}
     return render_to_response(
         "waiving/result.html",
         context,

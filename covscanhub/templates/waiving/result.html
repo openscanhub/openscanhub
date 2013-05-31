@@ -15,9 +15,10 @@
         <a id="bz_update" class="btn margin_right" href="{% url waiving/update_bz sb.scan.package.id sb.scan.tag.release.id %}">Update Bugzilla ({{ unreported_bugs_count }})</a>
         {% endif %}
     {% endif %}
-
-    <span id="scan_release" class="info_box black_font light_grey_bg margin_right">{{ sb.scan.tag.release.product }} release {{ sb.scan.tag.release.release }}</span>
-    <span id="scan_state" class="info_box black_font bg_{{ sb.scan.get_state_display }} margin_right">{{ sb.scan.get_state_display }}</span>
+    {% if sb %}
+        <span id="scan_release" class="info_box black_font light_grey_bg margin_right">{{ sb.scan.tag.release.product }} release {{ sb.scan.tag.release.release }}</span>
+        <span id="scan_state" class="info_box black_font bg_{{ sb.scan.get_state_display }} margin_right">{{ sb.scan.get_state_display }}</span>
+    {% endif %}
     {% if advisory_link %}
         <a id="advisory_link" class="btn margin_right" href="https://errata.devel.redhat.com/advisory/{{ advisory_link }}/test_run/covscan">Erratum</a>
     {% endif %}
