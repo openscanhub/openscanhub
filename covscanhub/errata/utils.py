@@ -2,11 +2,9 @@
 
 import re
 import yum
-import brew
 import koji
 import logging
 
-#from pprint import pprint
 from kobo.rpmlib import parse_nvr
 from kobo.hub.models import Task, TASK_STATES
 
@@ -25,9 +23,9 @@ __all__ = (
 logger = logging.getLogger(__name__)
 
 try:
-    s = brew.ClientSession(settings.BREW_HUB)
-except ImportError:
-    s = brew.ClientSession("http://brewhub.devel.redhat.com/brewhub")
+    s = koji.ClientSession(settings.BREW_HUB)
+except (ImportError, NameError):
+    s = koji.ClientSession("http://brewhub.devel.redhat.com/brewhub")
 
 
 def _spawn_scan_task(d):
@@ -136,7 +134,7 @@ def depend_on_brew(valid_rpms, dependency):
         return dep_name.startswith(dependency)
     for rpm in valid_rpms:
         # get requires from brew, second arg is dependency type
-        requires = s.getRPMDeps(valid_rpms[0]['id'], brew.DEP_REQUIRE)
+        requires = s.getRPMDeps(valid_rpms[0]['id'], koji.DEP_REQUIRE)
         if filter(check_if_dep_match, requires):
             logger.info("depend_on_brew, %s depends on %s",
                         rpm['name'], dependency)
@@ -214,10 +212,7 @@ def depend_on(nvr, dependency, mock_profile):
 
 def get_build_tuple(nvr):
 
-    try:
-        s = brew.ClientSession(settings.BREW_HUB)
-    except ImportError:
-        s = brew.ClientSession("http://brewhub.devel.redhat.com/brewhub")
+    global s
 
     build = s.getBuild(nvr)
     task = s.getTaskInfo(build['task_id'], request=True)
@@ -281,14 +276,15 @@ def get_overrides(nvr):
 
 
 def test_depend_on():
-    #assert(depend_on('aspell-0.60.3-13', 'libc.so', 'rhel-5-x86_64'))
-    #assert(depend_on('redhat-release-5Server-5.10.0.2', 'libc.so', 'rhel-5-x86_64') == False)
+    assert(depend_on('aspell-0.60.3-13', 'libc.so', 'rhel-5-x86_64'))
+    assert(depend_on('redhat-release-5Server-5.10.0.2', 'libc.so', 'rhel-5-x86_64') == False)
     assert(depend_on('mysql55-mysql-5.5.31-9.el5', 'libc.so', 'rhel-5-x86_64'))
-    #assert(depend_on('openldap-2.4.23-33.el6', 'libc.so', 'rhel-6-x86_64'))
-    #assert(depend_on('wget-1.11.4-4.el6', 'libc.so', 'rhel-6-x86_64'))
-    #assert(depend_on('hardlink-1.0-9.el6', 'libc.so', 'rhel-6-x86_64'))
-    #assert(depend_on('coreutils-8.4-5.el6', 'libc.so', 'rhel-6-x86_64'))
-    #assert(depend_on('libssh2-1.4.2-1.el6', 'libc.so', 'rhel-6-x86_64'))
+    assert(depend_on('mysql55-1-12.el5', 'libc.so', 'rhel-5-x86_64'))
+    assert(depend_on('openldap-2.4.23-33.el6', 'libc.so', 'rhel-6-x86_64'))
+    assert(depend_on('wget-1.11.4-4.el6', 'libc.so', 'rhel-6-x86_64'))
+    assert(depend_on('hardlink-1.0-9.el6', 'libc.so', 'rhel-6-x86_64'))
+    assert(depend_on('coreutils-8.4-5.el6', 'libc.so', 'rhel-6-x86_64'))
+    assert(depend_on('libssh2-1.4.2-1.el6', 'libc.so', 'rhel-6-x86_64'))
 
 if __name__ == '__main__':
     test_depend_on()
