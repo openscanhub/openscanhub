@@ -544,6 +544,7 @@ class ETMapping(models.Model):
     et_scan_id = models.CharField(max_length=16, blank=False, null=False)
     # self.id is covscan_internal_target_run_id (formerly scanbinding.id)
     latest_run = models.ForeignKey(ScanBinding, null=True, blank=True)
+    comment = models.CharField(max_length=256, default="")
 
     def __unicode__(self):
         return u"#%d Advisory: %s %s" % (self.id, self.advisory_id,
