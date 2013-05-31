@@ -8,10 +8,9 @@ from kobo.hub.models import Task
 
 from covscanhub.scan.service import extract_logs_from_tarball, \
     prepare_and_execute_diff
-from covscanhub.scan.notify import send_task_notification, \
-    send_scan_notification
+from covscanhub.scan.notify import send_task_notification
 from covscanhub.scan.xmlrpc_helper import finish_scan as h_finish_scan,\
-    fail_scan as h_fail_scan
+    fail_scan as h_fail_scan, scan_notification_email
 from covscanhub.scan.models import SCAN_STATES, Scan, TaskExtension
 
 from django.core.exceptions import ObjectDoesNotExist
@@ -69,14 +68,7 @@ def get_additional_arguments(request, task_id):
 
 @validate_worker
 def email_scan_notification(request, scan_id):
-    scan = Scan.objects.get(id=scan_id)
-    logger.info("Send e-mail for scan scan %s", scan)
-    if scan.is_errata_scan():
-        # TODO: handle this better
-        if scan.state not in (SCAN_STATES['FAILED'],
-                              SCAN_STATES['CANCELED'],
-                              SCAN_STATES['PASSED'],):
-            return send_scan_notification(request, scan_id)
+    scan_notification_email(request, scan_id)
 
 
 @validate_worker

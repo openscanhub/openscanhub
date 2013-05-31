@@ -2,6 +2,7 @@
 
 """these functions are exported via XML-RPC"""
 
+import logging
 
 from kobo.client.constants import TASK_STATES
 from kobo.hub.models import Task
@@ -11,6 +12,9 @@ from covscanhub.scan.service import prepare_and_execute_diff, \
     get_latest_binding
 from covscanhub.waiving.service import create_results, get_unwaived_rgs
 from covscanhub.scan.models import SCAN_STATES, Scan, ScanBinding
+from covscanhub.scan.notify import send_scan_notification
+
+logger = logging.getLogger(__name__)
 
 
 def finish_scan(scan_id, task_id):
@@ -89,3 +93,12 @@ def cancel_scan(scan_id):
     else:
         cancel_scan(binding.task.parent.scanbinding.scan.id)
     return binding.scan
+
+
+def scan_notification_email(request, scan_id):
+    scan = Scan.objects.get(id=scan_id)
+    logger.info("Send e-mail for scan scan %s", scan)
+    if scan.is_errata_scan():
+        if scan.state not in (SCAN_STATES['CANCELED'],
+                              SCAN_STATES['PASSED'],):
+            return send_scan_notification(request, scan_id)
