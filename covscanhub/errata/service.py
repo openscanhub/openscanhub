@@ -1,12 +1,16 @@
 # -*- coding: utf-8 -*-
 
 import re
+import koji
 import logging
+
 from covscanhub.errata.utils import depend_on, spawn_scan_task, _spawn_scan_task
 from django.conf import settings
 from kobo.rpmlib import parse_nvr
 #from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 
+from covscanhub.other.exceptions import BrewException, \
+    PackageBlacklistedException, PackageNotEligibleException
 from covscanhub.scan.models import Scan, SCAN_STATES, SCAN_TYPES, Package, \
     ScanBinding, MockConfig, ReleaseMapping, ETMapping, \
     SCAN_STATES_IN_PROGRESS, AppSettings, SCAN_TYPES_TARGET
@@ -120,10 +124,11 @@ def check_package_eligibility(package, nvr, created, mock_profile):
         package.save()
 
     if not created and package.blocked:
-        raise RuntimeError('Package %s is blacklisted' % (package.name))
+        raise PackageBlacklistedException('Package %s is blacklisted' %
+                                          (package.name))
     elif not package.eligible:
-        raise RuntimeError('Package %s is not eligible for scanning' %
-                           (package.name))
+        raise PackageNotEligibleException(
+            'Package %s is not eligible for scanning' % (package.name))
 
 
 def assign_mock_config(dist_tag):
@@ -163,7 +168,7 @@ def return_or_raise(key, data):
 submission!" % (key, data))
 
 
-def create_errata_scan(kwargs):
+def create_errata_scan(kwargs, etm):
     """
     create scan of a package and perform diff on results against specified
      version
@@ -218,13 +223,6 @@ def create_errata_scan(kwargs):
                               created, options['mock_config'])
     d['package'] = package
 
-    etm = ETMapping()
-    # ET internal id for the scan record in ET
-    etm.et_scan_id = return_or_raise('id', kwargs)
-    # ET internal id of the advisory that the build is part of
-    etm.advisory_id = return_or_raise('errata_id', kwargs)
-    etm.save()
-
     ## one of RHEL-6.2.0, RHEL-6.2.z, etc.
     #rhel_version = return_or_raise('rhel_version', kwargs)
 
@@ -273,7 +271,46 @@ def create_errata_scan(kwargs):
 
     scan.set_state(SCAN_STATES['QUEUED'])
 
-    return etm
+
+def handle_scan(kwargs):
+    """
+    Create ET diff scan, handle all possible failures, return dict with
+    response, so it can be passed to ET
+    """
+    response = {}
+
+    etm = ETMapping()
+
+    try:
+        # ET internal id for the scan record in ET
+        etm.et_scan_id = return_or_raise('id', kwargs)
+        # ET internal id of the advisory that the build is part of
+        etm.advisory_id = return_or_raise('errata_id', kwargs)
+        etm.save()
+
+        create_errata_scan(kwargs, etm)
+    except koji.GenericError, ex:
+        response['status'] = 'ERROR'
+        response['message'] = 'Requested build does not exist in brew: %s' % ex
+    except BrewException, ex:
+        response['status'] = 'ERROR'
+        response['message'] = '%s' % ex
+    except (PackageBlacklistedException, PackageNotEligibleException), ex:
+        response['status'] = 'ERROR'
+        response['message'] = '%s' % ex
+    except RuntimeError, ex:
+        response['status'] = 'ERROR'
+        response['message'] = 'Unable to submit the scan, error: %s' % ex
+    except Exception, ex:
+        response['status'] = 'ERROR'
+        response['message'] = '%s' % ex
+    else:
+        response['status'] = 'OK'
+
+    if etm.id:
+        response['id'] = etm.id
+
+    return response
 
 
 def rescan(scan, user):

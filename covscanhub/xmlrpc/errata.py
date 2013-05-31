@@ -1,11 +1,9 @@
 # -*- coding: utf-8 -*-
 
-import brew
 import logging
 
-from covscanhub.errata.service import create_errata_scan
-from covscanhub.other.exceptions import BrewException
-from covscanhub.scan.models import SCAN_TYPES, SCAN_STATES, ETMapping, \
+from covscanhub.errata.service import handle_scan
+from covscanhub.scan.models import SCAN_STATES, ETMapping, \
     AppSettings
 
 from kobo.django.xmlrpc.decorators import login_required
@@ -70,24 +68,8 @@ function.'
 
     kwargs['task_user'] = request.user.username
 
-    response = {}
-    try:
-        etm = create_errata_scan(kwargs)
-    except brew.GenericError, ex:
-        response['status'] = 'ERROR'
-        response['message'] = 'Requested build does not exist in brew: %s' % ex
-    except BrewException, ex:
-        response['status'] = 'ERROR'
-        response['message'] = '%s' % ex
-    except RuntimeError, ex:
-        response['status'] = 'ERROR'
-        response['message'] = 'Unable to submit the scan, error: %s' % ex
-    except Exception, ex:
-        response['status'] = 'ERROR'
-        response['message'] = '%s' % ex
-    else:
-        response['id'] = etm.id
-        response['status'] = 'OK'
+    response = handle_scan(kwargs)
+
     logger.info('[CREATE_SCAN] => %s', response)
     return response
 
