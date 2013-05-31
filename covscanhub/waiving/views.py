@@ -48,6 +48,7 @@ def get_result_context(request, sb):
     else:
         context['unreported_bugs_count'] = 0
 
+    # numbers
     if sb.result:
         n_out, n_count = get_waiving_data(sb.result,
                                           defect_type=DEFECT_STATES['NEW'])
@@ -75,6 +76,8 @@ def get_result_context(request, sb):
     else:
         context['not_finished'] = "Scan not complete."
     context['sb'] = sb
+
+    # title
     if sb.scan.base:
         context['compare_title'] = get_compare_title(
             sb.scan.nvr,
@@ -104,6 +107,11 @@ def get_result_context(request, sb):
     else:
         context['scan_order'] = ids.index(sb.scan.id) + 1
     context['scans_count'] = sb.scan.all_scans_in_release().count()
+
+    # link to ET
+    mappings = sb.etmapping_set.all()
+    if mappings:
+        context['advisory_link'] = sb.etmapping_set.all()[0].advisory_id
 
     return context
 

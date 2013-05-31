@@ -212,7 +212,7 @@ label {
     color: #333333;
     cursor: pointer;
     /*display: inline-block;*/
-    font-size: 13px;
+    font-size: 11pt;
     line-height: 18px;
     margin-bottom: 0;
     padding: 4px 10px;
@@ -230,19 +230,7 @@ label {
     transition: background-position 0.1s linear 0s;
 }
 
-/*bugzilla*/
-
-#box_wrapper a:link, #box_wrapper a:visited {
-    background-color: #EEE;
-}
-
-#box_wrapper a:hover {
-    background-color: #CCC;
-}
-
-#bz_number, #bz_update {
-    background-color: #EEE;
-}
+/*BOXES*/
 
 /*
 #bz_bugs_count {
