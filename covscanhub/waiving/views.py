@@ -17,6 +17,7 @@ from covscanhub.scan.models import SCAN_STATES, ScanBinding, Package,\
     SystemRelease, ETMapping, Scan, SCAN_TYPES_TARGET
 from covscanhub.scan.compare import get_compare_title
 from covscanhub.scan.service import get_latest_sb_by_package
+from covscanhub.scan.xmlrpc_helper import scan_notification_email
 
 from covscanhub.other.shortcuts import get_or_none
 from covscanhub.other.constants import *
@@ -426,6 +427,7 @@ def remove_waiver(request, waiver_id):
         ResultGroup.objects.filter(id=waiver.result_group.id).update(
             state=RESULT_GROUP_STATES['NEEDS_INSPECTION'])
         sb.scan.set_state(SCAN_STATES['DISPUTED'])
+        scan_notification_email(request, sb.scan.id)
     request.session['status_message'] = \
         "Waiver (%s) invalidated." % (
         waiver.message[:50].rstrip() + '... ' if len(waiver.message) > 50
