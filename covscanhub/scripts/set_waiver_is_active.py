@@ -17,5 +17,5 @@ for rh in ResultGroup.objects.filter(defect_type=DEFECT_STATES['NEW']):
     wvrs = Waiver.objects.filter(result_group=rh, is_deleted=False)
     if wvrs:
         latest_waiver = wvrs.latest()
-        latest_waiver.is_enabled = True
+        latest_waiver.is_active = True
         latest_waiver.save()
