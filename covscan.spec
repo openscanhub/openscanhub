@@ -7,7 +7,7 @@
 
 Name:           covscan
 Version:        0.3.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Commercial
 Summary:        Coverity scan scheduler
 Group:          Applications/Engineering
@@ -155,6 +155,10 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Thu May 23 2013 Tomas Tomecek <ttomecek@redhat.com> - 0.3.2-2
+- New release of hub, bugfixes and RFEs
+- Getting ready for 6.5 scanning
+
 * Thu May 23 2013 Tomas Tomecek <ttomecek@redhat.com> - 0.3.2-1
 - Update to version 0.3.2
 
