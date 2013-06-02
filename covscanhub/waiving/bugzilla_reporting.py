@@ -86,9 +86,6 @@ Package was scanned as differential scan:
 == Reported groups of defects ==
 %(groups)s
 == Notes ==
-You may find issues that you marked as bugs bellow. These records contain \
-date, message and link to actual waiver.
-
 If you have any questions, feel free to ask at Red Hat IRC channel \
 #coverity or coverity-users@redhat.com .
 
