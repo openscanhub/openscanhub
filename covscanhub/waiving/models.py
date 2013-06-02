@@ -120,7 +120,8 @@ class Result(models.Model):
     def bugs_count(self):
         return self.resultgroup_set.filter(
             waiver__is_active=True,
-            state__in=[WAIVER_TYPES['IS_A_BUG'], WAIVER_TYPES['FIX_LATER']]
+            waiver__state__in=[WAIVER_TYPES['IS_A_BUG'],
+                               WAIVER_TYPES['FIX_LATER']]
         ).count()
 
     def __unicode__(self):
