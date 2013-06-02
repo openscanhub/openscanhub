@@ -294,15 +294,18 @@ def handle_scan(kwargs):
         response['status'] = 'ERROR'
         response['message'] = '%s' % ex
         etm.comment = unicode(ex)
+        etm.save()
     except RuntimeError, ex:
         response['status'] = 'ERROR'
         message = u'Unable to submit the scan, error: %s' % ex
         response['message'] = message
         etm.comment = message
+        etm.save()
     except Exception, ex:
         response['status'] = 'ERROR'
         response['message'] = '%s' % ex
         etm.comment = unicode(ex)
+        etm.save()
     else:
         response['status'] = 'OK'
 
