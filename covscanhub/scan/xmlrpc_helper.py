@@ -43,7 +43,8 @@ def finish_scan(scan_id, task_id):
         if scan.is_errata_scan():
             # if there are no missing waivers = there are some newly added
             # unwaived defects
-            if scan.is_newpkg_scan() or not get_unwaived_rgs(result):
+            if not get_unwaived_rgs(result):
+                # set newpkg scan to needs_insp too so e-mail will be sent
                 scan.set_state(SCAN_STATES['PASSED'])
             else:
                 scan.set_state(SCAN_STATES['NEEDS_INSPECTION'])
