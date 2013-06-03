@@ -553,7 +553,7 @@ def etmapping_latest(request, etmapping_id):
 
     Display latest result for etm_id
     """
-    etm = ETMapping.objects.get(id=etmapping_id)
+    etm = get_object_or_404(ETMapping, id=etmapping_id)
     if etm.latest_run:
         context = get_result_context(
             request,
@@ -577,11 +577,16 @@ def et_latest(request, et_id):
 
     Display latest result for et_internal_covscan_id
     """
-    context = get_result_context(
-        request,
-        ETMapping.objects.get(et_scan_id=et_id).latest_run
-    )
-    context['new_selected'] = "selected"
+    etm = get_object_or_404(ETMapping, et_scan_id=et_id)
+    if etm.latest_run:
+        context = get_result_context(
+            request,
+            etm.latest_run,
+        )
+        context['new_selected'] = "selected"
+    else:
+        context = {'not_finished': etm.comment}
+
     return render_to_response(
         "waiving/result.html",
         context,
