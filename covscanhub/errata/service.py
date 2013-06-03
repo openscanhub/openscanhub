@@ -124,11 +124,11 @@ def check_package_eligibility(package, nvr, created, mock_profile):
         package.save()
 
     if not created and package.blocked:
-        raise PackageBlacklistedException('Package %s is blacklisted' %
+        raise PackageBlacklistedException('Package %s is blacklisted.' %
                                           (package.name))
     elif not package.eligible:
         raise PackageNotEligibleException(
-            'Package %s is not eligible for scanning' % (package.name))
+            'Package %s is not eligible for scanning.' % (package.name))
 
 
 def assign_mock_config(dist_tag):
