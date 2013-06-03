@@ -13,7 +13,7 @@ from covscanhub.other.exceptions import BrewException, \
     PackageBlacklistedException, PackageNotEligibleException
 from covscanhub.scan.models import Scan, SCAN_STATES, SCAN_TYPES, Package, \
     ScanBinding, MockConfig, ReleaseMapping, ETMapping, \
-    SCAN_STATES_IN_PROGRESS, AppSettings, SCAN_TYPES_TARGET
+    SCAN_STATES_IN_PROGRESS, AppSettings, SCAN_TYPES_TARGET, REQUEST_STATES
 from covscanhub.scan.xmlrpc_helper import cancel_scan
 from covscanhub.other.shortcuts import check_brew_build, \
     check_and_create_dirs
@@ -278,6 +278,7 @@ def handle_scan(kwargs):
     response, so it can be passed to ET
     """
     response = {}
+    message = None
 
     etm = ETMapping()
 
@@ -289,26 +290,30 @@ def handle_scan(kwargs):
         etm.save()
 
         create_errata_scan(kwargs, etm)
-    except (koji.GenericError, BrewException,
-            PackageBlacklistedException, PackageNotEligibleException), ex:
-        response['status'] = 'ERROR'
-        response['message'] = '%s' % ex
-        etm.comment = unicode(ex)
-        etm.save()
+    except (PackageBlacklistedException, PackageNotEligibleException), ex:
+        status = 'INELIGIBLE'
+        message = unicode(ex)
     except RuntimeError, ex:
-        response['status'] = 'ERROR'
+        status = 'ERROR'
         message = u'Unable to submit the scan, error: %s' % ex
+    except Exception, ex:
+        status = 'ERROR'
+        message = unicode(ex)
+    else:
+        status = 'OK'
+
+    # set status in response dict + in DB
+    response['status'] = status
+    etm.state = REQUEST_STATES[status]
+    etm.save()
+
+    # if there were some error, add it to response & DB
+    if message:
         response['message'] = message
         etm.comment = message
         etm.save()
-    except Exception, ex:
-        response['status'] = 'ERROR'
-        response['message'] = '%s' % ex
-        etm.comment = unicode(ex)
-        etm.save()
-    else:
-        response['status'] = 'OK'
 
+    # this should evaluated as True _always_
     if etm.id:
         response['id'] = etm.id
 

@@ -93,6 +93,12 @@ SCAN_TYPES_TARGET = (
     SCAN_TYPES['NEWPKG'],
 )
 
+REQUEST_STATES = Enum(
+    EnumItem("OK", help_text="Ok"),
+    EnumItem("ERROR", help_text="An unexpected error happened"),
+    EnumItem("INELIGIBLE", help_text="Package is not eligible for scanning"),
+)
+
 
 class Permissions(models.Model):
     """
@@ -544,8 +550,12 @@ class ETMapping(models.Model):
     et_scan_id = models.CharField(max_length=16, blank=False, null=False)
     # self.id is covscan_internal_target_run_id (formerly scanbinding.id)
     latest_run = models.ForeignKey(ScanBinding, null=True, blank=True)
-    comment = models.CharField(max_length=256, default="")
-
+    comment = models.CharField(max_length=256, default="", blank=True)
+    state = models.PositiveIntegerField(
+        default=REQUEST_STATES['OK'],
+        choices=REQUEST_STATES.get_mapping(),
+        help_text="Status of request"
+    )
     def __unicode__(self):
         return u"#%d Advisory: %s %s" % (self.id, self.advisory_id,
                                          self.latest_run)

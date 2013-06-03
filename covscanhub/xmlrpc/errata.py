@@ -4,7 +4,7 @@ import logging
 
 from covscanhub.errata.service import handle_scan
 from covscanhub.scan.models import SCAN_STATES, ETMapping, \
-    AppSettings
+    AppSettings, REQUEST_STATES
 
 from kobo.django.xmlrpc.decorators import login_required
 
@@ -38,7 +38,7 @@ def create_errata_diff_scan(request, kwargs):
     @type kwargs: dictionary
     @rtype: dictionary
     @return:
-     - status: status message: { 'OK', 'ERROR' }
+     - status: status message: { 'OK', 'ERROR', 'INELIGIBLE' }
      - message: in case of error, here is detailed message
      - id: ID of mapping between ET_IDs and covscan IDs. This may be used to
        access waiver upon scan creation (you may use both URLs, same content
@@ -85,12 +85,15 @@ def get_scan_state(request, etm_id):
 
     @rtype: dictionary
     @return:
-     - status: status message: { 'OK', 'ERROR' }
+     - status: status message: { 'OK', 'ERROR', 'INELIGIBLE' }
      - message: in case of error, here is detailed message
      - state: state of scan. It can be one of following values (description
          can be found in etherpad in part "Requirements"):
        {'QUEUED', 'SCANNING', 'NEEDS_INSPECTION', 'WAIVED', 'PASSED',
-        'FAILED', 'BASE_SCANNING', 'CANCELED'}
+        'FAILED', 'BASE_SCANNING', 'CANCELED', 'DISPUTED'}
+
+    More info can be found here:
+        http://etherpad.corp.redhat.com/Covscan-ErrataTool-Integration
     """
     logger.info('[SCAN_STATE] %s', etm_id)
     response = {}
@@ -103,8 +106,13 @@ def get_scan_state(request, etm_id):
         response['status'] = 'ERROR'
         response['message'] = "Unable to retrieve scan's state, error: %s" % ex
     else:
-        state = SCAN_STATES.get_value(etm.latest_run.scan.state)
-        response['state'] = state
-        response['status'] = 'OK'
+        message = getattr(etm, 'message', '')
+        if message:
+            response['message'] = message
+        status_number = getattr(etm, 'state', REQUEST_STATES.get_num("OK"))
+        response['status'] = REQUEST_STATES.get_value(status_number)
+        if etm.latest_run:
+            response['state'] = SCAN_STATES.get_value(
+                etm.latest_run.scan.state)
     logger.info('[SCAN_STATE] => %s', response)
     return response
