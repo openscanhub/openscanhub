@@ -11,12 +11,12 @@ if PROJECT_DIR not in sys.path:
 
 os.environ['DJANGO_SETTINGS_MODULE'] = 'covscanhub.settings'
 
-from covscanhub.waiving.models import ETMapping, REQUEST_STATES
+from covscanhub.scan.models import ETMapping, REQUEST_STATES
 
 for etm in ETMapping.objects.all():
     if etm.latest_run:
-        etm.state = REQUEST_STATES.get_value("OK")
+        etm.state = REQUEST_STATES["OK"]
         etm.save()
     else:
-        etm.state = REQUEST_STATES.get_value("INELIGIBLE")
+        etm.state = REQUEST_STATES["INELIGIBLE"]
         etm.save()
