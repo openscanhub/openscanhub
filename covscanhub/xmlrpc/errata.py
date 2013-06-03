@@ -106,7 +106,7 @@ def get_scan_state(request, etm_id):
         response['status'] = 'ERROR'
         response['message'] = "Unable to retrieve scan's state, error: %s" % ex
     else:
-        message = getattr(etm, 'message', '')
+        message = getattr(etm, 'comment', '')
         if message:
             response['message'] = message
         status_number = getattr(etm, 'state', REQUEST_STATES.get_num("OK"))
