@@ -25,6 +25,7 @@ def finish_scan(request, scan_id, task_id):
     if sb.task.state == TASK_STATES['FAILED'] or \
             sb.task.state == TASK_STATES['CANCELED']:
         fail_scan(scan_id, "Task failed.")
+        send_scan_notification(request, scan_id)
         return
     else:
         if not scan.is_newpkg_scan() and scan.is_errata_scan() and scan.base:
