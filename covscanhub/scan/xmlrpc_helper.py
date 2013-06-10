@@ -93,7 +93,8 @@ def cancel_scan(scan_id):
         )
         binding.scan.enable_last_successfull()
     else:
-        cancel_scan(binding.task.parent.scanbinding.scan.id)
+        if binding.task.parent:
+            cancel_scan(binding.task.parent.scanbinding.scan.id)
     return binding.scan
 
 
