@@ -287,4 +287,5 @@ def test_depend_on():
     assert(depend_on('libssh2-1.4.2-1.el6', 'libc.so', 'rhel-6-x86_64'))
 
 if __name__ == '__main__':
-    test_depend_on()
+    print depend_on('hypervkvpd-0-0.10.el6', 'libc.so', 'rhel-6-x86_64')
+    #test_depend_on()
