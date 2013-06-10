@@ -73,7 +73,7 @@ def email_scan_notification(request, scan_id):
 
 @validate_worker
 def finish_scan(request, scan_id, task_id):
-    h_finish_scan(scan_id, task_id)
+    h_finish_scan(request, scan_id, task_id)
 
 
 @validate_worker

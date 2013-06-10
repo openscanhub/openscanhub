@@ -17,7 +17,7 @@ from covscanhub.scan.notify import send_scan_notification
 logger = logging.getLogger(__name__)
 
 
-def finish_scan(scan_id, task_id):
+def finish_scan(request, scan_id, task_id):
     """analysis ended, so process results"""
     sb = ScanBinding.objects.get(scan=scan_id, task=task_id)
     scan = sb.scan
