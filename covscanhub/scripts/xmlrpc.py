@@ -198,8 +198,8 @@ def create_et_scan(client, base, target):
 
     p = random.randint(1, 100000)
     p2 = random.randint(1, 100000)
-    p = 9999999
-    p2 = 15004
+    p = 239
+    p2 = 15028
     try:
         scan_args = {
             'package_owner': 'ttomecek',
