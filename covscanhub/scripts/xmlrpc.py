@@ -62,6 +62,14 @@ def set_options():
     parser.add_option("--info", help="get task's info",
                       action="store", type="int", dest="task_info")
 
+    parser.add_option("--et-scan-id", action="store", type="string",
+                      dest="et_id",
+                      help="database ID of run in ET")
+
+    parser.add_option("--advisory-id", action="store", type="string",
+                      dest="advisory_id",
+                      help="ID of advisory")
+
     (options, args) = parser.parse_args()
 
     return parser, options, args
@@ -187,7 +195,7 @@ KRB_REALM (current value: %s)." % realm
     return base64.encodestring(req)
 
 
-def create_et_scan(client, base, target):
+def create_et_scan(client, base, target, advisory_id, et_id):
     """
     Connect to RPC server, login and execute some method
     """
@@ -196,17 +204,16 @@ def create_et_scan(client, base, target):
     #if '127.0.0.1' in RPC_URL or 'localhost' in RPC_URL:
     #    client.auth.login_password('ttomecek', 'tatry')
 
-    p = random.randint(1, 100000)
-    p2 = random.randint(1, 100000)
-    p = 239
-    p2 = 15028
+    #p = random.randint(1, 100000)
+    #p2 = random.randint(1, 100000)
+
     try:
         scan_args = {
             'package_owner': 'ttomecek',
             'base': base,
             'target': target,
-            'id': str(p),
-            'errata_id': str(p2),
+            'id': et_id,
+            'errata_id': advisory_id,
             'rhel_version': "RHEL-6.5.0",
             'release': 'RHEL-6.5.0',
         }
@@ -279,7 +286,8 @@ if __name__ == '__main__':
     elif options.messaging:
         call_send_message(client)
     elif options.base and options.target:
-        create_et_scan(client, options.base, options.target)
+        create_et_scan(client, options.base, options.target,
+                       options.advisory_id, options.et_id)
     elif options.file and options.tag_name:
         client.auth.login_krbv(login(rpc_url))
         mass_prescan(client, options.file, parser, options.tag_name)
