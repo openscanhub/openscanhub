@@ -128,7 +128,7 @@ URL: %(url)s""" % {'url': self.get_scans_url(), 'nvr': self.scan.nvr}
             "",
             "Scan state: %s" % self.scan_state,
             "Waiver URL: %s" % self.get_scans_url(),
-            "Defects count: %d" % get_scans_new_defects_count(self.scan.id),
+            "New defects count: %d" % get_scans_new_defects_count(self.scan.id),
             "",
             "%(guide_message)s",
         ]
