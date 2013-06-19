@@ -110,16 +110,23 @@ def spawn_scan_task(d, target):
 
 
 def get_mocks_repo(mock_profile):
-    """return repo acoording to $(grep "baseurl" /etc/mock/`mock_profile`)"""
+    """
+    return repo acoording to $(grep "baseurl" /etc/mock/`mock_profile`)
+    if there is only one, return string, else return list of repos
+    """
     f = open('/etc/mock/%s.cfg' % mock_profile, 'r')
-    url = None
+    urls = []
+    pattern = re.compile(r'baseurl=([^\\\s]+)')
     with f:
         f.seek(0)
         for line in f:
-            m = re.search(r'baseurl=([^\\]+)', line)
-            if m:
-                url = m.group(1)
-    return url.strip()
+            for match in pattern.finditer(line):
+                if match.group(1):
+                    urls.append(match.group(1).strip())
+    if len(urls) == 1:
+        return urls[0]
+    else:
+        return urls
 
 
 def depend_on_brew(valid_rpms, dependency):
@@ -172,7 +179,16 @@ def depend_on(nvr, dependency, mock_profile):
         for repo in yb.repos.findRepos('*'):
             repo.disable()
             disabled_repos.append(repo)
-        mock_repo = yb.add_enable_repo(mock_profile, baseurls=[repo_url])
+        if isinstance(repo_url, list):
+            counter = 1
+            for url in repo_url:
+                yb.add_enable_repo(
+                    "%s_%d" % (mock_profile, counter),
+                    baseurls=[url]
+                )
+                counter += 1
+        elif isinstance(repo_url, basestring):
+            yb.add_enable_repo(mock_profile, baseurls=[repo_url])
         ## check if repo is okay; if not, use default repositories
         #try:
         #    mock_repo.check()
