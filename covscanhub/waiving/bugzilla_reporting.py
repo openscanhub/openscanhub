@@ -73,7 +73,8 @@ def create_bugzilla(request, package, release):
     """
     bz = bugzilla.Bugzilla(url=settings.BZ_URL,
                            user=settings.BZ_USER,
-                           password=settings.BZ_PSWD)
+                           password=settings.BZ_PSWD,
+                           cookiefile="/var/tmp/.bugzillacookies")
     waivers = get_unreported_bugs(package, release)
 
     comment = """
@@ -135,7 +136,8 @@ def update_bugzilla(request, package, release):
     """
     bz = bugzilla.Bugzilla(url=settings.BZ_URL,
                            user=settings.BZ_USER,
-                           password=settings.BZ_PSWD)
+                           password=settings.BZ_PSWD,
+                           cookiefile="/var/tmp/.bugzillacookies")
     db_bz = has_bugzilla(package, release)
     if db_bz:
         waivers = get_unreported_bugs(package, release)
