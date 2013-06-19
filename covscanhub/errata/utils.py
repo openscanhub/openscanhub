@@ -266,7 +266,12 @@ def test_depend_on():
     assert(depend_on('hardlink-1.0-9.el6', 'libc.so', 'rhel-6-x86_64'))
     assert(depend_on('coreutils-8.4-5.el6', 'libc.so', 'rhel-6-x86_64'))
     assert(depend_on('libssh2-1.4.2-1.el6', 'libc.so', 'rhel-6-x86_64'))
+def test_get_mock_repo():
+    print get_mocks_repo('rhel-6.5-x86_64')
+    print get_mocks_repo('fedora-18-x86_64')
+    print get_mocks_repo('rhel-7-x86_64')
 
 if __name__ == '__main__':
     print depend_on('hypervkvpd-0-0.10.el6', 'libc.so', 'rhel-6-x86_64')
     #test_depend_on()
+    test_depend_on()
