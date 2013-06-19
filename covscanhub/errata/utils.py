@@ -258,20 +258,26 @@ def retrieve_mock_for_build(nvr):
 
 def test_depend_on():
     assert(depend_on('aspell-0.60.3-13', 'libc.so', 'rhel-5-x86_64'))
-    assert(depend_on('redhat-release-5Server-5.10.0.2', 'libc.so', 'rhel-5-x86_64') == False)
-    assert(depend_on('mysql55-mysql-5.5.31-9.el5', 'libc.so', 'rhel-5-x86_64'))
-    assert(depend_on('mysql55-1-12.el5', 'libc.so', 'rhel-5-x86_64'))
+    assert(depend_on('redhat-release-5Server-5.10.0.2',
+                     'libc.so', 'rhel-5-x86_64') is False)
+    assert(depend_on('mysql55-mysql-5.5.31-9.el5',
+                     'libc.so', 'rhel-5-x86_64'))
+    assert(depend_on('mysql55-1-12.el5', 'libc.so', 'rhel-5-x86_64') is False)
     assert(depend_on('openldap-2.4.23-33.el6', 'libc.so', 'rhel-6-x86_64'))
     assert(depend_on('wget-1.11.4-4.el6', 'libc.so', 'rhel-6-x86_64'))
     assert(depend_on('hardlink-1.0-9.el6', 'libc.so', 'rhel-6-x86_64'))
     assert(depend_on('coreutils-8.4-5.el6', 'libc.so', 'rhel-6-x86_64'))
     assert(depend_on('libssh2-1.4.2-1.el6', 'libc.so', 'rhel-6-x86_64'))
+    assert(depend_on('hypervkvpd-0-0.10.el6', 'libc.so', 'rhel-6-x86_64'))
+    assert(depend_on('gnome-python2-desktop-2.28.0-5.el6',
+                     'libc.so', 'rhel-6-x86_64'))
+
+
 def test_get_mock_repo():
     print get_mocks_repo('rhel-6.5-x86_64')
     print get_mocks_repo('fedora-18-x86_64')
     print get_mocks_repo('rhel-7-x86_64')
 
 if __name__ == '__main__':
-    print depend_on('hypervkvpd-0-0.10.el6', 'libc.so', 'rhel-6-x86_64')
-    #test_depend_on()
     test_depend_on()
+    test_get_mock_repo()
