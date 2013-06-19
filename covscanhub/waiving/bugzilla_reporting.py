@@ -77,6 +77,11 @@ def create_bugzilla(request, package, release):
                            cookiefile="/var/tmp/.bugzillacookies")
     waivers = get_unreported_bugs(package, release)
 
+    if waivers[0].result_group.result.scanbinding.scan.base:
+        base = waivers[0].result_group.result.scanbinding.scan.base.nvr
+    else:
+        base = "NEW_PACKAGE"
+
     comment = """
 Coverity has found defect(s) in package %(package)s
 
@@ -94,7 +99,7 @@ If you have any questions, feel free to ask at Red Hat IRC channel \
 """ % {
         'package': package.name,
         'target': waivers[0].result_group.result.scanbinding.scan.nvr,
-        'base': waivers[0].result_group.result.scanbinding.scan.base.nvr,
+        'base': base,
         'groups': get_checker_groups(waivers),
     }
 
