@@ -395,6 +395,9 @@ def waiver(request, sb_id, result_group_id):
         form = WaiverForm()
         context['form'] = form
         context['display_form'] = True
+        context['waiver_type_helpers'] = \
+            [(WAIVER_TYPES.get_item_help_text(k), v) for k, v in
+                WAIVER_TYPES_HELP_TEXTS.iteritems()]
     else:
         context['display_form'] = False
         context['form_message'] = 'This is not the newest scan.'

@@ -31,6 +31,12 @@ WAIVER_TYPES = Enum(
     EnumItem("FIX_LATER", help_text="Fix later"),
 )
 
+WAIVER_TYPES_HELP_TEXTS = {
+    "NOT_A_BUG": "all defects in this group are false positives ",
+    "IS_A_BUG": "at least one defect in this group is a bug and should be fixed. Please, fix the defects and do a respin.",
+    "FIX_LATER": "there are defects in this group and will be fixed in future (in next release probably). Reporting them (or sending patches to) upstream is a good idea.",
+}
+
 WAIVER_LOG_ACTIONS = Enum(
     EnumItem("NEW", help_text="New waiver"),
     EnumItem("DELETE", help_text="Delete existing waiver"),

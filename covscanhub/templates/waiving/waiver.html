@@ -144,26 +144,39 @@
 
 {% if user.is_authenticated %}
 
-{% if display_form %}
-<form action=
-    {% if defects_list_class == "new" %}
-    "{% url waiving/waiver sb.id active_group.id %}"
-    {% else %}
-    "{% url waiving/previously_waived sb.id active_group.id %}"
+    {% if display_form %}
+
+<div id="form_wrapper">
+    <div id="form_inner_wrapper">
+        <form action=
+            {% if defects_list_class == "new" %}
+            "{% url waiving/waiver sb.id active_group.id %}"
+            {% else %}
+            "{% url waiving/previously_waived sb.id active_group.id %}"
+            {% endif %}
+         method="post">{% csrf_token %}
+        {{ form.as_p }}
+            <div id="form_buttons">
+                <input type="submit" value="Submit" name="submit" />
+                {% if defects_list_class == "new" %}
+                <input type="submit" value="Submit and show next" name="submit_next" />
+                {% endif %}
+            </div>
+        </form>
+        {% if waiver_type_helpers %}
+        <ul id="waiver_type_helper_texts">
+            {% for w_type, text in waiver_type_helpers %}
+            <li><em>{{ w_type }}</em><br />{{ text }}</li>
+            {% endfor %}
+        {% endif %}
+        </ul>
+    </div>
+</div>
+
+    {% else %}{% if form_message %}
+        <h3>{{ form_message }}</h3>
     {% endif %}
- method="post">{% csrf_token %}
-{{ form.as_p }}
-<input type="submit" value="Submit" name="submit" />
-
-{% if defects_list_class == "new" %}
-<input type="submit" value="Submit and show next" name="submit_next" />
-{% endif %}
-
-</form>
-{% else %}{% if form_message %}
-<h3>{{ form_message }}</h3>
-{% endif %}{% endif %}
-
+    {% endif %}{# display_form #}
 {% else %}
 
 <h3>You have to log in if you want to waive.</h3>

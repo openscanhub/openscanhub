@@ -12,6 +12,10 @@ label {
     vertical-align:top;
 }
 
+em {
+    font-weight: bold;
+}
+
 /*
  * INLINES *
            */
@@ -588,6 +592,59 @@ div.waiving_log span.change {
 
 .waiver {
     padding-top: 1.5em;
+}
+
+/* waiver form */
+
+#defects_container > #form_wrapper {
+    text-align: center;
+}
+
+#form_inner_wrapper {
+    /*display: inline-block;*/
+}
+
+#form_inner_wrapper textarea {
+    height: 110px;
+}
+
+#form_inner_wrapper label {
+    float: left;
+    font-weight: bold;
+    width: 120px;
+}
+
+#form_inner_wrapper select, #form_inner_wrapper textarea {
+    width: 350px;
+    -ms-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+}
+
+#form_buttons {
+    text-align: center;
+    background-color: #EEEEEE;
+    padding: 0.5em;
+}
+
+#form_inner_wrapper > form {
+    display: inline-block;
+    text-align: left;
+    border: 1px solid #8C8F91;
+    padding: 0 1em 1em;
+}
+
+#waiver_type_helper_texts {
+    display: inline-block;
+    padding: 1em 1em 1em 3em;
+    text-align: left;
+    vertical-align: top;
+    width: 400px;
+}
+
+#waiver_type_helper_texts li:not(:last-child) {
+    margin-bottom: 1em;
 }
 
 /* In document linking */
