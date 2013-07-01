@@ -61,6 +61,8 @@ def register_admin_module(module, exclude=None, new_fields=None):
     """
     @param module: module containing django.db.models classes
     @type module: str or __module__
+        If you are providing str, use absolute path
+
     @param exclude: list of classes to exclude from auto-register
     @type exclude: iterable of str or None
     @param new_fields: dictionary of additional fields:
