@@ -52,7 +52,7 @@ LOGGING = {
             'level': 'DEBUG',
             'class': 'logging.handlers.RotatingFileHandler',
             'formatter': 'verbose',
-            'filename': '/var/log/covscanhub.log',
+            'filename': '/var/tmp/covscanhub.log',
             'maxBytes': 10 * (1024 ** 2),  # 10 MB
             'backupCount': 14,
         },
