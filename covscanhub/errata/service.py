@@ -155,7 +155,7 @@ def get_tag(release):
         if tag:
             return tag
     logger.critical("Unable to assign proper product and release: %s", release)
-    raise RuntimeError("This package is not suitable for scanning.")
+    raise RuntimeError("Packages in this release are not being scanned.")
 
 
 def return_or_raise(key, data):
