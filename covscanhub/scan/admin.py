@@ -19,7 +19,8 @@ from django.contrib import admin
 from covscanhub.scan.models import Scan, ScanBinding, SCAN_STATES
 from covscanhub.other.admin import register_admin_module
 
-register_admin_module('covscanhub.scan.models', exclude=['Scan'])
+register_admin_module('covscanhub.scan.models', exclude=['Scan'],
+                      search_fields=[('Package', ['name'], ), ])
 register_admin_module('django.contrib.admin.models')
 register_admin_module('south.models')
 
@@ -36,6 +37,7 @@ class ScanAdmin(admin.ModelAdmin):
     list_display = ("id", "nvr", "state", "scan_type", 'link_base',
                     'link_parent', "link_tag",
                     'username', 'link_package', 'link_bind', 'enabled')
+    search_fields = ['package__name', 'nvr',]
 
     review_template = 'admin/my_test/myentry/review.html'
 
