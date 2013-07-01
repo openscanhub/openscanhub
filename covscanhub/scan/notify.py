@@ -171,7 +171,7 @@ of states:"
     def generate_disputed_scan_text(self):
         return self.generate_general_text() % {
             'firstline': "Someone has disputed a scan of %s, which you \
-ownq. It means that one of the waivers was invalidated. If you have done \
+own. It means that one of the waivers was invalidated. If you have done \
 it, consider this e-mail as informational. If this was done by someone else, \
 please check the run." % (self.scan.nvr),
             'guide_message': "Please, check the invalidated group of defects \
