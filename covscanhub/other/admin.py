@@ -6,6 +6,18 @@ admin.py
 Auto-register admin classes with fields and links to linked model classes
 
 based on http://djangosnippets.org/snippets/997/
+
+Sample:
+
+get_group_state = lambda self, instance: \
+    GROUP_STATES.get_value(instance.group_state)
+defect_states.short_description = 'Group state'
+
+register_admin_module('project.app.models', new_fields={
+    'Group': ('group_state_field', get_group_state),
+})
+
+
 """
 
 from django.core.urlresolvers import reverse
