@@ -569,7 +569,7 @@ class AppSettings(models.Model):
     SEND_BUS_MESSAGE { Y, N }
     CHECK_USER_CAN_SUBMIT_SCAN { Y, N }
     WAIVER_IS_OVERDUE pickled datetime.delta
-    WAIVER_IS_OVERDUE_RELSPEC release specific ^^
+    WAIVER_IS_OVERDUE_RELSPEC release specific ^
     ACTUAL_SCANNER tuple('coverity', '6.5.0')
     """
     key = models.CharField(max_length=32, blank=False, null=False)
