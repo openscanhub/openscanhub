@@ -274,6 +274,8 @@ def test_depend_on():
     assert(depend_on('hypervkvpd-0-0.10.el6', 'libc.so', 'rhel-6-x86_64'))
     assert(depend_on('gnome-python2-desktop-2.28.0-5.el6',
                      'libc.so', 'rhel-6-x86_64'))
+    assert(depend_on('libwacom-0.5-5.el6',
+                     'libc.so', 'rhel-6-x86_64'))
 
 
 def test_get_mock_repo():
