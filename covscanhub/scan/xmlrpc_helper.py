@@ -105,3 +105,6 @@ def scan_notification_email(request, scan_id):
         if scan.state not in (SCAN_STATES['CANCELED'],
                               SCAN_STATES['PASSED'],):
             return send_scan_notification(request, scan_id)
+    elif scan.is_errata_base_scan():
+        if scan.is_failed():
+            return send_scan_notification(request, scan_id)
