@@ -57,7 +57,8 @@ def add_link_field(admin_class, field):
 
 
 @public
-def register_admin_module(module, exclude=None, new_fields=None):
+def register_admin_module(module, exclude=None, new_fields=None,
+                          search_fields=None):
     """
     @param module: module containing django.db.models classes
     @type module: str or __module__
@@ -68,11 +69,13 @@ def register_admin_module(module, exclude=None, new_fields=None):
     @param new_fields: dictionary of additional fields:
         {'model name': ('field_name', callable)}
     @type new_fields: dict or None
-
-    If you are providing str, use absolute path
+    @param search_fields: list of tuples to search in:
+        ('model name', ['list', 'of', 'fields'])
+    @type search_fields: dict or None
     """
     exclude = exclude or []
     new_fields = new_fields or {}
+    search_fields = search_fields or {}
     if isinstance(module, ModuleType):
         models = module
     elif isinstance(module, basestring):
@@ -112,6 +115,11 @@ def register_admin_module(module, exclude=None, new_fields=None):
                 setattr(admin_class, new_fields[new_field][0],
                         new_fields[new_field][1])
                 admin_class.list_display.append(new_fields[new_field][0])
+
+        # add fields to search in
+        for model_name, fields_to_search in search_fields:
+            if c.__name__ == model_name:
+                setattr(admin_class, 'search_fields', fields_to_search)
 
         try:  # pass gracefully on duplicate registration errors
             admin.site.register(c, admin_class)
