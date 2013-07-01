@@ -20,7 +20,10 @@ __all__ = (
     "_spawn_scan_task",
 )
 
-logger = logging.getLogger(__name__)
+if __name__ == '__main__':
+    logger = logging.getLogger('covscanhub.errata.utils')
+else:
+    logger = logging.getLogger(__name__)
 
 try:
     s = koji.ClientSession(settings.BREW_HUB)
