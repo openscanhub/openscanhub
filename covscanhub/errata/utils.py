@@ -22,6 +22,9 @@ __all__ = (
 
 if __name__ == '__main__':
     logger = logging.getLogger('covscanhub.errata.utils')
+    ch = logging.StreamHandler()
+    ch.setLevel(logging.DEBUG)
+    logger.addHandler(ch)
 else:
     logger = logging.getLogger(__name__)
 
@@ -126,6 +129,7 @@ def get_mocks_repo(mock_profile):
             for match in pattern.finditer(line):
                 if match.group(1):
                     urls.append(match.group(1).strip())
+                    logger.debug('enable repo %s', match.group(1).strip())
     if len(urls) == 1:
         return urls[0]
     else:
@@ -145,6 +149,7 @@ def depend_on_brew(valid_rpms, dependency):
     for rpm in valid_rpms:
         # get requires from brew, second arg is dependency type
         requires = s.getRPMDeps(valid_rpms[0]['id'], koji.DEP_REQUIRE)
+        logger.debug('brew req: %s', requires)
         if filter(check_if_dep_match, requires):
             logger.info("depend_on_brew, %s depends on %s",
                         rpm['name'], dependency)
@@ -217,7 +222,9 @@ def depend_on(nvr, dependency, mock_profile):
 
     for pkg in pkgs:
         # alternative: for req in pkg.requires:
+        logger.debug('yum package %s', pkg)
         for req in pkg.returnPrco('requires'):
+            logger.debug('yum req %s', req[0])
             if req[0].startswith(dependency):
                 logger.info("%s depends on %s", pkg.name, dependency)
                 return True
@@ -284,5 +291,7 @@ def test_get_mock_repo():
     print get_mocks_repo('rhel-7-x86_64')
 
 if __name__ == '__main__':
-    test_depend_on()
-    test_get_mock_repo()
+    #print depend_on("system-config-lvm-1.1.12-16.el6", 'libc.so', 'rhel-6-x86_64')
+    print depend_on("grub-0.97-82.el6", 'libc.so', 'rhel-6-x86_64')
+    #test_depend_on()
+    #test_get_mock_repo()
