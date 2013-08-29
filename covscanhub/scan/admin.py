@@ -17,6 +17,7 @@ from django.utils.safestring import mark_safe
 from django.contrib import admin
 
 from covscanhub.scan.models import Scan, ScanBinding, SCAN_STATES
+from covscanhub.scan.service import extract_logs_from_tarball
 from covscanhub.other.admin import register_admin_module
 
 register_admin_module('covscanhub.scan.models', exclude=['Scan'],
@@ -88,6 +89,7 @@ class ScanAdmin(admin.ModelAdmin):
         task = Task.objects.get(scanbinding__scan__id=scan_id)
         task.state = TASK_STATES['CLOSED']
         task.save()
+        extract_logs_from_tarball(task.id)
         h_finish_scan(request, scan_id, task.id)
         scan = Scan.objects.get(id=scan_id)
 
