@@ -18,6 +18,7 @@ from covscanhub.scan.models import SCAN_STATES, ScanBinding, Package,\
 from covscanhub.scan.compare import get_compare_title
 from covscanhub.scan.service import get_latest_sb_by_package
 from covscanhub.scan.xmlrpc_helper import scan_notification_email
+from covscanhub.scan.notify import send_notif_new_comment
 
 from covscanhub.other.shortcuts import get_or_none
 from covscanhub.other.constants import *
@@ -301,14 +302,60 @@ def results_list(request):
     return object_list(request, **args)
 
 
+def comment_post(request, form, sb, result_group_object, url_name_next,
+                 active_tab, defects_list_class):
+    """ Add comment to RG """
+    wl = WaivingLog()
+    wl.user = request.user
+    wl.state = WAIVER_LOG_ACTIONS['NEW']
+
+    w = Waiver()
+    w.message = form.cleaned_data['message']
+    w.result_group = result_group_object
+    w.user = request.user
+    w.is_active = False
+    w.state = WAIVER_TYPES[form.cleaned_data['waiver_type']]
+    w.save()
+
+    wl.waiver = w
+    wl.save()
+
+    s = sb.scan
+    s.last_access = datetime.datetime.now()
+    s.save()
+
+    if s.username != wl.user:
+        send_notif_new_comment(request, s, wl)
+
+    logger.info('Comment %s submitted for resultgroup %s',
+                w, result_group_object)
+    request.session['status_message'] = \
+        "Comment (%s) successfully submitted." % (
+        w.message[:50].rstrip() + '... ' if len(w.message) > 50
+        else w.message)
+
+    request.session['active_tab'] = active_tab
+    request.session['defects_list_class'] = defects_list_class
+
+    prim_url = reverse("waiving/result", args=(sb.id, ))
+
+    if 'submit_next' in request.POST:
+        if rgs:
+            return HttpResponseRedirect(reverse(url_name_next,
+                                                args=(sb.id, rgs[0].id)))
+    return HttpResponseRedirect(prim_url)
+
+
 def waiver_post(request, sb, result_group_object, url_name, url_name_next,
                 active_tab, defects_list_class):
     """adding new waiver/marking group as TP"""
     form = WaiverForm(request.POST)
     if form.is_valid():
+        if 'COMMENT' == form.cleaned_data['waiver_type']:
+            return comment_post(request, form, sb, result_group_object,
+                                url_name_next, active_tab, defects_list_class)
         wl = WaivingLog()
         wl.user = request.user
-        wl.date = datetime.datetime.now()
         if result_group_object.has_waiver():
             wl.state = WAIVER_LOG_ACTIONS['REWAIVE']
         else:
@@ -321,7 +368,6 @@ def waiver_post(request, sb, result_group_object, url_name, url_name_next,
             lw.save()
 
         w = Waiver()
-        w.date = datetime.datetime.now()
         w.message = form.cleaned_data['message']
         w.result_group = result_group_object
         w.user = request.user
@@ -433,13 +479,16 @@ def remove_waiver(request, waiver_id):
     waiver.save()
     Scan.objects.filter(id=sb.scan.id).update(
         last_access=datetime.datetime.now())
-    if not waiver_condition(waiver.result_group):
-        ResultGroup.objects.filter(id=waiver.result_group.id).update(
-            state=RESULT_GROUP_STATES['NEEDS_INSPECTION'])
-        sb.scan.set_state(SCAN_STATES['DISPUTED'])
-        scan_notification_email(request, sb.scan.id)
+    if not waiver.is_comment():
+        if sb.scan.is_waived() and not waiver_condition(waiver.result_group):
+            ResultGroup.objects.filter(id=waiver.result_group.id).update(
+                state=RESULT_GROUP_STATES['NEEDS_INSPECTION'])
+            sb.scan.set_state(SCAN_STATES['DISPUTED'])
+            if wl.user != waiver.user:
+                scan_notification_email(request, sb.scan.id)
     request.session['status_message'] = \
-        "Waiver (%s) invalidated." % (
+        "%s (%s) invalidated." % (
+        waiver.type_text,
         waiver.message[:50].rstrip() + '... ' if len(waiver.message) > 50
         else waiver.message)
 

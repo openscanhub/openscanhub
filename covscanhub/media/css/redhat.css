@@ -554,6 +554,11 @@ div.waiving_log span.FIX_LATER {
     color: #AA6600;
 }
 
+div.waiving_log span.COMMENT {
+    background-color: #CCC;
+    color: #000;
+}
+
 .waiver_type {
     border: 1px solid transparent;
     font-weight: bold;
@@ -637,7 +642,8 @@ div.waiving_log span.change {
 
 #waiver_type_helper_texts {
     display: inline-block;
-    padding: 1em 1em 1em 3em;
+    padding: 0 1em 1em 3em;
+    margin-top: 0;
     text-align: left;
     vertical-align: top;
     width: 400px;

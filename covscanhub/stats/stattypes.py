@@ -281,8 +281,7 @@ def get_total_is_a_bug_waivers():
 
         Number of waivers with type IS_A_BUG.
     """
-    return Waiver.objects.filter(state=WAIVER_TYPES['IS_A_BUG'],
-                                 is_deleted=False).count()
+    return Waiver.objects.filter(state=WAIVER_TYPES['IS_A_BUG']).count()
 get_total_is_a_bug_waivers.group = "WAIVERS"
 get_total_is_a_bug_waivers.order = 3
 
@@ -299,7 +298,6 @@ def get_is_a_bug_waivers_by_release():
         result[r] = Waiver.objects.filter(
             state=WAIVER_TYPES['IS_A_BUG'],
             result_group__result__scanbinding__scan__tag__release=r.id,
-            is_deleted=False,
         ).count()
     return result
 get_is_a_bug_waivers_by_release.group = "WAIVERS"
@@ -312,8 +310,7 @@ def get_total_not_a_bug_waivers():
 
         Number of waivers with type NOT_A_BUG.
     """
-    return Waiver.objects.filter(state=WAIVER_TYPES['NOT_A_BUG'],
-                                 is_deleted=False,).count()
+    return Waiver.objects.filter(state=WAIVER_TYPES['NOT_A_BUG']).count()
 get_total_not_a_bug_waivers.group = "WAIVERS"
 get_total_not_a_bug_waivers.order = 4
 
@@ -330,7 +327,6 @@ def get_not_a_bug_waivers_by_release():
         result[r] = Waiver.objects.filter(
             state=WAIVER_TYPES['NOT_A_BUG'],
             result_group__result__scanbinding__scan__tag__release=r.id,
-            is_deleted=False,
         ).count()
     return result
 get_not_a_bug_waivers_by_release.group = "WAIVERS"
@@ -343,8 +339,7 @@ def get_total_fix_later_waivers():
 
         Number of waivers with type FIX_LATER.
     """
-    return Waiver.objects.filter(state=WAIVER_TYPES['FIX_LATER'],
-                                 is_deleted=False,).count()
+    return Waiver.objects.filter(state=WAIVER_TYPES['FIX_LATER']).count()
 get_total_fix_later_waivers.group = "WAIVERS"
 get_total_fix_later_waivers.order = 5
 
@@ -361,7 +356,6 @@ def get_fix_later_waivers_by_release():
         result[r] = Waiver.objects.filter(
             state=WAIVER_TYPES['FIX_LATER'],
             result_group__result__scanbinding__scan__tag__release=r.id,
-            is_deleted=False,
         ).count()
     return result
 get_fix_later_waivers_by_release.group = "WAIVERS"

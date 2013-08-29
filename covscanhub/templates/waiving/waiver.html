@@ -81,8 +81,9 @@
         {% endif %}
 
         <span class="button_line">
-            <span class="waiver_type {{ wl.waiver.get_state_display }}">{{ wl.waiver.get_display_type }}</span> waiver submitted by {{ wl.waiver.user }} {{ wl.waiver.date|naturaltime }} ({{ wl.waiver.date|date:"Y-m-d H:i:s" }}).
-            <a title="Permalink to this waiver" href="#waiver_{{ wl.id }}" class="indoc_link">¶</a>
+            <span class="waiver_type {{ wl.waiver.get_state_display }}">{{ wl.waiver.get_display_type }}</span>
+            {% if not wl.waiver.is_comment %}waiver{% endif %} submitted by {{ wl.waiver.user }} {{ wl.waiver.date|naturaltime }} ({{ wl.waiver.date|date:"Y-m-d H:i:s" }}).
+            <a title="Permalink" href="#waiver_{{ wl.id }}" class="indoc_link">¶</a>
         </span>
 
         <span id="btn_toggle_{{ wl.id }}" onclick="
@@ -108,8 +109,12 @@
         <div id="waiver_text_{{ wl.id }}" class="small grey waiver">
         {% endif %}
             User {{ wl.user }}
-            {% if wl.get_state_display == "NEW" %}
-                submitted <span class="wl_type new">new</span> waiver:
+            {% if wl.get_state_display == "NEW" and wl.waiver.is_comment %}
+                submitted <span class="wl_type new">new</span> comment:
+            {% else %}
+                {% if wl.get_state_display == "NEW" %}
+                    submitted <span class="wl_type new">new</span> waiver:
+                {% endif %}
             {% endif %}
             {% if wl.get_state_display == "REWAIVE" %}
                 <span class="wl_type change">changed</span> current waiver:

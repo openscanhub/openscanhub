@@ -29,16 +29,25 @@ WAIVER_TYPES = Enum(
     EnumItem("IS_A_BUG", help_text="Is a bug"),
     # defect is a bug and I'm going to fix it in next version
     EnumItem("FIX_LATER", help_text="Fix later"),
+    # just a comment, no semantics behind
+    EnumItem("COMMENT", help_text="Comment"),
+)
+
+WAIVERS_ONLY = (
+    WAIVER_TYPES['NOT_A_BUG'],
+    WAIVER_TYPES['IS_A_BUG'],
+    WAIVER_TYPES['FIX_LATER'],
 )
 
 WAIVER_TYPES_HELP_TEXTS = {
     "NOT_A_BUG": "all defects in this group are false positives ",
     "IS_A_BUG": "at least one defect in this group is a bug and should be fixed. Please, fix the defects and do a respin.",
     "FIX_LATER": "there are defects in this group and will be fixed in future (in next release probably). Reporting them (or sending patches to) upstream is a good idea.",
+    "COMMENT": "inform maintainer about something related to defects in this group",
 }
 
 WAIVER_LOG_ACTIONS = Enum(
-    EnumItem("NEW", help_text="New waiver"),
+    EnumItem("NEW", help_text="New entry"),
     EnumItem("DELETE", help_text="Delete existing waiver"),
     EnumItem("REWAIVE", help_text="Change current waiver"),
 )
@@ -195,6 +204,10 @@ only ResultGroups which belong to enabled CheckerGroups")
         return "#%d %s" % (self.id, self.name)
 
 
+class ResultGroupManager(models.Manager):
+    pass
+
+
 class ResultGroup(models.Model):
     """
     Each set of defects from existed Result that belongs to some CheckGroup is
@@ -226,10 +239,12 @@ associated with this group.")
 
     def get_waivers(self):
         """return all non-deleted waivers associated with this rg"""
-        return Waiver.objects.filter(
-            result_group=self,
-            is_deleted=False
-        )
+        return Waiver.waivers.waivers_for(self)
+
+    def latest_waiver(self):
+        waivers = Waiver.waivers.waivers_for(self)
+        if waivers:
+            return waivers.latest()
 
 
     def has_waiver(self):
@@ -329,11 +344,25 @@ class Bugzilla(models.Model):
         )
 
 
+class WaiverOnlyManager(models.Manager):
+    def get_query_set(self):
+        """ return all active waivers """
+        return super(WaiverOnlyManager, self).get_query_set().filter(
+            state__in=WAIVERS_ONLY, is_deleted=False)
+
+    def waivers_for(self, rg):
+        return self.filter(result_group=rg)
+
+
+class WaiverManager(models.Manager):
+    pass
+
+
 class Waiver(models.Model):
     """
     User acknowledges that he processed associated defect group
     """
-    date = models.DateTimeField()  # date submitted
+    date = models.DateTimeField(auto_now_add=True)  # date submitted
     message = models.TextField("Message")
     result_group = models.ForeignKey(ResultGroup, blank=False, null=False,
                                      help_text="Group of defects which is \
@@ -347,17 +376,11 @@ waived for specific Result")
 
     is_active = models.BooleanField(default=False)
 
+    objects = WaiverManager()
+    waivers = WaiverOnlyManager()
+
     class Meta:
         get_latest_by = "date"
-
-    def get_display_type(self):
-        return WAIVER_TYPES.get_item_help_text(self.state)
-
-    def get_delete_waiving_log(self):
-        return WaivingLog.objects.get(
-            waiver=self,
-            state=WAIVER_LOG_ACTIONS['DELETE']
-        )
 
     def __unicode__(self):
         return u"#%d %s - %s, ResultGroup: (%s) BZ: %s" % (
@@ -368,12 +391,35 @@ waived for specific Result")
             self.bz
         )
 
+    def is_comment(self):
+        return self.state == WAIVER_TYPES['COMMENT']
+
+    def type_text(self):
+        if self.is_comment():
+            return "Comment"
+        else:
+            return "Waiver"
+
+    def get_display_type(self):
+        return WAIVER_TYPES.get_item_help_text(self.state)
+
+    def get_delete_waiving_log(self):
+        return WaivingLog.objects.get(
+            waiver=self,
+            state=WAIVER_LOG_ACTIONS['DELETE']
+        )
+
+    @classmethod
+    def new_comment(cls, text, rg, user):
+        return cls(message=text, result_group=rg,
+                   user=user, state=WAIVER_TYPES['COMMENT'])
+
 
 class WaivingLog(models.Model):
     """
     Log of waiving related actions
     """
-    date = models.DateTimeField()  # date submitted
+    date = models.DateTimeField(auto_now_add=True)  # date submitted
     user = models.ForeignKey(User)
     # possible actions:
     #  new -- submit waiver to group that wasn't waived yet
@@ -394,3 +440,11 @@ class WaivingLog(models.Model):
             WAIVER_LOG_ACTIONS.get_value(self.state),
             self.waiver,
         )
+
+    @classmethod
+    def new_log(cls, user, waiver=None):
+        if waiver:
+            return cls(state=WAIVER_LOG_ACTIONS['NEW'], user=user,
+                       waiver=waiver)
+        else:
+            return cls(state=WAIVER_LOG_ACTIONS['NEW'], user=user)

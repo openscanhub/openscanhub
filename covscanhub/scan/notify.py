@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
-"""functions related to sending notifications"""
+"""functions related to sending e-mail notifications"""
 
 import socket
+import logging
 
 from django.core.mail import get_connection, EmailMessage
 from django.core.urlresolvers import reverse
@@ -18,6 +19,9 @@ __all__ = (
     "send_task_notification",
     "send_scan_notification",
 )
+
+
+logger = logging.getLogger(__name__)
 
 
 def send_mail(message, recipient, subject, recipients, headers, bcc=None):
@@ -122,7 +126,7 @@ class MailGenerator(object):
 
 URL: %(url)s""" % {'url': self.get_scans_url(), 'nvr': self.scan.nvr}
 
-    def generate_general_text(self):
+    def generate_general_text(self, display_states=True):
         message = [
             "%(firstline)s",
             "",
@@ -133,12 +137,14 @@ URL: %(url)s""" % {'url': self.get_scans_url(), 'nvr': self.scan.nvr}
             "%(guide_message)s",
         ]
         message = "\n".join(message)
-        message += """
+        if display_states:
+            message += """
     Is a bug -- defect is true positive and you are going to fix it (with \
 next build)
     Fix later -- defect is true positive, but fix is postponed to next release
     Not a bug -- issue is false positive, so you are waiving it
-
+            """
+        message += """
 You can find documentation of covscan's workflow at \
 http://cov01.lab.eng.brq.redhat.com/covscan_documentation.html .
 
@@ -178,6 +184,28 @@ please check the run." % (self.scan.nvr),
 and waive it. Here is a description of states:"
         }
 
+    def generate_newpkg_scan_text(self):
+        return self.generate_general_text() % {
+            'firstline': "Automatic static analysis scan of build %s \
+submitted from Errata Tool has finished." % (self.scan.nvr),
+            'guide_message': "This is a scan of newly added package. covscan \
+therefore has no base to diff against. This means that final report is a list \
+of all defects found by covscan. The list may be really big. Please fix most \
+serious ones and/or discuss the results with upstream. Here is a description \
+of states:"
+        }
+
+    def generate_new_comment_text(self, commenter, date, message):
+        return self.generate_general_text(display_states=False) % {
+            'firstline': "New comment has been added to scan of package %s." %
+            (self.scan.nvr),
+            'guide_message': "Comment from %s posted on %s:\n\n%s\n" % (
+                commenter,
+                date.strftime('%Y-%m-%d %H:%M:%S'), # TODO: add %Z - TZ
+                message
+            )
+        }
+
 
 def send_scan_notification(request, scan_id):
     scan = Scan.objects.get(id=scan_id)
@@ -196,6 +224,8 @@ def send_scan_notification(request, scan_id):
         message = mg.generate_failed_scan_text()
     elif scan.is_disputed():
         message = mg.generate_disputed_scan_text()
+    elif scan.is_newpkg_scan():
+        message = mg.generate_newpkg_scan_text()
     elif scan.is_rebase_scan():
         # rebase should be after disputed, so 'disputing' e-mails are being
         # sent for rebases
@@ -209,6 +239,27 @@ def send_scan_notification(request, scan_id):
     else:
         subject = "[covscan] Scan of %s finished, state: %s" % (scan.nvr,
                                                                 mg.scan_state)
+
+    headers = {
+        "X-Scan-ID": scan.scanbinding.id,
+        "X-Scan-State": mg.scan_state,
+    }
+    return send_mail(message, recipient, subject, [recipient], headers=headers)
+
+
+def send_notif_new_comment(request, scan, wl):
+    mg = MailGenerator(request, scan)
+
+    if AppSettings.setting_send_mail():
+        recipient = get_recipient(scan.username)
+    else:
+        recipient = "ttomecek@redhat.com"
+
+    logger.info('Notifying %s about new comment in %s', recipient, scan.nvr)
+
+    message = mg.generate_new_comment_text(wl.user, wl.date, wl.waiver.message)
+
+    subject = "[covscan] New comment has been added to scan of %s" % (scan.nvr)
 
     headers = {
         "X-Scan-ID": scan.scanbinding.id,

@@ -300,11 +300,10 @@ def get_last_waiver(checker_group, package, release, exclude=None):
      return None if there is newer run with change in waiving;
     exclude specified resultgroup
     """
-    waivers = Waiver.objects.filter(
+    waivers = Waiver.waivers.filter(
         result_group__checker_group=checker_group,
         result_group__result__scanbinding__scan__package=package,
         result_group__result__scanbinding__scan__tag__release=release,
-        is_deleted=False,
     )
     if waivers:
         latest_waiver = waivers.latest()

@@ -25,12 +25,11 @@ def get_unreported_bugs(package, release):
         result__scanbinding__scan__package=package,
         result__scanbinding__scan__tag__release=release,
     )
-    waivers = Waiver.objects.filter(
+    waivers = Waiver.waivers.filter(
         result_group__result__scanbinding__scan__package=package,
         result_group__result__scanbinding__scan__tag__release=release,
         state=WAIVER_TYPES['IS_A_BUG'],
         bz__isnull=True,
-        is_deleted=False,
         id__in=[rg.has_waiver().id for rg in rgs if rg.has_waiver()]
     )
     if waivers:
