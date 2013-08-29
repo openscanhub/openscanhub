@@ -59,7 +59,7 @@ class ScanListSearchForm(forms.Form):
             if release:
                 query &= Q(scan__tag__release__id=int(release))
             if my and request.user.is_authenticated():
-                query &= Q(owner=request.user)
+                query &= Q(scan__username=request.user)
 
             return query
         else:
