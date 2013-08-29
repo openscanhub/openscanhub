@@ -69,9 +69,9 @@ old: %s new: %s', old_err, new_err)
     #whole csdiff call must be in one string, because character '>' cannot be
     #enclosed into quotes -- command '"csdiff" "-j" "old.err" "new.err" ">"
     #"csdiff.out"' does not work
-    diff_cmd = ' '.join(['csdiff', '-j', pipes.quote(old_err),
+    diff_cmd = ' '.join(['csdiff', '-jz', pipes.quote(old_err),
                          pipes.quote(new_err), '>', diff_file_path])
-    fixed_diff_cmd = ' '.join(['csdiff', '-jx', pipes.quote(old_err),
+    fixed_diff_cmd = ' '.join(['csdiff', '-jxz', pipes.quote(old_err),
                               pipes.quote(new_err), '>',
                               fixed_diff_file_path])
     retcode, output = run(diff_cmd,
