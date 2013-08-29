@@ -9,7 +9,7 @@ from kobo.hub.models import Task
 
 from covscanhub.other.exceptions import ScanException
 from covscanhub.scan.service import prepare_and_execute_diff, \
-    get_latest_binding
+    get_latest_binding, get_latest_sb_by_package
 from covscanhub.waiving.service import create_results, get_unwaived_rgs
 from covscanhub.scan.models import SCAN_STATES, Scan, ScanBinding
 from covscanhub.scan.notify import send_scan_notification
@@ -107,4 +107,7 @@ def scan_notification_email(request, scan_id):
             return send_scan_notification(request, scan_id)
     elif scan.is_errata_base_scan():
         if scan.is_failed():
-            return send_scan_notification(request, scan_id)
+            return send_scan_notification(
+                request,
+                get_latest_sb_by_package(scan.tag.release,
+                                         scan.package).scan.id)
