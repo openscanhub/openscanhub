@@ -70,6 +70,10 @@ def set_options():
                       dest="advisory_id",
                       help="ID of advisory")
 
+    parser.add_option("--owner", action="store", type="string",
+                      dest="owner",
+                      help="package owner")
+
     (options, args) = parser.parse_args()
 
     return parser, options, args
@@ -195,7 +199,7 @@ KRB_REALM (current value: %s)." % realm
     return base64.encodestring(req)
 
 
-def create_et_scan(client, base, target, advisory_id, et_id):
+def create_et_scan(client, base, target, advisory_id, et_id, owner):
     """
     Connect to RPC server, login and execute some method
     """
@@ -209,7 +213,7 @@ def create_et_scan(client, base, target, advisory_id, et_id):
 
     try:
         scan_args = {
-            'package_owner': 'ttomecek',
+            'package_owner': owner,
             'base': base,
             'target': target,
             'id': et_id,
@@ -287,7 +291,7 @@ if __name__ == '__main__':
         call_send_message(client)
     elif options.base and options.target:
         create_et_scan(client, options.base, options.target,
-                       options.advisory_id, options.et_id)
+                       options.advisory_id, options.et_id, options.owner)
     elif options.file and options.tag_name:
         client.auth.login_krbv(login(rpc_url))
         mass_prescan(client, options.file, parser, options.tag_name)
