@@ -50,8 +50,9 @@ def format_waivers(waivers, request):
             w.date.strftime('%Y-%m-%d %H:%M:%S %Z'),  # 2013-01-04 04:09:51 EST
             w.message,
             request.build_absolute_uri(
-                reverse('waiving/waiver', args=(w.result_group.result.id,
-                                                w.result_group.id))
+                reverse('waiving/waiver',
+                        args=(w.result_group.result.scanbinding.id,
+                              w.result_group.id))
             )
         )
         if w != waivers.reverse()[0]:
