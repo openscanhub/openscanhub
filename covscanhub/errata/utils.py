@@ -292,6 +292,8 @@ def test_get_mock_repo():
 
 if __name__ == '__main__':
     #print depend_on("system-config-lvm-1.1.12-16.el6", 'libc.so', 'rhel-6-x86_64')
-    print depend_on("grub-0.97-82.el6", 'libc.so', 'rhel-6-x86_64')
+    #print depend_on("grub-0.97-82.el6", 'libc.so', 'rhel-6-x86_64')
+    #print depend_on("seabios-0.6.1.2-28.el6", 'libc.so', 'rhel-6-x86_64')
+    print depend_on("libvirt-snmp-0.0.2-4.el6", 'libc.so', 'rhel-6-x86_64')
     #test_depend_on()
     #test_get_mock_repo()
