@@ -41,6 +41,11 @@ class DiffBuild(TaskBase):
         aggressive = self.args.pop("aggressive", None)
         cppcheck = self.args.pop("cppcheck", None)
         concurrency = self.args.pop("concurrency", None)
+        clang = self.args.pop('clang', None)
+        no_coverity = self.args.pop('no_coverity', None)
+        warning_level = self.args.pop('warning_level', None)
+        coverity_version = self.args.pop('coverity_version', None)
+
         # create a temp dir, make it writable by 'coverity' user
         tmp_dir = tempfile.mkdtemp(prefix="covscan_")
         os.chmod(tmp_dir, 0775)
@@ -78,6 +83,16 @@ class DiffBuild(TaskBase):
             cov_cmd.append("-i")
         if cppcheck:
             cov_cmd.append("-c")
+        if clang:
+            cov_cmd.append("-l")
+        if no_coverity:
+            cov_cmd.append("-b")
+        if warning_level:
+            cov_cmd.append('-w%s' % warning_level)
+        if coverity_version:
+            old_path = os.environ['PATH']
+            cov_path = "/opt/cov-sa-%s/bin" % coverity_version
+            os.environ['PATH'] = cov_path + ':' + old_path
         if add_args:
             cov_cmd.append("-m")
             cov_cmd.append(pipes.quote(construct_cim_string(add_args)))

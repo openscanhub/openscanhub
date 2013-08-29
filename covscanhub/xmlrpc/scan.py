@@ -53,13 +53,15 @@ class DiffBuild(object):
         if upload_id is None and brew_build is None:
             raise RuntimeError("Neither upload_id or brew_build specified.")
         if upload_id is not None and brew_build is not None:
-            raise RuntimeError("Can't specify both upload_id and brew_build at the same time.")
+            raise RuntimeError("Can't specify both upload_id and brew_build \
+at the same time.")
 
         priority = options.pop("priority", 10)
         if priority is not None:
             max_prio = 20
             if int(priority) > max_prio and not request.user.is_superuser:
-                raise RuntimeError("Setting high task priority (>%s) requires admin privileges." % max_prio)
+                raise RuntimeError("Setting high task priority (>%s) requires \
+admin privileges." % max_prio)
 
         try:
             conf = MockConfig.objects.get(name=mock_config)

@@ -36,6 +36,10 @@ if not specified)"
         add_aggressive_option(self.parser)
         add_concurrency_option(self.parser)
         add_download_results_option(self.parser)
+        add_clang_option(self.parser)
+        add_no_cov_option(self.parser)
+        add_comp_warnings_option(self.parser)
+        add_cov_ver_option(self.parser)
 
         self.parser.add_option(
             "-i",
@@ -152,6 +156,10 @@ exist." % self.results_store_file)
         concurrency = kwargs.pop("concurrency")
         commit_string = kwargs.pop("commit_string", None)
         self.results_store_file = kwargs.pop("results_dir", None)
+        clang = kwargs.pop('clang', False)
+        no_cov = kwargs.pop('no_cov', False)
+        warn_level = kwargs.pop('warn_level', '0')
+        cov_version = kwargs.pop('cov_version', '')
 
         if len(args) != 1:
             self.parser.error("please specify exactly one SRPM")
@@ -204,6 +212,14 @@ is not even one in your user configuration file \
             options["aggressive"] = aggressive
         if cppcheck:
             options["cppcheck"] = cppcheck
+        if clang:
+            options['clang'] = clang
+        if no_cov:
+            options['no_coverity'] = no_cov
+        if warn_level:
+            options['warning_level'] = warn_level
+        if cov_version:
+            options['coverity_version'] = cov_version
         if all_option:
             options["all"] = all_option
         if security:
