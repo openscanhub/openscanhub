@@ -640,3 +640,26 @@ class TaskExtension(models.Model):
 
     def __unicode__(self):
         return u"%s %s" % (self.task, self.secret_args)
+
+
+class AnalyzerManager(models.Manager):
+    def list_available(self):
+        return self.filter(enabled=True)
+
+    def export_available(self):
+        return self.list_available().values('name', 'version', 'cli_command')
+
+
+class Analyzer(models.Model):
+    name = models.CharField(max_length=64, blank=False, null=False)
+    version = models.CharField(max_length=32, blank=False, null=False)
+    enabled = models.BooleanField(default=True)
+    # what covscan-client options enables analyzer
+    cli_command = models.CharField(max_length=32, blank=False, null=False)
+    # what should worker put to builder to enable this
+    build_append = models.CharField(max_length=32, blank=False, null=False)
+
+    objects = AnalyzerManager()
+
+    def __unicode__(self):
+        return u"%s %s" % (self.name, self.version)

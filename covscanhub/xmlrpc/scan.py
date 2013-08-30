@@ -12,7 +12,8 @@ from kobo.hub.models import Task, TASK_STATES
 from kobo.django.upload.models import FileUpload
 from kobo.django.xmlrpc.decorators import login_required, admin_required
 
-from covscanhub.scan.models import MockConfig, Package, Tag, TaskExtension
+from covscanhub.scan.models import MockConfig, Package, Tag, TaskExtension, \
+    Analyzer
 from covscanhub.scan.service import create_diff_task
 from covscanhub.errata.service import create_errata_base_scan
 
@@ -250,3 +251,7 @@ def find_tasks(request, query):
         result = list(tasks.order_by("-dt_finished").values_list(
             "id", flat=True))
     return result
+
+
+def list_analyzers(request):
+    return Analyzer.objects.export_available()

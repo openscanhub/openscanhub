@@ -77,6 +77,12 @@ class DiffBuild(TaskBase):
         # fetch additional arguments from hub
         add_args = self.hub.worker.get_additional_arguments(self.task_id)
 
+        # we build the command like this:
+        # cd <tmp_dir> ; PATH=...:$PATH cov-*build
+        if coverity_version:
+            cov_path = "/opt/cov-sa-%s/bin" % coverity_version
+            cov_cmd.append("PATH=%s:$PATH" % cov_path)
+
         # $program [-fit] MOCK_PROFILE my-package.src.rpm [COV_OPTS]
         cov_cmd.append(program)
         if keep_covdata:
@@ -89,10 +95,6 @@ class DiffBuild(TaskBase):
             cov_cmd.append("-b")
         if warning_level:
             cov_cmd.append('-w%s' % warning_level)
-        if coverity_version:
-            old_path = os.environ['PATH']
-            cov_path = "/opt/cov-sa-%s/bin" % coverity_version
-            os.environ['PATH'] = cov_path + ':' + old_path
         if add_args:
             cov_cmd.append("-m")
             cov_cmd.append(pipes.quote(construct_cim_string(add_args)))
@@ -108,7 +110,7 @@ class DiffBuild(TaskBase):
             cov_cmd.append("--concurrency")
 
         retcode, output = run(["su", "-", "coverity", "-c", " ".join(cov_cmd)],
-                              can_fail=True, stdout=True, buffer_size=128)
+                              can_fail=True, stdout=True, buffer_size=8)
 
         # upload results back to hub
         xz_path = srpm_path[:-8] + ".tar.xz"
