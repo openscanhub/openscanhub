@@ -25,6 +25,8 @@ __all__ = (
     "create_base_scans",
     "get_task_info",
     "find_tasks",
+    "list_analyzers",
+    "check_analyzers",
 )
 
 
@@ -50,6 +52,7 @@ class DiffBuild(object):
 
         upload_id = options.pop("upload_id", None)
         brew_build = options.pop("brew_build", None)
+        analyzers = options.pop("analyzers", None)
 
         if upload_id is None and brew_build is None:
             raise RuntimeError("Neither upload_id or brew_build specified.")
@@ -88,6 +91,10 @@ admin privileges." % max_prio)
         if brew_build:
             options["brew_build"] = brew_build
             task_label = options["brew_build"]
+
+        if analyzers:
+            an_conf = Analyzer.objects.get_opts(analyzers)
+            options.update(an_conf)
 
         # remove sensitive data from options['CIM'] if they exists
         cim_conf = options.pop("CIM", None)
@@ -255,3 +262,11 @@ def find_tasks(request, query):
 
 def list_analyzers(request):
     return Analyzer.objects.export_available()
+
+
+def check_analyzers(request, analyzers):
+    a_list = re.split('[,:;]', analyzers.strip())
+
+    for analyzer in a_list:
+        if not Analyzer.objects.is_valid(analyzer):
+            return "Analyzer %s is not available." % analyzer

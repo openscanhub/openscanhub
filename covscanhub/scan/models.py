@@ -7,6 +7,7 @@ import logging
 import cPickle as pickle
 
 from covscanhub.scan.messaging import post_qpid_message
+from covscanhub.other.scan import remove_duplicities
 
 from django.db import models
 from django.contrib.auth.models import User
@@ -643,23 +644,72 @@ class TaskExtension(models.Model):
 
 
 class AnalyzerManager(models.Manager):
+    def get_query_set(self):
+        """ return all active waivers """
+        return super(AnalyzerManager, self).get_query_set()
+
     def list_available(self):
         return self.filter(enabled=True)
 
     def export_available(self):
-        return self.list_available().values('name', 'version', 'cli_command')
+        return list(self.list_available().values(
+            'name', 'version', 'cli_short_command', 'cli_long_command'))
+
+    def get_default(self):
+        return self.filter(default=True)[0]
+
+    def filter_by_long_arg(self, long_opts):
+        return self.list_available().filter(cli_long_command__in=long_opts)
+
+    def get_paths(self, query):
+        return query.exclude(path__exact='', path__isnull=False)
+
+    def get_path(self, query):
+        try:
+            return self.get_paths(query)[0].path
+        except KeyError:
+            return None
+
+    def get_opts(self, analyzers):
+        """
+        get_opts(['clang', 'cov-6.6.1'])
+         -> {'path': '/opt/...', 'args': ['-a', '-b']}
+        """
+        a_list = re.split('[,:;]', analyzers.strip())
+        a_list = remove_duplicities(a_list)
+
+        ans = self.filter_by_long_arg(a_list)
+
+        response = {}
+        response['path'] = self.get_path(ans)
+        response['args'] = list(ans.values('build_append', flat=True))
+        response['no_coverity'] = not bool(
+            filter(lambda x: x.startswith('cov-'), a_list))
+
+        return response
+
+    def is_valid(self, analyzer):
+        return self.list_available().filter(cli_long_command=analyzer).exists()
 
 
 class Analyzer(models.Model):
     name = models.CharField(max_length=64, blank=False, null=False)
-    version = models.CharField(max_length=32, blank=False, null=False)
+    version = models.CharField(max_length=32, blank=True, null=True)
     enabled = models.BooleanField(default=True)
     # what covscan-client options enables analyzer
-    cli_command = models.CharField(max_length=32, blank=False, null=False)
+    cli_short_command = models.CharField(max_length=32, blank=True, null=True)
+    cli_long_command = models.CharField(max_length=32, blank=False, null=False)
     # what should worker put to builder to enable this
-    build_append = models.CharField(max_length=32, blank=False, null=False)
+    build_append = models.CharField(max_length=32, blank=True, null=True)
+    # how should be $PATH altered
+    path = models.CharField(max_length=64, blank=True, null=True)
+    # default analyzer when there is none specified
+    default = models.BooleanField(default=False)
 
     objects = AnalyzerManager()
+
+    class Meta:
+        ordering = ('id', )
 
     def __unicode__(self):
         return u"%s %s" % (self.name, self.version)

@@ -44,7 +44,8 @@ class DiffBuild(TaskBase):
         clang = self.args.pop('clang', None)
         no_coverity = self.args.pop('no_coverity', None)
         warning_level = self.args.pop('warning_level', None)
-        coverity_version = self.args.pop('coverity_version', None)
+        path = self.args.pop('path', '')
+        an_args = self.args.pop('args', [])
 
         # create a temp dir, make it writable by 'coverity' user
         tmp_dir = tempfile.mkdtemp(prefix="covscan_")
@@ -79,9 +80,8 @@ class DiffBuild(TaskBase):
 
         # we build the command like this:
         # cd <tmp_dir> ; PATH=...:$PATH cov-*build
-        if coverity_version:
-            cov_path = "/opt/cov-sa-%s/bin" % coverity_version
-            cov_cmd.append("PATH=%s:$PATH" % cov_path)
+        if path:
+            cov_cmd.append("export PATH=%s:$PATH" % path)
 
         # $program [-fit] MOCK_PROFILE my-package.src.rpm [COV_OPTS]
         cov_cmd.append(program)
@@ -89,8 +89,10 @@ class DiffBuild(TaskBase):
             cov_cmd.append("-i")
         if cppcheck:
             cov_cmd.append("-c")
+            an_args.remove("-c")
         if clang:
             cov_cmd.append("-l")
+            an_args.remove("-l")
         if no_coverity:
             cov_cmd.append("-b")
         if warning_level:
@@ -110,7 +112,8 @@ class DiffBuild(TaskBase):
             cov_cmd.append("--concurrency")
 
         retcode, output = run(["su", "-", "coverity", "-c", " ".join(cov_cmd)],
-                              can_fail=True, stdout=True, buffer_size=8)
+                              can_fail=True, stdout=True, buffer_size=8,
+                              show_cmd=True)
 
         # upload results back to hub
         xz_path = srpm_path[:-8] + ".tar.xz"

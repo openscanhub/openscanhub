@@ -6,11 +6,12 @@ import covscan
 
 from xmlrpclib import Fault
 from kobo.shortcuts import random_string
-from covscan.commands.shortcuts import verify_brew_koji_build, verify_mock, upload_file, \
-    handle_perm_denied
+from covscan.commands.shortcuts import verify_brew_koji_build, verify_mock, \
+    upload_file, handle_perm_denied
 from covscan.commands.common import *
 from covscan.utils.conf import get_conf
 from covscan.utils.cim import extract_cim_data
+from covscan.commands.analyzers import check_analyzers
 
 
 class Diff_Build(covscan.CovScanCommand):
@@ -39,7 +40,7 @@ if not specified)"
         add_clang_option(self.parser)
         add_no_cov_option(self.parser)
         add_comp_warnings_option(self.parser)
-        add_cov_ver_option(self.parser)
+        add_analyzers_option(self.parser)
 
         self.parser.add_option(
             "-i",
@@ -159,7 +160,7 @@ exist." % self.results_store_file)
         clang = kwargs.pop('clang', False)
         no_cov = kwargs.pop('no_cov', False)
         warn_level = kwargs.pop('warn_level', '0')
-        cov_version = kwargs.pop('cov_version', '')
+        analyzers = kwargs.pop('analyzers', '')
 
         if len(args) != 1:
             self.parser.error("please specify exactly one SRPM")
@@ -218,8 +219,12 @@ is not even one in your user configuration file \
             options['no_coverity'] = no_cov
         if warn_level:
             options['warning_level'] = warn_level
-        if cov_version:
-            options['coverity_version'] = cov_version
+        if analyzers:
+            try:
+                check_analyzers(analyzers)
+            except RuntimeError as ex:
+                self.parser.error(str(ex))
+            options['analyzers'] = analyzers
         if all_option:
             options["all"] = all_option
         if security:

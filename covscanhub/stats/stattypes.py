@@ -243,6 +243,35 @@ get_waivers_submitted_by_release.group = "WAIVERS"
 get_waivers_submitted_by_release.order = 1
 
 
+def get_total_waivers_submitted():
+    """
+        New package/rebase waivers submitted
+
+        Number of waivers submitted for scans of new packages and rebases.
+    """
+    return Waiver.objects.all().count()
+get_total_waivers_submitted.order = 1
+get_total_waivers_submitted.group = "WAIVERS"
+
+
+def get_waivers_submitted_by_release():
+    """
+        New package/rebase waivers submitted
+
+        Number of waivers submitted for scans of new packages and rebases in \
+this release.
+    """
+    releases = SystemRelease.objects.filter(active=True)
+    result = {}
+    for r in releases:
+        result[r] = Waiver.objects.filter(
+            result_group__result__scanbinding__scan__tag__release=r.id,
+        ).count()
+    return result
+get_waivers_submitted_by_release.group = "WAIVERS"
+get_waivers_submitted_by_release.order = 1
+
+
 def get_total_missing_waivers():
     """
         Missing waivers
