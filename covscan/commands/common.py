@@ -72,7 +72,7 @@ failures with older mock profiles and/or non-default compilers (such as clang)"
     )
 
 
-def add_analyzers_option(parser):
+def add_cov_ver_option(parser):
     parser.add_option(
         "-a",
         "--analyzer",
