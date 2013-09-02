@@ -81,7 +81,7 @@ class DiffBuild(TaskBase):
         # cd <tmp_dir> ; PATH=...:$PATH cov-*build
         if coverity_version:
             cov_path = "/opt/cov-sa-%s/bin" % coverity_version
-            cov_cmd.append("PATH=%s:$PATH" % cov_path)
+            cov_cmd.append("export PATH=%s:$PATH" % cov_path)
 
         # $program [-fit] MOCK_PROFILE my-package.src.rpm [COV_OPTS]
         cov_cmd.append(program)
@@ -110,7 +110,8 @@ class DiffBuild(TaskBase):
             cov_cmd.append("--concurrency")
 
         retcode, output = run(["su", "-", "coverity", "-c", " ".join(cov_cmd)],
-                              can_fail=True, stdout=True, buffer_size=8)
+                              can_fail=True, stdout=True, buffer_size=8,
+                              show_cmd=True)
 
         # upload results back to hub
         xz_path = srpm_path[:-8] + ".tar.xz"

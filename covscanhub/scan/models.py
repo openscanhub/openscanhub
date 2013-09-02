@@ -647,7 +647,17 @@ class AnalyzerManager(models.Manager):
         return self.filter(enabled=True)
 
     def export_available(self):
-        return self.list_available().values('name', 'version', 'cli_command')
+        return list(self.list_available().values(
+            'name', 'version', 'cli_command'))
+
+    def get_analyzer_by_long_arg(self, arg):
+        an = self.get(cli_long_command=arg)
+        if not an.enabled:
+            raise RuntimeError("Analyzer %s is not enabled" % str(an))
+        return an
+
+    def is_valid(self, analyzer):
+        return self.list_available().filter(cli_long_command=analyzer).exists()
 
 
 class Analyzer(models.Model):
@@ -655,7 +665,8 @@ class Analyzer(models.Model):
     version = models.CharField(max_length=32, blank=False, null=False)
     enabled = models.BooleanField(default=True)
     # what covscan-client options enables analyzer
-    cli_command = models.CharField(max_length=32, blank=False, null=False)
+    cli_short_command = models.CharField(max_length=32, blank=True, null=True)
+    cli_long_command = models.CharField(max_length=32, blank=False, null=False)
     # what should worker put to builder to enable this
     build_append = models.CharField(max_length=32, blank=False, null=False)
 

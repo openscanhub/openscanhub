@@ -25,6 +25,8 @@ __all__ = (
     "create_base_scans",
     "get_task_info",
     "find_tasks",
+    "list_analyzers",
+    "check_analyzers",
 )
 
 
@@ -255,3 +257,11 @@ def find_tasks(request, query):
 
 def list_analyzers(request):
     return Analyzer.objects.export_available()
+
+
+def check_analyzers(request, analyzers):
+    a_list = analyzers.strip().split(',')
+
+    for analyzer in a_list:
+        if not Analyzer.objects.is_valid(analyzer):
+            return "Analyzer %s is not available." % analyzer

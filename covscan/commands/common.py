@@ -72,9 +72,11 @@ failures with older mock profiles and/or non-default compilers (such as clang)"
     )
 
 
-def add_cov_ver_option(parser):
+def add_analyzers_option(parser):
     parser.add_option(
-        "--cov-version",
-        choices=['6.5.3', '6.6.1'],
-        help="use specific version of coverity: 6.5.3 or 6.6.1"
+        "-a",
+        "--analyzers",
+        action="store",
+        help="list of analyzers to perform scan with (use 'list-analyzers' \
+to see available ones)"
     )
