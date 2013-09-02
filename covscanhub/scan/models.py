@@ -682,7 +682,7 @@ class AnalyzerManager(models.Manager):
 
         response = {}
         response['path'] = self.get_path(ans)
-        response['args'] = list(ans.values('build_append', flat=True))
+        response['args'] = list(ans.values_list('build_append', flat=True))
         response['no_coverity'] = not bool(
             filter(lambda x: x.startswith('cov-'), a_list))
 

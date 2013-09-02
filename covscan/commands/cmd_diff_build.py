@@ -221,7 +221,7 @@ is not even one in your user configuration file \
             options['warning_level'] = warn_level
         if analyzers:
             try:
-                check_analyzers(analyzers)
+                check_analyzers(self.hub, analyzers)
             except RuntimeError as ex:
                 self.parser.error(str(ex))
             options['analyzers'] = analyzers

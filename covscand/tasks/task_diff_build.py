@@ -100,6 +100,9 @@ class DiffBuild(TaskBase):
         if add_args:
             cov_cmd.append("-m")
             cov_cmd.append(pipes.quote(construct_cim_string(add_args)))
+        # this has to be after all analyzer-triggering args!
+        if an_args:
+            cov_cmd.extend(an_args)
         cov_cmd.append(pipes.quote(mock_config))
         cov_cmd.append(pipes.quote(srpm_path))
         if all_checks:
