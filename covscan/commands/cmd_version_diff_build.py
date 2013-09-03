@@ -248,7 +248,7 @@ is not even one in your user configuration file \
                 check_analyzers(self.hub, analyzers)
             except RuntimeError as ex:
                 self.parser.error(str(ex))
-            options_forwarded['analyzers'] = analyzers
+            options_consumed['analyzers'] = analyzers
         if all_checker:
             options_forwarded["all"] = all_checker
         if security:
