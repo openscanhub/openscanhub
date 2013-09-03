@@ -26,6 +26,10 @@ class Version_Diff_Build(covscan.CovScanCommand):
         add_cppcheck_option(self.parser)
         add_aggressive_option(self.parser)
         add_concurrency_option(self.parser)
+        add_clang_option(self.parser)
+        add_no_cov_option(self.parser)
+        add_comp_warnings_option(self.parser)
+        add_analyzers_option(self.parser)
 
         self.parser.add_option(
             "--base-config",
@@ -133,6 +137,10 @@ local file"
         all_checker = kwargs.pop("all")
         security = kwargs.pop("security")
         concurrency = kwargs.pop("concurrency")
+        clang = kwargs.pop('clang', False)
+        no_cov = kwargs.pop('no_cov', False)
+        warn_level = kwargs.pop('warn_level', '0')
+        analyzers = kwargs.pop('analyzers', '')
 
         if comment:
             options['comment'] = comment
@@ -221,6 +229,18 @@ is not even one in your user configuration file \
             options["aggressive"] = aggressive
         if cppcheck:
             options["cppcheck"] = cppcheck
+        if clang:
+            options['clang'] = clang
+        if no_cov:
+            options['no_coverity'] = no_cov
+        if warn_level:
+            options['warning_level'] = warn_level
+        if analyzers:
+            try:
+                check_analyzers(self.hub, analyzers)
+            except RuntimeError as ex:
+                self.parser.error(str(ex))
+            options['analyzers'] = analyzers
         if all_checker:
             options["all"] = all_checker
         if security:

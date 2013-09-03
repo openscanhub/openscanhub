@@ -36,8 +36,6 @@ class VersionDiffBuild(TaskBase):
     weight = 1.0
 
     def run(self):
-        DEBUG = False
-
         mock_config = self.args.pop("mock_config")
         keep_covdata = self.args.pop("keep_covdata", False)
         all_checks = self.args.pop("all", False)
@@ -47,39 +45,43 @@ class VersionDiffBuild(TaskBase):
         aggressive = self.args.pop("aggressive", None)
         cppcheck = self.args.pop("cppcheck", None)
         concurrency = self.args.pop("concurrency", None)
+        clang = self.args.pop('clang', None)
+        no_coverity = self.args.pop('no_coverity', None)
+        warning_level = self.args.pop('warning_level', None)
+        path = self.args.pop('path', '')
+        an_args = self.args.pop('args', [])
 
         # create a temp dir, make it writable by 'coverity' user
         tmp_dir = tempfile.mkdtemp(prefix="covscan_")
         os.chmod(tmp_dir, 0775)
 
-        if not DEBUG:
-            #change atributes of temp dir
-            coverity_gid = grp.getgrnam("coverity").gr_gid
-            os.chown(tmp_dir, -1, coverity_gid)
+        #change atributes of temp dir
+        coverity_gid = grp.getgrnam("coverity").gr_gid
+        os.chown(tmp_dir, -1, coverity_gid)
 
-            #download srpm from brew
-            if brew_build is not None:
-                srpm_path = downloadSRPM(tmp_dir, brew_build)
-                if not os.path.exists(srpm_path):
-                    print >> sys.stderr, \
-                        "Invalid path %s to SRPM file (%s): %s" % \
-                        (srpm_path, brew_build, kobo.tback.get_exception())
-                    self.fail()
-            elif srpm_name is not None:
-                # download SRPM
-                task_url = self.hub.client.task_url(self.task_id).rstrip("/")
-                srpm_path = os.path.join(tmp_dir, srpm_name)
-                urllib.urlretrieve("%s/log/%s?format=raw" % (task_url,
-                                                             srpm_name),
-                                   srpm_path)
-
-            #is srpm allright?
-            try:
-                get_rpm_header(srpm_path)
-            except Exception:
-                print >> sys.stderr, "Invalid RPM file(%s): %s" % \
-                    (brew_build, kobo.tback.get_exception())
+        #download srpm from brew
+        if brew_build is not None:
+            srpm_path = downloadSRPM(tmp_dir, brew_build)
+            if not os.path.exists(srpm_path):
+                print >> sys.stderr, \
+                    "Invalid path %s to SRPM file (%s): %s" % \
+                    (srpm_path, brew_build, kobo.tback.get_exception())
                 self.fail()
+        elif srpm_name is not None:
+            # download SRPM
+            task_url = self.hub.client.task_url(self.task_id).rstrip("/")
+            srpm_path = os.path.join(tmp_dir, srpm_name)
+            urllib.urlretrieve("%s/log/%s?format=raw" % (task_url,
+                                                         srpm_name),
+                               srpm_path)
+
+        #is srpm allright?
+        try:
+            get_rpm_header(srpm_path)
+        except Exception:
+            print >> sys.stderr, "Invalid RPM file(%s): %s" % \
+                (brew_build, kobo.tback.get_exception())
+            self.fail()
 
         #execute mockbuild of this package
         cov_cmd = []
@@ -87,12 +89,30 @@ class VersionDiffBuild(TaskBase):
         cov_cmd.append(pipes.quote(tmp_dir))
         cov_cmd.append(";")
 
+        # we build the command like this:
+        # cd <tmp_dir> ; PATH=...:$PATH cov-*build
+        if path:
+            cov_cmd.append("PATH=%s:$PATH" % path)
+
         # $program [-fit] MOCK_PROFILE my-package.src.rpm [COV_OPTS]
         cov_cmd.append('cov-mockbuild')
         if keep_covdata:
             cov_cmd.append("-i")
         if cppcheck:
             cov_cmd.append("-c")
+            if '-c' in an_args:
+                an_args.remove("-c")
+        if clang:
+            cov_cmd.append("-l")
+            if '-l' in an_args:
+                an_args.remove("-l")
+        if no_coverity:
+            cov_cmd.append("-b")
+        if warning_level:
+            cov_cmd.append('-w%s' % warning_level)
+        # this has to be after all analyzer-triggering args!
+        if an_args:
+            cov_cmd.extend(an_args)
         cov_cmd.append(pipes.quote(mock_config))
         cov_cmd.append(pipes.quote(srpm_path))
         if all_checks:
@@ -106,17 +126,10 @@ class VersionDiffBuild(TaskBase):
 
         command = ["su", "-", "coverity", "-c", " ".join(cov_cmd)]
 
-        if not DEBUG:
-            retcode, output = run(command, can_fail=True, stdout=True,
-                                  buffer_size=128)
-        else:
-            command_str = ' '.join(command)
-            retcode = 0
+        retcode, output = run(command, can_fail=True, stdout=True,
+                              buffer_size=8, show_cmd=True)
 
         # upload results back to hub
-        if DEBUG:
-            shutil.copy2('/tmp/' + brew_build + '.tar.xz', tmp_dir)
-
         xz_path = srpm_path[:-8] + ".tar.xz"
         if not os.path.exists(xz_path):
             xz_path = srpm_path[:-8] + ".tar.lzma"

@@ -81,7 +81,7 @@ class DiffBuild(TaskBase):
         # we build the command like this:
         # cd <tmp_dir> ; PATH=...:$PATH cov-*build
         if path:
-            cov_cmd.append("export PATH=%s:$PATH" % path)
+            cov_cmd.append("PATH=%s:$PATH" % path)
 
         # $program [-fit] MOCK_PROFILE my-package.src.rpm [COV_OPTS]
         cov_cmd.append(program)
@@ -89,10 +89,12 @@ class DiffBuild(TaskBase):
             cov_cmd.append("-i")
         if cppcheck:
             cov_cmd.append("-c")
-            an_args.remove("-c")
+            if '-c' in an_args:
+                an_args.remove("-c")
         if clang:
             cov_cmd.append("-l")
-            an_args.remove("-l")
+            if '-l' in an_args:
+                an_args.remove("-l")
         if no_coverity:
             cov_cmd.append("-b")
         if warning_level:

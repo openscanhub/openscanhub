@@ -6,8 +6,8 @@ import logging
 from kobo.hub.decorators import validate_worker
 from kobo.hub.models import Task
 
-from covscanhub.scan.service import extract_logs_from_tarball, \
-    prepare_and_execute_diff
+from covscanhub.scan.service import extract_logs_from_tarball
+from covscanhub.service.processing import task_diff
 from covscanhub.scan.notify import send_task_notification
 from covscanhub.scan.xmlrpc_helper import finish_scan as h_finish_scan,\
     fail_scan as h_fail_scan, scan_notification_email
@@ -50,11 +50,12 @@ def email_task_notification(request, task_id):
 def finish_task(request, task_id):
     task = Task.objects.get(id=task_id)
     if task.subtask_count == 1:
-        child_task = task.subtasks()[0]
-        prepare_and_execute_diff(task, child_task, task.label,
-                                 child_task.label)
+        base_task = task.subtasks()[0]
+        task_dir = Task.get_task_dir(task.id)
+        base_task_dir = Task.get_task_dir(base_task.id)
+        return task_diff(task_dir, base_task_dir, task.label, base_task.label)
     elif task.subtask_count > 1:
-        raise RuntimeError('Task %s contains too much subtasks' % task.id)
+        raise RuntimeError('Task %s contains too many subtasks' % task.id)
 
 
 def get_additional_arguments(request, task_id):

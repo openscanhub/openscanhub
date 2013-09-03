@@ -299,6 +299,7 @@ def create_diff_task(kwargs):
     nvr_srpm = kwargs.get('nvr_srpm', None)
     nvr_brew_build = kwargs.get('nvr_brew_build', None)
     nvr_upload_id = kwargs.get('nvr_upload_id', None)
+    analyzers = options.pop("analyzers", None)
 
     options['aggressive'] = kwargs.get('aggressive', False)
     options['cppcheck'] = kwargs.get('cppcheck', False)
@@ -339,6 +340,10 @@ def create_diff_task(kwargs):
         task_label = options["srpm_name"][:-8]
     else:
         raise RuntimeError('Target build is not specified!')
+
+    if analyzers:
+        an_conf = Analyzer.objects.get_opts(analyzers)
+        options.update(an_conf)
 
     task_id = Task.create_task(
         owner_name=task_user,
