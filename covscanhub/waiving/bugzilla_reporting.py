@@ -103,11 +103,9 @@ If you have any questions, feel free to ask at Red Hat IRC channel \
         'groups': get_checker_groups(waivers),
     }
 
-    if waivers.count() <= 1:
-        summary = '[Coverity] %d defect found (%s)' % (waivers.count(), release.tag)
-    else:
-        summary = '[Coverity] %d defects found (%s)' % (waivers.count(), release.tag)
-    comment += format_waivers(waivers, request)
+    summary = 'New defect%s found in %s' % (
+        's' if waivers.count() >= 2 else '',
+        waivers[0].result_group.result.scanbinding.scan.base.nvr)
 
     data = {
         'product': release.product,
