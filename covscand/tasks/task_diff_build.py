@@ -117,7 +117,7 @@ class DiffBuild(TaskBase):
             cov_cmd.append("--concurrency")
 
         retcode, output = run(["su", "-", "coverity", "-c", " ".join(cov_cmd)],
-                              can_fail=True, stdout=True, buffer_size=8,
+                              can_fail=True, stdout=True, buffer_size=-1,
                               show_cmd=True)
 
         # upload results back to hub

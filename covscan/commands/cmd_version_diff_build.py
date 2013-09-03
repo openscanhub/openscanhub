@@ -7,6 +7,7 @@ from shortcuts import verify_brew_koji_build, verify_mock, upload_file, \
     handle_perm_denied
 from common import *
 from covscan.utils.conf import get_conf
+from covscan.commands.analyzers import check_analyzers
 from xmlrpclib import Fault
 
 
@@ -117,7 +118,13 @@ local file"
     def run(self, *args, **kwargs):
         # optparser output is passed via *args (args) and **kwargs (opts)
         local_conf = get_conf(self.conf)
-        options = {}
+
+        # options required for hub
+        options_consumed = {}
+        # options which should be forwarded to worker -- no need to manage
+        # them on hub
+        options_forwarded = {}
+
         username = kwargs.pop("username", None)
         password = kwargs.pop("password", None)
         config = kwargs.pop("config", None)
@@ -143,7 +150,7 @@ local file"
         analyzers = kwargs.pop('analyzers', '')
 
         if comment:
-            options['comment'] = comment
+            options_consumed['comment'] = comment
 
         #both bases are specified
         if base_brew_build and base_srpm:
@@ -205,68 +212,69 @@ is not even one in your user configuration file \
 is not even one in your user configuration file \
 (~/.config/covscan/covscan.conf) nor in system configuration file \
 (/etc/covscan/covscan.conf)")
-            print "Mock config for target not specified, using default one: %s" \
+            print "Mock config for target not specified, using default: %s" \
                 % config
 
         # login to the hub
         self.set_hub(username, password)
 
         verify_mock(base_config, self.hub)
-        options['base_mock'] = base_config
+        options_consumed['base_mock'] = base_config
         verify_mock(config, self.hub)
-        options['nvr_mock'] = config
+        options_consumed['nvr_mock'] = config
 
         # end of CLI options handling
 
-        options["keep_covdata"] = keep_covdata
+        if keep_covdata:
+            options_forwarded["keep_covdata"] = keep_covdata
 
         if email_to:
-            options["email_to"] = email_to
+            options_forwarded["email_to"] = email_to
         if priority is not None:
-            options["priority"] = priority
+            options_consumed["priority"] = priority
 
         if aggressive:
-            options["aggressive"] = aggressive
+            options_forwarded["aggressive"] = aggressive
         if cppcheck:
-            options["cppcheck"] = cppcheck
+            options_forwarded["cppcheck"] = cppcheck
         if clang:
-            options['clang'] = clang
+            options_forwarded['clang'] = clang
         if no_cov:
-            options['no_coverity'] = no_cov
+            options_forwarded['no_coverity'] = no_cov
         if warn_level:
-            options['warning_level'] = warn_level
+            options_forwarded['warning_level'] = warn_level
         if analyzers:
             try:
                 check_analyzers(self.hub, analyzers)
             except RuntimeError as ex:
                 self.parser.error(str(ex))
-            options['analyzers'] = analyzers
+            options_forwarded['analyzers'] = analyzers
         if all_checker:
-            options["all"] = all_checker
+            options_forwarded["all"] = all_checker
         if security:
-            options["security"] = security
+            options_forwarded["security"] = security
         if concurrency:
-            options["concurrency"] = concurrency
+            options_forwarded["concurrency"] = concurrency
 
         if brew_build:
-            options["nvr_brew_build"] = brew_build
+            options_consumed["nvr_brew_build"] = brew_build
         else:
             target_dir = random_string(32)
             upload_id, err_code, err_msg = upload_file(self.hub, srpm,
                                                        target_dir, self.parser)
-            options["nvr_upload_id"] = upload_id
-            options['nvr_srpm'] = srpm
+            options_consumed["nvr_upload_id"] = upload_id
+            options_consumed['nvr_srpm'] = srpm
 
         if base_brew_build:
-            options["base_brew_build"] = base_brew_build
+            options_consumed["base_brew_build"] = base_brew_build
         else:
             target_dir = random_string(32)
             upload_id, err_code, err_msg = upload_file(self.hub, base_srpm,
                                                        target_dir, self.parser)
-            options["base_upload_id"] = upload_id
-            options['base_srpm'] = base_srpm
+            options_consumed["base_upload_id"] = upload_id
+            options_consumed['base_srpm'] = base_srpm
 
-        task_id = self.submit_task(options)
+        task_id = self.submit_task(options_consumed, options_forwarded)
 
         self.write_task_id_file(task_id, task_id_file)
         print "Task info: %s" % self.hub.client.task_url(task_id)
@@ -275,8 +283,12 @@ is not even one in your user configuration file \
             from kobo.client.task_watcher import TaskWatcher
             TaskWatcher.watch_tasks(self.hub, [task_id])
 
-    def submit_task(self, options):
+    def submit_task(self, hub_opts, task_opts):
+        """
+        hub_opts -- options for creating Task (consumed on hub)
+        task_opts -- options for task itself
+        """
         try:
-            return self.hub.scan.create_user_diff_task(options)
+            return self.hub.scan.create_user_diff_task(hub_opts, task_opts)
         except Fault, e:
             handle_perm_denied(e, self.parser)

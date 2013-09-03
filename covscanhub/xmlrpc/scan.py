@@ -162,7 +162,7 @@ def mock_build(*args, **kwargs):
 
 
 @login_required
-def create_user_diff_task(request, kwargs):
+def create_user_diff_task(request, hub_opts, task_opts):
     """
         create scan of a package and perform diff on results against specified
         version
@@ -177,8 +177,8 @@ def create_user_diff_task(request, kwargs):
          - nvr_mock - mock config
          - base_mock - mock config
     """
-    kwargs['task_user'] = request.user.username
-    return create_diff_task(kwargs)
+    hub_opts['task_user'] = request.user.username
+    return create_diff_task(hub_opts, task_opts)
 
 
 @admin_required

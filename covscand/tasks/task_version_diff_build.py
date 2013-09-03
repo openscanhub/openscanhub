@@ -127,7 +127,7 @@ class VersionDiffBuild(TaskBase):
         command = ["su", "-", "coverity", "-c", " ".join(cov_cmd)]
 
         retcode, output = run(command, can_fail=True, stdout=True,
-                              buffer_size=8, show_cmd=True)
+                              buffer_size=-1, show_cmd=True)
 
         # upload results back to hub
         xz_path = srpm_path[:-8] + ".tar.xz"

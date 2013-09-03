@@ -194,7 +194,7 @@ def extract_logs_from_tarball(task_id, name=None):
 I have used this command: %s' % (task_id, tar_archive, command))
 
 
-def create_base_diff_task(kwargs, parent_id):
+def create_base_diff_task(hub_opts, task_opts, parent_id):
     """
         create scan of a package and perform diff on results against specified
         version
@@ -211,28 +211,21 @@ def create_base_diff_task(kwargs, parent_id):
          - nvr_mock - mock config
          - base_mock - mock config
     """
-    options = {}
+    options = task_opts or {}
 
-    base_srpm = kwargs.get('base_srpm', None)
-    base_brew_build = kwargs.get('base_brew_build', None)
-    base_upload_id = kwargs.get('base_upload_id', None)
-
-    options['aggressive'] = kwargs.get('aggressive', False)
-    options['cppcheck'] = kwargs.get('cppcheck', False)
-    options['keep_covdata'] = kwargs.get("keep_covdata", False)
-    options['all'] = kwargs.get("all", False)
-    options['security'] = kwargs.get("security", False)
-    options['concurrency'] = kwargs.get("concurrency", False)
+    base_srpm = hub_opts.get('base_srpm', None)
+    base_brew_build = hub_opts.get('base_brew_build', None)
+    base_upload_id = hub_opts.get('base_upload_id', None)
 
     #from request.user
-    task_user = kwargs['task_user']
+    task_user = hub_opts['task_user']
 
     #Label, description or any reason for this task.
     task_label = base_srpm or base_brew_build
 
-    base_mock = kwargs['base_mock']
-    priority = kwargs.get('priority', 10) + 1
-    comment = kwargs.get('comment', '')
+    base_mock = hub_opts['base_mock']
+    priority = hub_opts.get('priority', 10) + 1
+    comment = hub_opts.get('comment', '')
 
     options["mock_config"] = base_mock
 
@@ -275,13 +268,14 @@ def create_base_diff_task(kwargs, parent_id):
 
 
 @public
-def create_diff_task(kwargs):
+def create_diff_task(hub_opts, task_opts):
     """
         create scan of a package and perform diff on results against specified
         version
-        options of this scan are in dict 'kwargs'
+        Options for task are stored in 'task_opts'
+        options of this scan are in dict 'hub_opts':
 
-        kwargs
+        hub_opts
          - task_user - username from request.user.username
          - nvr_srpm - name, version, release of scanned package
          - nvr_upload_id - upload id for target, so worker is able to download it
@@ -292,29 +286,22 @@ def create_diff_task(kwargs):
          - nvr_mock - mock config
          - base_mock - mock config
     """
-    options = {}
+    options = task_opts or {}
 
-    task_user = kwargs['task_user']
+    task_user = hub_opts['task_user']
 
-    nvr_srpm = kwargs.get('nvr_srpm', None)
-    nvr_brew_build = kwargs.get('nvr_brew_build', None)
-    nvr_upload_id = kwargs.get('nvr_upload_id', None)
-    analyzers = options.pop("analyzers", None)
-
-    options['aggressive'] = kwargs.get('aggressive', False)
-    options['cppcheck'] = kwargs.get('cppcheck', False)
-    options['keep_covdata'] = kwargs.get("keep_covdata", False)
-    options['all'] = kwargs.get("all", False)
-    options['security'] = kwargs.get("security", False)
-    options['concurrency'] = kwargs.get("concurrency", False)
+    nvr_srpm = hub_opts.get('nvr_srpm', None)
+    nvr_brew_build = hub_opts.get('nvr_brew_build', None)
+    nvr_upload_id = hub_opts.get('nvr_upload_id', None)
+    analyzers = hub_opts.pop("analyzers", None)
 
     #Label, description or any reason for this task.
     task_label = nvr_srpm or nvr_brew_build
 
-    nvr_mock = kwargs['nvr_mock']
-    base_mock = kwargs['base_mock']
-    priority = kwargs.get('priority', 10)
-    comment = kwargs.get('comment', '')
+    nvr_mock = hub_opts['nvr_mock']
+    base_mock = hub_opts['base_mock']
+    priority = hub_opts.get('priority', 10)
+    comment = hub_opts.get('comment', '')
 
     #does mock config exist?
     get_mock_by_name(nvr_mock)
@@ -366,7 +353,7 @@ def create_diff_task(kwargs):
         upload.delete()
 
     parent_task = Task.objects.get(id=task_id)
-    create_base_diff_task(copy.deepcopy(kwargs), task_id)
+    create_base_diff_task(copy.deepcopy(hub_opts), task_opts, task_id)
 
     # wait has to be after creation of new subtask
     # TODO wait should be executed in one transaction with creation of
