@@ -243,33 +243,33 @@ get_waivers_submitted_by_release.group = "WAIVERS"
 get_waivers_submitted_by_release.order = 1
 
 
-def get_total_waivers_submitted():
+def get_total_update_waivers_submitted():
     """
-        New package/rebase waivers submitted
+        Waivers submitted for regular updates
 
-        Number of waivers submitted for scans of new packages and rebases.
+        Number of waivers submitted for updates (no rebase/new package).
     """
-    return Waiver.objects.all().count()
-get_total_waivers_submitted.order = 1
-get_total_waivers_submitted.group = "WAIVERS"
+    return Waiver.waivers.updates().count()
+get_total_update_waivers_submitted.order = 2
+get_total_update_waivers_submitted.group = "WAIVERS"
 
 
-def get_waivers_submitted_by_release():
+def get_total_update_waivers_submitted_by_release():
     """
-        New package/rebase waivers submitted
+        Waivers submitted for regular updates
 
-        Number of waivers submitted for scans of new packages and rebases in \
+        Number of waivers submitted for updates (no rebase/new package) in \
 this release.
     """
     releases = SystemRelease.objects.filter(active=True)
     result = {}
     for r in releases:
-        result[r] = Waiver.objects.filter(
+        result[r] = Waiver.waivers.updates().filter(
             result_group__result__scanbinding__scan__tag__release=r.id,
         ).count()
     return result
-get_waivers_submitted_by_release.group = "WAIVERS"
-get_waivers_submitted_by_release.order = 1
+get_total_update_waivers_submitted_by_release.group = "WAIVERS"
+get_total_update_waivers_submitted_by_release.order = 2
 
 
 def get_total_missing_waivers():
@@ -282,7 +282,7 @@ def get_total_missing_waivers():
         result__scanbinding__scan__enabled=True,
         state=RESULT_GROUP_STATES['NEEDS_INSPECTION']).count()
 get_total_missing_waivers.group = "WAIVERS"
-get_total_missing_waivers.order = 2
+get_total_missing_waivers.order = 3
 
 
 def get_missing_waivers_by_release():
@@ -301,7 +301,7 @@ def get_missing_waivers_by_release():
         ).count()
     return result
 get_missing_waivers_by_release.group = "WAIVERS"
-get_missing_waivers_by_release.order = 2
+get_missing_waivers_by_release.order = 3
 
 
 def get_total_is_a_bug_waivers():
@@ -312,7 +312,7 @@ def get_total_is_a_bug_waivers():
     """
     return Waiver.objects.filter(state=WAIVER_TYPES['IS_A_BUG']).count()
 get_total_is_a_bug_waivers.group = "WAIVERS"
-get_total_is_a_bug_waivers.order = 3
+get_total_is_a_bug_waivers.order = 4
 
 
 def get_is_a_bug_waivers_by_release():
@@ -330,7 +330,7 @@ def get_is_a_bug_waivers_by_release():
         ).count()
     return result
 get_is_a_bug_waivers_by_release.group = "WAIVERS"
-get_is_a_bug_waivers_by_release.order = 3
+get_is_a_bug_waivers_by_release.order = 4
 
 
 def get_total_not_a_bug_waivers():
@@ -341,7 +341,7 @@ def get_total_not_a_bug_waivers():
     """
     return Waiver.objects.filter(state=WAIVER_TYPES['NOT_A_BUG']).count()
 get_total_not_a_bug_waivers.group = "WAIVERS"
-get_total_not_a_bug_waivers.order = 4
+get_total_not_a_bug_waivers.order = 5
 
 
 def get_not_a_bug_waivers_by_release():
@@ -359,7 +359,7 @@ def get_not_a_bug_waivers_by_release():
         ).count()
     return result
 get_not_a_bug_waivers_by_release.group = "WAIVERS"
-get_not_a_bug_waivers_by_release.order = 4
+get_not_a_bug_waivers_by_release.order = 5
 
 
 def get_total_fix_later_waivers():
@@ -370,7 +370,7 @@ def get_total_fix_later_waivers():
     """
     return Waiver.objects.filter(state=WAIVER_TYPES['FIX_LATER']).count()
 get_total_fix_later_waivers.group = "WAIVERS"
-get_total_fix_later_waivers.order = 5
+get_total_fix_later_waivers.order = 6
 
 
 def get_fix_later_waivers_by_release():
@@ -388,7 +388,7 @@ def get_fix_later_waivers_by_release():
         ).count()
     return result
 get_fix_later_waivers_by_release.group = "WAIVERS"
-get_fix_later_waivers_by_release.order = 5
+get_fix_later_waivers_by_release.order = 6
 
 ######
 # TIME
