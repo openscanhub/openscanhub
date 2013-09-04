@@ -681,12 +681,17 @@ class AnalyzerManager(models.Manager):
         ans = self.filter_by_long_arg(a_list)
 
         response = {}
-        response['path'] = self.get_path(ans)
+        path = self.get_path(ans)
+        if path:
+            response['path'] = path
+
         # get rid of entries with empty build_append with filter function
-        response['args'] = filter(lambda y: y,
-                                  ans.values_list('build_append', flat=True))
-        response['no_coverity'] = not bool(
-            filter(lambda x: x.startswith('cov-'), a_list))
+        args = filter(lambda y: y, ans.values_list('build_append', flat=True))
+        if args:
+            response['args'] = args
+
+        if not bool(filter(lambda x: x.startswith('cov-'), a_list)):
+            response['no_coverity'] = True
 
         return response
 
