@@ -667,7 +667,7 @@ class AnalyzerManager(models.Manager):
     def get_path(self, query):
         try:
             return self.get_paths(query)[0].path
-        except KeyError:
+        except IndexError:
             return None
 
     def get_opts(self, analyzers):
