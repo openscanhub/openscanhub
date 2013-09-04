@@ -91,7 +91,7 @@ def release_stats_detail_graph(request, stat_id, release_id):
 
     data['labels'] = [release.tag]
     data['ykeys'] = ['a']
-    for result in sr.order_by('date'):
+    for result in sr.order_by('-date'):
         data['data'].append(
             {'x': result.date.strftime(time_format), 'a': result.value}
         )
@@ -116,7 +116,7 @@ def stats_detail_graph(request, stat_id):
 
     data['labels'] = ['Global']
     data['ykeys'] = ['a']
-    for result in sr.order_by('date'):
+    for result in sr.order_by('-date'):
         data['data'].append(
             {'x': result.date.strftime(time_format), 'a': result.value}
         )
