@@ -57,14 +57,14 @@ def csdiff_fixed_defects(old, new, result, task_dir):
 
 def cshtml(input_file, output_file, workdir):
     """ generate HTML report """
-    cmd = 'cshtml %s > %s' % \
+    cmd = 'csgrep --prune-events 1 --mode json %s | cshtml - > %s' % \
         (input_file, output_file)
     return _run(cmd, workdir)
 
 
 def csgrep_err(input_file, output_file, workdir):
     """ generate ERR text files """
-    cmd = 'csgrep %s > %s' % (input_file, output_file)
+    cmd = 'csgrep --prune-events 1 %s > %s' % (input_file, output_file)
     return _run(cmd, workdir)
 
 
