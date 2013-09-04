@@ -107,6 +107,8 @@ If you have any questions, feel free to ask at Red Hat IRC channel \
         's' if waivers.count() >= 2 else '',
         waivers[0].result_group.result.scanbinding.scan.base.nvr)
 
+    comment += format_waivers(waivers, request)
+
     data = {
         'product': release.product,
         'component': package.name,
