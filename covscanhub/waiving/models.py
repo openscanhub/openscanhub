@@ -9,7 +9,7 @@ from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 import django.db.models as models
 
-from covscanhub.scan.models import Package, SystemRelease
+from covscanhub.scan.models import Package, SystemRelease, SCAN_TYPES
 
 DEFECT_STATES = Enum(
     # newly introduced defect
@@ -352,6 +352,12 @@ class WaiverOnlyManager(models.Manager):
 
     def waivers_for(self, rg):
         return self.filter(result_group=rg)
+
+    def updates(self):
+        """ return all waivers for regular updates (not rebase/new package) """
+        return self.filter(
+            result_group__result__scanbinding__scan__scan_type=
+            SCAN_TYPES['ERRATA'])
 
 
 class WaiverManager(models.Manager):
