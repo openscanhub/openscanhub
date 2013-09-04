@@ -15,7 +15,7 @@ from kobo.django.upload.models import FileUpload
 from kobo.client.constants import TASK_STATES
 
 from models import SCAN_STATES, ScanBinding, Scan, SCAN_TYPES_TARGET, \
-    SCAN_STATES_FINISHED_WELL
+    SCAN_STATES_FINISHED_WELL, Analyzer
 
 from covscanhub.other.exceptions import ScanException
 from covscanhub.other.shortcuts import get_mock_by_name, check_brew_build,\
