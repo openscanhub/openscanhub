@@ -331,7 +331,7 @@ def create_diff_task(hub_opts, task_opts):
     if analyzers:
         an_conf = Analyzer.objects.get_opts(analyzers)
         options.update(an_conf)
-        hub_opts.update(an_conf)
+        task_opts.update(an_conf)
 
     task_id = Task.create_task(
         owner_name=task_user,
