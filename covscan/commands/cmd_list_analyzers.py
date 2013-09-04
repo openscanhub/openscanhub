@@ -2,6 +2,7 @@
 
 
 import sys
+import random
 
 import covscan
 from kobo.client import HubProxy
@@ -42,6 +43,8 @@ http://$hostname/covscan/xmlrpc"
             print format % (i["name"], i['version'], i["cli_short_command"],
                             i["cli_long_command"])
 
+        shuffled_list = available_analyzers[:]
+        random.shuffle(shuffled_list)
         print >> sys.stderr, "\nExample of using long option: \
-\"--analyzer %s\"" \
-            % (','.join([x['cli_long_command'] for x in available_analyzers]))
+\"--analyzer=%s\"" \
+            % (','.join([x['cli_long_command'] for x in shuffled_list[:2]]))
