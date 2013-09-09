@@ -346,77 +346,72 @@ def comment_post(request, form, sb, result_group_object, url_name_next,
     return HttpResponseRedirect(prim_url)
 
 
-def waiver_post(request, sb, result_group_object, url_name, url_name_next,
-                active_tab, defects_list_class):
+def waiver_post(form, request, sb, result_group_object, url_name,
+                url_name_next, active_tab, defects_list_class):
     """adding new waiver/marking group as TP"""
-    form = WaiverForm(request.POST)
-    if form.is_valid():
-        if 'COMMENT' == form.cleaned_data['waiver_type']:
-            return comment_post(request, form, sb, result_group_object,
-                                url_name_next, active_tab, defects_list_class)
-        wl = WaivingLog()
-        wl.user = request.user
-        if result_group_object.has_waiver():
-            wl.state = WAIVER_LOG_ACTIONS['REWAIVE']
-        else:
-            wl.state = WAIVER_LOG_ACTIONS['NEW']
-
-        lws = Waiver.objects.filter(result_group=result_group_object)
-        if lws:
-            lw = lws.latest()
-            lw.is_active = False
-            lw.save()
-
-        w = Waiver()
-        w.message = form.cleaned_data['message']
-        w.result_group = result_group_object
-        w.user = request.user
-        w.is_active = True
-        w.state = WAIVER_TYPES[form.cleaned_data['waiver_type']]
-        w.save()
-
-        wl.waiver = w
-        wl.save()
-
-        s = sb.scan
-
-        if result_group_object.is_previously_waived():
-            result_group_object.defect_type = DEFECT_STATES['NEW']
-            result_group_object.save()
-
-        # set RG as waived when condition is met
-        # set run as waived if everything is okay
-        if waiver_condition(result_group_object):
-            result_group_object.state = RESULT_GROUP_STATES['WAIVED']
-            result_group_object.save()
-
-            if not get_unwaived_rgs(sb.result) and not s.is_waived():
-                s.set_state(SCAN_STATES['WAIVED'])
-        s.last_access = datetime.datetime.now()
-        s.save()
-
-        logger.info('Waiver %s submitted for resultgroup %s',
-                    w, result_group_object)
-        request.session['status_message'] = \
-            "Waiver (%s) successfully submitted." % (
-            w.message[:50].rstrip() + '... ' if len(w.message) > 50
-            else w.message)
-
-        request.session['active_tab'] = active_tab
-        request.session['defects_list_class'] = defects_list_class
-
-        prim_url = reverse("waiving/result", args=(sb.id, ))
-        rgs = get_unwaived_rgs(result_group_object.result)
-        if not rgs:
-            request.session['status_message'] += " Everything is waived."
-        if 'submit_next' in request.POST:
-            if rgs:
-                return HttpResponseRedirect(reverse(url_name_next,
-                                                    args=(sb.id, rgs[0].id)))
-        return HttpResponseRedirect(prim_url)
+    if 'COMMENT' == form.cleaned_data['waiver_type']:
+        return comment_post(request, form, sb, result_group_object,
+                            url_name_next, active_tab, defects_list_class)
+    wl = WaivingLog()
+    wl.user = request.user
+    if result_group_object.has_waiver():
+        wl.state = WAIVER_LOG_ACTIONS['REWAIVE']
     else:
-        request.session['status_message'] = "You have entered invalid data."
-        return HttpResponseRedirect(prim_url)
+        wl.state = WAIVER_LOG_ACTIONS['NEW']
+
+    lws = Waiver.objects.filter(result_group=result_group_object)
+    if lws:
+        lw = lws.latest()
+        lw.is_active = False
+        lw.save()
+
+    w = Waiver()
+    w.message = form.cleaned_data['message']
+    w.result_group = result_group_object
+    w.user = request.user
+    w.is_active = True
+    w.state = WAIVER_TYPES[form.cleaned_data['waiver_type']]
+    w.save()
+
+    wl.waiver = w
+    wl.save()
+
+    s = sb.scan
+
+    if result_group_object.is_previously_waived():
+        result_group_object.defect_type = DEFECT_STATES['NEW']
+        result_group_object.save()
+
+    # set RG as waived when condition is met
+    # set run as waived if everything is okay
+    if waiver_condition(result_group_object):
+        result_group_object.state = RESULT_GROUP_STATES['WAIVED']
+        result_group_object.save()
+
+        if not get_unwaived_rgs(sb.result) and not s.is_waived():
+            s.set_state(SCAN_STATES['WAIVED'])
+    s.last_access = datetime.datetime.now()
+    s.save()
+
+    logger.info('Waiver %s submitted for resultgroup %s',
+                w, result_group_object)
+    request.session['status_message'] = \
+        "Waiver (%s) successfully submitted." % (
+        w.message[:50].rstrip() + '... ' if len(w.message) > 50
+        else w.message)
+
+    request.session['active_tab'] = active_tab
+    request.session['defects_list_class'] = defects_list_class
+
+    rgs = get_unwaived_rgs(result_group_object.result)
+    if not rgs:
+        request.session['status_message'] += " Everything is waived."
+    if 'submit_next' in request.POST:
+        if rgs:
+            return HttpResponseRedirect(reverse(url_name_next,
+                                                args=(sb.id, rgs[0].id)))
+    prim_url = reverse("waiving/result", args=(sb.id, ))
+    return HttpResponseRedirect(prim_url)
 
 
 def waiver(request, sb_id, result_group_id):
@@ -429,8 +424,17 @@ def waiver(request, sb_id, result_group_id):
     result_group_object = get_object_or_404(ResultGroup, id=result_group_id)
 
     if request.method == "POST":
-        return waiver_post(request, sb, result_group_object, 'waiving/waiver',
-                           'waiving/waiver', "new_selected", "new")
+        form = WaiverForm(request.POST)
+
+        if form.is_valid():
+            return waiver_post(form, request, sb, result_group_object,
+                               'waiving/waiver', 'waiving/waiver',
+                               "new_selected", "new")
+        else:
+            context['status_message'] = 'Invalid submission. For more ' \
+                'details, see form.'
+    else:
+        form = WaiverForm()
 
     # this could help user to determine if this is FP or not
     previous_waivers = result_group_object.previous_waivers()
@@ -438,7 +442,6 @@ def waiver(request, sb_id, result_group_id):
         context['previous_waivers'] = previous_waivers
     context['display_waivers'] = True
     if sb.scan.enabled:
-        form = WaiverForm()
         context['form'] = form
         context['display_form'] = True
         context['waiver_type_helpers'] = \
