@@ -196,7 +196,10 @@ a SRPM")
                 self.parser.error(result)
 
         if not base_config:
-            base_config = local_conf.get_default_mockconfig()
+            if config:
+                base_config = config
+            else:
+                base_config = local_conf.get_default_mockconfig()
             if not base_config:
                 self.parser.error("You haven't specified mock config, there \
 is not even one in your user configuration file \
@@ -206,7 +209,10 @@ is not even one in your user configuration file \
                 % base_config
 
         if not config:
-            config = local_conf.get_default_mockconfig()
+            if base_config:
+                config = base_config
+            else:
+                config = local_conf.get_default_mockconfig()
             if not config:
                 self.parser.error("You haven't specified mock config, there \
 is not even one in your user configuration file \
