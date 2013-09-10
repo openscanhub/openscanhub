@@ -162,9 +162,9 @@ def add_logs_to_context(sb):
                                  (FIXED_HTML_FILE, 'HTML'),
                                  (FIXED_DIFF_FILE, 'JSON')], logs_list))
     logs.append(create_log_dict('All defects', 'Document_content_32.png',
-                                sb.scan.nvr + '.html',
+                                log_prefix + '.html',
                                 [(log_prefix + '.err', 'TXT'),
-                                 (sb.scan.nvr + '.html', 'HTML'),
+                                 (log_prefix + '.html', 'HTML'),
                                  (log_prefix + '.js', 'JSON')], logs_list))
     logs.append(create_log_dict('Scan Log', 'Message_log_32.png',
                                 'stdout.log',
