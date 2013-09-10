@@ -381,6 +381,8 @@ def waiver_post(form, request, sb, result_group_object, url_name,
 
     if result_group_object.is_previously_waived():
         result_group_object.defect_type = DEFECT_STATES['NEW']
+        Defect.objects.filter(result_group=result_group_object).\
+            update(state=DEFECT_STATES['NEW'])
         result_group_object.save()
 
     # set RG as waived when condition is met
@@ -532,11 +534,17 @@ def previously_waived(request, sb_id, result_group_id):
     result_group_object = get_object_or_404(ResultGroup, id=result_group_id)
 
     if request.method == "POST":
-        result_group_object.defect_type = DEFECT_STATES['PREVIOUSLY_WAIVED']
-        result_group_object.save()
-        return waiver_post(request, sb, result_group_object,
-                           'waiving/previously_waived', 'waiving/waiver',
-                           "old_selected", "old")
+        form = WaiverForm(request.POST)
+
+        if form.is_valid():
+            return waiver_post(form, request, sb, result_group_object,
+                               'waiving/previously_waived', 'waiving/waiver',
+                               "old_selected", "old")
+        else:
+            context['status_message'] = 'Invalid submission. For more ' \
+                'details, see form.'
+    else:
+        form = WaiverForm()
 
     context = get_result_context(request, sb)
 
@@ -557,7 +565,6 @@ def previously_waived(request, sb_id, result_group_id):
     context['waiving_logs'] = WaivingLog.objects.filter(
         waiver__result_group=result_group_id).exclude(
         state=WAIVER_LOG_ACTIONS['DELETE'])
-    form = WaiverForm()
     context['form'] = form
     context['display_form'] = True
     context['display_waivers'] = True
