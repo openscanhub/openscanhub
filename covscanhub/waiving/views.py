@@ -426,6 +426,11 @@ def waiver(request, sb_id, result_group_id):
     sb = get_object_or_404(ScanBinding, id=sb_id)
     result_group_object = get_object_or_404(ResultGroup, id=result_group_id)
 
+    # this could help user to determine if this is FP or not
+    previous_waivers = result_group_object.previous_waivers()
+    if previous_waivers:
+        context['previous_waivers'] = previous_waivers
+
     if request.method == "POST":
         form = WaiverForm(request.POST)
 
@@ -437,12 +442,11 @@ def waiver(request, sb_id, result_group_id):
             context['status_message'] = 'Invalid submission. For more ' \
                 'details, see form.'
     else:
-        form = WaiverForm()
+        if previous_waivers:
+            form = WaiverForm(initial={'message': previous_waivers[0].message})
+        else:
+            form = WaiverForm()
 
-    # this could help user to determine if this is FP or not
-    previous_waivers = result_group_object.previous_waivers()
-    if previous_waivers:
-        context['previous_waivers'] = previous_waivers
     context['display_waivers'] = True
     if sb.scan.enabled:
         context['form'] = form

@@ -387,6 +387,7 @@ waived for specific Result")
 
     class Meta:
         get_latest_by = "date"
+        ordering = ("-date", )
 
     def __unicode__(self):
         return u"#%d %s - %s, ResultGroup: (%s) BZ: %s" % (
