@@ -192,9 +192,12 @@
 <h3>This group has been waived in a past with these waivers:</h3>
     {% for w in previous_waivers %}
     <div class="waiving_log wl_type_PAST_WAIVERS">
+        <span class="waiver_type {{ w.get_state_display }}">{{ w.get_display_type }}</span>
         Waiver for build <a href="{% url waiving/waiver w.result_group.result.scanbinding.id w.result_group.id %}">{{ w.result_group.result.scanbinding.scan.nvr}}</a> submitted {{ w.date|naturaltime }} ({{ w.date|date:"Y-m-d H:i:s" }}):
-        <div class="message">
-        {{ w.message }}
+        <div class="message_box">
+            <div class="message">
+                {{ w.message }}
+            </div>
         </div>
     </div>
     {% endfor %}
