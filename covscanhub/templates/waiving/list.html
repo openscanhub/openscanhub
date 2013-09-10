@@ -10,6 +10,7 @@
 <input type="submit" value="{% trans "Search" %}" />
 {% if user.is_authenticated %}<br />{{ search_form.my }} Show only my scans{% endif %}
 {{ search_form.overdue }} Show only overdue runs
+{{ search_form.latest }} Show only latest runs
 </form>
 
 {% include "pagination.html" %}

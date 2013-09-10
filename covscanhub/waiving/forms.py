@@ -21,6 +21,9 @@ class ScanListSearchForm(forms.Form):
     search = forms.CharField(required=False)
     my = forms.BooleanField(required=False)
     overdue = forms.BooleanField(required=False)
+    # Scan.objects.raw('SELECT * FROM (SELECT * FROM scan_scan ORDER BY
+    # date_submitted) GROUP BY package_id')
+    latest = forms.BooleanField(required=False)
 
     def __init__(self, *args, **kwargs):
         super(ScanListSearchForm, self).__init__(*args, **kwargs)
@@ -43,6 +46,7 @@ class ScanListSearchForm(forms.Form):
             my = self.cleaned_data["my"]
             self.overdue_filled = self.cleaned_data["overdue"]
             release = self.cleaned_data["release"]
+            self.latest = self.cleaned_data['latest']
             query = Q()
 
             if search:
@@ -67,6 +71,8 @@ class ScanListSearchForm(forms.Form):
 
     def objects_satisfy(self, q):
         """ is run processed correctly on time? """
+        if self.latest:
+            q = q.latest_packages_scans()
         if self.overdue_filled:
             # DO NOT USE `if not o.sca...`, because `scan.wai...` may return
             # False and None which are two completely different states:
@@ -77,4 +83,4 @@ class ScanListSearchForm(forms.Form):
             return q
 
     def extra_query(self):
-        return self.overdue_filled
+        return self.overdue_filled or self.latest

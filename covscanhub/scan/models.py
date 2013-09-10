@@ -490,6 +490,27 @@ setting: %s', e)
         return scans
 
 
+class ScanBindingMixin(object):
+    def latest_packages_scans(self):
+        ids = []
+        q = self.finished_well()
+        for p_id in q.values_list('scan__package', flat=True).distinct():
+            ids.append(self.filter(scan__package__id=p_id).latest().id)
+        return self.filter(id__in=ids)
+
+    def finished_well(self):
+        return self.filter(scan__state__in=SCAN_STATES_FINISHED_WELL)
+
+
+class ScanBindingQuerySet(models.query.QuerySet, ScanBindingMixin):
+    pass
+
+
+class ScanBindingManager(models.Manager, ScanBindingMixin):
+    def get_query_set(self):
+        return ScanBindingQuerySet(self.model, using=self._db)
+
+
 class ScanBinding(models.Model):
     """
     Binding between scan, task and result -- for easier creation of scans that
@@ -502,6 +523,8 @@ class ScanBinding(models.Model):
                                 verbose_name="Scan")
     result = models.OneToOneField("waiving.Result",
                                   blank=True, null=True,)
+
+    objects = ScanBindingManager()
 
     class Meta:
         get_latest_by = "result__date_submitted"
