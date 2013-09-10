@@ -278,6 +278,19 @@ package')
         return mark_safe(response)
 
 
+class ScanMixin(object):
+    pass
+
+
+class ScanQuerySet(models.query.QuerySet, ScanMixin):
+    pass
+
+
+class ScanManager(models.Manager, ScanMixin):
+    def get_query_set(self):
+        return ScanQuerySet(self.model, using=self._db)
+
+
 class Scan(models.Model):
     """
     Stores information about submitted scans from Errata Tool
@@ -323,6 +336,8 @@ counted in statistics.")
 
     parent = models.ForeignKey('self', verbose_name="Parent Scan", blank=True,
                                null=True, related_name="parent_scan")
+
+    objects = ScanManager()
 
     class Meta:
         get_latest_by = "date_submitted"
