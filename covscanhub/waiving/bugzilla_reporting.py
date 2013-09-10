@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import bugzilla
+import xmlrpclib
 
 from django.conf import settings
 from django.core.urlresolvers import reverse
@@ -120,10 +121,23 @@ If you have any questions, feel free to ask at Red Hat IRC channel \
         'rep_platform': 'All',
         'op_sys': 'Linux',
         'groups': ['private'],  # others are devel, qa
-        'cf_devel_whiteboard': 'CoverityScan'
+        'cf_devel_whiteboard': 'CoverityScan',
     }
-    # set bug as private?
-    b = bz.createbug(**data)
+
+    if waivers[0].result_group.result.scanbinding.scan.username != \
+            request.user:
+        data['cc'] = [request.user.username + '@redhat.com']
+
+    try:
+        b = bz.createbug(**data)
+    except xmlrpclib.Fault:
+        try:
+            # most likely the email in CC does not exist in BZ as user
+            del data['cc']
+        except KeyError:
+            pass
+        else:
+            b = bz.createbug(**data)
     db_bz = Bugzilla()
     db_bz.release = release
     db_bz.package = package
