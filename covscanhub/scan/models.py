@@ -510,7 +510,9 @@ class ScanBindingMixin(object):
         ids = []
         q = self.finished_well()
         for p_id in q.values_list('scan__package', flat=True).distinct():
-            ids.append(self.filter(scan__package__id=p_id).latest().id)
+            p = q.filter(scan__package__id=p_id)
+            for base in p.values_list('scan__base__nvr', flat=True).distinct():
+                ids.append(p.filter(scan__base__nvr=base).latest().id)
         return self.filter(id__in=ids)
 
     def finished_well(self):
