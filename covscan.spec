@@ -6,8 +6,8 @@
 
 
 Name:           covscan
-Version:        0.3.2
-Release:        3%{?dist}
+Version:        0.4.0
+Release:        1%{?dist}
 License:        Commercial
 Summary:        Coverity scan scheduler
 Group:          Applications/Engineering
