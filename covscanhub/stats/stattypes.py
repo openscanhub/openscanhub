@@ -407,7 +407,7 @@ def get_busy_minutes():
             result += t.time
         except TypeError:
             pass
-    return result.seconds / 60
+    return result.seconds / 60 + (result.days * 24 * 60)
 get_busy_minutes.order = 1
 get_busy_minutes.group = "TIME"
 
