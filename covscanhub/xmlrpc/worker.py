@@ -11,7 +11,8 @@ from covscanhub.service.processing import task_diff
 from covscanhub.scan.notify import send_task_notification
 from covscanhub.scan.xmlrpc_helper import finish_scan as h_finish_scan,\
     fail_scan as h_fail_scan, scan_notification_email
-from covscanhub.scan.models import SCAN_STATES, Scan, TaskExtension
+from covscanhub.scan.models import SCAN_STATES, Scan, TaskExtension, \
+    SCAN_STATES_IN_PROGRESS
 
 from django.core.exceptions import ObjectDoesNotExist
 
@@ -84,7 +85,7 @@ def set_scan_to_scanning(request, scan_id):
     if not scan.base:
         try:
             Scan.objects.get(
-                state=SCAN_STATES['QUEUED'],
+                state__in=SCAN_STATES_IN_PROGRESS,
                 base=scan,
             ).set_state(SCAN_STATES['BASE_SCANNING'])
         except Exception, ex:
