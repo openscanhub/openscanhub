@@ -444,8 +444,8 @@ def get_latest_binding(scan_nvr, show_failed=False):
         #'-date' -- latest; 'date' -- oldest
         latest_submitted = query.order_by('-scan__date_submitted')[0]
         if (latest_submitted.scan.state == SCAN_STATES['QUEUED'] or
-            latest_submitted.scan.state == SCAN_STATES['SCANNING']) and \
-                latest_submitted.result is None:
+            latest_submitted.scan.state == SCAN_STATES['SCANNING'] or
+            latest_submitted.result is None):
             return latest_submitted
         else:
             return query.latest()
