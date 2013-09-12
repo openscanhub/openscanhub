@@ -14,6 +14,7 @@ import datetime
 
 from kobo.hub.models import Task
 
+from covscanhub.stats.utils import stat_function
 from covscanhub.scan.models import Scan, SystemRelease,\
     ScanBinding, SCAN_TYPES_TARGET
 from covscanhub.scan.service import diff_fixed_defects_in_package,\
@@ -29,7 +30,7 @@ from django.db.models import Sum
 # SCANS
 #######
 
-
+@stat_function(1, "SCANS")
 def get_total_scans():
     """
         Scans count
@@ -37,10 +38,9 @@ def get_total_scans():
         Number of all submitted scans.
     """
     return Scan.objects.filter(scan_type__in=SCAN_TYPES_TARGET).count()
-get_total_scans.group = "SCANS"
-get_total_scans.order = 1
 
 
+@stat_function(1, "SCANS")
 def get_scans_by_release():
     """
         Scans count
@@ -53,14 +53,13 @@ def get_scans_by_release():
         result[r] = Scan.objects.filter(scan_type__in=SCAN_TYPES_TARGET,
                                         tag__release=r.id).count()
     return result
-get_scans_by_release.group = "SCANS"
-get_scans_by_release.order = 1
 
 #####
 # LOC
 #####
 
 
+@stat_function(1, "LOC")
 def get_total_lines():
     """
         Lines of code scanned
@@ -72,9 +71,9 @@ def get_total_lines():
         return 0
     else:
         return sbs.aggregate(Sum('result__lines'))['result__lines__sum']
-get_total_lines.group = "LOC"
-get_total_lines.order = 1
 
+
+@stat_function(1, "LOC")
 def get_lines_by_release():
     """
         Lines of code scanned
@@ -84,29 +83,29 @@ def get_lines_by_release():
     releases = SystemRelease.objects.filter(active=True)
     result = {}
     for r in releases:
-        result[r] = ScanBinding.objects.filter(scan__enabled=True,
-            scan__tag__release=r.id)\
+        result[r] = ScanBinding.objects.filter(
+            scan__enabled=True, scan__tag__release=r.id)\
             .aggregate(Sum('result__lines'))['result__lines__sum']
     return result
-get_lines_by_release.group = "LOC"
-get_lines_by_release.order = 1
 
 #########
 # DEFECTS
 #########
 
 
+@stat_function(1, "DEFECTS")
 def get_total_fixed_defects():
     """
         Fixed defects
 
         Number of defects that were marked as 'fixed'
     """
-    return Defect.objects.filter(state=DEFECT_STATES['FIXED'],
+    return Defect.objects.filter(
+        state=DEFECT_STATES['FIXED'],
         result_group__result__scanbinding__scan__enabled=True).count()
-get_total_fixed_defects.group = "DEFECTS"
-get_total_fixed_defects.order = 1
 
+
+@stat_function(1, "DEFECTS")
 def get_fixed_defects_by_release():
     """
         Fixed defects
@@ -122,10 +121,9 @@ def get_fixed_defects_by_release():
             result_group__result__scanbinding__scan__enabled=True
         ).count()
     return result
-get_fixed_defects_by_release.group = "DEFECTS"
-get_fixed_defects_by_release.order = 1
 
 
+@stat_function(2, "DEFECTS")
 def get_total_new_defects():
     """
         New defects
@@ -134,10 +132,9 @@ def get_total_new_defects():
     """
     return Defect.objects.filter(state=DEFECT_STATES['NEW'],
         result_group__result__scanbinding__scan__enabled=True).count()
-get_total_new_defects.group = "DEFECTS"
-get_total_new_defects.order = 2
 
 
+@stat_function(2, "DEFECTS")
 def get_new_defects_by_release():
     """
         New defects
@@ -153,10 +150,9 @@ def get_new_defects_by_release():
             result_group__result__scanbinding__scan__enabled=True
         ).count()
     return result
-get_new_defects_by_release.group = "DEFECTS"
-get_new_defects_by_release.order = 2
 
 
+@stat_function(3, "DEFECTS")
 def get_fixed_defects_in_release():
     """
         Fixed defects in one release
@@ -171,10 +167,9 @@ def get_fixed_defects_in_release():
                                              scan__enabled=True):
             result[r] += diff_fixed_defects_in_package(sb)
     return result
-get_fixed_defects_in_release.group = "DEFECTS"
-get_fixed_defects_in_release.order = 3
 
 
+@stat_function(4, "DEFECTS")
 def get_fixed_defects_between_releases():
     """
         Fixed defects between releases
@@ -189,10 +184,9 @@ def get_fixed_defects_between_releases():
                                              scan__enabled=True):
             result[r] += diff_fixed_defects_between_releases(sb)
     return result
-get_fixed_defects_between_releases.group = "DEFECTS"
-get_fixed_defects_between_releases.order = 4
 
 
+@stat_function(5, "DEFECTS")
 def get_new_defects_between_releases():
     """
         New defects between releases
@@ -207,14 +201,13 @@ def get_new_defects_between_releases():
                                              scan__enabled=True):
             result[r] += diff_new_defects_between_releases(sb)
     return result
-get_new_defects_between_releases.group = "DEFECTS"
-get_new_defects_between_releases.order = 5
 
 #########
 # WAIVERS
 #########
 
 
+@stat_function(1, "WAIVERS")
 def get_total_waivers_submitted():
     """
         Waivers submitted
@@ -222,10 +215,9 @@ def get_total_waivers_submitted():
         Number of waivers submitted. (including invalidated)
     """
     return Waiver.objects.all().count()
-get_total_waivers_submitted.order = 1
-get_total_waivers_submitted.group = "WAIVERS"
 
 
+@stat_function(1, "WAIVERS")
 def get_waivers_submitted_by_release():
     """
         Waivers submitted
@@ -239,10 +231,9 @@ def get_waivers_submitted_by_release():
             result_group__result__scanbinding__scan__tag__release=r.id,
         ).count()
     return result
-get_waivers_submitted_by_release.group = "WAIVERS"
-get_waivers_submitted_by_release.order = 1
 
 
+@stat_function(2, "WAIVERS")
 def get_total_update_waivers_submitted():
     """
         Waivers submitted for regular updates
@@ -250,10 +241,9 @@ def get_total_update_waivers_submitted():
         Number of waivers submitted for updates (no rebase/new package).
     """
     return Waiver.waivers.updates().count()
-get_total_update_waivers_submitted.order = 2
-get_total_update_waivers_submitted.group = "WAIVERS"
 
 
+@stat_function(2, "WAIVERS")
 def get_total_update_waivers_submitted_by_release():
     """
         Waivers submitted for regular updates
@@ -268,10 +258,9 @@ this release.
             result_group__result__scanbinding__scan__tag__release=r.id,
         ).count()
     return result
-get_total_update_waivers_submitted_by_release.group = "WAIVERS"
-get_total_update_waivers_submitted_by_release.order = 2
 
 
+@stat_function(3, "WAIVERS")
 def get_total_missing_waivers():
     """
         Missing waivers
@@ -281,10 +270,9 @@ def get_total_missing_waivers():
     return ResultGroup.objects.filter(
         result__scanbinding__scan__enabled=True,
         state=RESULT_GROUP_STATES['NEEDS_INSPECTION']).count()
-get_total_missing_waivers.group = "WAIVERS"
-get_total_missing_waivers.order = 3
 
 
+@stat_function(3, "WAIVERS")
 def get_missing_waivers_by_release():
     """
         Missing waivers
@@ -300,10 +288,9 @@ def get_missing_waivers_by_release():
             result__scanbinding__scan__enabled=True,
         ).count()
     return result
-get_missing_waivers_by_release.group = "WAIVERS"
-get_missing_waivers_by_release.order = 3
 
 
+@stat_function(4, "WAIVERS")
 def get_total_is_a_bug_waivers():
     """
         'is a bug' waivers
@@ -311,10 +298,9 @@ def get_total_is_a_bug_waivers():
         Number of waivers with type IS_A_BUG.
     """
     return Waiver.objects.filter(state=WAIVER_TYPES['IS_A_BUG']).count()
-get_total_is_a_bug_waivers.group = "WAIVERS"
-get_total_is_a_bug_waivers.order = 4
 
 
+@stat_function(4, "WAIVERS")
 def get_is_a_bug_waivers_by_release():
     """
         'is a bug' waivers
@@ -329,10 +315,9 @@ def get_is_a_bug_waivers_by_release():
             result_group__result__scanbinding__scan__tag__release=r.id,
         ).count()
     return result
-get_is_a_bug_waivers_by_release.group = "WAIVERS"
-get_is_a_bug_waivers_by_release.order = 4
 
 
+@stat_function(5, "WAIVERS")
 def get_total_not_a_bug_waivers():
     """
         'not a bug' waivers
@@ -340,10 +325,9 @@ def get_total_not_a_bug_waivers():
         Number of waivers with type NOT_A_BUG.
     """
     return Waiver.objects.filter(state=WAIVER_TYPES['NOT_A_BUG']).count()
-get_total_not_a_bug_waivers.group = "WAIVERS"
-get_total_not_a_bug_waivers.order = 5
 
 
+@stat_function(5, "WAIVERS")
 def get_not_a_bug_waivers_by_release():
     """
         'not a bug' waivers
@@ -358,10 +342,9 @@ def get_not_a_bug_waivers_by_release():
             result_group__result__scanbinding__scan__tag__release=r.id,
         ).count()
     return result
-get_not_a_bug_waivers_by_release.group = "WAIVERS"
-get_not_a_bug_waivers_by_release.order = 5
 
 
+@stat_function(6, "WAIVERS")
 def get_total_fix_later_waivers():
     """
         'fix later' waivers
@@ -369,10 +352,9 @@ def get_total_fix_later_waivers():
         Number of waivers with type FIX_LATER.
     """
     return Waiver.objects.filter(state=WAIVER_TYPES['FIX_LATER']).count()
-get_total_fix_later_waivers.group = "WAIVERS"
-get_total_fix_later_waivers.order = 6
 
 
+@stat_function(6, "WAIVERS")
 def get_fix_later_waivers_by_release():
     """
         'fix later' waivers
@@ -387,14 +369,13 @@ def get_fix_later_waivers_by_release():
             result_group__result__scanbinding__scan__tag__release=r.id,
         ).count()
     return result
-get_fix_later_waivers_by_release.group = "WAIVERS"
-get_fix_later_waivers_by_release.order = 6
 
 ######
 # TIME
 ######
 
 
+@stat_function(1, "TIME")
 def get_busy_minutes():
     """
         Busy minutes
@@ -408,10 +389,9 @@ def get_busy_minutes():
         except TypeError:
             pass
     return result.seconds / 60 + (result.days * 24 * 60)
-get_busy_minutes.order = 1
-get_busy_minutes.group = "TIME"
 
 
+@stat_function(2, "TIME")
 def get_minutes_spent_scanning():
     """
         Scanning minutes
@@ -422,6 +402,4 @@ def get_minutes_spent_scanning():
     if not result:
         return 0
     else:
-        return result.aggregate(Sum('scanning_time'))['scanning_time__sum'] / 60
-get_minutes_spent_scanning.group = "TIME"
-get_minutes_spent_scanning.order = 2
+        return result.aggregate(Sum('st'))['st__sum'] / 60
