@@ -148,6 +148,44 @@ class Result(models.Model):
                                  self.scanbinding.scan)
 
 
+class DefectMixin(object):
+    def by_release(self, release):
+        return self.filter(
+            result_group__result__scanbinding__scan__tag__release=release)
+
+    def enabled(self):
+        return self.filter(
+            result_group__result__scanbinding__scan__enabled=True)
+
+    def fixed(self):
+        return self.filter(state=DEFECT_STATES['FIXED'])
+
+    def new(self):
+        return self.filter(state=DEFECT_STATES['NEW'])
+
+    def updates(self):
+        """ return all defects for regular updates """
+        return self.filter(
+            result_group__result__scanbinding__scan__scan_type=
+            SCAN_TYPES['ERRATA'])
+
+    def rebases(self):
+        """ return all defects for rebases """
+        return self.filter(
+            result_group__result__scanbinding__scan__scan_type=
+            SCAN_TYPES['REBASE'])
+
+
+class DefectQuerySet(models.query.QuerySet, DefectMixin):
+    pass
+
+
+class DefectManager(models.Manager, DefectMixin):
+    def get_query_set(self):
+        """ return all active waivers """
+        return DefectQuerySet(self.model, using=self._db)
+
+
 class Defect(models.Model):
     """
     One Result is composed of several Defects, each Defect is defined by
@@ -186,6 +224,8 @@ current defect",
     events = JSONField(default=[],
                        help_text="List of defect related events.")
 
+    objects = DefectManager()
+
     def __unicode__(self):
         return "#%d Checker: (%s)" % (self.id, self.checker)
 
@@ -204,8 +244,43 @@ only ResultGroups which belong to enabled CheckerGroups")
         return "#%d %s" % (self.id, self.name)
 
 
-class ResultGroupManager(models.Manager):
+class ResultGroupMixin(object):
+    def needs_insp(self):
+        return self.filter(state=RESULT_GROUP_STATES['NEEDS_INSPECTION'])
+
+    def active(self):
+        return self.filter(result__scanbinding__scan__enabled=True)
+
+    def missing_waiver(self):
+        return self.active().needs_insp()
+
+    def by_release(self, release):
+        return self.filter(result__scanbinding__scan__tag__release=release)
+
+    def updates(self):
+        """ return all rgs for regular updates """
+        return self.filter(
+            result__scanbinding__scan__scan_type=SCAN_TYPES['ERRATA'])
+
+    def newpkgs(self):
+        """ return all rgs for newpkgs """
+        return self.filter(
+            result__scanbinding__scan__scan_type=SCAN_TYPES['NEWPKG'])
+
+    def rebases(self):
+        """ return all rgs for rebases """
+        return self.filter(
+            result__scanbinding__scan__scan_type=SCAN_TYPES['REBASE'])
+
+
+class ResultGroupQuerySet(models.query.QuerySet, ResultGroupMixin):
     pass
+
+
+class ResultGroupManager(models.Manager, ResultGroupMixin):
+    def get_query_set(self):
+        """ return all active waivers """
+        return ResultGroupQuerySet(self.model, using=self._db)
 
 
 class ResultGroup(models.Model):
@@ -228,6 +303,8 @@ class ResultGroup(models.Model):
     defects_count = models.PositiveSmallIntegerField(
         default=0, blank=True, null=True, verbose_name="Number of defects \
 associated with this group.")
+
+    objects = ResultGroupManager()
 
     def is_previously_waived(self):
         return self.state == RESULT_GROUP_STATES['PREVIOUSLY_WAIVED'] or \
@@ -344,20 +421,51 @@ class Bugzilla(models.Model):
         )
 
 
-class WaiverOnlyManager(models.Manager):
-    def get_query_set(self):
-        """ return all active waivers """
-        return super(WaiverOnlyManager, self).get_query_set().filter(
-            state__in=WAIVERS_ONLY, is_deleted=False)
+class WaiverOnlyMixin(object):
+    def by_release(self, release):
+        return self.filter(
+            result_group__result__scanbinding__scan__tag__release=release)
 
     def waivers_for(self, rg):
         return self.filter(result_group=rg)
 
     def updates(self):
-        """ return all waivers for regular updates (not rebase/new package) """
+        """ return all waivers for regular updates """
         return self.filter(
             result_group__result__scanbinding__scan__scan_type=
             SCAN_TYPES['ERRATA'])
+
+    def newpkgs(self):
+        """ return all waivers for newpkgs """
+        return self.filter(
+            result_group__result__scanbinding__scan__scan_type=
+            SCAN_TYPES['NEWPKG'])
+
+    def rebases(self):
+        """ return all waivers for rebases """
+        return self.filter(
+            result_group__result__scanbinding__scan__scan_type=
+            SCAN_TYPES['REBASE'])
+
+    def is_a_bugs(self):
+        return self.filter(state=WAIVER_TYPES["IS_A_BUG"])
+
+    def not_a_bugs(self):
+        return self.filter(state=WAIVER_TYPES["NOT_A_BUG"])
+
+    def fix_laters(self):
+        return self.filter(state=WAIVER_TYPES["FIX_LATER"])
+
+
+class WaiverOnlyQuerySet(models.query.QuerySet, WaiverOnlyMixin):
+    pass
+
+
+class WaiverOnlyManager(models.Manager, WaiverOnlyMixin):
+    def get_query_set(self):
+        """ return all active waivers """
+        return WaiverOnlyQuerySet(self.model, using=self._db).filter(
+            state__in=WAIVERS_ONLY, is_deleted=False)
 
 
 class WaiverManager(models.Manager):

@@ -7,11 +7,11 @@ from covscanhub.scan.models import SystemRelease
 
 
 class StatType(models.Model):
-    key = models.CharField("Key", max_length="32", help_text="Short tag that \
+    key = models.CharField("Key", max_length=128, help_text="Short tag that \
 describes value of this stat.")
-    short_comment = models.CharField("Description", max_length="128")
-    comment = models.CharField("Description", max_length="512")
-    group = models.CharField("Description", max_length="16")
+    short_comment = models.CharField("Description", max_length=128)
+    comment = models.CharField("Description", max_length=512)
+    group = models.CharField("Description", max_length=16)
     order = models.IntegerField()
     is_release_specific = models.BooleanField()
 

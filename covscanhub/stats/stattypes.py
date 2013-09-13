@@ -18,7 +18,8 @@ from covscanhub.stats.utils import stat_function
 from covscanhub.scan.models import Scan, SystemRelease,\
     ScanBinding, SCAN_TYPES_TARGET
 from covscanhub.scan.service import diff_fixed_defects_in_package,\
-    diff_fixed_defects_between_releases, diff_new_defects_between_releases
+    diff_fixed_defects_between_releases, diff_new_defects_between_releases, \
+    diff_new_defects_in_package
 
 from covscanhub.waiving.models import Result, Defect, DEFECT_STATES, Waiver, \
     WAIVER_TYPES, ResultGroup, RESULT_GROUP_STATES
@@ -37,7 +38,7 @@ def get_total_scans():
 
         Number of all submitted scans.
     """
-    return Scan.objects.filter(scan_type__in=SCAN_TYPES_TARGET).count()
+    return Scan.objects.target().count()
 
 
 @stat_function(1, "SCANS")
@@ -50,8 +51,79 @@ def get_scans_by_release():
     releases = SystemRelease.objects.filter(active=True)
     result = {}
     for r in releases:
-        result[r] = Scan.objects.filter(scan_type__in=SCAN_TYPES_TARGET,
-                                        tag__release=r.id).count()
+        result[r] = Scan.objects.target().by_release(r).count()
+    return result
+
+
+@stat_function(2, "SCANS")
+def get_rebases_count():
+    """
+        Rebase scans count
+
+        Number of all submitted scans of rebases.
+    """
+    return Scan.objects.rebases().count()
+
+
+@stat_function(2, "SCANS")
+def get_rebases_count_by_release():
+    """
+        Rebase scans count
+
+        Number of all submitted scans of rebases by release.
+    """
+    releases = SystemRelease.objects.filter(active=True)
+    result = {}
+    for r in releases:
+        result[r] = Scan.objects.rebases().by_release(r).count()
+    return result
+
+
+@stat_function(3, "SCANS")
+def get_newpkg_count():
+    """
+        New package scans count
+
+        Number of scans of new packages.
+    """
+    return Scan.objects.newpkgs().count()
+
+
+@stat_function(3, "SCANS")
+def get_newpkg_count_by_release():
+    """
+        New package scans count
+
+        Number of scans of new packages by release.
+    """
+    releases = SystemRelease.objects.filter(active=True)
+    result = {}
+    for r in releases:
+        result[r] = Scan.objects.newpkgs().by_release(r).count()
+    return result
+
+
+@stat_function(4, "SCANS")
+def get_updates_count():
+    """
+        Update scans count
+
+        Number of scans of updates.
+    """
+    return Scan.objects.updates().count()
+
+
+@stat_function(4, "SCANS")
+def get_updates_count_by_release():
+    """
+        Update scans count
+
+        Number of scans of updates by release.
+    """
+    releases = SystemRelease.objects.filter(active=True)
+    result = {}
+    for r in releases:
+        result[r] = Scan.objects.updates().by_release(r).count()
     return result
 
 #####
@@ -98,11 +170,9 @@ def get_total_fixed_defects():
     """
         Fixed defects
 
-        Number of defects that were marked as 'fixed'
+        Number of defects that were marked as 'fixed'.
     """
-    return Defect.objects.filter(
-        state=DEFECT_STATES['FIXED'],
-        result_group__result__scanbinding__scan__enabled=True).count()
+    return Defect.objects.enabled().fixed().count()
 
 
 @stat_function(1, "DEFECTS")
@@ -115,15 +185,61 @@ def get_fixed_defects_by_release():
     releases = SystemRelease.objects.filter(active=True)
     result = {}
     for r in releases:
-        result[r] = Defect.objects.filter(
-            result_group__result__scanbinding__scan__tag__release=r.id,
-            state=DEFECT_STATES['FIXED'],
-            result_group__result__scanbinding__scan__enabled=True
-        ).count()
+        result[r] = Defect.objects.enabled().by_release(r).fixed().count()
     return result
 
 
 @stat_function(2, "DEFECTS")
+def get_total_fixed_defects_in_rebases():
+    """
+        Fixed defects in rebases
+
+        Number of defects that were marked as 'fixed' in rebases.
+    """
+    return Defect.objects.enabled().rebases().fixed().count()
+
+
+@stat_function(2, "DEFECTS")
+def get_fixed_defects_in_rebases_by_release():
+    """
+        Fixed defects in rebases
+
+        Number of fixed defects found in rebases by release.
+    """
+    releases = SystemRelease.objects.filter(active=True)
+    result = {}
+    for r in releases:
+        result[r] = Defect.objects.enabled().rebases().by_release(r)\
+            .fixed().count()
+    return result
+
+
+@stat_function(3, "DEFECTS")
+def get_total_fixed_defects_in_updates():
+    """
+        Fixed defects in updates
+
+        Number of defects that were marked as 'fixed' in updates.
+    """
+    return Defect.objects.enabled().updates().fixed().count()
+
+
+@stat_function(3, "DEFECTS")
+def get_fixed_defects_in_updates_by_release():
+    """
+        Fixed defects in updates
+
+        Number of fixed defects found in updates by release.
+    """
+    releases = SystemRelease.objects.filter(active=True)
+    result = {}
+    for r in releases:
+        result[r] = Defect.objects.enabled().updates().by_release(r)\
+            .fixed().count()
+    return result
+
+
+@stat_function(4, "DEFECTS")
 def get_total_new_defects():
     """
         New defects
@@ -134,7 +250,7 @@ def get_total_new_defects():
         result_group__result__scanbinding__scan__enabled=True).count()
 
 
-@stat_function(2, "DEFECTS")
+@stat_function(4, "DEFECTS")
 def get_new_defects_by_release():
     """
         New defects
@@ -152,7 +268,57 @@ def get_new_defects_by_release():
     return result
 
 
-@stat_function(3, "DEFECTS")
+@stat_function(5, "DEFECTS")
+def get_total_new_defects_in_rebases():
+    """
+        New defects in rebases
+
+        Number of newly introduced defects in rebases.
+    """
+    return Defect.objects.enabled().rebases().new().count()
+
+
+@stat_function(5, "DEFECTS")
+def get_new_defects_in_rebases_by_release():
+    """
+        New defects in rebases
+
+        Number of newly introduced defects in rebases by release.
+    """
+    releases = SystemRelease.objects.filter(active=True)
+    result = {}
+    for r in releases:
+        result[r] = Defect.objects.enabled().rebases().by_release(r)\
+            .new().count()
+    return result
+
+
+@stat_function(6, "DEFECTS")
+def get_total_new_defects_in_updates():
+    """
+        New defects in updates
+
+        Number of newly introduced defects in updates.
+    """
+    return Defect.objects.enabled().updates().new().count()
+
+
+@stat_function(6, "DEFECTS")
+def get_new_defects_in_updates_by_release():
+    """
+        Fixed defects in updates
+
+        Number of newly introduced defects in updates by release.
+    """
+    releases = SystemRelease.objects.filter(active=True)
+    result = {}
+    for r in releases:
+        result[r] = Defect.objects.enabled().updates().by_release(r)\
+            .new().count()
+    return result
+
+
+@stat_function(7, "DEFECTS")
 def get_fixed_defects_in_release():
     """
         Fixed defects in one release
@@ -163,13 +329,79 @@ def get_fixed_defects_in_release():
     result = {}
     for r in releases:
         result[r] = 0
-        for sb in ScanBinding.objects.filter(scan__tag__release=r.id,
-                                             scan__enabled=True):
+        for sb in ScanBinding.objects.by_release(r).enabled():
             result[r] += diff_fixed_defects_in_package(sb)
     return result
 
 
-@stat_function(4, "DEFECTS")
+@stat_function(8, "DEFECTS")
+def get_eliminated_in_rebases_in_release():
+    """
+        Eliminated newly introduced defects in rebases
+
+        Number of newly introduced defects in rebases that were fixed \
+between first scan and final one.
+    """
+    releases = SystemRelease.objects.filter(active=True)
+    result = {}
+    for r in releases:
+        result[r] = 0
+        for sb in ScanBinding.objects.by_release(r).rebases().enabled():
+            result[r] += diff_new_defects_in_package(sb)
+    return result
+
+
+@stat_function(9, "DEFECTS")
+def get_eliminated_in_newpkgs_in_release():
+    """
+        Eliminated newly introduced defects in new packages
+
+        Number of newly introduced defects in new packages that were fixed \
+between first scan and final one.
+    """
+    releases = SystemRelease.objects.filter(active=True)
+    result = {}
+    for r in releases:
+        result[r] = 0
+        for sb in ScanBinding.objects.by_release(r).newpkgs().enabled():
+            result[r] += diff_new_defects_in_package(sb)
+    return result
+
+
+@stat_function(10, "DEFECTS")
+def get_eliminated_in_updates_in_release():
+    """
+        Eliminated newly introduced defects in updates
+
+        Number of newly introduced defects in updates that were fixed \
+between first scan and final one.
+    """
+    releases = SystemRelease.objects.filter(active=True)
+    result = {}
+    for r in releases:
+        result[r] = 0
+        for sb in ScanBinding.objects.by_release(r).updates().enabled():
+            result[r] += diff_new_defects_in_package(sb)
+    return result
+
+
+@stat_function(11, "DEFECTS")
+def get_fixed_defects_in_release():
+    """
+        Fixed defects in one release
+
+        Number of defects that were fixed between first scan and final one.
+    """
+    releases = SystemRelease.objects.filter(active=True)
+    result = {}
+    for r in releases:
+        result[r] = 0
+        for sb in ScanBinding.objects.by_release(r).enabled():
+            result[r] += diff_fixed_defects_in_package(sb)
+    return result
+
+
+@stat_function(12, "DEFECTS")
 def get_fixed_defects_between_releases():
     """
         Fixed defects between releases
@@ -186,7 +418,7 @@ def get_fixed_defects_between_releases():
     return result
 
 
-@stat_function(5, "DEFECTS")
+@stat_function(13, "DEFECTS")
 def get_new_defects_between_releases():
     """
         New defects between releases
@@ -238,7 +470,7 @@ def get_total_update_waivers_submitted():
     """
         Waivers submitted for regular updates
 
-        Number of waivers submitted for updates (no rebase/new package).
+        Number of waivers submitted for regular updates.
     """
     return Waiver.waivers.updates().count()
 
@@ -248,31 +480,74 @@ def get_total_update_waivers_submitted_by_release():
     """
         Waivers submitted for regular updates
 
-        Number of waivers submitted for updates (no rebase/new package) in \
-this release.
+        Number of waivers submitted for updates in this release.
     """
     releases = SystemRelease.objects.filter(active=True)
     result = {}
     for r in releases:
-        result[r] = Waiver.waivers.updates().filter(
-            result_group__result__scanbinding__scan__tag__release=r.id,
-        ).count()
+        result[r] = Waiver.waivers.updates().by_release(r).count()
     return result
 
 
 @stat_function(3, "WAIVERS")
+def get_total_rebase_waivers_submitted():
+    """
+        Waivers submitted for rebases
+
+        Number of waivers submitted for rebases.
+    """
+    return Waiver.waivers.rebases().count()
+
+
+@stat_function(3, "WAIVERS")
+def get_total_rebase_waivers_submitted_by_release():
+    """
+        Waivers submitted for rebases
+
+        Number of waivers submitted for rebases in this release.
+    """
+    releases = SystemRelease.objects.filter(active=True)
+    result = {}
+    for r in releases:
+        result[r] = Waiver.waivers.rebases().by_release(r).count()
+    return result
+
+
+@stat_function(4, "WAIVERS")
+def get_total_newpkg_waivers_submitted():
+    """
+        Waivers submitted for newpkg scans
+
+        Number of waivers submitted for new package scans.
+    """
+    return Waiver.waivers.newpkgs().count()
+
+
+@stat_function(4, "WAIVERS")
+def get_total_newpkg_waivers_submitted_by_release():
+    """
+        Waivers submitted for regular updates
+
+        Number of waivers submitted for new package scans in this release.
+    """
+    releases = SystemRelease.objects.filter(active=True)
+    result = {}
+    for r in releases:
+        result[r] = Waiver.waivers.newpkgs().by_release(r).count()
+    return result
+
+
+@stat_function(5, "WAIVERS")
 def get_total_missing_waivers():
     """
         Missing waivers
 
         Number of groups that were not waived, but should have been.
     """
-    return ResultGroup.objects.filter(
-        result__scanbinding__scan__enabled=True,
-        state=RESULT_GROUP_STATES['NEEDS_INSPECTION']).count()
+    return ResultGroup.objects.missing_waiver().count()
 
 
-@stat_function(3, "WAIVERS")
+@stat_function(5, "WAIVERS")
 def get_missing_waivers_by_release():
     """
         Missing waivers
@@ -282,25 +557,96 @@ def get_missing_waivers_by_release():
     releases = SystemRelease.objects.filter(active=True)
     result = {}
     for r in releases:
-        result[r] = ResultGroup.objects.filter(
-            state=RESULT_GROUP_STATES['NEEDS_INSPECTION'],
-            result__scanbinding__scan__tag__release=r.id,
-            result__scanbinding__scan__enabled=True,
-        ).count()
+        result[r] = ResultGroup.objects.missing_waiver().by_release(r).count()
     return result
 
 
-@stat_function(4, "WAIVERS")
+@stat_function(6, "WAIVERS")
+def get_total_missing_waivers_in_rebases():
+    """
+        Missing waivers in rebases
+
+        Number of groups in rebases that were not waived, but should have been.
+    """
+    return ResultGroup.objects.missing_waiver().rebases().count()
+
+
+@stat_function(6, "WAIVERS")
+def get_missing_waivers_in_rebases_by_release():
+    """
+        Missing waivers in rebases
+
+        Number of groups in rebases that were not waived by release.
+    """
+    releases = SystemRelease.objects.filter(active=True)
+    result = {}
+    for r in releases:
+        result[r] = ResultGroup.objects.missing_waiver().rebases().\
+            by_release(r).count()
+    return result
+
+
+@stat_function(7, "WAIVERS")
+def get_total_missing_waivers_in_newpkgs():
+    """
+        Missing waivers in new packages
+
+        Number of groups in new package scans that were not waived.
+    """
+    return ResultGroup.objects.missing_waiver().newpkgs().count()
+
+
+@stat_function(7, "WAIVERS")
+def get_missing_waivers_in_newpkgs_by_release():
+    """
+        Missing waivers in new packages
+
+        Number of groups in new package scans that were not waived by release.
+    """
+    releases = SystemRelease.objects.filter(active=True)
+    result = {}
+    for r in releases:
+        result[r] = ResultGroup.objects.missing_waiver().newpkgs().\
+            by_release(r).count()
+    return result
+
+
+@stat_function(8, "WAIVERS")
+def get_total_missing_waivers_in_updates():
+    """
+        Missing waivers in updates
+
+        Number of groups in updates that were not waived.
+    """
+    return ResultGroup.objects.missing_waiver().updates().count()
+
+
+@stat_function(8, "WAIVERS")
+def get_missing_waivers_in_updates_by_release():
+    """
+        Missing waivers in updates
+
+        Number of groups in updates that were not waived.
+    """
+    releases = SystemRelease.objects.filter(active=True)
+    result = {}
+    for r in releases:
+        result[r] = ResultGroup.objects.missing_waiver().updates().\
+            by_release(r).count()
+    return result
+
+
+@stat_function(9, "WAIVERS")
 def get_total_is_a_bug_waivers():
     """
         'is a bug' waivers
 
         Number of waivers with type IS_A_BUG.
     """
-    return Waiver.objects.filter(state=WAIVER_TYPES['IS_A_BUG']).count()
+    return Waiver.waivers.is_a_bugs().count()
 
 
-@stat_function(4, "WAIVERS")
+@stat_function(9, "WAIVERS")
 def get_is_a_bug_waivers_by_release():
     """
         'is a bug' waivers
@@ -310,24 +656,63 @@ def get_is_a_bug_waivers_by_release():
     releases = SystemRelease.objects.filter(active=True)
     result = {}
     for r in releases:
-        result[r] = Waiver.objects.filter(
-            state=WAIVER_TYPES['IS_A_BUG'],
-            result_group__result__scanbinding__scan__tag__release=r.id,
-        ).count()
+        result[r] = Waiver.waivers.is_a_bugs().by_release(r).count()
     return result
 
 
-@stat_function(5, "WAIVERS")
+@stat_function(10, "WAIVERS")
+def get_is_a_bug_waivers_in_rebases_by_release():
+    """
+        'is a bug' waivers in rebases
+
+        Number of waivers with type IS_A_BUG in rebases by release.
+    """
+    releases = SystemRelease.objects.filter(active=True)
+    result = {}
+    for r in releases:
+        result[r] = Waiver.waivers.is_a_bugs().rebases().by_release(r).count()
+    return result
+
+
+@stat_function(11, "WAIVERS")
+def get_is_a_bug_waivers_in_newpkgs_by_release():
+    """
+        'is a bug' waivers in newpkgs
+
+        Number of waivers with type IS_A_BUG in new packages by release.
+    """
+    releases = SystemRelease.objects.filter(active=True)
+    result = {}
+    for r in releases:
+        result[r] = Waiver.waivers.is_a_bugs().newpkgs().by_release(r).count()
+    return result
+
+
+@stat_function(12, "WAIVERS")
+def get_is_a_bug_waivers_in_updates_by_release():
+    """
+        'is a bug' waivers in updates
+
+        Number of waivers with type IS_A_BUG in updates by release.
+    """
+    releases = SystemRelease.objects.filter(active=True)
+    result = {}
+    for r in releases:
+        result[r] = Waiver.waivers.is_a_bugs().updates().by_release(r).count()
+    return result
+
+
+@stat_function(10, "WAIVERS")
 def get_total_not_a_bug_waivers():
     """
         'not a bug' waivers
 
         Number of waivers with type NOT_A_BUG.
     """
-    return Waiver.objects.filter(state=WAIVER_TYPES['NOT_A_BUG']).count()
+    return Waiver.waivers.not_a_bugs().count()
 
 
-@stat_function(5, "WAIVERS")
+@stat_function(13, "WAIVERS")
 def get_not_a_bug_waivers_by_release():
     """
         'not a bug' waivers
@@ -337,24 +722,63 @@ def get_not_a_bug_waivers_by_release():
     releases = SystemRelease.objects.filter(active=True)
     result = {}
     for r in releases:
-        result[r] = Waiver.objects.filter(
-            state=WAIVER_TYPES['NOT_A_BUG'],
-            result_group__result__scanbinding__scan__tag__release=r.id,
-        ).count()
+        result[r] = Waiver.waivers.not_a_bugs().by_release(r).count()
     return result
 
 
-@stat_function(6, "WAIVERS")
+@stat_function(14, "WAIVERS")
+def get_not_a_bug_waivers_in_rebases_by_release():
+    """
+        'not a bug' waivers in rebases
+
+        Number of waivers with type NOT_A_BUG in rebases by release.
+    """
+    releases = SystemRelease.objects.filter(active=True)
+    result = {}
+    for r in releases:
+        result[r] = Waiver.waivers.not_a_bugs().rebases().by_release(r).count()
+    return result
+
+
+@stat_function(15, "WAIVERS")
+def get_not_a_bug_waivers_in_newpkgs_by_release():
+    """
+        'not a bug' waivers in newpkgs
+
+        Number of waivers with type NOT_A_BUG in new packages by release.
+    """
+    releases = SystemRelease.objects.filter(active=True)
+    result = {}
+    for r in releases:
+        result[r] = Waiver.waivers.not_a_bugs().newpkgs().by_release(r).count()
+    return result
+
+
+@stat_function(16, "WAIVERS")
+def get_not_a_bug_waivers_in_updates_by_release():
+    """
+        'not a bug' waivers in updates
+
+        Number of waivers with type NOT_A_BUG in updates by release.
+    """
+    releases = SystemRelease.objects.filter(active=True)
+    result = {}
+    for r in releases:
+        result[r] = Waiver.waivers.not_a_bugs().updates().by_release(r).count()
+    return result
+
+
+@stat_function(11, "WAIVERS")
 def get_total_fix_later_waivers():
     """
         'fix later' waivers
 
         Number of waivers with type FIX_LATER.
     """
-    return Waiver.objects.filter(state=WAIVER_TYPES['FIX_LATER']).count()
+    return Waiver.waivers.fix_laters().count()
 
 
-@stat_function(6, "WAIVERS")
+@stat_function(17, "WAIVERS")
 def get_fix_later_waivers_by_release():
     """
         'fix later' waivers
@@ -364,10 +788,49 @@ def get_fix_later_waivers_by_release():
     releases = SystemRelease.objects.filter(active=True)
     result = {}
     for r in releases:
-        result[r] = Waiver.objects.filter(
-            state=WAIVER_TYPES['FIX_LATER'],
-            result_group__result__scanbinding__scan__tag__release=r.id,
-        ).count()
+        result[r] = Waiver.waivers.fix_laters().by_release(r).count()
+    return result
+
+
+@stat_function(18, "WAIVERS")
+def get_fix_later_waivers_in_rebases_by_release():
+    """
+        'fix later' waivers in rebases
+
+        Number of waivers with type FIX_LATER in rebases by release.
+    """
+    releases = SystemRelease.objects.filter(active=True)
+    result = {}
+    for r in releases:
+        result[r] = Waiver.waivers.fix_laters().rebases().by_release(r).count()
+    return result
+
+
+@stat_function(19, "WAIVERS")
+def get_fix_later_waivers_in_newpkgs_by_release():
+    """
+        'fix later' waivers in newpkgs
+
+        Number of waivers with type FIX_LATER in new packages by release.
+    """
+    releases = SystemRelease.objects.filter(active=True)
+    result = {}
+    for r in releases:
+        result[r] = Waiver.waivers.fix_laters().newpkgs().by_release(r).count()
+    return result
+
+
+@stat_function(20, "WAIVERS")
+def get_fix_later_waivers_in_updates_by_release():
+    """
+        'fix later' waivers in updates
+
+        Number of waivers with type FIX_LATER in updates by release.
+    """
+    releases = SystemRelease.objects.filter(active=True)
+    result = {}
+    for r in releases:
+        result[r] = Waiver.waivers.fix_laters().updates().by_release(r).count()
     return result
 
 ######
@@ -402,4 +865,5 @@ def get_minutes_spent_scanning():
     if not result:
         return 0
     else:
-        return result.aggregate(Sum('st'))['st__sum'] / 60
+        return result.aggregate(
+            Sum('scanning_time'))['scanning_time__sum'] / 60

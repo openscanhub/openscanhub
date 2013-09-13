@@ -390,6 +390,17 @@ def get_latest_sb_by_package(release, package):
 
 
 @public
+def diff_new_defects_in_package(sb):
+    try:
+        return ScanBinding.objects.get(scan=sb.scan.get_first_scan()).result.\
+            new_defects_count() - sb.result.new_defects_count()
+    except ObjectDoesNotExist:
+        return 0
+    except AttributeError:
+        return 0
+
+
+@public
 def diff_fixed_defects_in_package(sb):
     try:
         return sb.result.fixed_defects_count()\
