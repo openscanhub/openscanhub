@@ -280,7 +280,20 @@ package')
 
 
 class ScanMixin(object):
-    pass
+    def by_release(self, release):
+        return self.filter(tag__release=release)
+
+    def target(self):
+        return self.filter(scan_type__in=SCAN_TYPES_TARGET)
+
+    def updates(self):
+        return self.filter(scan_type=SCAN_TYPES['ERRATA'])
+
+    def newpkgs(self):
+        return self.filter(scan_type=SCAN_TYPES['NEWPKG'])
+
+    def rebases(self):
+        return self.filter(scan_type=SCAN_TYPES['REBASE'])
 
 
 class ScanQuerySet(models.query.QuerySet, ScanMixin):
@@ -515,6 +528,33 @@ class ScanBindingMixin(object):
             for base in p.values_list('scan__base__nvr', flat=True).distinct():
                 ids.append(p.filter(scan__base__nvr=base).latest().id)
         return self.filter(id__in=ids)
+
+    def by_package(self, package):
+        return self.filter(scan__package=package)
+
+    def by_release(self, release):
+        return self.filter(scan__tag__release=release)
+
+    def enabled(self):
+        return self.filter(scan__enabled=True)
+
+    def target(self):
+        return self.filter(scan__scan_type__in=SCAN_TYPES_TARGET)
+
+    def rebases(self):
+        return self.filter(scan__scan_type=SCAN_TYPES['REBASE'])
+
+    def updates(self):
+        return self.filter(scan__scan_type=SCAN_TYPES['ERRATA'])
+
+    def newpkgs(self):
+        return self.filter(scan__scan_type=SCAN_TYPES['NEWPKG'])
+
+    def latest_scan_of_package(self, package, release):
+        """ return latest scan of package in specific release """
+        q = self.target().by_release(release).by_package(package)
+        if q:
+            return q.latest()
 
     def finished_well(self):
         return self.filter(scan__state__in=SCAN_STATES_FINISHED_WELL)
