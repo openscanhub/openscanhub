@@ -167,8 +167,10 @@ def depend_on(nvr, dependency, mock_profile):
     """
     # get build from brew
     build = s.getBuild(nvr)
+    logger.debug(build)
     # list all binary packages built from srpm
     rpms = s.listRPMs(buildID=build['id'])
+    logger.debug(rpms)
     # we do care only about x86_64
     valid_rpms = filter(lambda x: x['arch'] == 'x86_64', rpms)
     if not valid_rpms:
@@ -294,6 +296,7 @@ if __name__ == '__main__':
     #print depend_on("system-config-lvm-1.1.12-16.el6", 'libc.so', 'rhel-6-x86_64')
     #print depend_on("grub-0.97-82.el6", 'libc.so', 'rhel-6-x86_64')
     #print depend_on("seabios-0.6.1.2-28.el6", 'libc.so', 'rhel-6-x86_64')
-    print depend_on("libvirt-snmp-0.0.2-4.el6", 'libc.so', 'rhel-6-x86_64')
+    #print depend_on("libvirt-snmp-0.0.2-4.el6", 'libc.so', 'rhel-6-x86_64')
+    print depend_on("librtas-1.3.8-1.el6", 'libc.so', 'rhel-6-x86_64')
     #test_depend_on()
     #test_get_mock_repo()
