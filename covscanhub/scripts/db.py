@@ -207,14 +207,23 @@ def set_default_settings():
             AppSettings.objects.get_or_create(key="WAIVER_IS_OVERDUE_RELSPEC",
                                               value=pickle.dumps(b))
 
+
 def set_statistics():
     # function = (key, description)
     for desc in get_mapping().itervalues():
-        #tag, short_comment, comment, group, order
-        s, created = StatType.objects.get_or_create(
-            key=desc[0], short_comment=desc[1], comment=desc[2],
-            group=desc[3], order=desc[4], is_release_specific=(
-                'RELEASE' in desc[0]))
+        try:
+            s = StatType.objects.get(key=desc[0])
+        except ObjectDoesNotExist:
+            #tag, short_comment, comment, group, order
+            s, created = StatType.objects.get_or_create(
+                key=desc[0], short_comment=desc[1], comment=desc[2],
+                group=desc[3], order=desc[4], is_release_specific=(
+                    'RELEASE' in desc[0]))
+        else:
+            StatType.objects.filter(id=s.id).update(
+                key=desc[0], short_comment=desc[1], comment=desc[2],
+                group=desc[3], order=desc[4], is_release_specific=(
+                    'RELEASE' in desc[0]))
 
 
 def main():
