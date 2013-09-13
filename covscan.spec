@@ -6,7 +6,7 @@
 
 
 Name:           covscan
-Version:        0.4.0
+Version:        0.4.1
 Release:        1%{?dist}
 License:        Commercial
 Summary:        Coverity scan scheduler
@@ -155,6 +155,13 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Fri Sep 13 2013 Tomas Tomecek <ttomecek@redhat.com> - 0.4.1-1
+- improve stats
+- bugfixes
+
+* Wed Sep 11 2013 Tomas Tomecek <ttomecek@redhat.com> - 0.4.0-1
+- new version of hub and client
+
 * Mon Jun 03 2013 Tomas Tomecek <ttomecek@redhat.com> - 0.3.2-3
 - store provider requests in DB (hub)
 
