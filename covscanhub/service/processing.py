@@ -6,10 +6,10 @@ Util functions related to processing data -- results of analysis
 import os
 import pipes
 import logging
+from django.utils import simplejson as json
 
 from covscanhub.other.decorators import public
 from covscanhub.other.constants import *
-from covscanhub.scan.service import add_title_to_json
 
 from kobo.shortcuts import run
 
@@ -135,7 +135,7 @@ def get_input_filenames_scan(base_path, base_nvr, path, nvr):
 
 
 @public
-def task_diff(task_dir, base_task_dir, nvr, base_nvr):
+def diff_results(task_dir, base_task_dir, nvr, base_nvr):
     """ generate diff files for VersionDiffBuild task """
     p = get_output_filenames(task_dir)
     p.update(get_input_filenames_task(base_task_dir, base_nvr, task_dir, nvr))
@@ -148,3 +148,13 @@ def scan_diff(task_dir, base_task_dir, nvr, base_nvr):
     p = get_output_filenames(task_dir)
     p.update(get_input_filenames_scan(base_task_dir, base_nvr, task_dir, nvr))
     return generate_diff_files(p, task_dir)
+
+
+def add_title_to_json(path, title):
+    fd = open(path, "r+")
+    loaded_json = json.load(fd)
+    loaded_json['scan']['title'] = title
+    fd.seek(0)
+    fd.truncate()
+    json.dump(loaded_json, fd, indent=4)
+    fd.close()

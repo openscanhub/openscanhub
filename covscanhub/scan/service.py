@@ -13,31 +13,19 @@ from kobo.hub.models import Task
 from kobo.shortcuts import run
 from kobo.django.upload.models import FileUpload
 from kobo.client.constants import TASK_STATES
+from django.core.exceptions import ObjectDoesNotExist
 
+from covscanhub.service.processing import add_title_to_json, diff_results
 from models import SCAN_STATES, ScanBinding, Scan, SCAN_TYPES_TARGET, \
     SCAN_STATES_FINISHED_WELL, Analyzer
-
 from covscanhub.other.exceptions import ScanException
 from covscanhub.other.shortcuts import get_mock_by_name, check_brew_build,\
     check_and_create_dirs
 from covscanhub.other.decorators import public
 from covscanhub.other.constants import *
 
-import django.utils.simplejson as json
-from django.core.exceptions import ObjectDoesNotExist
-
 
 logger = logging.getLogger(__name__)
-
-
-def add_title_to_json(path, title):
-    fd = open(path, "r+")
-    loaded_json = json.load(fd)
-    loaded_json['scan']['title'] = title
-    fd.seek(0)
-    fd.truncate()
-    json.dump(loaded_json, fd, indent=4)
-    fd.close()
 
 
 @public
@@ -369,7 +357,7 @@ def prepare_and_execute_diff(task, base_task, nvr, base_nvr):
     task_dir = Task.get_task_dir(task.id)
     base_task_dir = Task.get_task_dir(base_task.id)
 
-    return run_diff(task_dir, base_task_dir, nvr, base_nvr)
+    return diff_results(task_dir, base_task_dir, nvr, base_nvr)
 
 
 @public
