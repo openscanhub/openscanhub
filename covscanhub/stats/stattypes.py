@@ -446,7 +446,7 @@ def get_total_waivers_submitted():
 
         Number of waivers submitted. (including invalidated)
     """
-    return Waiver.objects.all().count()
+    return Waiver.waivers.all().count()
 
 
 @stat_function(1, "WAIVERS")
@@ -459,7 +459,7 @@ def get_waivers_submitted_by_release():
     releases = SystemRelease.objects.filter(active=True)
     result = {}
     for r in releases:
-        result[r] = Waiver.objects.filter(
+        result[r] = Waiver.waivers.filter(
             result_group__result__scanbinding__scan__tag__release=r.id,
         ).count()
     return result
