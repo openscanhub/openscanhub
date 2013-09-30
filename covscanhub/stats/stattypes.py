@@ -526,7 +526,7 @@ def get_total_newpkg_waivers_submitted():
 @stat_function(4, "WAIVERS")
 def get_total_newpkg_waivers_submitted_by_release():
     """
-        Waivers submitted for regular updates
+        Waivers submitted for newpkg scans
 
         Number of waivers submitted for new package scans in this release.
     """
