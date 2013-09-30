@@ -92,6 +92,7 @@ class ErrataDiffBuild(TaskBase):
         cov_cmd.append('cov-mockbuild')
         #if keep_covdata:
         cov_cmd.append("-i")
+        cov_cmd.append("-c")
         cov_cmd.append(pipes.quote(mock_config))
         cov_cmd.append(pipes.quote(srpm_path))
         cov_cmd.append("--security")
