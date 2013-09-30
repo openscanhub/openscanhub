@@ -7,7 +7,7 @@
 
 Name:           covscan
 Version:        0.4.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Commercial
 Summary:        Coverity scan scheduler
 Group:          Applications/Engineering
@@ -27,6 +27,7 @@ It consists of central hub, workers and cli client.
 Summary: CovScan CLI client
 Group: Applications/Engineering
 Requires: kobo-client >= 0.3.4
+Requires: kobo-client <= 0.3.8
 Requires: python-krbV
 Requires: brewkoji
 
@@ -155,6 +156,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Mon Sep 30 2013 Tomas Tomecek <ttomecek@redhat.com> - 0.4.1-2
+- make dependency to kobo 0.3.8 (0.4 is broken currently)
+
 * Fri Sep 13 2013 Tomas Tomecek <ttomecek@redhat.com> - 0.4.1-1
 - improve stats
 - bugfixes
