@@ -149,7 +149,16 @@ def create_log_dict(title, icon, icon_link, files, logs_list):
 def add_logs_to_context(sb):
     logs = []
     logs_list = sb.task.logs.list
-    log_prefix = os.path.join(sb.scan.nvr, 'run1', sb.scan.nvr)
+
+    def new_type_results_in_logs():
+        res_3 = lambda x: x.endswith(('results.html',
+                                      'results.html', 'resultsto je divn.html'))
+        return len(filter(res_3, logs_list)) >= 3
+
+    if new_type_results_in_logs():
+        log_prefix = os.path.join(sb.scan.nvr, 'run1', 'results')
+    else:
+        log_prefix = os.path.join(sb.scan.nvr, 'run1', sb.scan.nvr)
 
     logs.append(create_log_dict('Added defects', 'Warning_32.png',
                                 ERROR_HTML_FILE,
