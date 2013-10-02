@@ -547,6 +547,8 @@ def previously_waived(request, sb_id, result_group_id):
     sb = get_object_or_404(ScanBinding, id=sb_id)
     result_group_object = get_object_or_404(ResultGroup, id=result_group_id)
 
+    context = {}
+
     if request.method == "POST":
         form = WaiverForm(request.POST)
 
@@ -560,7 +562,7 @@ def previously_waived(request, sb_id, result_group_id):
     else:
         form = WaiverForm()
 
-    context = get_result_context(request, sb)
+    context.update(get_result_context(request, sb))
 
     w = get_last_waiver(result_group_object.checker_group,
                         sb.scan.package,
