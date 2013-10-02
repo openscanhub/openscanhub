@@ -20,6 +20,8 @@ from covscanhub.scan.service import get_latest_sb_by_package
 from covscanhub.scan.xmlrpc_helper import scan_notification_email
 from covscanhub.scan.notify import send_notif_new_comment
 
+from covscanhub.service.processing import task_has_newstyle_results
+
 from covscanhub.other.shortcuts import get_or_none
 from covscanhub.other.constants import *
 
@@ -150,12 +152,7 @@ def add_logs_to_context(sb):
     logs = []
     logs_list = sb.task.logs.list
 
-    def new_type_results_in_logs():
-        res_3 = lambda x: x.endswith(('results.html',
-                                      'results.html', 'resultsto je divn.html'))
-        return len(filter(res_3, logs_list)) >= 3
-
-    if new_type_results_in_logs():
+    if task_has_newstyle_results(sb.task):
         log_prefix = os.path.join(sb.scan.nvr, 'run1', 'results')
     else:
         log_prefix = os.path.join(sb.scan.nvr, 'run1', sb.scan.nvr)

@@ -20,6 +20,7 @@ from covscanhub.other.shortcuts import check_brew_build, \
 from covscanhub.other.exceptions import ScanException
 from covscanhub.scan.service import get_latest_sb_by_package, \
     get_latest_binding
+from covscanhub.service.processing import task_has_newstyle_results
 
 from kobo.hub.models import Task, TASK_STATES
 
@@ -92,6 +93,8 @@ def obtain_base(d, task_id):
             found = False
         elif binding.result.scanner_version != actual_scanner[1] or \
                 binding.result.scanner != actual_scanner[0]:
+            found = False
+        elif not task_has_newstyle_results(binding.task):
             found = False
     if not found:
         parent_task = Task.objects.get(id=task_id)

@@ -150,6 +150,7 @@ def scan_diff(task_dir, base_task_dir, nvr, base_nvr):
     return generate_diff_files(p, task_dir)
 
 
+@public
 def add_title_to_json(path, title):
     fd = open(path, "r+")
     loaded_json = json.load(fd)
@@ -158,3 +159,12 @@ def add_title_to_json(path, title):
     fd.truncate()
     json.dump(loaded_json, fd, indent=4)
     fd.close()
+
+
+@public
+def task_has_newstyle_results(task):
+    logs_list = task.logs.list
+
+    res_3 = lambda x: x.endswith(('results.html',
+                                  'results.err', 'results.js'))
+    return len(filter(res_3, logs_list)) >= 3
