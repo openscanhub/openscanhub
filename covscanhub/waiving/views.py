@@ -349,6 +349,7 @@ def comment_post(request, form, sb, result_group_object, url_name_next,
 
     prim_url = reverse("waiving/result", args=(sb.id, ))
 
+    rgs = get_unwaived_rgs(result_group_object.result)
     if 'submit_next' in request.POST:
         if rgs:
             return HttpResponseRedirect(reverse(url_name_next,
