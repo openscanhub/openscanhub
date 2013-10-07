@@ -749,6 +749,11 @@ div#defects div.FIXED h3 {
     /*background-color: #EEFFEE;*/
 }
 
+div#defects div.events_list div.code {
+    white-space: pre;
+    display: inline;
+}
+
 /**/
 
 /* CHART */
