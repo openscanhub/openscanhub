@@ -104,6 +104,7 @@ def send_task_notification(request, task_id):
         "X-Task-ID": task_id,
         "X-Task-State": state,
         "X-Task-Owner": task.owner.username,
+        "X-Scan-Build": nvr,
     }
 
     return send_mail(message, recipient, subject, recipients, headers, bcc)
@@ -243,6 +244,8 @@ def send_scan_notification(request, scan_id):
     headers = {
         "X-Scan-ID": scan.scanbinding.id,
         "X-Scan-State": mg.scan_state,
+        "X-Scan-Package": scan.package.name,
+        "X-Scan-Build": scan.nvr,
     }
     return send_mail(message, recipient, subject, [recipient], headers=headers)
 
@@ -264,5 +267,7 @@ def send_notif_new_comment(request, scan, wl):
     headers = {
         "X-Scan-ID": scan.scanbinding.id,
         "X-Scan-State": mg.scan_state,
+        "X-Scan-Package": scan.package.name,
+        "X-Scan-Build": scan.nvr,
     }
     return send_mail(message, recipient, subject, [recipient], headers=headers)
