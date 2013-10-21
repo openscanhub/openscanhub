@@ -213,15 +213,12 @@ def send_scan_notification(request, scan_id):
     mg = MailGenerator(request, scan)
 
     # recipient setting
-    if scan.is_failed():
-        recipient = "covscan-auto@redhat.com"
-    elif AppSettings.setting_send_mail():
+    recipient = "covscan-auto@redhat.com"
+    if AppSettings.setting_send_mail():
         recipient = get_recipient(scan.username)
-    else:
-        recipient = "ttomecek@redhat.com"
 
     # message setting
-    if scan.is_failed():
+    if scan.is_failed() or scan.is_canceled():
         message = mg.generate_failed_scan_text()
     elif scan.is_disputed():
         message = mg.generate_disputed_scan_text()
