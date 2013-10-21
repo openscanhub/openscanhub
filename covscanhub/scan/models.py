@@ -389,6 +389,9 @@ counted in statistics.")
     def is_failed(self):
         return self.state == SCAN_STATES['FAILED']
 
+    def is_canceled(self):
+        return self.state == SCAN_STATES['CANCELED']
+
     def is_disputed(self):
         return self.state == SCAN_STATES['DISPUTED']
 
