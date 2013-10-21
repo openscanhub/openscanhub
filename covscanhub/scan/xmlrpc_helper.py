@@ -109,5 +109,4 @@ def scan_notification_email(request, scan_id):
         if scan.is_failed():
             return send_scan_notification(
                 request,
-                ScanBinding.objects.latest_scan_of_package(
-                    scan.package, scan.tag.release).scan.id)
+                scan.scanbinding.task.parent.scanbinding.scan.id)
