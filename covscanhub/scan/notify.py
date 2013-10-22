@@ -13,7 +13,7 @@ from kobo.client.constants import TASK_STATES
 
 from covscanhub.scan.models import Scan, SCAN_STATES
 from covscanhub.scan.models import AppSettings
-from covscanhub.service.loading import load_defects
+from covscanhub.service.loading import load_defects, get_defect_stats
 from covscanhub.waiving.service import get_scans_new_defects_count
 
 __all__ = (
@@ -58,19 +58,20 @@ def get_recipient(user):
 
 def generate_stats(task, diff_task):
     def display_defects(result_list, label_name, defects_dict, diff_sign=''):
-        if defects:
+        if defects_dict:
             result_list.append(label_name)
             result_list += ["%s: %s%d" % (checker, diff_sign, count) for checker, count in defects_dict.items()]
         return result_list
-    defects_dict = load_defects(task.id)
+    defects_json = load_defects(task.id)
+    stats = get_defect_stats(defects_json)
     result = []
     if diff_task:
-        added = defects_dict['added']
-        fixed = defects_dict['fixed']
+        added = stats['added']
+        fixed = stats['fixed']
         display_defects(result, "Added:", added, '+')
         display_defects(result, "Fixed:", fixed, '-')
     else:
-        defects = defects_dict['defects']
+        defects = stats['defects']
         display_defects(result, 'All defects:', defects)
     return '\n'.join(result)
 
