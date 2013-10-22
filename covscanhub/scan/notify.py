@@ -13,6 +13,7 @@ from kobo.client.constants import TASK_STATES
 
 from covscanhub.scan.models import Scan, SCAN_STATES
 from covscanhub.scan.models import AppSettings
+from covscanhub.service.loading import load_defects
 from covscanhub.waiving.service import get_scans_new_defects_count
 
 __all__ = (
@@ -55,6 +56,25 @@ def get_recipient(user):
     return recipient
 
 
+def generate_stats(task, diff_task):
+    def display_defects(result_list, label_name, defects_dict, diff_sign=''):
+        if defects:
+            result_list.append(label_name)
+            result_list += ["%s: %s%d" % (checker, diff_sign, count) for checker, count in defects_dict.items()]
+        return result_list
+    defects_dict = load_defects(task.id)
+    result = []
+    if diff_task:
+        added = defects_dict['added']
+        fixed = defects_dict['fixed']
+        display_defects(result, "Added:", added, '+')
+        display_defects(result, "Fixed:", fixed, '-')
+    else:
+        defects = defects_dict['defects']
+        display_defects(result, 'All defects:', defects)
+    return '\n'.join(result)
+
+
 def send_task_notification(request, task_id):
     task = Task.objects.get(id=task_id)
 
@@ -85,6 +105,8 @@ def send_task_notification(request, task_id):
         "",
         "Task URL: %s" % task_url,
         "Comment: %s" % task.comment or "",
+        "",
+        "%s" % generate_stats(task.id, task.method not in ['MockBuild', 'DiffBuild']),
     ]
     message = "\n".join(message)
 
@@ -134,6 +156,7 @@ URL: %(url)s""" % {'url': self.get_scans_url(), 'nvr': self.scan.nvr}
             "Scan state: %s" % self.scan_state,
             "Waiver URL: %s" % self.get_scans_url(),
             "New defects count: %d" % get_scans_new_defects_count(self.scan.id),
+            "%s" % generate_stats(self.scan.scanbinding.task, True),
             "",
             "%(guide_message)s",
         ]
