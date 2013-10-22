@@ -7,7 +7,7 @@
 
 Name:           covscan
 Version:        0.4.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Commercial
 Summary:        Coverity scan scheduler
 Group:          Applications/Engineering
@@ -27,7 +27,6 @@ It consists of central hub, workers and cli client.
 Summary: CovScan CLI client
 Group: Applications/Engineering
 Requires: kobo-client >= 0.3.4
-Requires: kobo-client <= 0.3.8
 Requires: python-krbV
 Requires: brewkoji
 
@@ -124,6 +123,29 @@ cp -R covscanhub/scripts/checker_groups.txt $RPM_BUILD_ROOT/%{py_sitedir}/covsca
 rm -rf $RPM_BUILD_ROOT
 
 
+%post client
+if rpm -q kobo-0.4.0 &>/dev/null; then
+    echo "======================================================================"
+    echo "======================================================================"
+    echo "Package kobo detected in version 0.4.0. This version has known issues."
+    echo "Please update to 0.4.1 or downgrade to 0.3.8."
+    echo "For more info, see https://bugzilla.redhat.com/show_bug.cgi?id=997735"
+    echo "======================================================================"
+    echo "======================================================================"
+fi
+
+
+%triggerin -n covscan-client -- kobo == 0.4.0
+kobo_client_dir=%{python_sitelib}/kobo/client
+kobo_client_conf=${kobo_client_dir}/default.conf
+mkdir -p ${kobo_client_dir}
+if [ ! -f ${kobo_client_conf} ] ; then
+    echo "Touching file ${kobo_client_conf}"
+    echo "This file is required for correct functionality of package kobo."
+    touch ${kobo_client_conf}
+fi
+
+
 %files client
 %defattr(644,root,root,755)
 %{py_sitedir}/covscan
@@ -156,6 +178,10 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Fri Oct 18 2013 Tomas Tomecek <ttomecek@redhat.com> - 0.4.2-2
+- update kobo dependency (0.4.1 should be fine)
+- add scriptlets for handling issues with kobo-0.4.0
+
 * Mon Sep 30 2013 Tomas Tomecek <ttomecek@redhat.com> - 0.4.1-2
 - make dependency to kobo 0.3.8 (0.4 is broken currently)
 
