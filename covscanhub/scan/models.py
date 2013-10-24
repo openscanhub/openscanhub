@@ -131,6 +131,20 @@ class MockConfig(models.Model):
         return result
 
 
+class SystemReleaseMixin(object):
+    def active(self):
+        return self.filter(active=True)
+
+
+class SystemReleaseQuerySet(models.query.QuerySet, SystemReleaseMixin):
+    pass
+
+
+class SystemReleaseManager(models.Manager, SystemReleaseMixin):
+    def get_query_set(self):
+        return SystemReleaseQuerySet(self.model, using=self._db)
+
+
 class SystemRelease(models.Model):
     """
     Represents release for which are scans submitted
@@ -149,6 +163,12 @@ statistical data will be harvested for this system release.")
 
     parent = models.OneToOneField("self", blank=True, null=True)
 
+    objects = SystemReleaseManager()
+
+    def __unicode__(self):
+        return u"%s -- %s.%d" % \
+            (self.tag, self.product, self.release)
+
     def get_child(self):
         try:
             return self.systemrelease
@@ -156,10 +176,6 @@ statistical data will be harvested for this system release.")
             return None
 
     child = property(get_child)
-
-    def __unicode__(self):
-        return u"%s -- %s.%d" % \
-            (self.tag, self.product, self.release)
 
     def get_prod_ver(self):
         """
