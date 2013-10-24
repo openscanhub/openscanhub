@@ -1,16 +1,16 @@
 # -*- coding: utf-8 -*-
 
 import re
-import koji
 import logging
 
-from covscanhub.errata.utils import depend_on, spawn_scan_task, _spawn_scan_task
 from django.conf import settings
-from kobo.rpmlib import parse_nvr
+
+from covscanhub.errata.check import check_nvr, check_package_eligibility
+from covscanhub.errata.utils import spawn_scan_task, _spawn_scan_task
+
 #from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 
-from covscanhub.other.exceptions import BrewException, \
-    PackageBlacklistedException, PackageNotEligibleException
+from covscanhub.other.exceptions import PackageBlacklistedException, PackageNotEligibleException
 from covscanhub.scan.models import Scan, SCAN_STATES, SCAN_TYPES, Package, \
     ScanBinding, MockConfig, ReleaseMapping, ETMapping, \
     SCAN_STATES_IN_PROGRESS, AppSettings, SCAN_TYPES_TARGET, REQUEST_STATES
@@ -118,22 +118,6 @@ def check_obsolete_scan(package, release):
             cancel_scan(binding.scan.id)
 
 
-def check_package_eligibility(package, nvr, created, mock_profile):
-    if created:
-        logger.warn('Package %s was created', package)
-
-        depends_on = depend_on(nvr, 'libc.so', mock_profile)
-        package.eligible = depends_on
-        package.save()
-
-    if not created and package.blocked:
-        raise PackageBlacklistedException('Package %s is blacklisted.' %
-                                          (package.name))
-    elif not package.eligible:
-        raise PackageNotEligibleException(
-            'Package %s is not eligible for scanning.' % (package.name))
-
-
 def assign_mock_config(dist_tag):
     """
         NOT USED:, base scan inherits mock profile from target
@@ -199,12 +183,10 @@ def create_errata_scan(kwargs, etm):
     return_or_raise('target', kwargs)
     return_or_raise('base', kwargs)
 
+    # validation of nvr
+    target_nvre_dict = check_nvr(kwargs['target'])
+
     # first thing, create entry in DB about provided package
-    try:
-        target_nvre_dict = parse_nvr(kwargs['target'])
-    except ValueError:
-        logger.error('%s is not a correct N-V-R', kwargs['target'])
-        raise RuntimeError('%s is not a correct N-V-R' % kwargs['target'])
     package, created = Package.objects.get_or_create(
         name=target_nvre_dict['name'])
 
@@ -221,9 +203,9 @@ def create_errata_scan(kwargs, etm):
     check_obsolete_scan(package, tag.release)
     d['tag'] = tag
 
-    # validation of nvr, creating appropriate package object
+    # check if package is written in scannable language and is not blacklisted
     check_package_eligibility(package, kwargs['target'],
-                              created, options['mock_config'])
+                              options['mock_config'], tag.release)
     d['package'] = package
 
     ## one of RHEL-6.2.0, RHEL-6.2.z, etc.

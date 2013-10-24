@@ -278,6 +278,132 @@ package')
             response += u"<hr/ ></div>\n"
         return mark_safe(response)
 
+    def is_blocked(self, release):
+        atr = PackageAttribute.blocked(self, release)
+        return atr.is_blocked()
+
+    def is_eligible(self, release):
+        atr = PackageAttribute.eligible(self, release)
+        return atr.is_eligible()
+
+
+class PackageAttributeMixin(object):
+    def by_package(self, package):
+        return self.filter(package=package)
+
+    def by_release(self, release):
+        return self.filter(release=release)
+
+    def eligible(self):
+        return self.filter(key=PackageAttribute.ELIGIBLE)
+
+    def eligible_package_in_release(self, package, release):
+        return self.get(package=package, release=release, key=PackageAttribute.ELIGIBLE)
+
+
+class PackageAttributeQuerySet(models.query.QuerySet, PackageAttributeMixin):
+    pass
+
+
+class PackageAttributeManager(models.Manager, PackageAttributeMixin):
+    def get_query_set(self):
+        return PackageAttributeQuerySet(self.model, using=self._db)
+
+
+class PackageAttribute(models.Model):
+    """
+    keys:
+    BLOCKED: {Y | N}
+     * If this is set to True, the package is blacklisted -- not accepted
+    for scanning.
+    
+    ELIGIBLE: {Y | N}
+     * Is package scannable? You may have package written in different language
+    that is supported by your scanner.
+
+    TODO: eligible should be more flexible:
+        it should be M2M relation with table capability (C, Java, Python)
+        capability should be linked with table Analyzers
+    """
+    BLOCKED = 'BLOCKED'
+    ELIGIBLE = 'ELIGIBLE'
+
+    key = models.CharField(max_length=64, null=True, blank=True)
+    value = models.CharField(max_length=128, null=True, blank=True)
+    package = models.ForeignKey(Package)
+    release = models.ForeignKey(SystemRelease)
+
+    objects = PackageAttributeManager()
+
+    def __unicode__(self):
+        return u"%s = %s (%s %s)" % (self.key, self.value, self.package, self.release)
+
+    @classmethod
+    def create(cls, package, release):
+        atr = cls()
+        atr.release = release
+        atr.package = package
+        return atr
+
+    @classmethod
+    def _get_for_package_in_release(cls, package, release, key=None):
+        """
+        return package attribute for provided package/release
+        """
+        try:
+            if key:
+                return cls.objects.get(package=package, release=release, key=key)
+            else:
+                return cls.objects.get(package=package, release=release)
+        except ObjectDoesNotExist:
+            logger.error("Package attribute not found: %s %s %s", package, release, key)
+            raise
+
+    @classmethod
+    def blocked(cls, package, release):
+        return cls._get_for_package_in_release(package, release, PackageAttribute.BLOCKED)
+
+    @classmethod
+    def eligible(cls, package, release):
+        return cls._get_for_package_in_release(package, release, PackageAttribute.ELIGIBLE)
+
+    def _is(self, key, exc_type):
+        if self.key == key:
+            return self.value == 'Y'
+        else:
+            raise ValueError('This attribute (%s) is not related to %s stuff.'
+                             % (self.key, exc_type))
+
+    def is_blocked(self):
+        return self._is(PackageAttribute.BLOCKED, 'blocked')
+
+    def is_eligible(self):
+        return self._is(PackageAttribute.ELIGIBLE, 'eligible')
+
+    @classmethod
+    def create_new_bool(cls, package, release, key, value):
+        bool_value = 'Y' if value else 'N'
+        atr = cls.create(package, release)
+        atr.key = key
+        atr.value = bool_value
+        atr.save()
+        return atr
+
+    @classmethod
+    def create_blocked(cls, package, release, blocked):
+        return cls.create_new_bool(package, release, PackageAttribute.BLOCKED, blocked)
+
+    @classmethod
+    def create_eligible(cls, package, release, eligible):
+        try:
+            atr = cls.objects.eligible_package_in_release(package, release)
+        except ObjectDoesNotExist:
+            return cls.create_new_bool(package, release, PackageAttribute.ELIGIBLE, eligible)
+        else:
+            atr.value = eligible
+            atr.save()
+            return atr
+
 
 class ScanMixin(object):
     def by_release(self, release):
