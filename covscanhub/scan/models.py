@@ -141,7 +141,7 @@ class SystemRelease(models.Model):
     #Red Hat Enterprise Linux 6 etc.
     product = models.CharField("Product name", max_length=128, blank=False)
 
-    # release number (y)
+    # release number (y) -- RHEL-x.y
     release = models.IntegerField()
 
     active = models.BooleanField(default=True, help_text="If set to True,\
