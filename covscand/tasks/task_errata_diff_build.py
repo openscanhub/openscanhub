@@ -99,7 +99,7 @@ class ErrataDiffBuild(TaskBase):
         #
         #command = ["su", "-", "coverity", "-c", " ".join(cov_cmd)]
 
-        command_base = self.hub.get_scanning_command(self.args['scan_id'])
+        command_base = self.hub.worker.get_scanning_command(self.args['scan_id'])
         command_base = command_base % {
             'mock_profile': mock_config,
             'tmp_dir': tmp_dir,
@@ -108,7 +108,7 @@ class ErrataDiffBuild(TaskBase):
         command = [command_base]
 
         retcode, output = run(command, can_fail=True, stdout=True,
-                              buffer_size=128)
+                              buffer_size=1, show_cmd=True)
 
         # upload results back to hub
         xz_path = srpm_path[:-8] + ".tar.xz"
