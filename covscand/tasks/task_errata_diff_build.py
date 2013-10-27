@@ -100,12 +100,11 @@ class ErrataDiffBuild(TaskBase):
         #command = ["su", "-", "coverity", "-c", " ".join(cov_cmd)]
 
         command_base = self.hub.worker.get_scanning_command(self.args['scan_id'])
-        command_base = command_base % {
+        command = command_base % {
             'mock_profile': mock_config,
             'tmp_dir': tmp_dir,
             'srpm_path': srpm_path,
         }
-        command = [command_base]
 
         retcode, output = run(command, can_fail=True, stdout=True,
                               buffer_size=1, show_cmd=True)
