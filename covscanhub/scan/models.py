@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-
+import json
 
 import re
 import datetime
@@ -538,6 +538,11 @@ counted in statistics.")
         return self.state == SCAN_STATES['DISPUTED']
 
     @property
+    def target(self):
+        if self.is_errata_base_scan():
+            return self.scanbinding.task.parent.scanbinding.scan
+
+    @property
     def overdue(self):
         """
         Return CSS class name if scan's overdue state -- not waived on time
@@ -790,17 +795,27 @@ class ETMapping(models.Model):
 
 class AppSettings(models.Model):
     """
-    Settings for application, these might be tuned once live.
+    Settings for covscan stored in DB so they can be easily changed.
 
     SEND_EMAIL { Y, N }
     SEND_BUS_MESSAGE { Y, N }
+
     CHECK_USER_CAN_SUBMIT_SCAN { Y, N }
-    WAIVER_IS_OVERDUE pickled datetime.delta
+
+    WAIVER_IS_OVERDUE pickled/jsoned datetime.delta
     WAIVER_IS_OVERDUE_RELSPEC release specific ^
+
     ACTUAL_SCANNER tuple('coverity', '6.5.0')
+
+    DEFAULT_SCANNING_COMMAND -- command for running analysis
+     * this string should accept these dynamic variables:
+      * srpm_path -- absolute path to SRPM
+      * tmp_dir -- temporary created dir
+      * mock_profile -- mock profile used for analysis
+    SCANNING_COMMAND_RELSPEC -- override of default
     """
     key = models.CharField(max_length=32, blank=False, null=False)
-    value = models.CharField(max_length=64, blank=True, null=True)
+    value = models.TextField(blank=True, null=True)
 
     class Meta:
         verbose_name_plural = "AppSettings"
@@ -831,8 +846,12 @@ class AppSettings(models.Model):
     @classmethod
     def setting_waiver_is_overdue(cls):
         """Time period when run is marked as not processed -- default value"""
-        return pickle.loads(
-            str(cls.objects.get(key="WAIVER_IS_OVERDUE").value))
+        try:
+            return pickle.loads(
+                str(cls.objects.get(key="WAIVER_IS_OVERDUE").value))
+        except Exception:
+            return json.loads(
+                str(cls.objects.get(key="WAIVER_IS_OVERDUE").value))
 
     @classmethod
     def settings_waiver_is_overdue_relspec(cls):
@@ -842,7 +861,10 @@ class AppSettings(models.Model):
             pickle.dumps('release__tag', 'timedelta')
         """
         q = cls.objects.filter(key="WAIVER_IS_OVERDUE_RELSPEC")
-        return dict(pickle.loads(str(o.value)) for o in q)
+        try:
+            return dict(pickle.loads(str(o.value)) for o in q)
+        except Exception:
+            return dict(json.loads(str(o.value)) for o in q)
 
     @classmethod
     def settings_waiver_overdue_by_release(cls, short_tag):
@@ -856,9 +878,41 @@ class AppSettings(models.Model):
         """
         Return tuple (FUTURE: list of tuples) with scanner name and version
         """
-        return pickle.loads(
-            str(cls.objects.get(key="ACTUAL_SCANNER").value)
-        )
+        try:
+            return pickle.loads(
+                str(cls.objects.get(key="ACTUAL_SCANNER").value)
+            )
+        except Exception:
+            return json.loads(
+                str(cls.objects.get(key="ACTUAL_SCANNER").value)
+            )
+
+    @classmethod
+    def _settings_scanning_command_relspec(cls):
+        """
+        Release specific scanning command
+        The are stored in DB like this:
+            json.dumps('release__tag', 'command')
+        """
+        q = cls.objects.filter(key="SCANNING_COMMAND_RELSPEC")
+        return dict(json.loads(str(o.value)) for o in q)
+
+    @classmethod
+    def settings_default_scanning_command(cls):
+        """
+        Return default scanning command
+        """
+        return cls.objects.get(key="DEFAULT_SCANNING_COMMAND").value
+
+    @classmethod
+    def settings_scanning_command(cls, short_tag):
+        """
+        Return release specific scanning command
+        """
+        try:
+            return cls._settings_scanning_command_relspec()[short_tag]
+        except KeyError:
+            return cls.settings_default_scanning_command()
 
 
 class TaskExtension(models.Model):

@@ -12,7 +12,7 @@ from covscanhub.scan.notify import send_task_notification
 from covscanhub.scan.xmlrpc_helper import finish_scan as h_finish_scan,\
     fail_scan as h_fail_scan, scan_notification_email
 from covscanhub.scan.models import SCAN_STATES, Scan, TaskExtension, \
-    SCAN_STATES_IN_PROGRESS
+    SCAN_STATES_IN_PROGRESS, AppSettings
 
 from django.core.exceptions import ObjectDoesNotExist
 
@@ -26,6 +26,7 @@ __all__ = (
     "fail_scan",
     "finish_task",
     "set_scan_to_scanning",
+    "get_scanning_command",
 )
 
 logger = logging.getLogger(__name__)
@@ -95,3 +96,12 @@ def set_scan_to_scanning(request, scan_id):
 @validate_worker
 def fail_scan(request, scan_id, reason=None):
     h_fail_scan(scan_id, reason)
+
+
+def get_scanning_command(request, scan_id):
+    scan = Scan.objects.get(id=scan_id)
+    if scan.is_errata_base_scan():
+        rel_tag = scan.target.release.tag
+    else:
+        rel_tag = scan.tag.release.tag
+    return AppSettings.settings_scanning_command(rel_tag)

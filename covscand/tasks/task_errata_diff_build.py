@@ -83,21 +83,29 @@ class ErrataDiffBuild(TaskBase):
             self.fail()
 
         #execute mockbuild of this package
-        cov_cmd = []
-        cov_cmd.append("cd")
-        cov_cmd.append(pipes.quote(tmp_dir))
-        cov_cmd.append(";")
+        #cov_cmd = []
+        #cov_cmd.append("cd")
+        #cov_cmd.append(pipes.quote(tmp_dir))
+        #cov_cmd.append(";")
+        #
+        ## $program [-fit] MOCK_PROFILE my-package.src.rpm [COV_OPTS]
+        #cov_cmd.append('cov-mockbuild')
+        ##if keep_covdata:
+        #cov_cmd.append("-c")
+        #cov_cmd.append(pipes.quote(mock_config))
+        #cov_cmd.append(pipes.quote(srpm_path))
+        #cov_cmd.append("--security")
+        #cov_cmd.append("--concurrency")
+        #
+        #command = ["su", "-", "coverity", "-c", " ".join(cov_cmd)]
 
-        # $program [-fit] MOCK_PROFILE my-package.src.rpm [COV_OPTS]
-        cov_cmd.append('cov-mockbuild')
-        #if keep_covdata:
-        cov_cmd.append("-c")
-        cov_cmd.append(pipes.quote(mock_config))
-        cov_cmd.append(pipes.quote(srpm_path))
-        cov_cmd.append("--security")
-        cov_cmd.append("--concurrency")
-
-        command = ["su", "-", "coverity", "-c", " ".join(cov_cmd)]
+        command_base = self.hub.get_scanning_command(self.args['scan_id'])
+        command_base = command_base % {
+            'mock_profile': mock_config,
+            'tmp_dir': tmp_dir,
+            'srpm_path': srpm_path,
+        }
+        command = [command_base]
 
         retcode, output = run(command, can_fail=True, stdout=True,
                               buffer_size=128)
