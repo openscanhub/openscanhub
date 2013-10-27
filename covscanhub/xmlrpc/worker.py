@@ -101,7 +101,7 @@ def fail_scan(request, scan_id, reason=None):
 def get_scanning_command(request, scan_id):
     scan = Scan.objects.get(id=scan_id)
     if scan.is_errata_base_scan():
-        rel_tag = scan.target.release.tag
+        rel_tag = scan.target.tag.release.tag
     else:
         rel_tag = scan.tag.release.tag
     return AppSettings.settings_scanning_command(rel_tag)
