@@ -148,13 +148,12 @@ def depend_on_brew(valid_rpms, dependency):
         return dep_name.startswith(dependency)
     for rpm in valid_rpms:
         # get requires from brew, second arg is dependency type
-        requires = s.getRPMDeps(valid_rpms[0]['id'], koji.DEP_REQUIRE)
+        requires = s.getRPMDeps(rpm['id'], koji.DEP_REQUIRE)
         logger.debug('brew req: %s', requires)
         if filter(check_if_dep_match, requires):
-            logger.info("depend_on_brew, %s depends on %s",
-                        rpm['name'], dependency)
+            logger.info("%s depends on %s", rpm['name'], dependency)
             return True
-    logger.info("depend_on_brew, no RPM depends on %s", dependency)
+    logger.info("no RPM depends on %s", dependency)
     return False
 
 
@@ -266,3 +265,7 @@ def retrieve_mock_for_build(nvr):
                               repoid=repo['id'],
                               topurl=TOP_URL)
     return mock
+
+
+if __name__ == '__main__':
+    print depend_on('rpm-4.11.1-8.el7', 'libc.so', 'rhel-7-x86_64')
