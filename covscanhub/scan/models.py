@@ -892,10 +892,13 @@ class AppSettings(models.Model):
         """
         Release specific scanning command
         The are stored in DB like this:
-            json.dumps('release__tag', 'command')
+            json.dumps({'release__tag': 'command'})
         """
         q = cls.objects.filter(key="SCANNING_COMMAND_RELSPEC")
-        return dict(json.loads(str(o.value)) for o in q)
+        r = {}
+        for o in q:
+            r.update(json.loads(str(o.value)))
+        return r
 
     @classmethod
     def settings_default_scanning_command(cls):
