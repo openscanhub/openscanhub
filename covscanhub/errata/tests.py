@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 
+import koji
 import unittest
 
-from covscanhub.errata.utils import depend_on, get_mocks_repo
+from covscanhub.errata.utils import depend_on, get_mocks_repo, depend_on_brew
 
 
 class TestDepChecking(unittest.TestCase):
@@ -39,3 +40,10 @@ class TestDepChecking(unittest.TestCase):
         self.assertTrue(isinstance(get_mocks_repo('rhel-6.5-x86_64'), (basestring, list)))
         self.assertTrue(isinstance(get_mocks_repo('rhel-6.5-x86_64'), (basestring, list)))
         self.assertTrue(isinstance(get_mocks_repo('rhel-6.5-x86_64'), (basestring, list)))
+
+    def test_depend_on_brew(self):
+        s = koji.ClientSession("http://brewhub.devel.redhat.com/brewhub")
+        build = s.getBuild("rpm-4.11.1-8.el7")
+        rpms = s.listRPMs(buildID=build['id'])
+        valid_rpms = filter(lambda x: x['arch'] == 'x86_64', rpms)
+        self.assertTrue(depend_on_brew(valid_rpms, 'libc.so'))
