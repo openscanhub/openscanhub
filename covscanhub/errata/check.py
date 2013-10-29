@@ -6,7 +6,7 @@ Functions related to checking provided data
 import logging
 from django.core.exceptions import ObjectDoesNotExist
 from kobo.rpmlib import parse_nvr
-from covscanhub.errata.service import logger
+
 from covscanhub.errata.utils import depend_on
 from covscanhub.other.exceptions import PackageBlacklistedException, PackageNotEligibleException
 from covscanhub.scan.models import PackageAttribute
@@ -23,27 +23,23 @@ def check_nvr(nvr):
         raise RuntimeError('%s is not a correct N-V-R' % nvr)
 
 
-def check_package_eligibility(package, nvr, mock_profile, release):
+def check_package_eligibility(package, nvr, mock_profile, release, created):
     """
     check if package is eligible for scanning
     * has code in appropriate programming language
     * is not blacklisted
     """
-    try:
-        is_blocked = package.is_blocked(release)
-    except ObjectDoesNotExist:
-        PackageAttribute.create_blocked(package, release, False)
+    if created:
+        logger.info('Package %s for %s was created', package, release)
+        depends_on = depend_on(nvr, 'libc.so', mock_profile)
+        atr = PackageAttribute.create_eligible(package, release, depends_on)
+        is_eligible = atr.is_eligible()
     else:
+        is_blocked = package.is_blocked(release)
         if is_blocked:
             raise PackageBlacklistedException('Package %s is blacklisted.' %
                                               (package.name))
-    try:
         is_eligible = package.is_eligible(release)
-    except ObjectDoesNotExist:
-        logger.info('Package %s for %s was created', package, release)
-        depends_on = depend_on(nvr, 'libc.so', mock_profile)
-        PackageAttribute.create_eligible(package, release, depends_on)
-    else:
-        if not is_eligible:
-            raise PackageNotEligibleException(
-                'Package %s is not eligible for scanning.' % (package.name))
+    if not is_eligible:
+        raise PackageNotEligibleException(
+            'Package %s is not eligible for scanning.' % (package.name))

@@ -295,12 +295,20 @@ package')
         return mark_safe(response)
 
     def is_blocked(self, release):
-        atr = PackageAttribute.blocked(self, release)
-        return atr.is_blocked()
+        try:
+            atr = PackageAttribute.blocked(self, release)
+        except ObjectDoesNotExist:
+            return self.blocked
+        else:
+            return atr.is_blocked()
 
     def is_eligible(self, release):
-        atr = PackageAttribute.eligible(self, release)
-        return atr.is_eligible()
+        try:
+            atr = PackageAttribute.eligible(self, release)
+        except ObjectDoesNotExist:
+            return self.eligible
+        else:
+            return atr.is_eligible()
 
 
 class PackageAttributeMixin(object):
@@ -366,14 +374,11 @@ class PackageAttribute(models.Model):
         """
         return package attribute for provided package/release
         """
-        try:
-            if key:
-                return cls.objects.get(package=package, release=release, key=key)
-            else:
-                return cls.objects.get(package=package, release=release)
-        except ObjectDoesNotExist:
-            logger.error("Package attribute not found: %s %s %s", package, release, key)
-            raise
+        if key:
+            return cls.objects.get(package=package, release=release, key=key)
+        else:
+            return cls.objects.get(package=package, release=release)
+
 
     @classmethod
     def blocked(cls, package, release):
@@ -381,7 +386,11 @@ class PackageAttribute(models.Model):
 
     @classmethod
     def eligible(cls, package, release):
-        return cls._get_for_package_in_release(package, release, PackageAttribute.ELIGIBLE)
+        try:
+            return cls._get_for_package_in_release(package, release, PackageAttribute.ELIGIBLE)
+        except ObjectDoesNotExist:
+            logger.error("Package eligibility attribute not found: %s %s", package, release)
+            raise
 
     def _is(self, key, exc_type):
         if self.key == key:
