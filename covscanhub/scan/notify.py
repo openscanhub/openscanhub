@@ -59,19 +59,23 @@ def get_recipient(user):
 def generate_stats(task, diff_task):
     def display_defects(result_list, label_name, defects_dict, diff_sign=''):
         if defects_dict:
-            result_list.append(label_name)
+            result_list.append('')
+            if label_name:
+                result_list.append(label_name)
+                result_list.append('')
             result_list += ["%s: %s%d" % (checker, diff_sign, count) for checker, count in defects_dict.items()]
+            result_list.append('')
         return result_list
     defects_json = load_defects(task.id)
     result = []
     if diff_task:
         added = get_defect_stats(defects_json['added'])
         fixed = get_defect_stats(defects_json['fixed'])
-        display_defects(result, "Added:", added, '+')
-        display_defects(result, "Fixed:", fixed, '-')
+        display_defects(result, "Added (+), Fixed (-)", added, '+')
+        display_defects(result, "", fixed, '-')
     else:
         defects = get_defect_stats(defects_json['defects'])
-        display_defects(result, 'All defects:', defects)
+        display_defects(result, 'All defects', defects)
     return '\n'.join(result)
 
 
