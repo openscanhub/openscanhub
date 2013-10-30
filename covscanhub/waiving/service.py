@@ -176,7 +176,7 @@ def create_results(scan, sb):
     task_dir = Task.get_task_dir(sb.task.id)
 
     #json's path is <TASK_DIR>/<NVR>/run1/<NVR>.js
-    defects_path = os.path.join(task_dir, scan.nvr, 'run1', scan.nvr + '.js')
+    defects_path = os.path.join(task_dir, scan.nvr, 'run1', SCAN_RESULTS_FILENAME)
     fixed_file_path = os.path.join(task_dir, FIXED_DIFF_FILE)
     diff_file_path = os.path.join(task_dir, ERROR_DIFF_FILE)
 

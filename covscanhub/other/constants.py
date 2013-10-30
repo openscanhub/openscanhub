@@ -16,5 +16,5 @@ FIXED_TXT_FILE = 'csdiff_fixed.err'
 
 DEFAULT_CHECKER_GROUP = "Unsorted"
 
-TASK_DIFF_SOURCE = 'results.js'
+SCAN_RESULTS_FILENAME = 'results.js'
 CSDIFF_ARGS = '-jz'

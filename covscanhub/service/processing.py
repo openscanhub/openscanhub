@@ -120,8 +120,8 @@ def get_input_filenames_task(base_path, base_nvr, path, nvr):
     """ build path names for VersionDiffBuild task """
     p = {}
     # task dir structure: <task_dir>/<nvr>/run1/<nvr>.js
-    p['old'] = os.path.join(base_path, base_nvr, 'run1', TASK_DIFF_SOURCE)
-    p['new'] = os.path.join(path, nvr, 'run1', TASK_DIFF_SOURCE)
+    p['old'] = os.path.join(base_path, base_nvr, 'run1', SCAN_RESULTS_FILENAME)
+    p['new'] = os.path.join(path, nvr, 'run1', SCAN_RESULTS_FILENAME)
     return p
 
 

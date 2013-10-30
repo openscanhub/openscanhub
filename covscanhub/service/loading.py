@@ -9,7 +9,7 @@ import json
 import logging
 
 from kobo.hub.models import Task
-from covscanhub.other.constants import TASK_DIFF_SOURCE, FIXED_DIFF_FILE, ERROR_DIFF_FILE
+from covscanhub.other.constants import SCAN_RESULTS_FILENAME, FIXED_DIFF_FILE, ERROR_DIFF_FILE
 
 
 logger = logging.getLogger(__name__)
@@ -46,7 +46,7 @@ def load_defects(task_id):
     dir_name = task.label
     if dir_name.endswith('.src.rpm'):
         dir_name = dir_name[:-8]
-    defects_path = os.path.join(task_dir, dir_name, 'run1', TASK_DIFF_SOURCE)
+    defects_path = os.path.join(task_dir, dir_name, 'run1', SCAN_RESULTS_FILENAME)
     fixed_file_path = os.path.join(task_dir, FIXED_DIFF_FILE)
     added_file_path = os.path.join(task_dir, ERROR_DIFF_FILE)
     result = {}
