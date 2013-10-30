@@ -323,7 +323,6 @@ associated with this group.")
         if waivers:
             return waivers.latest()
 
-
     def has_waiver(self):
         """return latest waiver, if it exists"""
         if self.state == RESULT_GROUP_STATES['WAIVED']:
@@ -333,7 +332,6 @@ associated with this group.")
             else:
                 return waivers.latest()
 
-
     def is_marked_as_bug(self):
         """return True if there is latest waiver with type IS_A_BUG"""
         w = self.has_waiver()
@@ -341,7 +339,6 @@ associated with this group.")
             return w.state == WAIVER_TYPES['IS_A_BUG']
         else:
             return False
-
 
     def get_state_to_display(self):
         """
