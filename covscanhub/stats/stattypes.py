@@ -306,7 +306,7 @@ def get_total_new_defects_in_updates():
 @stat_function(6, "DEFECTS")
 def get_new_defects_in_updates_by_release():
     """
-        Fixed defects in updates
+        New defects in updates
 
         Number of newly introduced defects in updates by release.
     """
