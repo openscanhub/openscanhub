@@ -19,9 +19,9 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Sum
 
 from covscanhub.other.constants import ERROR_DIFF_FILE, FIXED_DIFF_FILE,\
-    DEFAULT_CHECKER_GROUP
+    DEFAULT_CHECKER_GROUP, SCAN_RESULTS_FILENAME
 from models import DEFECT_STATES, RESULT_GROUP_STATES, Defect, Result, \
-    Checker, CheckerGroup, Waiver, ResultGroup
+    Checker, CheckerGroup, Waiver, ResultGroup, WaivingLog
 
 from kobo.hub.models import Task
 from kobo.shortcuts import run
@@ -135,6 +135,37 @@ def update_analyzer(result, json_dict):
             result.scanning_time = int(time_delta.days * 86400 +
                                        time_delta.seconds)
     result.save()
+
+
+def find_processed_in_past(result):
+    """
+    When new scan is imported, check which defects were waived in past
+    or marked as bugs.
+    """
+
+    # get all RGs, that does not have waiver
+    for rg in get_unwaived_rgs(result):
+        # was RG waived in past?
+        w = get_last_waiver(
+            rg.checker_group,
+            rg.result.scanbinding.scan.package,
+            rg.result.scanbinding.scan.tag.release,
+            exclude=rg.id,
+        )
+        # compare defects in these 2 result groups using pycsdiff
+        if w and compare_result_groups(rg, w.result_group):
+            if w.is_a_bug():
+                rg.waive()
+            else:
+                # they match! -- change states
+                rg.state = RESULT_GROUP_STATES['PREVIOUSLY_WAIVED']
+                rg.defect_type = DEFECT_STATES['PREVIOUSLY_WAIVED']
+                rg.save()
+
+                #also changes states for defects
+                for d in Defect.objects.filter(result_group=rg):
+                    d.state = DEFECT_STATES['PREVIOUSLY_WAIVED']
+                    d.save()
 
 
 def create_results(scan, sb):
@@ -439,6 +470,20 @@ def get_scans_new_defects_count(scan_id):
     except KeyError:
         count = 0
     return count
+
+
+def get_waivers_for_rg(rg):
+    wls = WaivingLog.objects.for_rg(rg.id)
+    if not wls:
+        w = get_last_waiver(
+            rg.checker_group,
+            rg.result.scanbinding.scan.package,
+            rg.result.scanbinding.scan.tag.release,
+        )
+        if w:
+            return WaivingLog.objects.for_waiver(w)
+    else:
+        return wls
 
 
 """

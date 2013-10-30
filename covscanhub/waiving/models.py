@@ -375,6 +375,11 @@ associated with this group.")
         if w:
             return w.order_by('-date')
 
+    def waive(self, save=True):
+        self.state = RESULT_GROUP_STATES['WAIVED']
+        if save:
+            self.save()
+
     def __unicode__(self):
         return "#%d [%s - %s], Result: (%s)" % (
             self.id, self.checker_group.name, self.get_state_display(),
@@ -506,6 +511,21 @@ waived for specific Result")
     def is_comment(self):
         return self.state == WAIVER_TYPES['COMMENT']
 
+    def is_not_a_bug(self):
+        """ does this waiver has type 'not a bug'? """
+        return self.state == WAIVER_TYPES['NOT_A_BUG']
+
+    def is_bug(self):
+        """ type == 'is a bug' """
+        return self.state == WAIVER_TYPES['IS_A_BUG']
+
+    def is_fix_later(self):
+        return self.state == WAIVER_TYPES['FIX_LATER']
+
+    def marks_bug(self):
+        """ this waiver marks bug: either 'fix later' or 'is a bug' """
+        return self.is_bug() or self.is_fix_later()
+
     def type_text(self):
         if self.is_comment():
             return "Comment"
@@ -527,6 +547,28 @@ waived for specific Result")
                    user=user, state=WAIVER_TYPES['COMMENT'])
 
 
+class WaivingLogMixin(object):
+    def not_deleted(self):
+        return self.exclude(state=WAIVER_LOG_ACTIONS['DELETE'])
+
+    def for_rg(self, rg_id):
+        return self.not_deleted().filter(waiver__result_group=rg_id)
+
+    def for_waiver(self, waiver):
+        return self.not_deleted().filter(waiver=waiver)
+
+
+class WaivingLogQuerySet(models.query.QuerySet, WaivingLogMixin):
+    pass
+
+
+class WaivingLogManager(models.Manager, WaivingLogMixin):
+    def get_query_set(self):
+        """ return all active waivers """
+        return WaivingLogQuerySet(self.model, using=self._db).filter(
+            state__in=WAIVERS_ONLY, is_deleted=False)
+
+
 class WaivingLog(models.Model):
     """
     Log of waiving related actions
@@ -542,6 +584,8 @@ class WaivingLog(models.Model):
         help_text="Waiving action"
     )
     waiver = models.ForeignKey(Waiver)
+
+    objects = WaivingLogManager()
 
     class Meta:
         ordering = ['date']

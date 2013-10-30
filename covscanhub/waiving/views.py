@@ -30,7 +30,7 @@ from covscanhub.waiving.bugzilla_reporting import create_bugzilla, \
 from covscanhub.waiving.models import *
 from covscanhub.waiving.forms import WaiverForm, ScanListSearchForm
 from covscanhub.waiving.service import get_unwaived_rgs, get_last_waiver, \
-    display_in_result, get_defects_diff_display, waiver_condition
+    display_in_result, get_defects_diff_display, waiver_condition, get_waivers_for_rg
 
 
 logger = logging.getLogger(__name__)
@@ -472,9 +472,7 @@ def waiver(request, sb_id, result_group_id):
     context['defects'] = Defect.objects.filter(result_group=result_group_id,
                                                state=DEFECT_STATES['NEW']).\
                                                    order_by("order")
-    context['waiving_logs'] = WaivingLog.objects.filter(
-        waiver__result_group=result_group_id).exclude(
-        state=WAIVER_LOG_ACTIONS['DELETE'])
+    context['waiving_logs'] = get_waivers_for_rg(result_group_object)
 
     context['defects_list_class'] = 'new'
     context['new_selected'] = "selected"
