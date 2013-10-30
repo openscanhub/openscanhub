@@ -206,26 +206,7 @@ def create_results(scan, sb):
             load_defects_from_file(fixed_file_path, r, DEFECT_STATES['FIXED'])
             load_defects_from_file(diff_file_path, r, DEFECT_STATES['NEW'])
 
-            # get all RGs, that does not have waiver
-            for rg in get_unwaived_rgs(r):
-                # was RG waived in past?
-                w = get_last_waiver(
-                    rg.checker_group,
-                    rg.result.scanbinding.scan.package,
-                    rg.result.scanbinding.scan.tag.release,
-                    exclude=rg.id,
-                )
-                # compare defects in these 2 result groups using pycsdiff
-                if w and compare_result_groups(rg, w.result_group):
-                    # they match! -- change states
-                    rg.state = RESULT_GROUP_STATES['PREVIOUSLY_WAIVED']
-                    rg.defect_type = DEFECT_STATES['PREVIOUSLY_WAIVED']
-                    rg.save()
-
-                    #also changes states for defects
-                    for d in Defect.objects.filter(result_group=rg):
-                        d.state = DEFECT_STATES['PREVIOUSLY_WAIVED']
-                        d.save()
+            find_processed_in_past(r)
 
         for rg in ResultGroup.objects.filter(result=r):
             counter = 1
