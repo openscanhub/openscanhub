@@ -106,7 +106,7 @@ If you have any questions, feel free to ask at Red Hat IRC channel \
 
     summary = 'New defect%s found in %s' % (
         's' if waivers.count() >= 2 else '',
-        waivers[0].result_group.result.scanbinding.scan.base.nvr)
+        waivers[0].result_group.result.scanbinding.scan.nvr)
 
     comment += format_waivers(waivers, request)
 
