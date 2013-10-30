@@ -214,10 +214,11 @@ def get_tupled_data(output):
     i = 0
 
     # find best match: 6 is too much and 3 is too few
-    if len(output.keys()) % 4 == 0:
-        column_count = 4
-    else:
-        column_count = 5
+    # FIXME: 5 columns doesn't work
+    #if len(output.keys()) % 4 == 0:
+    column_count = 4
+    #else:
+    #    column_count = 5
     while True:
         low_bound = column_count * i
         high_bound = column_count * (i + 1)
