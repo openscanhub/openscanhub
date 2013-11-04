@@ -119,10 +119,10 @@ def send_task_notification(request, task_id):
     to = task.args.get("email_to", []) or []
     bcc = task.args.get("email_bcc", []) or []
     recipients = []
-    if recipient:
-        recipients.append(recipient)
     if to:
         recipients.extend(to)
+    elif recipient:
+        recipients.append(recipient)
     if not recipients and not bcc:
         return
 

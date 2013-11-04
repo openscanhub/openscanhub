@@ -70,7 +70,7 @@ if not specified)"
         self.parser.add_option(
             "--email-to",
             action="append",
-            help="send output to this address"
+            help="send notification to this address (can be used multiple times)"
         )
 
         self.parser.add_option(
