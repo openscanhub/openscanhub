@@ -564,8 +564,7 @@ class WaivingLogQuerySet(models.query.QuerySet, WaivingLogMixin):
 class WaivingLogManager(models.Manager, WaivingLogMixin):
     def get_query_set(self):
         """ return all active waivers """
-        return WaivingLogQuerySet(self.model, using=self._db).filter(
-            state__in=WAIVERS_ONLY, is_deleted=False)
+        return WaivingLogQuerySet(self.model, using=self._db)
 
 
 class WaivingLog(models.Model):
