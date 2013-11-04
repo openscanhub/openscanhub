@@ -154,7 +154,7 @@ def find_processed_in_past(result):
         )
         # compare defects in these 2 result groups using pycsdiff
         if w and compare_result_groups(rg, w.result_group):
-            if w.is_a_bug():
+            if w.is_bug():
                 rg.waive()
             else:
                 # they match! -- change states
