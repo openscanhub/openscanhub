@@ -1,49 +1,35 @@
 # -*- coding: utf-8 -*-
 """custom task urls"""
 
-from django.conf.urls.defaults import *
+from django.conf.urls import *
 from kobo.client.constants import TASK_STATES
+
+from kobo.hub.views import TaskListView, TaskDetail
 
 
 urlpatterns = patterns("",
-    url(r"^task/et/$",
-        "kobo.hub.views.task_list",
-        kwargs={"state": None,
-                "title": "ET Tasks",
-                "order_by": ["-id"],
-                'method': "ErrataDiffBuild"},
+    url(r"^et/$",
+        TaskListView.as_view(title="Errata Tool Tasks", ),
+        kwargs={'method': "ErrataDiffBuild"},
         name="task/et"),
 
     url(r"^$",
-        "kobo.hub.views.task_list",
-        kwargs={"state": None,
-                "title": "All tasks",
-                "order_by": ["-id"],
-                'method__in': ['DiffBuild', 'MockBuild', 'VersionDiffBuild']},
+        TaskListView.as_view(),
+        kwargs={'method__in': ['DiffBuild', 'MockBuild', 'VersionDiffBuild']},
         name="task/index"),
 
     url(r"^(?P<id>\d+)/$",
-        "kobo.hub.views.task_detail",
+        TaskDetail.as_view(),
         name="task/detail"),
 
     url(r"^running/$",
-        "kobo.hub.views.task_list",
-        kwargs={"state": (TASK_STATES["FREE"],
-                          TASK_STATES["ASSIGNED"],
-                          TASK_STATES["OPEN"]),
-                "title": "Running tasks",
-                "order_by": ["id"]},
+        TaskListView.as_view(title="Running Tasks", state=(TASK_STATES["FREE"], TASK_STATES["ASSIGNED"], TASK_STATES["OPEN"])),
         name="task/running"),
 
     url(r"^finished/$",
-        "kobo.hub.views.task_list",
-        kwargs={"state": (TASK_STATES["CLOSED"],
-                          TASK_STATES["INTERRUPTED"],
-                          TASK_STATES["CANCELED"],
-                          TASK_STATES["FAILED"]),
-                "title": "Finished tasks",
-                "order_by": ["-dt_finished", "id"],
-                'method__in': ['DiffBuild', 'MockBuild', 'VersionDiffBuild']},
+        TaskListView.as_view(state=(TASK_STATES["CLOSED"], TASK_STATES["INTERRUPTED"], TASK_STATES["CANCELED"], TASK_STATES["FAILED"]),
+                             title="Finished Tasks",),
+        kwargs={'method__in': ['DiffBuild', 'MockBuild', 'VersionDiffBuild']},
         name="task/finished"),
 
     url(r"^(?P<id>\d+)/log/(?P<log_name>.+)$",
