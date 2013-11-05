@@ -21,7 +21,9 @@ from covscanhub.scan.service import extract_logs_from_tarball
 from covscanhub.other.admin import register_admin_module
 
 register_admin_module('covscanhub.scan.models', exclude=['Scan'],
-                      search_fields=[('Package', ['name'], ), ('PackageAttribute', ['package__name'], )])
+                      search_fields=[('Package', ['name']),
+                                     ('ScanBinding', ['scan__nvr']),
+                                     ('PackageAttribute', ['package__name'], )])
 register_admin_module('django.contrib.admin.models')
 register_admin_module('south.models')
 
@@ -39,7 +41,7 @@ class ScanAdmin(admin.ModelAdmin):
                     'link_parent', "link_tag",
                     'username', 'link_package', 'link_bind', 'enabled')
     search_fields = ['package__name', 'nvr',]
-
+    list_per_page = 15
     review_template = 'admin/my_test/myentry/review.html'
 
     def get_urls(self):
