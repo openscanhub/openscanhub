@@ -104,7 +104,7 @@
         </span>
 
         {% if wl.get_state_display != "DELETE" and not wl.waiver.is_deleted and user.is_authenticated %}
-            <a class="btn float_right delete_link" href="{% url waiving/waiver/remove wl.waiver.id %}">Invalidate</a>
+            <a class="btn float_right delete_link" href="{% url 'waiving/waiver/remove' wl.waiver.id %}">Invalidate</a>
         {% endif %}
 
         {% if wl.waiver.is_deleted %}
@@ -143,7 +143,7 @@
 {% if waivers_place and matching_waiver %}
 
 <div class="waiving_log wl_type_PREV_WAIVED">
-    <div class="small grey">This group has been waived in run: <a href="{% url waiving/waiver matching_waiver.result_group.result.scanbinding.id matching_waiver.result_group.id %}">{{ waivers_place }}</a></div>
+    <div class="small grey">This group has been waived in run: <a href="{% url 'waiving/waiver' matching_waiver.result_group.result.scanbinding.id matching_waiver.result_group.id %}">{{ waivers_place }}</a></div>
     <div class="message">
     {{ matching_waiver.message }}
     </div>
@@ -159,9 +159,9 @@
     <div id="form_inner_wrapper">
         <form action=
             {% if defects_list_class == "new" %}
-            "{% url waiving/waiver sb.id active_group.id %}"
+            "{% url 'waiving/waiver' sb.id active_group.id %}"
             {% else %}
-            "{% url waiving/previously_waived sb.id active_group.id %}"
+            "{% url 'waiving/previously_waived' sb.id active_group.id %}"
             {% endif %}
          method="post">{% csrf_token %}
         {{ form.as_p }}
@@ -197,7 +197,7 @@
     {% for w in previous_waivers %}
     <div class="waiving_log wl_type_PAST_WAIVERS">
         <span class="waiver_type {{ w.get_state_display }}">{{ w.get_display_type }}</span>
-        Waiver for build <a href="{% url waiving/waiver w.result_group.result.scanbinding.id w.result_group.id %}">{{ w.result_group.result.scanbinding.scan.nvr}}</a> submitted {{ w.date|naturaltime }} ({{ w.date|date:"Y-m-d H:i:s" }}):
+        Waiver for build <a href="{% url 'waiving/waiver' w.result_group.result.scanbinding.id w.result_group.id %}">{{ w.result_group.result.scanbinding.scan.nvr}}</a> submitted {{ w.date|naturaltime }} ({{ w.date|date:"Y-m-d H:i:s" }}):
         <div class="message_box">
             <div class="message">
                 {{ w.message }}

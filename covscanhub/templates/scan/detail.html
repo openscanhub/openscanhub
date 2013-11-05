@@ -32,7 +32,7 @@
   </tr>
   <tr>
     <th>{% trans "Task" %}</th>
-    <td><a href="{% url task/detail sb.task.id %}">{{ sb.task }}</a></td>
+    <td><a href="{% url 'task/detail' sb.task.id %}">{{ sb.task }}</a></td>
   </tr>
   <tr>
     <th>{% trans "RHEL Version" %}</th>

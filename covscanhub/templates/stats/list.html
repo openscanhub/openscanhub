@@ -7,7 +7,7 @@
 
 {% if releases %}
     {% for r in releases %}
-        <a href="{% url stats/release/list r.id %}">{{ r.tag }}</a>
+        <a href="{% url 'stats/release/list' r.id %}">{{ r.tag }}</a>
     {% endfor %}
 {% endif %}
 

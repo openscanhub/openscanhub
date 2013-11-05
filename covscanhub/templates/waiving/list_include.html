@@ -25,7 +25,7 @@
   </tr>
 {% for scanbinding in scanbinding_list %}
   <tr>
-    <td><a href="{% url waiving/result scanbinding.id %}">{{ scanbinding.id }}</a></td>
+    <td><a href="{% url 'waiving/result' scanbinding.id %}">{{ scanbinding.id }}</a></td>
     <td>{{ scanbinding.scan.nvr }}</td>
     <td>{{ scanbinding.scan.base.nvr }}</td>
     {% if scanbinding.result.bugs_count > 0 and scanbinding.scan.get_state_display == "WAIVED" %}

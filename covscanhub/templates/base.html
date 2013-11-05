@@ -11,7 +11,7 @@ Red Hat Coverity Scan Scheduler
 {% endblock %}
 
 {% block login %}
-<a href="{% url auth/login %}?next={{ request.path }}">login</a> | <a href="{% url auth/krb5login %}?next={{ request.path }}">krb5login</a>
+<a href="{% url 'auth/login' %}?next={{ request.path }}">login</a> | <a href="{% url 'auth/krb5login' %}?next={{ request.path }}">krb5login</a>
 {% endblock %}
 
 {% block header_login %}

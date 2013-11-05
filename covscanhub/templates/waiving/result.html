@@ -7,12 +7,12 @@
 <div id="box_wrapper">
     {% if not bugzilla %}
         {% if unreported_bugs_count > 0 %}
-    <a id="bz_create" class="btn margin_right" href="{% url waiving/new_bz sb.scan.package.id sb.scan.tag.release.id %}">Create Bugzilla ({{ unreported_bugs_count }})</a>
+    <a id="bz_create" class="btn margin_right" href="{% url 'waiving/new_bz' sb.scan.package.id sb.scan.tag.release.id %}">Create Bugzilla ({{ unreported_bugs_count }})</a>
         {% endif %}
     {% else %}
     <a id="bz_number" class="btn {% if unreported_bugs_count == 0 %}margin_right{% endif %}" href="https://bugzilla.redhat.com/show_bug.cgi?id={{ bugzilla.number }}">BZ#{{ bugzilla.number }}</a>
         {% if unreported_bugs_count > 0 %}
-        <a id="bz_update" class="btn margin_right" href="{% url waiving/update_bz sb.scan.package.id sb.scan.tag.release.id %}">Update Bugzilla ({{ unreported_bugs_count }})</a>
+        <a id="bz_update" class="btn margin_right" href="{% url 'waiving/update_bz' sb.scan.package.id sb.scan.tag.release.id %}">Update Bugzilla ({{ unreported_bugs_count }})</a>
         {% endif %}
     {% endif %}
     {% if sb %}
@@ -23,7 +23,7 @@
         <a id="advisory_link" class="btn margin_right" href="https://errata.devel.redhat.com/advisory/{{ advisory_link }}/test_run/covscan">Erratum</a>
     {% endif %}
     {% if sb.task %}
-        <a id="task_link" class="btn margin_right" href="{% url task/detail sb.task.id %}">Task</a>
+        <a id="task_link" class="btn margin_right" href="{% url 'task/detail' sb.task.id %}">Task</a>
     {% endif %}
 </div>
 
@@ -51,7 +51,7 @@
     {% for group, data in five.items %}
         {% if data and data.id %}
         <td class="bg_{{ data.group_state }} {% if active_group and active_group.id == data.id %} active {% endif %}">
-            <a href="{% url waiving/waiver sb.id data.id %}#defects">{{ group.name }}</a>
+            <a href="{% url 'waiving/waiver' sb.id data.id %}#defects">{{ group.name }}</a>
             {% if data.diff_state %}
             <span class="{{ data.diff_state }}">{{ data.diff_count }}</span>
             {% endif %}
@@ -83,7 +83,7 @@
     {% for group, data in five.items %}
         {% if data and data.id %}
         <td class="bg_{{ data.group_state }} {% if active_group and active_group.id == data.id %} active {% endif %}">
-            <a href="{% url waiving/fixed_defects sb.id data.id %}#defects">{{ group.name }}</a>
+            <a href="{% url 'waiving/fixed_defects' sb.id data.id %}#defects">{{ group.name }}</a>
             {% if data.diff_state %}
             <span class="{{ data.diff_state }}">{{ data.diff_count }}</span>
             {% endif %}
@@ -115,7 +115,7 @@
     {% for group, data in five.items %}
         {% if data and data.id %}
         <td class="bg_{{ data.group_state }} {% if active_group and active_group.id == data.id %} active {% endif %}">
-            <a href="{% url waiving/previously_waived sb.id data.id %}#defects">{{ group.name }}</a>
+            <a href="{% url 'waiving/previously_waived' sb.id data.id %}#defects">{{ group.name }}</a>
             {% if data.diff_state %}
             <span class="{{ data.diff_state }}">{{ data.diff_count }}</span>
             {% endif %}
@@ -145,14 +145,14 @@
 {% endif %}
 
 {% if task %}
-<a href="{% url task/detail sb.task.id %}">Task</a>
+<a href="{% url 'task/detail' sb.task.id %}">Task</a>
 {% endif %}
 
 {% if logs %}
 <div>
 <ul>
 {% for log, log_label in logs.iteritems %}
-  <li><a href="{% url task/log sb.task.id log %}">{{ log_label }}</a> [<a href="{% url task/log sb.task.id log %}?format=raw">download</a>]</li>
+  <li><a href="{% url 'task/log' sb.task.id log %}">{{ log_label }}</a> [<a href="{% url 'task/log' sb.task.id log %}?format=raw">download</a>]</li>
 {% endfor %}
 </ul>
 </div>
@@ -161,7 +161,7 @@
 <div id="result_links">
     {% if first_sb %}
         <span class="link">
-            <a href="{% url waiving/result first_sb.id %}">
+            <a href="{% url 'waiving/result' first_sb.id %}">
                 <span class="link_icon">&#171;</span> {# « &#171; {left double angle quote} #}
                 <span class="tooltip">{{ first_sb.scan.nvr }}</span>
                 {% trans "First" %}
@@ -177,7 +177,7 @@
     {% if previous_sb or next_sb %}
     {% if previous_sb %}
         <span class="link">
-            <a href="{% url waiving/result previous_sb.id %}">
+            <a href="{% url 'waiving/result' previous_sb.id %}">
                 <span class="link_icon">&lsaquo;</span> {# ‹ &lsaquo; &#139; &#8249; {left single angle quote} #}
                 <span class="tooltip">{{ previous_sb.scan.nvr }}</span>
                 {% trans "Previous" %}
@@ -198,7 +198,7 @@
     {% if previous_sb or next_sb %}
     {% if next_sb %}
         <span class="link">
-            <a href="{% url waiving/result next_sb.id %}">
+            <a href="{% url 'waiving/result' next_sb.id %}">
                 <span class="tooltip">{{ next_sb.scan.nvr }}</span>
                 {% trans "Next" %}
                 <span class="link_icon">&rsaquo;</span> {# › &rsaquo; &#155; &#8250; {right single angle quote} #}
@@ -214,7 +214,7 @@
 
     {% if newest_sb %}
         <span class="link">
-            <a href="{% url waiving/result newest_sb.id %}">
+            <a href="{% url 'waiving/result' newest_sb.id %}">
                 <span class="tooltip">{{ newest_sb.scan.nvr }}</span>
                 {% trans "Last" %}
                 <span class="link_icon">&#187;</span> {# » &#187; {right double angle quote} #}
@@ -260,13 +260,13 @@
     <span id="logs_title">Additional info</span>
     {% for log in logs %}
     <span class="log_type {% if forloop.counter == 1 %}first_log{% endif %}">
-        <a href="{% url task/log sb.task.id log.icon_link %}">
+        <a href="{% url 'task/log' sb.task.id log.icon_link %}">
             <img src="{{ MEDIA_URL }}{{ log.icon }}" width="32" height="32" />
         </a>
         <div class="log_title">{{ log.title }}</div>
         <div class="log_links">
         {% for f in log.files %}
-            <a href="{% url task/log sb.task.id f.path %}?format=raw">{{ f.title }}</a>
+            <a href="{% url 'task/log' sb.task.id f.path %}?format=raw">{{ f.title }}</a>
             {% if forloop.counter < log.files|length %}
                 |
             {% endif %}

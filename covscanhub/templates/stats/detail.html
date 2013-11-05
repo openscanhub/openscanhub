@@ -37,7 +37,7 @@ $(document).ready(function() {
 
 {% block content %}
 {% if release %}
-<h2><a href="{% url stats/release/list release.id %}">{{ release.product }}.{{release.release}}</a></h2>
+<h2><a href="{% url 'stats/release/list' release.id %}">{{ release.product }}.{{release.release}}</a></h2>
 {% endif %}
 <h2>{{ type.short_comment }}</h2>
 <div>{{ type.comment }}</div>
