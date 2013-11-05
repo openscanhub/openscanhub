@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
 
 
-from django.conf.urls.defaults import patterns, url
+from django.conf.urls import patterns, url
+
+from covscanhub.waiving.views import *
 
 
 urlpatterns = patterns("",
-    url(r"^$", "covscanhub.waiving.views.results_list", name="waiving/list"),
+    url(r"^$", ResultsListView.as_view(), name="waiving/list"),
 
     url(r"^(?P<sb_id>\d+)/(?P<result_group_id>\d+)/$",
         "covscanhub.waiving.views.waiver", name="waiving/waiver"),

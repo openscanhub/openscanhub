@@ -1,25 +1,25 @@
 # -*- coding: utf-8 -*-
 
 
-from django.conf.urls.defaults import *
+from django.conf.urls import *
 from django.conf import settings
 
-# Uncomment the next two lines to enable the admin:
 from django.contrib import admin
+from django.views.generic.base import TemplateView
+
 admin.autodiscover()
 
 
 urlpatterns = patterns('',
     # Example:
     # (r'^covscanhub/', include('covscanhub.foo.urls')),
-
+    url(r"^$", TemplateView.as_view(template_name="index.html"), name="index"),
+    url(r"^$", TemplateView.as_view(template_name="index.html"), name="home/index"),
     # Uncomment the admin/doc line below and add 'django.contrib.admindocs'
     # to INSTALLED_APPS to enable admin documentation:
     # (r'^admin/doc/', include('django.contrib.admindocs.urls')),
 
     #url(r"^$", 'covscanhub.home.views.index_redirect', name="task/list"),
-    url(r"^$", "django.views.generic.simple.direct_to_template", kwargs={"template": "index.html"}, name="index"),
-    url(r"^$", "django.views.generic.simple.direct_to_template", kwargs={"template": "index.html"}, name="home/index"),
     url(r"^auth/", include("kobo.hub.urls.auth")),
     url(r"^task/", include("covscanhub.scan.task_urls")),
     url(r"^info/arch/", include("kobo.hub.urls.arch")),
