@@ -101,6 +101,7 @@ def register_admin_module(module, exclude=None, new_fields=None,
     for (ac, c) in admins:
         admin_class = type(ac, (admin.ModelAdmin,), dict())
         admin_class.list_display = []
+        admin_class.list_per_page = 15
         for field in c._meta.fields:
             field_name = field.name
             # create link for relations
