@@ -209,11 +209,11 @@ class Package(models.Model):
     """
     name = models.CharField("Package name", max_length=64,
                             blank=False, null=False)
-    blocked = models.BooleanField(default=False, help_text="If this is set to \
-True, the package is blacklisted -- not accepted for scanning.")
-    eligible = models.BooleanField(default=True, help_text="Is package \
+    blocked = models.NullBooleanField(default=False, help_text="If this is set to \
+True, the package is blacklisted -- not accepted for scanning.", blank=True, null=True)
+    eligible = models.NullBooleanField(default=True, help_text="Is package \
 scannable? You may have package written in different language that is \
-supported by your scanner.")
+supported by your scanner.", blank=True, null=True)
 
     def __unicode__(self):
         return "#%s %s" % (self.id, self.name)
