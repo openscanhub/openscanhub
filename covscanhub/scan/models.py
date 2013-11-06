@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import json
+from django.conf import settings
 
 import re
 import datetime
@@ -483,7 +484,7 @@ class Scan(models.Model):
                             blank=True, null=True,
                             help_text="Tag from brew")
 
-    username = models.ForeignKey(User)
+    username = models.ForeignKey(settings.AUTH_USER_MODEL)
 
     #date when there was last access to scan
     #should change when:

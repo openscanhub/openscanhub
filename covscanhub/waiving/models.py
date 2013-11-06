@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import datetime
+from django.conf import settings
 
 from kobo.types import Enum, EnumItem
 from kobo.django.fields import JSONField
@@ -482,7 +483,7 @@ class Waiver(models.Model):
     result_group = models.ForeignKey(ResultGroup, blank=False, null=False,
                                      help_text="Group of defects which is \
 waived for specific Result")
-    user = models.ForeignKey(User)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL)
     state = models.PositiveIntegerField(default=WAIVER_TYPES["IS_A_BUG"],
                                         choices=WAIVER_TYPES.get_mapping(),
                                         help_text="Type of waiver")
@@ -572,7 +573,7 @@ class WaivingLog(models.Model):
     Log of waiving related actions
     """
     date = models.DateTimeField(auto_now_add=True)  # date submitted
-    user = models.ForeignKey(User)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL)
     # possible actions:
     #  new -- submit waiver to group that wasn't waived yet
     #  delete -- delete waiver
