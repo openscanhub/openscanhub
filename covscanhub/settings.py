@@ -50,7 +50,7 @@ AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
 )
 
-AUTH_USER_MODEL = 'auth.User'
+AUTH_USER_MODEL = 'auth.LongnameUser'
 
 MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
@@ -93,7 +93,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 INSTALLED_APPS = (
     'kobo.django.auth',
 
-    'django.contrib.auth',
+    #'django.contrib.auth',
 
     'django.contrib.contenttypes',
     'django.contrib.sessions',
