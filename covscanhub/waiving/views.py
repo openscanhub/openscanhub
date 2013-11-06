@@ -10,8 +10,7 @@ from django.shortcuts import render_to_response, get_object_or_404
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from django.core.exceptions import ObjectDoesNotExist
-
-from kobo.django.views.generic import object_list
+from django.views.generic.list import ListView
 
 from covscanhub.scan.models import SCAN_STATES, ScanBinding, Package,\
     SystemRelease, ETMapping, Scan, SCAN_TYPES_TARGET
@@ -232,82 +231,82 @@ def get_tupled_data(output):
     return result_tuples
 
 
-def results_list(request):
+class ResultsListView(ListView):
     """
     Display list of runs; request['GET'] may contain order_by
     """
-    order_by = request.GET.get('order_by', None)
-    order_prefix = ''
-    # mapping between ?order_by=name and .order_by(...) -- nicer URLs
-    order_by_mapping = {
-        'id': 'id',
-        'target': 'scan__nvr',
-        'base': 'scan__base__nvr',
-        'state': 'scan__state',
-        'access': 'scan__last_access',
-        'user': 'scan__username',
-        'release': 'scan__tag__release__tag',
-    }
+    allow_empty = True
+    paginate_by = 50
+    template_name = "waiving/list.html"
+    context_object_name = "scanbinding_list"
+    title = "List of all results"
 
-    # custom sort or default one?
-    if order_by:
-        # will it be asc or desc sort?
-        if order_by.startswith('-'):
-            order_prefix = '-'
-            order_by = order_by[1:]
-
-        order = order_prefix + order_by_mapping[order_by]
-    else:
-        # order by scan__date, because result might not exist
-        order = '-scan__date_submitted'
-
-    def generate_url(args, order_key):
-        """args = request.GET, order_key = "name" | "-user" """
-        args[u'order_by'] = order_key
-        url = urllib.urlencode(args)
-        if url:
-            return u'?' + url
-        else:
-            return u""
-
-    # link sort URLs to template
-    table_sort = {}
-    for o in order_by_mapping.iterkeys():
-        t = request.GET.copy()
-
-        # generate URL + CSS style for clicked sorter
-        if order_by == o:
-            if not order_prefix:
-                table_sort[o] = generate_url(t, '-' + o), 'down'
-            else:
-                table_sort[o] = generate_url(t, o), 'up'
-        else:
-            table_sort[o] = generate_url(t, o), 'undef'
-
-    search_form = ScanListSearchForm(request.GET)
-
-    q = ScanBinding.objects.filter(
-        scan__scan_type__in=SCAN_TYPES_TARGET)
-    if search_form.is_valid():
-        q = q.filter(search_form.get_query(request))
-        if search_form.extra_query():
-            q_ids = search_form.objects_satisfy(q)
-            q = q.filter(id__in=q_ids)
-    q = q.order_by(order)
-
-    args = {
-        "queryset": q,
-        "allow_empty": True,
-        "paginate_by": 50,
-        "template_name": "waiving/list.html",
-        "template_object_name": "scanbinding",
-        "extra_context": {
-            "title": "List of all results",
-            "search_form": search_form,
-            "table_sort": table_sort,
+    def order_scans(self):
+        order_by = self.request.GET.get('order_by', None)
+        order_prefix = ''
+        # mapping between ?order_by=name and .order_by(...) -- nicer URLs
+        order_by_mapping = {
+            'id': 'id',
+            'target': 'scan__nvr',
+            'base': 'scan__base__nvr',
+            'state': 'scan__state',
+            'access': 'scan__last_access',
+            'user': 'scan__username',
+            'release': 'scan__tag__release__tag',
         }
-    }
-    return object_list(request, **args)
+
+        # custom sort or default one?
+        if order_by:
+            # will it be asc or desc sort?
+            if order_by.startswith('-'):
+                order_prefix = '-'
+                order_by = order_by[1:]
+
+            order = order_prefix + order_by_mapping[order_by]
+        else:
+            # order by scan__date, because result might not exist
+            order = '-scan__date_submitted'
+
+        def generate_url(args, order_key):
+            """args = request.GET, order_key = "name" | "-user" """
+            args[u'order_by'] = order_key
+            url = urllib.urlencode(args)
+            if url:
+                return u'?' + url
+            else:
+                return u""
+
+        # link sort URLs to template
+        self.table_sort = {}
+        for o in order_by_mapping.iterkeys():
+            t = self.request.GET.copy()
+
+            # generate URL + CSS style for clicked sorter
+            if order_by == o:
+                if not order_prefix:
+                    self.table_sort[o] = generate_url(t, '-' + o), 'down'
+                else:
+                    self.table_sort[o] = generate_url(t, o), 'up'
+            else:
+                self.table_sort[o] = generate_url(t, o), 'undef'
+        return order
+
+    def get_queryset(self):
+        self.search_form = ScanListSearchForm(self.request.GET)
+        q = ScanBinding.objects.filter(
+            scan__scan_type__in=SCAN_TYPES_TARGET)
+        if self.search_form.is_valid():
+            q = q.filter(self.search_form.get_query(self.request))
+            if self.search_form.extra_query():
+                q_ids = self.search_form.objects_satisfy(q)
+                q = q.filter(id__in=q_ids)
+        return q.order_by(self.order_scans()).select_related()
+
+    def get_context_data(self, **kwargs):
+        context = super(ResultsListView, self).get_context_data(**kwargs)
+        context["search_form"] = self.search_form
+        context['table_sort'] = self.table_sort
+        return context
 
 
 def comment_post(request, form, sb, result_group_object, url_name_next,
