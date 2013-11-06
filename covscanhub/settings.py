@@ -25,6 +25,14 @@ USE_L10N = True
 # Example: "/home/media/media.lawrence.com/"
 MEDIA_ROOT = os.path.join(PROJECT_DIR, "media/")
 
+STATIC_URL = '/static/'
+
+STATIC_ROOT = os.path.join(PROJECT_DIR, 'static')
+
+STATICFILES_DIRS = (
+    os.path.join(PROJECT_DIR, "media"),
+)
+
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = '$e9r6h6n@@zw)g@_6vkiug_ys0pv)tn(2x4e@zgkaany8qau8@'
 
@@ -37,20 +45,32 @@ TEMPLATE_LOADERS = (
     )),
 )
 
+AUTHENTICATION_BACKENDS = (
+    'kobo.django.auth.krb5.RemoteUserBackend',
+    'django.contrib.auth.backends.ModelBackend',
+)
+
+AUTH_USER_MODEL = 'auth.User'
+
 MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'django.middleware.transaction.TransactionMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
+
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'kobo.django.auth.krb5.Krb5AuthenticationMiddleware',
+    'django.contrib.auth.middleware.RemoteUserMiddleware',
+
     'django.contrib.messages.middleware.MessageMiddleware',
+
     # kobo related middleware:
     'kobo.hub.middleware.WorkerMiddleware',
     'kobo.django.menu.middleware.MenuMiddleware',
-    # require login for every view -- it isn't working well with krb
-    # 'covscanhub.middleware.LoginRequiredMiddleware',
+
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
 )
+
+INTERNAL_IPS = ('127.0.0.1',)
 
 ROOT_URLCONF = 'covscanhub.urls'
 ROOT_MENUCONF = 'covscanhub.menu'
@@ -67,17 +87,20 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.media',
     'django.core.context_processors.request',
     'kobo.django.menu.context_processors.menu_context_processor',
+    "django.core.context_processors.static",
 )
 
 INSTALLED_APPS = (
-    # load this first to make sure the username length hack is applied first
     'kobo.django.auth',
+
     'django.contrib.auth',
+
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.admin',
+    'django.contrib.staticfiles',
 
     # nice numbers and dates
     'django.contrib.humanize',
@@ -93,9 +116,23 @@ INSTALLED_APPS = (
 
     # better ./manage.py shell
     'django_extensions',
+    'debug_toolbar',
 
     # migrations
-    'south'
+    #'south'
+)
+
+
+DEBUG_TOOLBAR_PANELS = (
+    'debug_toolbar.panels.version.VersionDebugPanel',
+    'debug_toolbar.panels.timer.TimerDebugPanel',
+    'debug_toolbar.panels.settings_vars.SettingsVarsDebugPanel',
+    'debug_toolbar.panels.headers.HeaderDebugPanel',
+    'debug_toolbar.panels.request_vars.RequestVarsDebugPanel',
+    'debug_toolbar.panels.template.TemplateDebugPanel',
+    'debug_toolbar.panels.sql.SQLDebugPanel',
+    'debug_toolbar.panels.signals.SignalDebugPanel',
+    'debug_toolbar.panels.logger.LoggingPanel',
 )
 
 
