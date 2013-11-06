@@ -155,7 +155,7 @@ def find_processed_in_past(result):
         # compare defects in these 2 result groups using pycsdiff
         if w and compare_result_groups(rg, w.result_group):
             if w.is_bug():
-                rg.waive()
+                rg.set_bug_confirmed()
             else:
                 # they match! -- change states
                 rg.state = RESULT_GROUP_STATES['PREVIOUSLY_WAIVED']
@@ -466,6 +466,18 @@ def get_waivers_for_rg(rg):
     else:
         return wls
 
+
+def apply_waiver(rg, sb, waiver):
+    """
+    rg -- processed result group
+    sb -- scan binding
+    waiver -- newly submitted waiver
+    """
+    if waiver_condition(rg):
+        rg.apply_waiver()
+
+        if not get_unwaived_rgs(sb.result):
+            sb.s.finalize()
 
 """
 def waiver_condition(result_group):

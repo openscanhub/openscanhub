@@ -43,6 +43,7 @@ SCAN_STATES = Enum(
     "CANCELED",          # there is newer build submitted, this one is obsolete
     "DISPUTED",          # scan was waived but one of waivers was obsoleted
     "INIT",              # first, default state
+    "BUG_CONFIRMED",     # run contains at least one group marked as bug
 )
 
 SCAN_STATES_IN_PROGRESS = (
@@ -457,6 +458,19 @@ class ScanManager(models.Manager, ScanMixin):
         return ScanQuerySet(self.model, using=self._db)
 
 
+class ScanTargetMixin(object):
+    pass
+
+
+class ScanTargetQuerySet(models.query.QuerySet, ScanTargetMixin):
+    pass
+
+
+class ScanTargetManager(models.Manager, ScanTargetMixin):
+    def get_query_set(self):
+        return ScanTargetQuerySet(self.model, using=self._db).filter(state=SCAN_TYPES["ERRATA"])
+
+
 class Scan(models.Model):
     """
     Stores information about submitted scans from Errata Tool
@@ -504,6 +518,7 @@ counted in statistics.")
                                null=True, related_name="parent_scan")
 
     objects = ScanManager()
+    targets = ScanTargetManager()
 
     class Meta:
         get_latest_by = "date_submitted"
@@ -677,6 +692,17 @@ setting: %s', e)
             state__in=SCAN_STATES_FINISHED_BAD
         ).order_by('date_submitted')
         return scans
+
+    def finalize(self):
+        """
+        this scan doesn't contain any unprocessed defects
+        let's finalize it!
+        """
+        if self.scanbinding.result.has_bugs():
+            self.state = SCAN_STATES['BUG_CONFIRMED']
+        else:
+            self.state = SCAN_STATES['WAIVED']
+        self.save()
 
 
 class ScanBindingMixin(object):

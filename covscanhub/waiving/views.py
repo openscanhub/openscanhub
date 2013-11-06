@@ -30,7 +30,7 @@ from covscanhub.waiving.bugzilla_reporting import create_bugzilla, \
 from covscanhub.waiving.models import *
 from covscanhub.waiving.forms import WaiverForm, ScanListSearchForm
 from covscanhub.waiving.service import get_unwaived_rgs, get_last_waiver, \
-    display_in_result, get_defects_diff_display, waiver_condition, get_waivers_for_rg
+    display_in_result, get_defects_diff_display, waiver_condition, get_waivers_for_rg, apply_waiver
 
 
 logger = logging.getLogger(__name__)
@@ -393,14 +393,9 @@ def waiver_post(form, request, sb, result_group_object, url_name,
             update(state=DEFECT_STATES['NEW'])
         result_group_object.save()
 
-    # set RG as waived when condition is met
-    # set run as waived if everything is okay
-    if waiver_condition(result_group_object):
-        result_group_object.state = RESULT_GROUP_STATES['WAIVED']
-        result_group_object.save()
+    # update states of sb and rg; eventually of whole run
+    apply_waiver(result_group_object, sb, w)
 
-        if not get_unwaived_rgs(sb.result) and not s.is_waived():
-            s.set_state(SCAN_STATES['WAIVED'])
     s.last_access = datetime.datetime.now()
     s.save()
 

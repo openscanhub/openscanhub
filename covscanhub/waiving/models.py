@@ -67,6 +67,12 @@ RESULT_GROUP_STATES = Enum(
     EnumItem("UNKNOWN", help_text="Unknown state"),
     # this rg was waived in one of the previous runs
     EnumItem("PREVIOUSLY_WAIVED", help_text="Waived in one of previous runs"),
+    EnumItem("CONTAINS_BUG", help_text="Group contains bug, which should be fixed."),
+)
+
+RESULT_GROUP_PROCESSED = (
+    RESULT_GROUP_STATES['WAIVED'],
+    RESULT_GROUP_STATES['CONTAINS_BUG'],
 )
 
 #DEFECT_PRIORITY = Enum(
@@ -139,6 +145,11 @@ class Result(models.Model):
             waiver__state__in=[WAIVER_TYPES['IS_A_BUG'],
                                WAIVER_TYPES['FIX_LATER']]
         ).count()
+
+    def has_bugs(self):
+        return self.resultgroup_set.filter(
+            state=RESULT_GROUP_STATES['CONTAINS_BUG']
+        ).exists()
 
     def __unicode__(self):
         try:
@@ -307,6 +318,23 @@ associated with this group.")
 
     objects = ResultGroupManager()
 
+    def __unicode__(self):
+        return "#%d [%s - %s], Result: (%s)" % (
+            self.id, self.checker_group.name, self.get_state_display(),
+            self.result
+        )
+
+    def has_fix_later_waiver(self):
+        """ is waiver associated with this rg fix later? """
+        w = self.has_waiver()
+        return w and w.is_fix_later()
+
+    def is_waived(self):
+        return self.state == RESULT_GROUP_STATES['WAIVED']
+
+    def contains_bug(self):
+        return self.state == RESULT_GROUP_STATES['CONTAINS_BUG']
+
     def is_previously_waived(self):
         return self.state == RESULT_GROUP_STATES['PREVIOUSLY_WAIVED'] or \
             self.defect_type == DEFECT_STATES['PREVIOUSLY_WAIVED']
@@ -325,8 +353,10 @@ associated with this group.")
             return waivers.latest()
 
     def has_waiver(self):
-        """return latest waiver, if it exists"""
-        if self.state == RESULT_GROUP_STATES['WAIVED']:
+        """
+        return latest waiver, if it exists
+        """
+        if self.state in RESULT_GROUP_PROCESSED:
             waivers = self.get_waivers()
             if not waivers:
                 return None
@@ -334,10 +364,16 @@ associated with this group.")
                 return waivers.latest()
 
     def is_marked_as_bug(self):
-        """return True if there is latest waiver with type IS_A_BUG"""
+        """
+        return True if there is latest waiver with type IS_A_BUG
+        """
+        # new style
+        if self.contains_bug():
+            return True
+        # old style
         w = self.has_waiver()
         if w:
-            return w.state == WAIVER_TYPES['IS_A_BUG']
+            return w.is_bug()
         else:
             return False
 
@@ -353,8 +389,10 @@ associated with this group.")
         elif self.defect_type == DEFECT_STATES["NEW"] or \
                 self.defect_type == DEFECT_STATES["PREVIOUSLY_WAIVED"]:
             if self.defects_count > 0:
-                if self.is_marked_as_bug():
+                if self.is_marked_as_bug() and self.is_waived():
                     return 'IS_A_BUG'
+                elif self.has_fix_later_waiver():
+                    return 'FIX_LATER'
                 else:
                     return self.get_state_display()
             else:
@@ -381,11 +419,16 @@ associated with this group.")
         if save:
             self.save()
 
-    def __unicode__(self):
-        return "#%d [%s - %s], Result: (%s)" % (
-            self.id, self.checker_group.name, self.get_state_display(),
-            self.result
-        )
+    def set_bug_confirmed(self, save=True):
+        self.state = RESULT_GROUP_STATES['CONTAINS_BUG']
+        if save:
+            self.save()
+
+    def apply_waiver(self, waiver):
+        if waiver.is_bug():
+            self.set_bug_confirmed()
+        else:
+            self.waive()
 
 
 class Checker(models.Model):
