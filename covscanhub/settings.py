@@ -59,7 +59,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.csrf.CsrfViewMiddleware',
 
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.auth.middleware.RemoteUserMiddleware',
+    'kobo.django.auth.middleware.LimitedRemoteUserMiddleware',
 
     'django.contrib.messages.middleware.MessageMiddleware',
 
