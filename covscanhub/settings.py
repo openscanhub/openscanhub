@@ -46,7 +46,7 @@ TEMPLATE_LOADERS = (
 )
 
 AUTHENTICATION_BACKENDS = (
-    'kobo.django.auth.krb5.RemoteUserBackend',
+    'kobo.django.auth.krb5.Krb5RemoteUserBackend',
     'django.contrib.auth.backends.ModelBackend',
 )
 
