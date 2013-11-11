@@ -261,7 +261,7 @@
     {% for log in logs %}
     <span class="log_type {% if forloop.counter == 1 %}first_log{% endif %}">
         <a href="{% url 'task/log' sb.task.id log.icon_link %}">
-            <img src="{{ MEDIA_URL }}{{ log.icon }}" width="32" height="32" />
+            <img src="{{ STATIC_URL }}{{ log.icon }}" width="32" height="32" />
         </a>
         <div class="log_title">{{ log.title }}</div>
         <div class="log_links">
