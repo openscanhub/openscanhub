@@ -18,7 +18,7 @@ urlpatterns = patterns("",
         kwargs={'method__in': ['DiffBuild', 'MockBuild', 'VersionDiffBuild']},
         name="task/index"),
 
-    url(r"^(?P<id>\d+)/$",
+    url(r"^(?P<pk>\d+)/$",
         TaskDetail.as_view(),
         name="task/detail"),
 
