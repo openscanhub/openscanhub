@@ -12,7 +12,6 @@ from covscanhub.waiving.service import *
 from covscanhub.xmlrpc.errata import create_errata_diff_scan
 
 from unittest import TestCase
-from django.contrib.auth.models import User
 from django.test import Client
 from django.conf import settings
 import django.utils.simplejson as json

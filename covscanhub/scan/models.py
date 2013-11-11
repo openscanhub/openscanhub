@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 import json
-from django.conf import settings
-
 import re
 import datetime
 import logging
@@ -11,7 +9,8 @@ from covscanhub.scan.messaging import post_qpid_message
 from covscanhub.other.scan import remove_duplicities
 
 from django.db import models
-from django.contrib.auth.models import User
+from django.conf import settings
+from django.contrib.auth import get_user_model
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.utils.safestring import mark_safe
 from django.core.urlresolvers import reverse
@@ -610,7 +609,7 @@ setting: %s', e)
         scan.nvr = nvr
         scan.base = base
         scan.tag = tag
-        scan.username = User.objects.get_or_create(username=username)[0]
+        scan.username = get_user_model().objects.get_or_create(username=username)[0]
         scan.last_access = datetime.datetime.now()
         scan.package = package
         scan.enabled = enabled

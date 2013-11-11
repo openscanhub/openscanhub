@@ -7,7 +7,6 @@ from compare import *
 from covscanhub.xmlrpc.errata import create_errata_diff_scan
 
 from django.utils import unittest
-from django.contrib.auth.models import User
 from django.test import Client
 from django.conf import settings
 

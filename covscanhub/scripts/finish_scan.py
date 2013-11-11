@@ -22,7 +22,7 @@ if KOBO_DIR not in sys.path:
 os.environ['DJANGO_SETTINGS_MODULE'] = 'covscanhub.settings'
 
 
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 
 from covscanhub.xmlrpc.worker import finish_scan, fail_scan, \
     email_scan_notification
@@ -62,7 +62,7 @@ def set_options():
 
 class FakeRequest(object):
     def __init__(self):
-        self.user = User.objects.get(
+        self.user = get_user_model().objects.get(
             username='worker/uqtm.lab.eng.brq.redhat.com')
         self.worker = 'asd'
         self.META = {}

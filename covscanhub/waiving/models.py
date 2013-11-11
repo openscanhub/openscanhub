@@ -6,7 +6,6 @@ from django.conf import settings
 from kobo.types import Enum, EnumItem
 from kobo.django.fields import JSONField
 
-from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 import django.db.models as models
 
