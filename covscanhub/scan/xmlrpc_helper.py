@@ -45,9 +45,14 @@ def finish_scan(request, scan_id, task_id):
             # if there are no missing waivers = there are some newly added
             # unwaived defects
             if not get_unwaived_rgs(result):
-                # set newpkg scan to needs_insp too so e-mail will be sent
-                scan.set_state(SCAN_STATES['PASSED'])
+                if result.has_bugs():
+                    # there are no new defects bug some groups are marked as bugs from previous runs
+                    scan.set_state_bug_confirmed()
+                else:
+                    # result does not have bugs and new defects
+                    scan.set_state(SCAN_STATES['PASSED'])
             else:
+                # set newpkg scan to needs_insp too so e-mail will be sent
                 scan.set_state(SCAN_STATES['NEEDS_INSPECTION'])
 
         elif scan.is_errata_base_scan():
