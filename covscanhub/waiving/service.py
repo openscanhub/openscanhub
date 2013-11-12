@@ -206,7 +206,7 @@ def create_results(scan, sb):
             load_defects_from_file(fixed_file_path, r, DEFECT_STATES['FIXED'])
             load_defects_from_file(diff_file_path, r, DEFECT_STATES['NEW'])
 
-            find_processed_in_past(r)
+        find_processed_in_past(r)
 
         for rg in ResultGroup.objects.filter(result=r):
             counter = 1
