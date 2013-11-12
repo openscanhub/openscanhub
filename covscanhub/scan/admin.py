@@ -67,10 +67,11 @@ class ScanAdmin(admin.ModelAdmin):
 
         return render_to_response('admin/scan/scan/state_change.html', {
             'title': 'Notify: %s' % scan.nvr,
-            'entry': scan,
+            'object': scan,
             'opts': self.model._meta,
             'result': mark_safe("Number of e-mails sent: <b>%s</b>" % result),
             'root_path': self.admin_site.root_path,
+            'app_label': self.model._meta.app_label,
         }, context_instance=RequestContext(request))
 
     def fail_scan(self, request, scan_id):
@@ -81,10 +82,11 @@ class ScanAdmin(admin.ModelAdmin):
 
         return render_to_response('admin/scan/scan/state_change.html', {
             'title': 'Fail scan: %s' % scan.nvr,
-            'entry': scan,
+            'object': scan,
             'opts': self.model._meta,
             'result': "Scan #%s set to failed" % scan_id,
             'root_path': self.admin_site.root_path,
+            'app_label': self.model._meta.app_label,
         }, context_instance=RequestContext(request))
 
     def finish_scan(self, request, scan_id):
@@ -97,13 +99,14 @@ class ScanAdmin(admin.ModelAdmin):
 
         return render_to_response('admin/scan/scan/state_change.html', {
             'title': 'Finish scan: %s' % scan.nvr,
-            'entry': scan,
+            'object': scan,
             'opts': self.model._meta,
             'result': "Scan #%s set to %s" % (
                 scan_id,
                 SCAN_STATES.get_value(scan.state)
             ),
             'root_path': self.admin_site.root_path,
+            'app_label': self.model._meta.app_label,
         }, context_instance=RequestContext(request))
 
     def rescan(self, request, scan_id):
@@ -116,20 +119,22 @@ class ScanAdmin(admin.ModelAdmin):
             result = "New scan #%s submitted." % (new_scan.scan.id)
         return render_to_response('admin/scan/scan/state_change.html', {
             'title': 'Rescan of package: %s' % scan.nvr,
-            'entry': scan,
+            'object': scan,
             'opts': self.model._meta,
             'result': result,
             'root_path': self.admin_site.root_path,
+            'app_label': self.model._meta.app_label,
         }, context_instance=RequestContext(request))
 
     def cancel_scan(self, request, scan_id):
         scan = h_cancel_scan(scan_id)
         return render_to_response('admin/scan/scan/state_change.html', {
             'title': 'Cancelation of scan: %s' % scan,
-            'entry': scan,
+            'object': scan,
             'opts': self.model._meta,
             'result': "Scan %s cancelled." % (scan),
             'root_path': self.admin_site.root_path,
+            'app_label': self.model._meta.app_label,
         }, context_instance=RequestContext(request))
 
 admin.site.register(Scan, ScanAdmin)
