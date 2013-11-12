@@ -70,7 +70,6 @@ class ScanAdmin(admin.ModelAdmin):
             'object': scan,
             'opts': self.model._meta,
             'result': mark_safe("Number of e-mails sent: <b>%s</b>" % result),
-            'root_path': self.admin_site.root_path,
             'app_label': self.model._meta.app_label,
         }, context_instance=RequestContext(request))
 
@@ -85,7 +84,6 @@ class ScanAdmin(admin.ModelAdmin):
             'object': scan,
             'opts': self.model._meta,
             'result': "Scan #%s set to failed" % scan_id,
-            'root_path': self.admin_site.root_path,
             'app_label': self.model._meta.app_label,
         }, context_instance=RequestContext(request))
 
@@ -105,7 +103,6 @@ class ScanAdmin(admin.ModelAdmin):
                 scan_id,
                 SCAN_STATES.get_value(scan.state)
             ),
-            'root_path': self.admin_site.root_path,
             'app_label': self.model._meta.app_label,
         }, context_instance=RequestContext(request))
 
@@ -122,7 +119,6 @@ class ScanAdmin(admin.ModelAdmin):
             'object': scan,
             'opts': self.model._meta,
             'result': result,
-            'root_path': self.admin_site.root_path,
             'app_label': self.model._meta.app_label,
         }, context_instance=RequestContext(request))
 
@@ -133,7 +129,6 @@ class ScanAdmin(admin.ModelAdmin):
             'object': scan,
             'opts': self.model._meta,
             'result': "Scan %s cancelled." % (scan),
-            'root_path': self.admin_site.root_path,
             'app_label': self.model._meta.app_label,
         }, context_instance=RequestContext(request))
 
