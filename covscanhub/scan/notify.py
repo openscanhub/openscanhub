@@ -66,7 +66,7 @@ def generate_stats(task, diff_task):
             result_list += ["%s: %s%d" % (checker, diff_sign, count) for checker, count in defects_dict.items()]
             result_list.append('')
         return result_list
-    defects_json = load_defects(task.id)
+    defects_json = load_defects(task.id, diff_task)
     result = []
     if diff_task:
         added = get_defect_stats(defects_json['added'])

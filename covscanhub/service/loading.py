@@ -37,7 +37,7 @@ def load_defects_from_file(file_path):
     return defects
 
 
-def load_defects(task_id):
+def load_defects(task_id, with_diff=True):
     """
     Load defects for provided task
     """
@@ -47,12 +47,14 @@ def load_defects(task_id):
     if dir_name.endswith('.src.rpm'):
         dir_name = dir_name[:-8]
     defects_path = os.path.join(task_dir, dir_name, 'run1', SCAN_RESULTS_FILENAME)
-    fixed_file_path = os.path.join(task_dir, FIXED_DIFF_FILE)
-    added_file_path = os.path.join(task_dir, ERROR_DIFF_FILE)
+    if with_diff:
+        fixed_file_path = os.path.join(task_dir, FIXED_DIFF_FILE)
+        added_file_path = os.path.join(task_dir, ERROR_DIFF_FILE)
     result = {}
     result['defects'] = load_defects_from_file(defects_path)
-    result['added'] = load_defects_from_file(added_file_path)
-    result['fixed'] = load_defects_from_file(fixed_file_path)
+    if with_diff:
+        result['added'] = load_defects_from_file(added_file_path)
+        result['fixed'] = load_defects_from_file(fixed_file_path)
     return result
 
 
