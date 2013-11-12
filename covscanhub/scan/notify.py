@@ -160,7 +160,7 @@ URL: %(url)s""" % {'url': self.get_scans_url(), 'nvr': self.scan.nvr}
             "Scan state: %s" % self.scan_state,
             "Waiver URL: %s" % self.get_scans_url(),
             "New defects count: %d" % get_scans_new_defects_count(self.scan.id),
-            "%s" % generate_stats(self.scan.scanbinding.task, True),
+            "%s" % generate_stats(self.scan.scanbinding.task, not self.scan.is_newpkg_scan()),
             "",
             "%(guide_message)s",
         ]
