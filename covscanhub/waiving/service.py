@@ -474,10 +474,10 @@ def apply_waiver(rg, sb, waiver):
     waiver -- newly submitted waiver
     """
     if waiver_condition(rg):
-        rg.apply_waiver()
+        rg.apply_waiver(waiver)
 
         if not get_unwaived_rgs(sb.result):
-            sb.s.finalize()
+            sb.scan.finalize()
 
 """
 def waiver_condition(result_group):
