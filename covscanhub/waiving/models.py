@@ -139,11 +139,16 @@ class Result(models.Model):
 
     @property
     def bugs_count(self):
-        return self.resultgroup_set.filter(
-            waiver__is_active=True,
-            waiver__state__in=[WAIVER_TYPES['IS_A_BUG'],
-                               WAIVER_TYPES['FIX_LATER']]
-        ).count()
+        contains_bug = self.resultgroup_set.filter(state=RESULT_GROUP_STATES['CONTAINS_BUG'])
+        contains_bug_count = contains_bug.count()
+        if contains_bug_count != 0:
+            return contains_bug_count
+        else:
+            return self.resultgroup_set.filter(
+                waiver__is_active=True,
+                waiver__state__in=[WAIVER_TYPES['IS_A_BUG'],
+                                   WAIVER_TYPES['FIX_LATER']]
+            ).count()
 
     def has_bugs(self):
         return self.resultgroup_set.filter(
