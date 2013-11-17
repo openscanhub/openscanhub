@@ -1,7 +1,7 @@
 #!/bin/bash
 
-PKG_VER="covscan-0.4.2"
-NVR=$PKG_VER"-1.fc19"
+PKG_VER="covscan-0.4.3"
+NVR=$PKG_VER"-1.fc20"
 TARBALL=$PKG_VER".tar.bz2"
 SRPM=$NVR".src.rpm"
 PROFILE1="epel-6-x86_64"

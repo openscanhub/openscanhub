@@ -6,8 +6,8 @@
 
 
 Name:           covscan
-Version:        0.4.2
-Release:        2%{?dist}
+Version:        0.4.3
+Release:        1%{?dist}
 License:        Commercial
 Summary:        Coverity scan scheduler
 Group:          Applications/Engineering
@@ -178,6 +178,9 @@ fi
 
 
 %changelog
+* Sun Nov 17 2013 Tomas Tomecek <ttomecek@redhat.com> - 0.4.3-1
+- hub update (django and kobo rebase)
+
 * Fri Oct 18 2013 Tomas Tomecek <ttomecek@redhat.com> - 0.4.2-2
 - update kobo dependency (0.4.1 should be fine)
 - add scriptlets for handling issues with kobo-0.4.0

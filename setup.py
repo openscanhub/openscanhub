@@ -17,7 +17,7 @@ project_author_email = "ttomecek@redhat.com"
 project_description  = "Coverity scan scheduler"
 package_name         = "%s" % project_name
 package_module_name  = project_name
-package_version      = [0, 4, 2, "final", ""]
+package_version      = [0, 4, 3, "final", ""]
 
 
 script_files = []
