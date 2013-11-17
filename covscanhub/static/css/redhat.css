@@ -1,0 +1,783 @@
+#header {
+    background-color: #cc0000;
+    background: -moz-linear-gradient(top, #ff0000, #cc0000, #a60000);
+    background: -webkit-gradient(linear, left top, left bottom, from(#ff0000), to(#a60000), color-stop(0.5, #cc0000));
+}
+
+#menu a.active {
+    color: #9e292b;
+}
+
+label {
+    vertical-align:top;
+}
+
+em {
+    font-weight: bold;
+}
+
+/*
+ * INLINES *
+           */
+
+/* PLACE & SIZE */
+
+.margin_left {
+    margin-left: 1em;
+}
+
+.margin_right {
+    margin-right: 1.5em;
+}
+
+.margin_right_big {
+    margin-right: 3em;
+}
+
+.float_right {
+    float: right;
+}
+
+.padding_1em {
+    padding: 1em;
+}
+
+.margin_1em {
+    margin: 1em;
+}
+
+.small {
+    font-size: 12px;
+}
+
+.italic {
+    font-style:italic;
+}
+
+.button_line {
+    line-height: 30px;
+}
+
+/* COLLAPSE / EXPAND */
+
+.hide_text {
+    display: none;
+}
+
+.show_text {
+    display: inline;
+}
+
+.currently_hiding .hide_text {
+    display: inline;
+}
+
+.currently_hiding .show_text {
+    display: none;
+}
+
+/* COLORS */
+
+.white_font {
+    color: white;
+}
+
+.black_font {
+    color: black;
+}
+
+.red_font {
+    color: #EE0000;
+}
+
+.light_green_font {
+    color: #00DD00;
+}
+
+.green_font {
+    color: #007700;
+}
+
+.bold_font {
+    font-weight: bold;
+}
+
+.light_green_bg {
+    background-color: #00DD00;
+}
+
+.green_bg {
+    background-color: #007700;
+}
+
+.light_grey_bg {
+    background-color: #CCC;
+}
+
+.grey_bg {
+    background-color: #999;
+}
+
+.dark_grey_bg {
+    background-color: #555;
+}
+
+.grey {
+    color: #888;
+}
+
+.transparent {
+    opacity: 0.7;
+}
+
+/* STATES */
+
+.empty {
+    background-color: #DDDDDD;
+}
+
+.bg_WAIVED {
+    background-color: #00FF00;
+}
+
+.bg_PASSED {
+    background-color: #AAFFAA;
+}
+
+.bg_BUG_CONFIRMED {
+    background-color: #FF7777;
+}
+
+.bg_PREVIOUSLY_WAIVED {
+    background-color: #AAFFAA;
+}
+
+.bg_NEEDS_INSPECTION {
+    background-color: #FFEB66;
+}
+
+.bg_IS_A_BUG {
+    background-color: #ffb7b7;
+}
+
+.bg_FIX_LATER {
+    background-color: #FFBD42;
+}
+
+.bg_CONTAINS_BUG {
+    background-color: #ffb7b7;
+}
+
+.bg_INFO {
+    background-color: #AAFFAA;
+}
+
+.bg_SCANNING {
+    background-color: #AACCFF;
+}
+
+.bg_QUEUED {
+    background-color: #C8EEFF;
+}
+
+.bg_INIT {
+    background-color: #EAEAEA;
+}
+
+.bg_BASE_SCANNING {
+    background-color: #C5C5FF;
+}
+
+.bg_FAILED {
+    background-color: #CCCCCC;
+}
+
+.bg_CANCELED {
+    background-color: #FFD570;
+}
+
+.bg_DISPUTED {
+    background-color: #D8F953;
+}
+
+/* BUTTONS & BOXES */
+
+.info_box {
+    font-weight: bold;
+    padding: 0.5em;
+}
+
+.btn {
+    -moz-border-bottom-colors: none;
+    -moz-border-left-colors: none;
+    -moz-border-right-colors: none;
+    -moz-border-top-colors: none;
+    background-color: #F5F5F5;
+    background-image: -moz-linear-gradient(center top , #FFFFFF, #E6E6E6);
+    background-repeat: repeat-x;
+    border-color: #E6E6E6 #E6E6E6 #B3B3B3;
+    border-image: none;
+    border-radius: 4px 4px 4px 4px;
+    border-style: solid;
+    border-width: 1px;
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.2) inset, 0 1px 2px rgba(0, 0, 0, 0.05);
+    color: #333333;
+    cursor: pointer;
+    /*display: inline-block;*/
+    font-size: 11pt;
+    line-height: 18px;
+    margin-bottom: 0;
+    padding: 4px 10px;
+    text-align: center;
+    text-decoration: none;
+    text-shadow: 0 1px 1px rgba(255, 255, 255, 0.75);
+    vertical-align: middle;
+}
+
+.btn:hover {
+    background-color: #E6E6E6;
+    background-position: 0 -15px;
+    color: #333333;
+    text-decoration: none;
+    transition: background-position 0.1s linear 0s;
+}
+
+/*BOXES*/
+
+/*
+#bz_bugs_count {
+}
+*/
+
+#box_wrapper {
+    margin-bottom: 2.5em;
+}
+
+/*tabs*/
+
+#tabContainer ul {
+    font-size: 1.5em;
+    text-align: center;
+    margin: 0;
+}
+
+#tabContainer ul li {
+    border-left: 2px solid #CCCCCC;
+    border-right: 2px solid #CCCCCC;
+    border-top: 2px solid #CCCCCC;
+    padding: 7px 0;
+    width: 15em;
+    display:inline-block;
+    color:#000;
+    background: #EEE;
+    cursor:pointer;
+    font-weight: 500;
+}
+
+#tabContainer ul li:hover{
+    background: #CCC;
+}
+
+#tabContainer ul li.selected {
+    background: #CCC;
+    font-weight: 900;
+}
+
+/* links to other runs */
+
+html body div#content div#result_links {
+    font-size: 11pt;
+    margin: 2em 0;
+    text-align: center;
+}
+
+div#result_links .nav_box {
+    font-weight: bold;
+    margin: 0 1em;
+}
+
+div#result_links a, div#result_links .no_link {
+    border: 1px solid #666;
+    color: #000000;
+    text-decoration: none;
+    margin: 2em 0.5em;
+    padding: 3px 6px;
+}
+
+div#result_links .no_link {
+    color: #AAA;
+    border-color: #AAA;
+}
+
+div#result_links .tooltip {
+    margin-left: -999em;
+    position: absolute;
+}
+
+div#result_links a {
+    position: relative;
+}
+
+div#result_links a:hover {
+    border: 1px solid #00AA00;
+    color: #00AA00;
+}
+
+div#result_links a:hover span.tooltip {
+    margin-left: 0;
+    position: absolute;
+    top: -3.35em;
+    left: -1px;
+    z-index: 99;
+    color: black;
+    background-color: #CCC;
+    padding: 0.5em;
+    font-weight: bold;
+    white-space: nowrap;
+}
+
+/*logs*/
+
+div#content div#logs {
+    padding: 0 0.5em;
+    background-color: #DDD;
+}
+
+div#content div#logs span#logs_title {
+    font-weight: bold;
+    font-size: 14pt;
+    margin-left: 0.5em;
+}
+
+#logs span {
+    vertical-align: middle;
+}
+
+.log_type {
+    display: inline-block;
+    margin-left: 1em;
+    padding: 0 1em 1em 1em;
+    text-align: center;
+}
+
+.log_type img {
+    margin: 0.5em 0.5em 3px;
+    padding: 0.3em;
+}
+
+div#logs span.log_type a:hover img {
+    background-color: #CCC;
+}
+
+.log_title {
+    font-weight: bold;
+    padding: 0 0.5em 0.5em 0.5em;
+}
+
+.log_type:hover {
+    /*background-color: #FFF;*/
+}
+
+
+.log_links > a {
+    padding: 0 0.1em;
+}
+
+.first_log {
+    border-left: 4px solid #FFF;
+}
+
+/*waiver's summary table*/
+
+#status_messages {
+    background-color: #FFFFBB;
+    border: 1px solid #FFCC33;
+    text-align: center;
+    margin: 0 5em 1em;
+}
+
+table.summary {
+    margin-top: -2px;
+    font-size: 11pt;
+    border-spacing: 0px;
+    border-collapse: separate;
+    width: 100%;
+}
+
+table.summary th {
+    border: 2px solid #FFF;
+}
+
+table.summary td {
+    padding: 0em 0em 0em 0.6em;
+    border: 2px solid white;
+    min-width: 21em;
+    height: 2.5em;
+    line-height: 2.5em;
+}
+
+#legend_wrapper h3 {
+    text-align: center;
+    margin: 0px 0px 0px 0px;
+    display: inline;
+}
+
+#legend_wrapper {
+    margin-bottom: 3em;
+    text-align: center;
+}
+
+div#legend_center_wrapper {
+    border: 2px solid #CCC;
+    display: inline-block;
+    padding: 0.5em;
+}
+
+table.legend {
+    font-size: 1em;
+    border-spacing: 2px;
+    border-collapse: separate;
+    /*width: 100%;*/
+    margin-top: 0.3em;
+}
+
+table.legend td {
+    padding: 0em 0em 0em 0.6em;
+    border: 2px solid white;
+    /*min-width: 17em;*/
+    height: 2.5em;
+    line-height: 2.5em;
+}
+
+table td.active {
+    font-weight: bolder;
+    border: 2px solid #666666;
+}
+
+table span.FIXED {
+    color: #007700;
+}
+
+table span.NEW {
+    color: #EE0000;
+}
+
+table .defects_count {
+    float: right;
+    padding-right: 1em;
+}
+
+table span.defects_increased {
+    background-color: #FF9282;
+    float: right;
+    padding: 0 0.3em;
+    text-align: center;
+    min-width: 3em;
+}
+
+table span.defects_decreased {
+    background-color: #44FF25;
+    float: right;
+    padding: 0 0.3em;
+    text-align: center;
+    min-width: 3em;
+}
+
+table span.diff_state_neutral {
+    background-color: #BBB;
+    float: right;
+    padding: 0 0.3em;
+    text-align: center;
+    min-width: 3em;
+}
+
+/* list (table) of runs */
+
+table#run_list.list tbody tr th.down:after {
+    content: "▲";
+}
+
+table#run_list.list tbody tr th.up:after {
+    content: "▼";
+}
+
+span.bugs_count {
+    float: right;
+}
+/**/
+
+/*waivers presentation*/
+
+.waiving_log {
+    background-color: #EEEEEE;
+    margin: 1em 3em 1em 2em;
+    padding: 1em 1.5em 0.9em;
+}
+
+.wl_type_NEW {
+    border: 1px solid #20D000;
+    box-shadow: 0 0 4px #20D000;
+}
+
+.wl_type_DELETE {
+    border: 1px solid #DB2a2a;
+    box-shadow: 0 0 4px #DB2a2a;
+}
+
+.wl_type_REWAIVE {
+    border: 1px solid #EDB600;
+    box-shadow: 0 0 4px #EDB600;
+}
+
+.wl_type_PREV_WAIVED {
+    border: 1px solid #AAFFFF;
+    box-shadow: 0 0 4px #AAFFFF;
+}
+
+.wl_type_PAST_WAIVERS {
+    border: 1px solid #CCC;
+    box-shadow: 0 0 4px #CCC;
+}
+
+.wl_type {
+    border: 1px solid transparent;
+    color: #FFFFFF;
+    font-weight: bold;
+    opacity: 0.9;
+    padding: 2px 3px 1px;
+}
+
+div.waiving_log span.IS_A_BUG {
+    background-color: #FFB7B7;
+    color: #DD0000;
+}
+
+div.waiving_log span.NOT_A_BUG {
+    background-color: #AAFFAA;
+    color: #009900;
+}
+
+div.waiving_log span.FIX_LATER {
+    background-color: #F5F500;
+    color: #AA6600;
+}
+
+div.waiving_log span.COMMENT {
+    background-color: #CCC;
+    color: #000;
+}
+
+.waiver_type {
+    border: 1px solid transparent;
+    font-weight: bold;
+    opacity: 0.9;
+    padding: 3px 4px 2px;
+}
+
+div.waiving_log span.delete {
+    background-color: #DB2a2a;
+}
+
+div.waiving_log span.new {
+    background-color: #20D000;
+}
+
+div.waiving_log span.change {
+    background-color: #EDB600;
+}
+
+.delete_link {
+    color: red;
+}
+
+.message_box {
+    padding: 0.3em 0.7em 0.3em;
+}
+
+.message {
+    background-color: #FFF;
+    border: 1px solid #AAA;
+    font-size: 16px;
+    margin: 0 0 0.5em 0.5em;
+    padding: 10px 8px;
+    color: #000;
+}
+
+.waiver {
+    padding-top: 1.5em;
+}
+
+/* waiver form */
+
+#defects_container > #form_wrapper {
+    text-align: center;
+}
+
+#form_inner_wrapper {
+    /*display: inline-block;*/
+}
+
+#form_inner_wrapper textarea {
+    height: 110px;
+}
+
+#form_inner_wrapper label {
+    float: left;
+    font-weight: bold;
+    width: 120px;
+}
+
+#form_inner_wrapper select, #form_inner_wrapper textarea {
+    width: 350px;
+    -ms-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+}
+
+#form_buttons {
+    text-align: center;
+    background-color: #EEEEEE;
+    padding: 0.5em;
+}
+
+#form_inner_wrapper > form {
+    display: inline-block;
+    text-align: left;
+    border: 1px solid #8C8F91;
+    padding: 0 1em 1em;
+}
+
+#waiver_type_helper_texts {
+    display: inline-block;
+    padding: 0 1em 1em 3em;
+    margin-top: 0;
+    text-align: left;
+    vertical-align: top;
+    width: 400px;
+}
+
+#waiver_type_helper_texts li:not(:last-child) {
+    margin-bottom: 1em;
+}
+
+/* In document linking */
+
+div#content *:hover > a.indoc_link {
+    visibility: visible;
+}
+
+div#content a.indoc_link {
+    padding: 0 4px;
+    text-decoration: none;
+    visibility: hidden;
+    color: #000;
+}
+
+div#content a.indoc_link:hover {
+    background-color: #CCC;
+}
+
+/*defects presentation*/
+
+div#content div#defects {
+    color: #000;
+}
+
+div#content div#defects div.events_list {
+    font-family: "Courier New",monospace;
+    margin: 1em;
+    padding-left: 1.5em;
+}
+
+#content div#defects div.defect {
+    margin: 1em 3em 1em 2em;
+}
+
+div#content div#defects div h3 {
+    margin: 0;
+}
+
+div#content div#defects div.key_event {
+    border-bottom: 1px solid #666666;
+    border-top: 1px solid #666666;
+    font-weight: bold;
+    margin: 3px 0;
+    padding: 3px 0;
+}
+
+div#content div#defects .level_1 {
+    display: none;
+}
+
+div#content div#defects div.level_1_show {
+    display: block;
+}
+
+div#content div#defects .level_2 {
+    display: none;
+    color: #777;
+}
+
+div#content div#defects div.level_2_show {
+    display: block;
+}
+
+#content div#defects div.FIXED {
+    background-color: #DDFFCC;
+}
+
+#content div#defects div.FIXED {
+    background-color: #DDFFCC;
+    border: 2px solid #BBFFAA;
+    box-shadow: 0 0 5px #BBFFAA;
+}
+
+#content div#defects div.NEW {
+    background-color: #FFD9D9;
+    border: 2px solid #FFB0B0;
+    box-shadow: 0 0 5px #FFB0B0;
+}
+
+#content div#defects div.PREVIOUSLY_WAIVED {
+    background-color: #DDDDDD;
+    border: 2px solid #BBBBBB;
+    box-shadow: 0 0 5px #BBBBBB;
+}
+
+div#content div#defects div.NEW h3 {
+    /*background-color: #FFEEEE;*/
+}
+
+div#content div#defects div.PREVIOUSLY_WAIVED h3 {
+    /*background-color: #EEEEEE;*/
+}
+
+div#defects div.FIXED h3 {
+    /*background-color: #EEFFEE;*/
+}
+
+div#defects div.events_list div.code {
+    white-space: pre;
+    display: inline;
+}
+
+/**/
+
+/* CHART */
+
+#chart {
+    width: 75%;
+    height: 450px;
+    margin: auto;
+}
+
+#chart_title {
+    text-align: center;
+}
+
+#chart_container {
+    border: 1px solid #777;
+}
+
+/**/
