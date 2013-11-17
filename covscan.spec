@@ -49,10 +49,9 @@ CovScan worker
 Summary: CovScan xml-rpc interface and web application
 Group: Applications/Engineering
 # Requires: covscan-client = %{version}-%{release}
-Requires: kobo-hub >= 0.3.4
-Requires: kobo-django >= 0.3.4
-Requires: kobo-client
-Requires: Django >= 1.2
+Requires: kobo-hub
+Requires: kobo-django
+Requires: Django
 Requires: Django-south
 Requires: httpd
 Requires: mod_auth_kerb
