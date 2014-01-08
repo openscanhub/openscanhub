@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-import brew
 import koji
 import os
 import re
@@ -15,33 +14,20 @@ __all__ = (
 )
 
 
-# took this directly from koji source
-# <koji_git_repo>/koji/__init__.py:153
-KOJI_BUILD_STATES = (
-    'BUILDING',
-    'COMPLETE',
-    'DELETED',
-    'FAILED',
-    'CANCELED',
-)
-
-
-def verify_build_exists(build, url, builder):
+def verify_build_exists(build, url):
     """
     Verify if build exists
     """
-    proxy_object = builder.ClientSession(url)
+    proxy_object = koji.ClientSession(url)
     try:
         # getBuild XML-RPC call is defined here: ./hub/kojihub.py:3206
         returned_build = proxy_object.getBuild(build)
-    except brew.GenericError:
-        return False
     except koji.GenericError:
         return False
     if returned_build is None:
         return False
     if 'state' in returned_build and \
-            returned_build['state'] != KOJI_BUILD_STATES.index('COMPLETE'):
+            returned_build['state'] != koji.BUILD_STATES['COMPLETE']:
         return False
     return True
 
@@ -64,14 +50,14 @@ files deleted, or did not finish successfully." % build
 
     koji_build_exists = True
     if 'fc' in dist_tag:
-        koji_build_exists = verify_build_exists(srpm, koji_url, koji)
+        koji_build_exists = verify_build_exists(srpm, koji_url)
         if koji_build_exists:
             return None
-    brew_build_exists = verify_build_exists(srpm, brew_url, brew)
+    brew_build_exists = verify_build_exists(srpm, brew_url)
     if not brew_build_exists and not koji_build_exists:
         return error_template
     elif not brew_build_exists:
-        koji_build_exists = verify_build_exists(srpm, koji_url, koji)
+        koji_build_exists = verify_build_exists(srpm, koji_url)
         if not brew_build_exists and not koji_build_exists:
             return error_template
         else:
@@ -105,3 +91,11 @@ def upload_file(hub, srpm, target_dir, parser):
         return hub.upload_file(os.path.expanduser(srpm), target_dir)
     except Fault, e:
         handle_perm_denied(e, parser)
+
+
+if __name__ == '__main__':
+    print verify_brew_koji_build('scipy-0.12.1-1.el7', 'http://brewhub.devel.redhat.com/brewhub', 'http://koji.fedoraproject.org/kojihub')
+    print verify_brew_koji_build('xscipy-0.12.1-1.el7', 'http://brewhub.devel.redhat.com/brewhub', 'http://koji.fedoraproject.org/kojihub')
+    print verify_brew_koji_build('gnome-shell-3.10.2.1-3.fc20', 'http://brewhub.devel.redhat.com/brewhub', 'http://koji.fedoraproject.org/kojihub')
+    print verify_brew_koji_build('gnome-shell-3.10.1-2.fc21', 'http://brewhub.devel.redhat.com/brewhub', 'http://koji.fedoraproject.org/kojihub')
+    
