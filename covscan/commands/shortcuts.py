@@ -98,4 +98,3 @@ if __name__ == '__main__':
     print verify_brew_koji_build('xscipy-0.12.1-1.el7', 'http://brewhub.devel.redhat.com/brewhub', 'http://koji.fedoraproject.org/kojihub')
     print verify_brew_koji_build('gnome-shell-3.10.2.1-3.fc20', 'http://brewhub.devel.redhat.com/brewhub', 'http://koji.fedoraproject.org/kojihub')
     print verify_brew_koji_build('gnome-shell-3.10.1-2.fc21', 'http://brewhub.devel.redhat.com/brewhub', 'http://koji.fedoraproject.org/kojihub')
-    

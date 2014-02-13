@@ -6,7 +6,7 @@
 
 
 Name:           covscan
-Version:        0.4.3
+Version:        0.4.4
 Release:        1%{?dist}
 License:        Commercial
 Summary:        Coverity scan scheduler
@@ -28,7 +28,7 @@ Summary: CovScan CLI client
 Group: Applications/Engineering
 Requires: kobo-client >= 0.3.4
 Requires: python-krbV
-Requires: brewkoji
+Requires: koji
 
 %description client
 CovScan CLI client
@@ -50,6 +50,7 @@ Summary: CovScan xml-rpc interface and web application
 Group: Applications/Engineering
 # Requires: covscan-client = %{version}-%{release}
 Requires: kobo-hub
+Requires: kobo-client
 Requires: kobo-django
 Requires: Django
 Requires: Django-south
@@ -177,6 +178,9 @@ fi
 
 
 %changelog
+* Wed Jan 8 2014 Tomas Tomecek <ttomecek@redhat.com> - 0.4.4-1
+- remove brewkoji dependency
+
 * Sun Nov 17 2013 Tomas Tomecek <ttomecek@redhat.com> - 0.4.3-1
 - hub update (django and kobo rebase)
 

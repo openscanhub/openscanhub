@@ -1,6 +1,6 @@
 #!/bin/bash
 
-PKG_VER="covscan-0.4.3"
+PKG_VER="covscan-0.4.4"
 NVR=$PKG_VER"-1.fc20"
 TARBALL=$PKG_VER".tar.bz2"
 SRPM=$NVR".src.rpm"
