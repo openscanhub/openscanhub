@@ -30,6 +30,13 @@ log:
 source: clean
 	@python setup.py sdist
 
+srpm: source
+	rpmbuild -bs "covscan.spec"                     \
+		--define "_source_filedigest_algorithm md5" \
+		--define "_binary_filedigest_algorithm md5" \
+		--define "_sourcedir ./dist"                 \
+		--define "_specdir ."                       \
+		--define "_srcrpmdir '.'"
 
 #test:
 #	cd tests; ./run_tests.py
