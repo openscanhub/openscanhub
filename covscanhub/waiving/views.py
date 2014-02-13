@@ -306,6 +306,16 @@ class ResultsListView(ListView):
         context = super(ResultsListView, self).get_context_data(**kwargs)
         context["search_form"] = self.search_form
         context['table_sort'] = self.table_sort
+
+        # to make pagination work with filtering
+        args = self.request.GET.copy()
+        try:
+            del args['page']
+        except KeyError:
+            pass
+        if args:
+            context['get_vars'] = '&' + urllib.urlencode(args)
+
         return context
 
 

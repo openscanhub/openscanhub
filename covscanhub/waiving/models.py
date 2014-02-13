@@ -514,7 +514,7 @@ class WaiverOnlyQuerySet(models.query.QuerySet, WaiverOnlyMixin):
 class WaiverOnlyManager(models.Manager, WaiverOnlyMixin):
     def get_query_set(self):
         """ return all active waivers """
-        return WaiverOnlyQuerySet(self.model, using=self._db)
+        return WaiverOnlyQuerySet(self.model, using=self._db).filter(is_deleted=False).filter(is_active=True)
 
 
 class WaiverManager(models.Manager):

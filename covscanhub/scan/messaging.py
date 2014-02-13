@@ -14,6 +14,7 @@ import threading
 import os
 import krbV
 import copy
+import logging
 
 from django.conf import settings
 
@@ -22,6 +23,8 @@ __all__ = (
     "send_message",
     "post_qpid_message",
 )
+
+logger = logging.getLogger(__name__)
 
 
 class SenderThread(threading.Thread):
@@ -115,6 +118,7 @@ def send_message(qpid_connection, message, key):
 
 def post_qpid_message(state, etm, key):
     """Separated this into scan_notice because of dependency deadlock"""
+    logger.info('message bus: %s %s', etm, state)
     s = copy.deepcopy(settings.QPID_CONNECTION)
     s['KRB_PRINCIPAL'] = settings.KRB_AUTH_PRINCIPAL
     s['KRB_KEYTAB'] = settings.KRB_AUTH_KEYTAB

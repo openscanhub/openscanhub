@@ -32,6 +32,8 @@ import datetime
 
 from optparse import OptionParser
 
+xmlrpclib.Fault.__repr__ = lambda x: "<Fault %s: %s>" % (x.faultCode, str(x.faultString))
+
 
 def set_options():
     parser = OptionParser()
@@ -74,6 +76,10 @@ def set_options():
                       dest="owner",
                       help="package owner")
 
+    parser.add_option("--notif", action="store", type="int",
+                      dest="notif_task_id",
+                      help="task to send notif e-mail")
+
     (options, args) = parser.parse_args()
 
     return parser, options, args
@@ -87,8 +93,9 @@ def connect(rpc_url):
     #SSL transport
     #TransportClass = kobo.xmlrpc.retry_request_decorator(
     #    kobo.xmlrpc.SafeCookieTransport)
-    TransportClass = kobo.xmlrpc.retry_request_decorator(
-        kobo.xmlrpc.CookieTransport)
+    #TransportClass = kobo.xmlrpc.retry_request_decorator(
+    #    kobo.xmlrpc.CookieTransport)
+    TransportClass = kobo.xmlrpc.CookieTransport
     transport = TransportClass()
 
     client = xmlrpclib.ServerProxy(rpc_url, allow_none=True,
@@ -112,6 +119,14 @@ def call_task_url(client, task_id):
     def task_url(request, task_id):
     """
     return client.client.task_url(task_id)
+
+
+def call_notif_task(client, task_id):
+    """
+    executes task_url RPC call
+    def task_url(request, task_id):
+    """
+    return client.worker.email_task_notification(task_id)
 
 
 def call_resubmit_task(client, task_id):
@@ -218,8 +233,8 @@ def create_et_scan(client, base, target, advisory_id, et_id, owner):
             'target': target,
             'id': et_id,
             'errata_id': advisory_id,
-            'rhel_version': "RHEL-6.5.0",
-            'release': 'RHEL-6.5.0',
+            'rhel_version': "RHEL-7.0.0",
+            'release': 'RHEL-7.0.0',
         }
     except Exception:
         print "Usage:\n%prog -b <base_nvr> -t <target_nvr>"
@@ -275,7 +290,10 @@ if __name__ == '__main__':
     elif options.hub_prod:
         #rpc_url = "https://releng-test1.englab.brq.redhat.com/covscan\
 #/xmlrpc/client/"
-        rpc_url = "http://cov01.lab.eng.brq.redhat.com/covscanhub/xmlrpc/kerbauth/"
+        if options.notif_task_id:
+            rpc_url = "http://cov01.lab.eng.brq.redhat.com/covscanhub/xmlrpc/worker/"
+        else:
+            rpc_url = "http://cov01.lab.eng.brq.redhat.com/covscanhub/xmlrpc/kerbauth/"
         #rpc_url = "https://cov01.lab.eng.brq.redhat.com/covscan/xmlrpc/client/"
     elif options.hub_staging:
         rpc_url = "http://uqtm.lab.eng.brq.redhat.com/covscan/xmlrpc/client/"
@@ -299,6 +317,8 @@ if __name__ == '__main__':
         print call_get_scan_state(client, options.scan_state)
     elif options.task_info:
         call_task_info(client, options.task_info)
+    elif options.notif_task_id:
+        call_notif_task(client, options.notif_task_id)
     #except Exception, ex:
     #    print '---EXCEPTION---\n\n\n%s\n\n\n' % ex
     #    t = Traceback()

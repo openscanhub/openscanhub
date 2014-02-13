@@ -110,7 +110,7 @@ def send_task_notification(request, task_id):
         "Task URL: %s" % task_url,
         "Comment: %s" % task.comment or "",
         "",
-        "%s" % generate_stats(task.id, task.method not in ['MockBuild', 'DiffBuild']),
+        "%s" % generate_stats(task, task.method not in ['MockBuild', 'DiffBuild']),
     ]
     message = "\n".join(message)
 
@@ -246,6 +246,7 @@ def send_scan_notification(request, scan_id):
 
     # message setting
     if scan.is_failed() or scan.is_canceled():
+        recipient = "covscan-auto@redhat.com"
         message = mg.generate_failed_scan_text()
     elif scan.is_disputed():
         message = mg.generate_disputed_scan_text()

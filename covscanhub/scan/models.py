@@ -469,7 +469,7 @@ class ScanTargetQuerySet(models.query.QuerySet, ScanTargetMixin):
 
 class ScanTargetManager(models.Manager, ScanTargetMixin):
     def get_query_set(self):
-        return ScanTargetQuerySet(self.model, using=self._db).filter(state=SCAN_TYPES["ERRATA"])
+        return ScanTargetQuerySet(self.model, using=self._db).filter(state__in=SCAN_TYPES_TARGET)
 
 
 class Scan(models.Model):
@@ -703,9 +703,9 @@ setting: %s', e)
         let's finalize it!
         """
         if self.scanbinding.result.has_bugs():
-            self.state = SCAN_STATES['BUG_CONFIRMED']
+            self.set_state(SCAN_STATES['BUG_CONFIRMED'])
         else:
-            self.state = SCAN_STATES['WAIVED']
+            self.set_state(SCAN_STATES['WAIVED'])
         self.save()
 
 
