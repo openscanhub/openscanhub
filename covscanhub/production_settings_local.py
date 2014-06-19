@@ -73,8 +73,8 @@ LOGGING = {
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
 TIME_ZONE = 'Europe/Prague'
 
-KRB_AUTH_PRINCIPAL = 'HTTP/cov01.lab.eng.brq.redhat.com@REDHAT.COM'
-KRB_AUTH_KEYTAB = '/etc/httpd/conf/httpd.keytab'
+KRB_AUTH_PRINCIPAL = 'covscan/cov01.lab.eng.brq.redhat.com@REDHAT.COM'
+KRB_AUTH_KEYTAB = '/etc/covscan.keytab'
 
 LANGUAGE_CODE = 'en-us'
 
@@ -121,7 +121,7 @@ BZ_USER = "covscan-auto@redhat.com"
 BZ_PSWD = "krokodyl"
 
 QPID_CONNECTION = {
-    'broker': "qpid.devel.redhat.com",
+    'broker': "qpid.engineering.redhat.com",
     'address': "eso.topic",
     'mechanism': "GSSAPI",
     'routing_key': "covscan.scan",
