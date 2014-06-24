@@ -34,6 +34,7 @@ DATABASES = {
         'PASSWORD': '',
         'HOST': '',
         'PORT': '',
+        'ATOMIC_REQUESTS': True
     }
 }
 
@@ -71,6 +72,8 @@ LOGGING = {
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
 TIME_ZONE = 'Europe/Bratislava'
 
+KRB_AUTH_PRINCIPAL_SERVICE = 'covscan/uqtm.lab.eng.brq.redhat.com@REDHAT.COM'
+KRB_AUTH_KEYTAB_SERVICE = '/etc/covscan.keytab'
 KRB_AUTH_PRINCIPAL = 'HTTP/uqtm.lab.eng.brq.redhat.com@REDHAT.COM'
 KRB_AUTH_KEYTAB = '/etc/httpd/conf/httpd.keytab'
 
@@ -105,6 +108,8 @@ TASK_DIR = os.path.join(FILES_PATH, 'tasks')
 # Root directory for uploaded files
 UPLOAD_DIR = os.path.join(FILES_PATH, 'upload')
 
+ACTUAL_SCANNER = ('coverity', '6.5.0')
+
 LOGIN_URL_NAME = 'auth/krb5login'
 LOGIN_EXEMPT_URLS = ['.*xmlrpc/.*']
 
@@ -119,7 +124,7 @@ BZ_USER = "ttomecek@redhat.com"
 BZ_PSWD = "roflcopter" # not my actual passwd on live bz
 
 QPID_CONNECTION = {
-    'broker': "qpid-stage.app.eng.bos.redhat.com",
+    'broker': "amqps://qpid.stage.engineering.redhat.com",
     'address': "eso.topic",
     'mechanism': "GSSAPI",
 }
