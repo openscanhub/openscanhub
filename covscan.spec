@@ -6,6 +6,7 @@
 
 %{!?hub_instance:%define hub_instance devel}
 %{!?hub_host:%define hub_host localhost}
+%{!?xmlrpc_url:%define xmlrpc_url http://localhost/xmlrpc}
 
 Name:           covscan
 Version:        0.4.4
@@ -36,14 +37,14 @@ Requires: koji
 CovScan CLI client
 
 
-%package worker
+%package worker-%{hub_instance}
 Summary: CovScan worker
 Group: Applications/Engineering
 # Requires: covscan-client = %{version}-%{release}
 Requires: kobo-worker >= 0.3.4
 Requires: kobo-rpmlib
 Requires: cppcheck
-%description worker
+%description worker-%{hub_instance}
 CovScan worker
 
 
@@ -100,6 +101,12 @@ sed -i 's/__HOST__/%{hub_host}/g' ${RPM_BUILD_ROOT}/etc/httpd/conf.d/covscanhub-
 
 # create symlink /etc/covscan/covscanhub.conf -> .../site-packages/covscanhub/settings.py
 # ln -s %{py_sitedir}/covscanhub/settings_local.py ${RPM_BUILD_ROOT}/etc/covscan/covscanhub.conf
+
+mv $RPM_BUILD_ROOT/%{_sysconfdir}/covscan/%{hub_instance}_covscand.conf \
+   $RPM_BUILD_ROOT/%{_sysconfdir}/covscan/covscand.conf
+rm -f $RPM_BUILD_ROOT/%{_sysconfdir}/covscan/devel_covscand.conf || :
+rm -f $RPM_BUILD_ROOT/%{_sysconfdir}/covscan/stage_covscand.conf || :
+rm -f $RPM_BUILD_ROOT/%{_sysconfdir}/covscan/prod_covscand.conf || :
 
 # prefix on stage & prod, not on devel & local
 %if "%{hub_instance}" == "stage" || "%{hub_instance}" == "prod"
@@ -167,10 +174,10 @@ fi
 %{_sysconfdir}/bash_completion.d/
 
 
-%files worker
+%files worker-%{hub_instance}
 %defattr(644,root,root,755)
 %{py_sitedir}/covscand
-%attr(640,root,root) %config(noreplace) /etc/covscan/covscand.conf
+%attr(640,root,root) /etc/covscan/covscand.conf
 %attr(755,root,root) /etc/init.d/covscand
 %attr(754,root,root) /usr/sbin/covscand
 
@@ -178,6 +185,7 @@ fi
 %files hub-%{hub_instance}
 %defattr(644,root,apache,755)
 %{py_sitedir}/covscanhub
+%attr(755, root, apache) %{py_sitedir}/covscanhub/manage.py
 # we want to override configuration
 # %attr(640,root,apache) %config(noreplace) %{py_sitedir}/covscanhub/settings.py
 # %attr(640,root,apache) %config(noreplace) %{py_sitedir}/covscanhub/settings_local.py

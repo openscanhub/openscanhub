@@ -27,6 +27,9 @@ data_files = {
     "/etc/covscan": [
         "covscan/covscan.conf",
         "covscand/covscand.conf",
+        "covscand/prod_covscand.conf",
+        "covscand/stage_covscand.conf",
+        #"covscand/devel_covscand.conf",
     ],
     "/etc/httpd/conf.d": [
         "covscanhub/covscanhub-httpd.conf",
