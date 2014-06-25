@@ -11,7 +11,7 @@ from covscanhub.scan.xmlrpc_helper import finish_scan as h_finish_scan, \
     fail_scan as h_fail_scan, cancel_scan as h_cancel_scan, cancel_scan_tasks
 
 from django.template import RequestContext
-from django.conf.urls.defaults import patterns
+from django.conf.urls import patterns
 from django.shortcuts import render_to_response
 from django.utils.safestring import mark_safe
 from django.contrib import admin

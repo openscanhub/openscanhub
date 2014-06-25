@@ -4,6 +4,8 @@
 %define py_incdir  %{py_prefix}/include/python%{py_version}
 %define py_sitedir %{py_libdir}/site-packages
 
+%{!?hub_instance:%define hub_instance devel}
+%{!?hub_host:%define hub_host localhost}
 
 Name:           covscan
 Version:        0.4.4
@@ -45,7 +47,7 @@ Requires: cppcheck
 CovScan worker
 
 
-%package hub
+%package hub-%{hub_instance}
 Summary: CovScan xml-rpc interface and web application
 Group: Applications/Engineering
 # Requires: covscan-client = %{version}-%{release}
@@ -76,13 +78,12 @@ Requires: python-bugzilla
 Requires: yum
 
 
-%description hub
+%description hub-%{hub_instance}
 CovScan xml-rpc interface and web application
 
 
 %prep
 %setup -q
-
 
 %build
 echo OK
@@ -94,9 +95,24 @@ python setup.py install --root=${RPM_BUILD_ROOT}
 
 # tweak python paths in config files
 sed -i 's@/lib/python2.[0-9]@/lib/python%{py_version}@g' ${RPM_BUILD_ROOT}/etc/httpd/conf.d/covscanhub-httpd.conf
+# update host in vhosts
+sed -i 's/__HOST__/%{hub_host}/g' ${RPM_BUILD_ROOT}/etc/httpd/conf.d/covscanhub-httpd.conf
 
 # create symlink /etc/covscan/covscanhub.conf -> .../site-packages/covscanhub/settings.py
-ln -s %{py_sitedir}/covscanhub/settings_local.py ${RPM_BUILD_ROOT}/etc/covscan/covscanhub.conf
+# ln -s %{py_sitedir}/covscanhub/settings_local.py ${RPM_BUILD_ROOT}/etc/covscan/covscanhub.conf
+
+# prefix on stage & prod, not on devel & local
+%if "%{hub_instance}" == "stage" || "%{hub_instance}" == "prod"
+  sed -i 's@^URL_PREFIX =.*@URL_PREFIX = "/covscanhub"@g' $RPM_BUILD_ROOT/%{py_sitedir}/covscanhub/settings.py
+  cat $RPM_BUILD_ROOT/%{py_sitedir}/covscanhub/settings.py
+%endif
+
+# use proper configuration, remove rest
+mv $RPM_BUILD_ROOT/%{py_sitedir}/covscanhub/%{hub_instance}_settings_local.py \
+   $RPM_BUILD_ROOT/%{py_sitedir}/covscanhub/settings_local.py
+rm $RPM_BUILD_ROOT/%{py_sitedir}/covscanhub/prod_settings_local.py* || :
+rm $RPM_BUILD_ROOT/%{py_sitedir}/covscanhub/stage_settings_local.py* || :
+rm $RPM_BUILD_ROOT/%{py_sitedir}/covscanhub/devel_settings_local.py* || :
 
 # delete covscan-<version>-py2.5.egg-info file
 egg_info=$RPM_BUILD_ROOT/%{py_sitedir}/%{name}-%{version}-py%{py_version}.egg-info
@@ -109,10 +125,7 @@ mkdir -p $RPM_BUILD_ROOT/var/lib/covscanhub/tasks
 mkdir -p $RPM_BUILD_ROOT/var/lib/covscanhub/upload
 
 # create log file
-if [ ! -d $RPM_BUILD_ROOT/var/log ]
-then
-    mkdir $RPM_BUILD_ROOT/var/log
-fi
+mkdir -p $RPM_BUILD_ROOT/var/log
 touch $RPM_BUILD_ROOT/var/log/covscanhub.log
 
 # copy checker_groups.txt
@@ -162,19 +175,19 @@ fi
 %attr(754,root,root) /usr/sbin/covscand
 
 
-%files hub
+%files hub-%{hub_instance}
 %defattr(644,root,apache,755)
 %{py_sitedir}/covscanhub
-%attr(640,root,apache) %config(noreplace) %{py_sitedir}/covscanhub/settings.py
-%attr(640,root,apache) %config(noreplace) %{py_sitedir}/covscanhub/settings_local.py
-%attr(640,root,apache) %{py_sitedir}/covscanhub/settings.py[co]
-%attr(640,root,apache) %{py_sitedir}/covscanhub/settings_local.py[co]
-%attr(640,root,root) %config(noreplace) /etc/httpd/conf.d/covscanhub-httpd.conf
-%config %ghost /var/log/covscanhub.log
+# we want to override configuration
+# %attr(640,root,apache) %config(noreplace) %{py_sitedir}/covscanhub/settings.py
+# %attr(640,root,apache) %config(noreplace) %{py_sitedir}/covscanhub/settings_local.py
+# %attr(640,root,apache) %{py_sitedir}/covscanhub/settings.py[co]
+# %attr(640,root,apache) %{py_sitedir}/covscanhub/settings_local.py[co]
+%attr(640,root,root) /etc/httpd/conf.d/covscanhub-httpd.conf
+%ghost /var/log/covscanhub.log
 %dir %attr(775,root,apache) /var/lib/covscanhub
 %dir %attr(775,root,apache) /var/lib/covscanhub/tasks
 %dir %attr(775,root,apache) /var/lib/covscanhub/upload
-%{_sysconfdir}/covscan/covscanhub.conf
 
 
 %changelog
