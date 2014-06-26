@@ -12,7 +12,7 @@ from covscanhub.scan.models import SCAN_TYPES, Scan
 from covscanhub.other.shortcuts import check_and_create_dirs
 
 from django.conf import settings
-
+from django.core.exceptions import ImproperlyConfigured
 
 __all__ = (
     "depend_on",
@@ -30,7 +30,7 @@ else:
 
 try:
     s = koji.ClientSession(settings.BREW_HUB)
-except (ImportError, NameError):
+except (ImportError, NameError, ImproperlyConfigured):
     s = koji.ClientSession("http://brewhub.devel.redhat.com/brewhub")
 
 
@@ -265,7 +265,3 @@ def retrieve_mock_for_build(nvr):
                               repoid=repo['id'],
                               topurl=TOP_URL)
     return mock
-
-
-if __name__ == '__main__':
-    print depend_on('rpm-4.11.1-8.el7', 'libc.so', 'rhel-7-x86_64')

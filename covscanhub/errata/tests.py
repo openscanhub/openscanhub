@@ -35,10 +35,10 @@ class TestDepChecking(unittest.TestCase):
         self.assertTrue(depend_on("seabios-0.6.1.2-28.el6", 'libc.so', 'rhel-6-x86_64'))
         self.assertTrue(depend_on("system-config-lvm-1.1.12-16.el6", 'libc.so', 'rhel-6-x86_64'))
         self.assertTrue(depend_on("grub-0.97-82.el6", 'libc.so', 'rhel-6-x86_64'))
+        self.assertTrue(depend_on('rpm-4.11.1-8.el7', 'libc.so', 'rhel-7-x86_64'))
+        self.assertTrue(depend_on('google-crosextra-carlito-fonts-1.103-0.1.20130920.el6.1', 'libc.so', 'rhel-6-x86_64'))
 
     def test_get_mock_repo(self):
-        self.assertTrue(isinstance(get_mocks_repo('rhel-6.5-x86_64'), (basestring, list)))
-        self.assertTrue(isinstance(get_mocks_repo('rhel-6.5-x86_64'), (basestring, list)))
         self.assertTrue(isinstance(get_mocks_repo('rhel-6.5-x86_64'), (basestring, list)))
 
     def test_depend_on_brew(self):
