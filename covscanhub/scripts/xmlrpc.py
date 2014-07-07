@@ -11,11 +11,6 @@ This module is present in Fedora repositories and in EPEL:
 """
 import sys
 
-KOBO_DIR = '/home/ttomecek/dev/kobo'
-
-if KOBO_DIR not in sys.path:
-    sys.path.insert(0, KOBO_DIR)
-
 from kobo.tback import Traceback, set_except_hook
 #print sys.excepthook
 set_except_hook()
@@ -43,6 +38,7 @@ def set_options():
                       action="store_true", dest="hub_staging", default=False)
     parser.add_option("-p", "--production", help="target hub is production",
                       action="store_true", dest="hub_prod", default=False)
+    parser.add_option("--hub", help="hub URL", dest="hub", default=None)
     parser.add_option("-i", "--init", help="create scan requests",
                       action="store_true", dest="init", default=False)
     parser.add_option("-b", "--base", action="store", type="string",
@@ -68,6 +64,10 @@ def set_options():
                       dest="et_id",
                       help="database ID of run in ET")
 
+    parser.add_option("--release", action="store", type="string",
+                      dest="release",
+                      help="release ID")
+
     parser.add_option("--advisory-id", action="store", type="string",
                       dest="advisory_id",
                       help="ID of advisory")
@@ -79,6 +79,14 @@ def set_options():
     parser.add_option("--notif", action="store", type="int",
                       dest="notif_task_id",
                       help="task to send notif e-mail")
+
+    parser.add_option("--username", action="store", type="string",
+                      dest="username",
+                      help="username for authentication")
+
+    parser.add_option("--password", action="store", type="string",
+                      dest="password",
+                      help="password for authentication")
 
     (options, args) = parser.parse_args()
 
@@ -214,14 +222,14 @@ KRB_REALM (current value: %s)." % realm
     return base64.encodestring(req)
 
 
-def create_et_scan(client, base, target, advisory_id, et_id, owner):
+def create_et_scan(client, base, target, advisory_id, et_id, owner, release="RHEL-6.5.0", username=None, password=None):
     """
     Connect to RPC server, login and execute some method
     """
     #login_krbv is rpc call
     #print client.auth.login_krbv(login())
-    #if '127.0.0.1' in RPC_URL or 'localhost' in RPC_URL:
-    #    client.auth.login_password('ttomecek', 'tatry')
+    if username and password:
+        client.auth.login_password(username, password)
 
     #p = random.randint(1, 100000)
     #p2 = random.randint(1, 100000)
@@ -233,8 +241,8 @@ def create_et_scan(client, base, target, advisory_id, et_id, owner):
             'target': target,
             'id': et_id,
             'errata_id': advisory_id,
-            'rhel_version': "RHEL-7.0.0",
-            'release': 'RHEL-7.0.0',
+            'rhel_version': release,
+            'release': release,
         }
     except Exception:
         print "Usage:\n%prog -b <base_nvr> -t <target_nvr>"
@@ -297,6 +305,8 @@ if __name__ == '__main__':
         #rpc_url = "https://cov01.lab.eng.brq.redhat.com/covscan/xmlrpc/client/"
     elif options.hub_staging:
         rpc_url = "http://uqtm.lab.eng.brq.redhat.com/covscan/xmlrpc/client/"
+    elif options.hub:
+        rpc_url = options.hub
 
     client = connect(rpc_url)
 
@@ -308,8 +318,13 @@ if __name__ == '__main__':
     elif options.messaging:
         call_send_message(client)
     elif options.base and options.target:
-        create_et_scan(client, options.base, options.target,
-                       options.advisory_id, options.et_id, options.owner)
+        if options.username and options.password:
+            create_et_scan(client, options.base, options.target,
+                           options.advisory_id, options.et_id, options.owner, options.release,
+                           options.username, options.password)
+        else:
+            create_et_scan(client, options.base, options.target,
+                           options.advisory_id, options.et_id, options.owner, options.release)
     elif options.file and options.tag_name:
         client.auth.login_krbv(login(rpc_url))
         mass_prescan(client, options.file, parser, options.tag_name)
