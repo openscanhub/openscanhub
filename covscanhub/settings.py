@@ -56,7 +56,7 @@ AUTH_USER_MODEL = 'auth.LongnameUser'
 
 MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.transaction.TransactionMiddleware',
+    #'django.middleware.transaction.TransactionMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
 
@@ -112,6 +112,7 @@ INSTALLED_APPS = (
     'kobo.hub',
 
     # covscan
+    'covscanhub.errata',
     'covscanhub.scan',
     'covscanhub.waiving',
     'covscanhub.stats',
@@ -121,7 +122,7 @@ INSTALLED_APPS = (
     'debug_toolbar',
 
     # migrations
-    #'south'
+    'south'
 )
 
 DEBUG_TOOLBAR_PATCH_SETTINGS = False

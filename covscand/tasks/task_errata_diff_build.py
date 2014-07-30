@@ -37,39 +37,44 @@ class ErrataDiffBuild(TaskBase):
         self.hub.worker.set_scan_to_scanning(self.args['scan_id'])
 
         mock_config = self.args.pop("mock_config")
-        #keep_covdata = self.args.pop("keep_covdata", False)
-        #all_checks = self.args.pop("all", False)
-        #security_checks = self.args.pop("security", False)
-        brew_build = self.args.pop("brew_build", None)
+        build = self.args.pop("build")
 
         # create a temp dir
         tmp_dir = tempfile.mkdtemp(prefix="covscan_")
         os.chmod(tmp_dir, 0775)
-        srpm_path = os.path.join(tmp_dir, "%s.src.rpm" % brew_build)
+        srpm_path = os.path.join(tmp_dir, "%s.src.rpm" % build)
 
         # make the dir writable by 'coverity' user
         coverity_gid = grp.getgrnam("coverity").gr_gid
         os.chown(tmp_dir, -1, coverity_gid)
 
+        try:
+            subtask_id = self.spawn_subtask(*tuple(self.args['base_task']))
+        except KeyError:
+            pass
+        else:
+            self.hub.worker.assign_task(subtask_id)
+            self.hub.worker.create_sb(subtask_id)
+            self.wait()
+
         #download srpm from brew
         cmd = ["brew", "download-build", "--quiet",
-               "--arch=src", brew_build]
+               "--arch=src", build]
         try:
             run(cmd, workdir=tmp_dir)
         except RuntimeError:
             print >> sys.stderr, \
-                "Error while downloading build from brew: %s" % \
+                "Error while downloading build: %s" % \
                 (kobo.tback.get_exception())
             self.hub.worker.fail_scan(self.args['scan_id'],
-                'Can\'t download build %s from brew.' % brew_build)
+                'Can\'t download build %s.' % build)
             self.fail()
 
         if not os.path.exists(srpm_path):
             print >> sys.stderr, \
                 "Invalid path %s to SRPM file (%s): %s" % \
-                (srpm_path, brew_build, kobo.tback.get_exception())
-            self.hub.worker.fail_scan(self.args['scan_id'],
-                'Invalid path %s to SRPM file.' % srpm_path)
+                (srpm_path, build, kobo.tback.get_exception())
+            self.hub.worker.fail_scan(self.args['scan_id'], 'Invalid path %s to SRPM file.' % srpm_path)
             self.fail()
 
         #is srpm allright?
@@ -77,27 +82,10 @@ class ErrataDiffBuild(TaskBase):
             get_rpm_header(srpm_path)
         except Exception:
             print >> sys.stderr, "Invalid RPM file (%s): %s" % \
-                (brew_build, kobo.tback.get_exception())
+                (build, kobo.tback.get_exception())
             self.hub.worker.fail_scan(self.args['scan_id'],
                                       'Invalid RPM file.')
             self.fail()
-
-        #execute mockbuild of this package
-        #cov_cmd = []
-        #cov_cmd.append("cd")
-        #cov_cmd.append(pipes.quote(tmp_dir))
-        #cov_cmd.append(";")
-        #
-        ## $program [-fit] MOCK_PROFILE my-package.src.rpm [COV_OPTS]
-        #cov_cmd.append('cov-mockbuild')
-        ##if keep_covdata:
-        #cov_cmd.append("-c")
-        #cov_cmd.append(pipes.quote(mock_config))
-        #cov_cmd.append(pipes.quote(srpm_path))
-        #cov_cmd.append("--security")
-        #cov_cmd.append("--concurrency")
-        #
-        #command = ["su", "-", "coverity", "-c", " ".join(cov_cmd)]
 
         command_base = self.hub.worker.get_scanning_command(self.args['scan_id'])
         command = command_base % {
@@ -120,7 +108,7 @@ class ErrataDiffBuild(TaskBase):
             self.hub.worker.extract_tarball(self.task_id, '')
         except Exception:
             print >> sys.stderr, "Tarball extraction failed (%s): %s" % \
-                (brew_build, kobo.tback.get_exception())
+                (build, kobo.tback.get_exception())
             self.hub.worker.fail_scan(self.args['scan_id'],
                                       'Tarball extraction failed.')
             self.fail()
@@ -130,7 +118,7 @@ class ErrataDiffBuild(TaskBase):
 
         if retcode:
             print >> sys.stderr, "Scanning have not completed successfully \
-(%s)" % (brew_build)
+(%s)" % (build)
             self.hub.worker.fail_scan(self.args['scan_id'],
                 'Scanning have not completed successfully.')
             self.fail()

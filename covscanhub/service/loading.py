@@ -9,7 +9,8 @@ import json
 import logging
 
 from kobo.hub.models import Task
-from covscanhub.other.constants import SCAN_RESULTS_FILENAME, FIXED_DIFF_FILE, ERROR_DIFF_FILE
+from covscanhub.other.constants import SCAN_RESULTS_FILENAME, FIXED_DIFF_FILE, \
+    ERROR_DIFF_FILE, DEFECTS_IN_PATCHES_FILE
 
 
 logger = logging.getLogger(__name__)
@@ -37,7 +38,7 @@ def load_defects_from_file(file_path):
     return defects
 
 
-def load_defects(task_id, with_diff=True):
+def load_defects(task_id, with_diff=True, with_defects_in_patches=False):
     """
     Load defects for provided task
     """
@@ -55,6 +56,9 @@ def load_defects(task_id, with_diff=True):
     if with_diff:
         result['added'] = load_defects_from_file(added_file_path)
         result['fixed'] = load_defects_from_file(fixed_file_path)
+    if with_defects_in_patches:
+        dip_path = os.path.join(task_dir, dir_name, DEFECTS_IN_PATCHES_FILE)
+        result['defects_in_patches'] = load_defects_from_file(dip_path)
     return result
 
 

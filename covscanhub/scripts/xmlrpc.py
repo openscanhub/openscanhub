@@ -103,8 +103,7 @@ def connect(rpc_url):
     #    kobo.xmlrpc.SafeCookieTransport)
     #TransportClass = kobo.xmlrpc.retry_request_decorator(
     #    kobo.xmlrpc.CookieTransport)
-    TransportClass = kobo.xmlrpc.CookieTransport
-    transport = TransportClass()
+    transport = kobo.xmlrpc.SafeCookieTransport()
 
     client = xmlrpclib.ServerProxy(rpc_url, allow_none=True,
                                    transport=transport)
@@ -289,10 +288,9 @@ def mass_prescan(client, file_path, parser, tag_name):
 
 if __name__ == '__main__':
     print 'You are using kobo from %s' % kobo.__file__
-
     parser, options, args = set_options()
 
-    rpc_url = "http://uqtm.lab.eng.brq.redhat.com/covscan/xmlrpc/kerbauth/"
+    rpc_url = "https://uqtm.lab.eng.brq.redhat.com/covscanhub/xmlrpc/kerbauth/"
     if options.hub_local:
         rpc_url = "http://127.0.0.1:8000/xmlrpc/kerbauth/"
     elif options.hub_prod:
@@ -307,6 +305,8 @@ if __name__ == '__main__':
         rpc_url = "http://uqtm.lab.eng.brq.redhat.com/covscan/xmlrpc/client/"
     elif options.hub:
         rpc_url = options.hub
+
+    print "connecting to %s" % rpc_url
 
     client = connect(rpc_url)
 

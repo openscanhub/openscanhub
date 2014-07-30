@@ -18,3 +18,5 @@ DEFAULT_CHECKER_GROUP = "Unsorted"
 
 SCAN_RESULTS_FILENAME = 'results.js'
 CSDIFF_ARGS = '-jz'
+
+DEFECTS_IN_PATCHES_FILE = "defects-in-patches.js"

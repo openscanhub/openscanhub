@@ -34,6 +34,15 @@ except (ImportError, NameError, ImproperlyConfigured):
     s = koji.ClientSession("http://brewhub.devel.redhat.com/brewhub")
 
 
+def get_or_fail(key, data):
+    """ Convenience function for retrieving data from dict """
+    try:
+        return data[key]
+    except KeyError:
+        logger.error("Key '%s' is missing from dict '%s'", key, data)
+        raise RuntimeError("Key '%s' is missing from '%s'!" % (key, data))
+
+
 def _spawn_scan_task(d):
     """
     parent method that actually creates Task and Scan
@@ -89,8 +98,10 @@ def spawn_classic(d):
     return _spawn_scan_task(d)
 
 
-def is_rebase(base, target_d):
+def is_rebase(base, target):
+    """ base, target -- NVRs """
     base_d = parse_nvr(base)
+    target_d = parse_nvr(target)
     return target_d['version'] != base_d['version']
 
 

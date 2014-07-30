@@ -4,12 +4,15 @@ Functions related to checking provided data
 """
 
 import logging
-from django.core.exceptions import ObjectDoesNotExist
-from kobo.rpmlib import parse_nvr
 
 from covscanhub.errata.utils import depend_on
 from covscanhub.other.exceptions import PackageBlacklistedException, PackageNotEligibleException
-from covscanhub.scan.models import PackageAttribute
+from covscanhub.scan.models import PackageAttribute, ScanBinding
+from covscanhub.scan.xmlrpc_helper import cancel_scan
+
+import koji
+from kobo.rpmlib import parse_nvr
+from django.conf import settings
 
 
 logger = logging.getLogger(__name__)
@@ -43,3 +46,25 @@ def check_package_eligibility(package, nvr, mock_profile, release, created):
     if not is_eligible:
         raise PackageNotEligibleException(
             'Package %s is not eligible for scanning.' % (package.name))
+
+
+def check_package_is_blocked(package, release):
+    is_blocked = package.is_blocked(release)
+    if is_blocked:
+        raise PackageBlacklistedException('Package %s is blacklisted.' %
+                                          (package.name))
+
+
+def check_obsolete_scan(package, release):
+    bindings = ScanBinding.targets.by_package(package).by_release_name(release)
+    for binding in bindings:
+        if binding.scan.is_in_progress():
+            cancel_scan(binding.scan.id)
+
+
+def check_build(nvr):
+    brew_proxy = koji.ClientSession(settings.BREW_HUB)
+    build = brew_proxy.getBuild(nvr)
+    if build is None:
+        raise RuntimeError("Brew build '%s' does not exist" % nvr)
+    return nvr

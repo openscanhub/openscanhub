@@ -173,8 +173,7 @@ statistical data will be harvested for this system release.")
     objects = SystemReleaseManager()
 
     def __unicode__(self):
-        return u"%s -- %s.%d" % \
-            (self.tag, self.product, self.release)
+        return u"%s -- %s.%d" % (self.tag, self.product, self.release)
 
     def get_child(self):
         try:
@@ -192,6 +191,25 @@ statistical data will be harvested for this system release.")
                           self.release)
 
 
+class TagMixin(object):
+    def for_release_str(self, release_str):
+        for rm in ReleaseMapping.objects.all():
+            tag = rm.get_tag(release_str)
+            if tag:
+                return tag
+        logger.critical("Unable to assign proper product and release: %s", release_str)
+        raise RuntimeError("Packages in this release are not being scanned.")
+
+
+class TagQuerySet(models.query.QuerySet, TagMixin):
+    pass
+
+
+class TagManager(models.Manager, TagMixin):
+    def get_query_set(self):
+        return TagQuerySet(self.model, using=self._db)
+
+
 class Tag(models.Model):
     """
     Mapping between brew tags and mock configs
@@ -203,9 +221,26 @@ class Tag(models.Model):
                              related_name='mock_profile')
     release = models.ForeignKey(SystemRelease, related_name='system_release')
 
+    objects = TagManager()
+
     def __unicode__(self):
         return "Tag: %s --> Mock: %s (%s)" % \
             (self.name, self.mock, self.release)
+
+
+class PackageMixin(object):
+    def get_or_create_by_name(self, name):
+        model, created = self.get_or_create(name=name)
+        return model
+
+
+class PackageQuerySet(models.query.QuerySet, PackageMixin):
+    pass
+
+
+class PackageManager(models.Manager, PackageMixin):
+    def get_query_set(self):
+        return PackageQuerySet(self.model, using=self._db)
 
 
 class Package(models.Model):
@@ -219,6 +254,8 @@ True, the package is blacklisted -- not accepted for scanning.", blank=True, nul
     eligible = models.NullBooleanField(default=True, help_text="Is package \
 scannable? You may have package written in different language that is \
 supported by your scanner.", blank=True, null=True)
+
+    objects = PackageManager()
 
     def __unicode__(self):
         return "#%s %s" % (self.id, self.name)
@@ -437,6 +474,33 @@ class PackageAttribute(models.Model):
             return atr
 
 
+class PackageCapabilityMixin(object):
+    def get_or_create_(self, package, is_capable, release=None):
+        model, created = self.get_or_create(package=package, is_capable=is_capable,
+                                            release=release)
+        return model
+
+
+class PackageCapabilityQuerySet(models.query.QuerySet, PackageCapabilityMixin):
+    pass
+
+
+class PackageCapabilityManager(models.Manager, PackageCapabilityMixin):
+    def get_query_set(self):
+        return PackageCapabilityQuerySet(self.model, using=self._db)
+
+
+class PackageCapability(models.Model):
+    release = models.ForeignKey(SystemRelease, blank=True, null=True)
+    package = models.ForeignKey(Package)
+    is_capable = models.BooleanField()
+
+    objects = PackageCapabilityManager()
+
+    def __unicode__(self):
+        return u"%s: %s" % (self.package, self.capability_set.all())
+
+
 class ScanMixin(object):
     def by_release(self, release):
         return self.filter(tag__release=release)
@@ -473,7 +537,7 @@ class ScanTargetQuerySet(models.query.QuerySet, ScanTargetMixin):
 
 class ScanTargetManager(models.Manager, ScanTargetMixin):
     def get_query_set(self):
-        return ScanTargetQuerySet(self.model, using=self._db).filter(state__in=SCAN_TYPES_TARGET)
+        return ScanTargetQuerySet(self.model, using=self._db).filter(scan_type__in=SCAN_TYPES_TARGET)
 
 
 class Scan(models.Model):
@@ -567,6 +631,18 @@ counted in statistics.")
     def is_disputed(self):
         return self.state == SCAN_STATES['DISPUTED']
 
+    def is_in_progress(self):
+        return self.state in SCAN_STATES_IN_PROGRESS
+
+    def is_actual(self):
+        """ is scan scanned with up to date analysers & arguments? """
+        # TODO: implement this for all analysers
+        actual_scanner = AppSettings.settings_actual_scanner()
+        if self.scanbinding.result.scanner_version != actual_scanner[1] or \
+           self.scanbinding.result.scanner != actual_scanner[0]:
+            return False
+        return True
+
     @property
     def target(self):
         if self.is_errata_base_scan():
@@ -655,6 +731,11 @@ setting: %s', e)
                 key
             )
 
+    def set_base(self, base, save=True):
+        self.base = base
+        if save:
+            self.save()
+
     def set_state(self, state):
         if state == self.state:
             return
@@ -729,6 +810,12 @@ class ScanBindingMixin(object):
     def by_release(self, release):
         return self.filter(scan__tag__release=release)
 
+    def by_package_name(self, package_name):
+        return self.filter(scan__package__name=package_name)
+
+    def by_release_name(self, release_name):
+        return self.filter(scan__tag__release__tag=release_name)
+
     def enabled(self):
         return self.filter(scan__enabled=True)
 
@@ -763,6 +850,11 @@ class ScanBindingManager(models.Manager, ScanBindingMixin):
         return ScanBindingQuerySet(self.model, using=self._db)
 
 
+class TargetScanBindingManager(models.Manager, ScanBindingMixin):
+    def get_query_set(self):
+        return ScanBindingQuerySet(self.model, using=self._db).filter(scan__scan_type__in=SCAN_TYPES_TARGET)
+
+
 class ScanBinding(models.Model):
     """
     Binding between scan, task and result -- for easier creation of scans that
@@ -778,11 +870,19 @@ class ScanBinding(models.Model):
 
     objects = ScanBindingManager()
 
+    targets = TargetScanBindingManager()
+
     class Meta:
         get_latest_by = "result__date_submitted"
 
     def __unicode__(self):
         return u"#%d: Scan: %s | %s" % (self.id, self.scan, self.task)
+
+    @classmethod
+    def create_sb(cls, **kwargs):
+        instance = cls(**kwargs)
+        instance.save()
+        return instance
 
     def get_errata_id(self):
         if self.is_errata_scan():
@@ -832,9 +932,15 @@ class ETMapping(models.Model):
         choices=REQUEST_STATES.get_mapping(),
         help_text="Status of request"
     )
+
     def __unicode__(self):
         return u"#%d Advisory: %s %s" % (self.id, self.advisory_id,
                                          self.latest_run)
+
+    def set_latest_run(self, sb, save=True):
+        self.latest_run = sb
+        if save:
+            self.save()
 
 
 class AppSettings(models.Model):

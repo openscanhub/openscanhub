@@ -5,8 +5,10 @@ import logging
 
 from kobo.hub.decorators import validate_worker
 from kobo.hub.models import Task
+from covscanhub.errata.scanner import prepare_base_scan, obtain_base2
 
 from covscanhub.scan.service import extract_logs_from_tarball
+from covscanhub.scan.models import ScanBinding
 from covscanhub.service.processing import diff_results
 from covscanhub.scan.notify import send_task_notification
 from covscanhub.scan.xmlrpc_helper import finish_scan as h_finish_scan,\
@@ -27,6 +29,7 @@ __all__ = (
     "finish_task",
     "set_scan_to_scanning",
     "get_scanning_command",
+    'create_sb',
 )
 
 logger = logging.getLogger(__name__)
@@ -98,6 +101,7 @@ def fail_scan(request, scan_id, reason=None):
     h_fail_scan(scan_id, reason)
 
 
+@validate_worker
 def get_scanning_command(request, scan_id):
     scan = Scan.objects.get(id=scan_id)
     if scan.is_errata_base_scan():
@@ -105,3 +109,30 @@ def get_scanning_command(request, scan_id):
     else:
         rel_tag = scan.tag.release.tag
     return AppSettings.settings_scanning_command(rel_tag)
+
+
+@validate_worker
+def create_sb(request, task_id):
+    task = Task.objects.get(id=task_id)
+    scan = Scan.objects.get(id=task.args['scan_id'])
+    ScanBinding.create_sb(task=task, scan=scan)
+
+
+#@validate_worker
+#def ensure_base_is_valid(request, scan, task):
+#    """
+#    Make sure that base is scanned properly, if not, do it (by spawning subtask)
+#
+#    we mean by valid that it has to be scanned by appropriate scanners
+#    """
+#    base_nvr = None
+#    base = obtain_base2(base_nvr)
+#    if not base:
+#        options = {
+#            'mock_config': task.args['mock_config'],
+#            'target': task.args['base'],
+#            'package_owner': scan.username.username,
+#        }
+#        spawn_subtask_args = prepare_base_scan(options)
+#        return spawn
+#        spawn_base

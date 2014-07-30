@@ -1,19 +1,19 @@
 # -*- coding: utf-8 -*-
 
-import re
 import logging
 
+import re
 from django.conf import settings
 
 from covscanhub.errata.check import check_nvr, check_package_eligibility
 from covscanhub.errata.utils import spawn_scan_task, _spawn_scan_task
 
+
 #from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 
-from covscanhub.other.exceptions import PackageBlacklistedException, PackageNotEligibleException
 from covscanhub.scan.models import Scan, SCAN_STATES, SCAN_TYPES, Package, \
     ScanBinding, MockConfig, ReleaseMapping, ETMapping, \
-    SCAN_STATES_IN_PROGRESS, AppSettings, SCAN_TYPES_TARGET, REQUEST_STATES
+    SCAN_STATES_IN_PROGRESS, AppSettings, SCAN_TYPES_TARGET
 from covscanhub.scan.xmlrpc_helper import cancel_scan
 from covscanhub.other.shortcuts import check_brew_build, \
     check_and_create_dirs
@@ -256,54 +256,6 @@ def create_errata_scan(kwargs, etm):
     etm.save()
 
     scan.set_state(SCAN_STATES['QUEUED'])
-
-
-def handle_scan(kwargs):
-    """
-    Create ET diff scan, handle all possible failures, return dict with
-    response, so it can be passed to ET
-    """
-    response = {}
-    message = None
-
-    etm = ETMapping()
-
-    try:
-        # ET internal id for the scan record in ET
-        etm.et_scan_id = return_or_raise('id', kwargs)
-        # ET internal id of the advisory that the build is part of
-        etm.advisory_id = return_or_raise('errata_id', kwargs)
-        etm.save()
-
-        create_errata_scan(kwargs, etm)
-    except (PackageBlacklistedException, PackageNotEligibleException), ex:
-        status = 'INELIGIBLE'
-        message = unicode(ex)
-    except RuntimeError, ex:
-        status = 'ERROR'
-        message = u'Unable to submit the scan, error: %s' % ex
-    except Exception, ex:
-        status = 'ERROR'
-        message = unicode(ex)
-    else:
-        status = 'OK'
-
-    # set status in response dict + in DB
-    response['status'] = status
-    etm.state = REQUEST_STATES[status]
-    etm.save()
-
-    # if there were some error, add it to response & DB
-    if message:
-        response['message'] = message
-        etm.comment = message
-        etm.save()
-
-    # this should evaluated as True _always_
-    if etm.id:
-        response['id'] = etm.id
-
-    return response
 
 
 def rescan(scan, user):

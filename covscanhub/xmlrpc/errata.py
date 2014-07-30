@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
 import logging
+from covscanhub.errata.scanner import handle_scan
 
-from covscanhub.errata.service import handle_scan
 from covscanhub.scan.models import SCAN_STATES, ETMapping, \
     AppSettings, REQUEST_STATES
 
