@@ -56,7 +56,7 @@ def get_recipient(user):
     return recipient
 
 
-def generate_stats(task, diff_task):
+def generate_stats(task, diff_task=False, with_defects_in_patches=False):
     def display_defects(result_list, label_name, defects_dict, diff_sign=''):
         if defects_dict:
             result_list.append('')
@@ -66,13 +66,16 @@ def generate_stats(task, diff_task):
             result_list += ["%s: %s%d" % (checker, diff_sign, count) for checker, count in defects_dict.items()]
             result_list.append('')
         return result_list
-    defects_json = load_defects(task.id, diff_task)
+    defects_json = load_defects(task.id, diff_task, with_defects_in_patches)
     result = []
     if diff_task:
         added = get_defect_stats(defects_json['added'])
         fixed = get_defect_stats(defects_json['fixed'])
         display_defects(result, "Added (+), Fixed (-)", added, '+')
         display_defects(result, "", fixed, '-')
+    elif with_defects_in_patches:
+        defects = get_defect_stats(defects_json['defects_in_patches'])
+        display_defects(result, 'Defects in patches', defects)
     else:
         defects = get_defect_stats(defects_json['defects'])
         display_defects(result, 'All defects', defects)
@@ -99,6 +102,13 @@ def send_task_notification(request, task_id):
         source = "SRPM"
         package = task.args['srpm_name']
 
+    if task.method == 'MockBuild':
+        stats = generate_stats(task, diff_task=False, with_defects_in_patches=False)
+    elif task.method == 'DiffBuild':
+        stats = generate_stats(task, diff_task=False, with_defects_in_patches=True)
+    elif task.method == 'VersionDiffBuild':
+        stats = generate_stats(task, diff_task=True, with_defects_in_patches=False)
+
     message = [
         "Hostname: %s" % hostname,
         "Task ID: %s" % task_id,
@@ -110,7 +120,7 @@ def send_task_notification(request, task_id):
         "Task URL: %s" % task_url,
         "Comment: %s" % task.comment or "",
         "",
-        "%s" % generate_stats(task, task.method not in ['MockBuild', 'DiffBuild']),
+        "%s" % stats,
     ]
     message = "\n".join(message)
 

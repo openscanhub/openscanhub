@@ -11,7 +11,7 @@ from covscanhub.other.exceptions import ScanException
 from covscanhub.scan.service import prepare_and_execute_diff, \
     get_latest_binding, get_latest_sb_by_package
 from covscanhub.waiving.service import create_results, get_unwaived_rgs
-from covscanhub.scan.models import SCAN_STATES, Scan, ScanBinding
+from covscanhub.scan.models import SCAN_STATES, Scan, ScanBinding, SCAN_STATES_SEND_MAIL
 from covscanhub.scan.notify import send_scan_notification
 
 logger = logging.getLogger(__name__)
@@ -107,8 +107,7 @@ def scan_notification_email(request, scan_id):
     scan = Scan.objects.get(id=scan_id)
     logger.info("Send e-mail for scan %s", scan)
     if scan.is_errata_scan():
-        if scan.state not in (SCAN_STATES['CANCELED'],
-                              SCAN_STATES['PASSED'],):
+        if scan.state in SCAN_STATES_SEND_MAIL:
             return send_scan_notification(request, scan_id)
     elif scan.is_errata_base_scan():
         if scan.is_failed():

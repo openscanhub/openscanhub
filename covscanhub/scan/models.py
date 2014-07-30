@@ -78,6 +78,10 @@ SCAN_STATES_PROCESSED = (
     SCAN_STATES['PASSED'],
     SCAN_STATES['WAIVED'],
 )
+SCAN_STATES_SEND_MAIL = (
+    SCAN_STATES['NEEDS_INSPECTION'],
+    SCAN_STATES['FAILED'],
+)
 
 SCAN_TYPES = Enum(
     # regular ET scan (not rebase, not new pkg, etc.)
