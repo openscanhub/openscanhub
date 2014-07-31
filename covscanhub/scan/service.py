@@ -280,6 +280,7 @@ def create_diff_task(hub_opts, task_opts):
 
     nvr_srpm = hub_opts.get('nvr_srpm', None)
     nvr_brew_build = hub_opts.get('nvr_brew_build', None)
+    base_brew_build = hub_opts.get('base_brew_build', None)
     nvr_upload_id = hub_opts.get('nvr_upload_id', None)
     analyzers = hub_opts.pop("analyzers", None)
 
@@ -298,6 +299,8 @@ def create_diff_task(hub_opts, task_opts):
     get_mock_by_name(base_mock)
 
     #Test if SRPM exists
+    if base_brew_build:
+        check_brew_build(base_brew_build)
     if nvr_brew_build:
         options['brew_build'] = check_brew_build(nvr_brew_build)
     elif nvr_upload_id:
