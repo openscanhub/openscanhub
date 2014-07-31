@@ -122,8 +122,8 @@ def post_qpid_message(state, etm, key):
     """Separated this into scan_notice because of dependency deadlock"""
     logger.info('message bus: %s %s', etm, state)
     s = copy.deepcopy(settings.QPID_CONNECTION)
-    s['KRB_PRINCIPAL_SERVICE'] = settings.KRB_AUTH_PRINCIPAL
-    s['KRB_KEYTAB_SERVICE'] = settings.KRB_AUTH_KEYTAB
+    s['KRB_PRINCIPAL'] = settings.KRB_AUTH_PRINCIPAL_SERVICE
+    s['KRB_KEYTAB'] = settings.KRB_AUTH_KEYTAB_SERVICE
     send_message(s,
                  {'scan_id': etm.id,
                   'et_id': etm.et_scan_id,
