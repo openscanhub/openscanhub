@@ -56,7 +56,7 @@ def check_package_is_blocked(package, release):
 
 
 def check_obsolete_scan(package, release):
-    bindings = ScanBinding.targets.by_package(package).by_release_name(release)
+    bindings = ScanBinding.targets.by_package(package).by_release(release)
     for binding in bindings:
         if binding.scan.is_in_progress():
             cancel_scan(binding.scan.id)
