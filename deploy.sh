@@ -5,6 +5,8 @@
 #
 
 STAGING_TARGET="root@stage-covscan"
+PROD_TARGET="ttomecek@cov01"
+COV02_TARGET="root@cov02"
 PROFILE_6="eng-rhel-6"
 
 deploy_staging(){
@@ -28,9 +30,42 @@ yum reinstall -y rpms/${HUB_RPM_NAME} rpms/${WORKER_RPM_NAME}
 service httpd restart || :
 service covscand restart || :
 END
+#    rsync ${WORKER_RPM_PATH} ${COV02_TARGET}:rpms/
+#    ssh ${COV02_TARGET} <<END
+#yum update -y rpms/${WORKER_RPM_NAME}
+#yum reinstall -y rpms/${WORKER_RPM_NAME}
+#service covscand restart || :
+#END
+}
+
+deploy_prod(){
+    rm -f ./*.src.rpm
+    make srpm || exit 2
+    mock --verbose -r ${PROFILE_6} ./*.src.rpm \
+        --define "hub_instance prod" \
+        --define "hub_host cov01.lab.eng.brq.redhat.com" \
+        --define "xmlrpc_url http://cov01.lab.eng.brq.redhat.com/covscanhub/xmlrpc" \
+        || exit 3
+    local RPM_NAME
+    local RPM_PATH
+    HUB_RPM_PATH="$(ls /var/lib/mock/${PROFILE_6}/result/covscan-hub-*.noarch.rpm)"
+    WORKER_RPM_PATH="$(ls /var/lib/mock/${PROFILE_6}/result/covscan-worker-*.noarch.rpm)"
+    HUB_RPM_NAME="$(basename ${HUB_RPM_PATH})"
+    WORKER_RPM_NAME="$(basename ${WORKER_RPM_PATH})"
+    rsync ${HUB_RPM_PATH} ${WORKER_RPM_PATH} ${PROD_TARGET}:rpms/
+#    ssh ${PROD_TARGET} <<END
+#yum update -y rpms/${HUB_RPM_NAME} rpms/${WORKER_RPM_NAME}
+#yum reinstall -y rpms/${HUB_RPM_NAME} rpms/${WORKER_RPM_NAME}
+#service httpd restart || :
+#service covscand restart || :
+#END
 }
 
 case "${1}" in
+    prod)
+        deploy_prod
+        ;;
+
     stage)
         deploy_staging
         ;;

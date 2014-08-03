@@ -77,7 +77,7 @@ Requires: cyrus-sasl-gssapi
 Requires: csdiff
 Requires: python-bugzilla
 Requires: yum
-
+Requires: file
 
 %description hub-%{hub_instance}
 CovScan xml-rpc interface and web application
@@ -94,6 +94,11 @@ echo OK
 rm -rf ${RPM_BUILD_ROOT}
 python setup.py install --root=${RPM_BUILD_ROOT}
 
+mv $RPM_BUILD_ROOT/%{_sysconfdir}/httpd/conf.d/%{hub_instance}-covscanhub-httpd.conf \
+   $RPM_BUILD_ROOT/%{_sysconfdir}/httpd/conf.d/covscanhub-httpd.conf
+rm -f $RPM_BUILD_ROOT/%{_sysconfdir}/httpd/conf.d/devel-covscanhub-httpd.conf || :
+rm -f $RPM_BUILD_ROOT/%{_sysconfdir}/httpd/conf.d/stage-covscanhub-httpd.conf || :
+rm -f $RPM_BUILD_ROOT/%{_sysconfdir}/httpd/conf.d/prod-covscanhub-httpd.conf || :
 # tweak python paths in config files
 sed -i 's@/lib/python2.[0-9]@/lib/python%{py_version}@g' ${RPM_BUILD_ROOT}/etc/httpd/conf.d/covscanhub-httpd.conf
 # update host in vhosts

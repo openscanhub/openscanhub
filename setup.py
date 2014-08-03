@@ -32,7 +32,8 @@ data_files = {
         #"covscand/devel_covscand.conf",
     ],
     "/etc/httpd/conf.d": [
-        "covscanhub/covscanhub-httpd.conf",
+        "covscanhub/prod-covscanhub-httpd.conf",
+        "covscanhub/stage-covscanhub-httpd.conf",
     ],
     "/etc/init.d": [
         "files/etc/init.d/covscand",
