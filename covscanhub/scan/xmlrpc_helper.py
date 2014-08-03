@@ -82,14 +82,11 @@ def fail_scan(scan_id, reason=None):
 
 def cancel_scan_tasks(task):
     if task.state in (TASK_STATES['OPEN'], TASK_STATES['FREE'],
-                      TASK_STATES['CREATED']):
-        task.cancel_task(recursive=False)
-        if task.parent:
-            task.parent.cancel_task(recursive=False)
+                      TASK_STATES['CREATED'], TASK_STATES['ASSIGNED']):
+        task.cancel_task(recursive=True)
 
 
-def cancel_scan(scan_id):
-    binding = ScanBinding.objects.get(scan__id=scan_id)
+def cancel_scan(binding):
     binding.scan.set_state(SCAN_STATES['CANCELED'])
     cancel_scan_tasks(binding.task)
     if binding.scan.is_errata_scan():
@@ -97,9 +94,8 @@ def cancel_scan(scan_id):
             enabled=False,
         )
         binding.scan.enable_last_successfull()
-    else:
-        if binding.task.parent:
-            cancel_scan(binding.task.parent.scanbinding.scan.id)
+        if binding.scan.base and binding.scan.base.is_in_progress():
+            binding.scan.base.set_state(SCAN_STATES['CANCELED'])
     return binding.scan
 
 
