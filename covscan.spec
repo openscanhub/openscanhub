@@ -9,7 +9,7 @@
 %{!?xmlrpc_url:%define xmlrpc_url http://localhost/xmlrpc}
 
 Name:           covscan
-Version:        0.4.4
+Version:        0.5.0
 Release:        1%{?dist}
 License:        Commercial
 Summary:        Coverity scan scheduler
