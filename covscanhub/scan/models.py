@@ -836,7 +836,7 @@ class ScanBindingMixin(object):
 
     def latest_scan_of_package(self, package, release):
         """ return latest scan of package in specific release """
-        q = self.target().by_release(release).by_package(package)
+        q = self.target().by_release(release).by_package(package).finished_well()
         if q:
             return q.latest()
 
