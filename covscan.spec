@@ -9,7 +9,7 @@
 %{!?xmlrpc_url:%define xmlrpc_url http://localhost/xmlrpc}
 
 Name:           covscan
-Version:        0.5.1
+Version:        0.5.2
 Release:        1%{?dist}
 License:        Commercial
 Summary:        Coverity scan scheduler
@@ -204,6 +204,9 @@ fi
 
 
 %changelog
+* Mon Aug 04 2014 Tomas Tomecek <ttomecek@redhat.com> - 0.5.2-1
+- add DB fixtures to package
+
 * Mon Aug 04 2014 Tomas Tomecek <ttomecek@redhat.com> - 0.5.1-1
 - fixes for reworked scheduler
 
