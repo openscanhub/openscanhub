@@ -5,7 +5,7 @@
 build/*
 dist/*
 MANIFEST
+.idea
 .spyderproject
 *.src.rpm
-covscanhub/*/migrations
 *~
