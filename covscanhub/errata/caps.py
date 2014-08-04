@@ -82,11 +82,11 @@ class FileCapabilityChecker(CapabilityChecker):
         prep_cmd = 'rpmbuild --nodeps -bp ./*spec --define="_sourcedir %(path)s" '\
                    '--define="_builddir %(path)s"' % {"path": self.tmp_dir}
         try:
-            run(prep_cmd, workdir=self.tmp_dir, can_fail=False)
+            run(prep_cmd, stdout=True, workdir=self.tmp_dir, can_fail=False)
         except RuntimeError:
             # prep failed, this could mean that the package couldn't be built
             # on this machine (exclusivearch ppc or something like that)
-            logger.debug("Command failed: '%s', package '%s'", prep_cmd, self.nvr)
+            logger.error("Command failed: '%s', package '%s'", prep_cmd, self.nvr)
             return False
         return True
 
@@ -266,7 +266,12 @@ def main():
         'mimetypes': ['text/x-c', 'text/c-c++'],
         'extensions': ['.c', '.cpp', '.h', '.hpp'],
         }
-    nvr = "system-config-lvm-1.1.12-16.el6"
+    import sys
+    try:
+        nvr = sys.argv[1]
+    except IndexError:
+        nvr = "system-config-lvm-1.1.12-16.el6"
+
     u = UnifiedCapabilityChecker(nvr, conf)
     mock = 'rhel-6-x86_64'
     print u.check(mock_profile=mock, arch="x86_64")
