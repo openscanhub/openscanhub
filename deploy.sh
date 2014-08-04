@@ -5,7 +5,8 @@
 #
 
 STAGING_TARGET="root@stage-covscan"
-PROD_TARGET="ttomecek@cov01"
+PROD_TARGET="cov01"
+PROD_TARGET2="ttomecek@cov02"
 COV02_TARGET="root@cov02"
 PROFILE_6="eng-rhel-6"
 
@@ -52,7 +53,8 @@ deploy_prod(){
     WORKER_RPM_PATH="$(ls /var/lib/mock/${PROFILE_6}/result/covscan-worker-*.noarch.rpm)"
     HUB_RPM_NAME="$(basename ${HUB_RPM_PATH})"
     WORKER_RPM_NAME="$(basename ${WORKER_RPM_PATH})"
-    rsync ${HUB_RPM_PATH} ${WORKER_RPM_PATH} ${PROD_TARGET}:rpms/
+    rsync ${HUB_RPM_PATH} ${WORKER_RPM_PATH} ${PROD_TARGET}:ttomecek/rpms/
+    rsync ${WORKER_RPM_PATH} ${PROD_TARGET2}:rpms/
 #    ssh ${PROD_TARGET} <<END
 #yum update -y rpms/${HUB_RPM_NAME} rpms/${WORKER_RPM_NAME}
 #yum reinstall -y rpms/${HUB_RPM_NAME} rpms/${WORKER_RPM_NAME}
