@@ -4,7 +4,7 @@
 %define py_incdir  %{py_prefix}/include/python%{py_version}
 %define py_sitedir %{py_libdir}/site-packages
 
-%{!?hub_instance:%define hub_instance devel}
+%{!?hub_instance:%define hub_instance prod}
 %{!?hub_host:%define hub_host localhost}
 %{!?xmlrpc_url:%define xmlrpc_url http://localhost/xmlrpc}
 
