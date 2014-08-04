@@ -204,22 +204,25 @@ class AbstractTargetScheduler(AbstractScheduler):
                                                  self.package, self.tag.release)
 
         super(AbstractTargetScheduler, self).store()
-        try:
-            base_scan = obtain_base2(self.base_nvr)
-        except BaseNotValidException:
-            logger.info("Preparing base scan")
-            options = {
-                'mock_config': self.tag.mock.name,
-                'target': self.base_nvr,
-                'package': self.package,
-                'package_owner': self.package_owner,
-                'parent_scan': self.scan,
-                'method': self.task_args['method'],
-            }
-            base_task_args = prepare_base_scan(options, self.scanning_session)
-            self.task_args['args']['base_task'] = base_task_args
-        else:
-            self.scan.set_base(base_scan)
+        if self.scan.can_have_base():
+            logger.debug("Looking for base scan.")
+            try:
+                base_scan = obtain_base2(self.base_nvr)
+            except BaseNotValidException:
+                logger.info("Preparing base scan")
+                options = {
+                    'mock_config': self.tag.mock.name,
+                    'target': self.base_nvr,
+                    'package': self.package,
+                    'package_owner': self.package_owner,
+                    'parent_scan': self.scan,
+                    'method': self.task_args['method'],
+                }
+                base_task_args = prepare_base_scan(options, self.scanning_session)
+                self.task_args['args']['base_task'] = base_task_args
+            else:
+                logger.info("Setting base to %s", base_scan)
+                self.scan.set_base(base_scan)
         self.is_stored = True
 
     def spawn(self):
