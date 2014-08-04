@@ -53,7 +53,13 @@ def email_task_notification(request, task_id):
 
 @validate_worker
 def finish_task(request, task_id):
-    task = Task.objects.get(id=task_id)
+    while True:
+        # FIXME: implement this properly
+        import time
+        task = Task.objects.get(id=task_id)
+        if task.is_finished():
+            break
+        time.sleep(10)
     if task.subtask_count == 1:
         base_task = task.subtasks()[0]
         task_dir = Task.get_task_dir(task.id)
