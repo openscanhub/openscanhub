@@ -47,14 +47,16 @@ data_files = {
     "/usr/sbin": [
         "covscand/covscand",
     ],
-    "covscanhub": [
-        "covscanhub/fixtures/",
-    ],
 }
 
 
 package_data = {
-    "covscanhub": get_files("covscanhub", "static") + get_files("covscanhub", "templates") + get_files("covscanhub", "media") + ["covscanhub.wsgi"] + ['scripts/checker_groups.txt']
+    "covscanhub": get_files("covscanhub", "static") + \
+            get_files("covscanhub", "templates") + \
+            get_files("covscanhub", "media") + \
+            get_files("covscanhub", "fixtures") + \
+            ["covscanhub.wsgi",
+             'scripts/checker_groups.txt']
 }
 
 
