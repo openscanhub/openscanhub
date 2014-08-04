@@ -110,4 +110,5 @@ class ScanningSession(models.Model):
             else:
                 is_capable = cap.check(nvr, mock_profile, package, release)
             if not is_capable:
-                raise PackageNotEligibleException()
+                raise PackageNotEligibleException(
+                    'Package %s is not eligible for scanning.' % (package.name))
