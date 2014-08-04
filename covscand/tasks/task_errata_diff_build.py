@@ -56,6 +56,7 @@ class ErrataDiffBuild(TaskBase):
             self.hub.worker.assign_task(subtask_id)
             self.hub.worker.create_sb(subtask_id)
             self.wait()
+            self.hub.worker.set_scan_to_scanning(self.args['scan_id'])
 
         #download srpm from brew
         cmd = ["brew", "download-build", "--quiet",
