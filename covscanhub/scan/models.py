@@ -743,6 +743,9 @@ setting: %s', e)
         self.save()
         self.scan_state_notice()
 
+    def set_state_queued(self):
+        self.set_state(SCAN_STATES['QUEUED'])
+
     def set_state_bug_confirmed(self):
         self.set_state(SCAN_STATES['BUG_CONFIRMED'])
 

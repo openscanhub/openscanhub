@@ -358,6 +358,7 @@ def create_errata_scan2(options, etm):
     else:
         sb = ClassicScheduler(options, scanning_session).spawn()
     etm.set_latest_run(sb)
+    sb.scan.set_state_queued()
     return etm
 
 
