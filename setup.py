@@ -47,6 +47,9 @@ data_files = {
     "/usr/sbin": [
         "covscand/covscand",
     ],
+    "covscanhub": [
+        "covscanhub/fixtures/",
+    ],
 }
 
 
