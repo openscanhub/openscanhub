@@ -237,6 +237,14 @@ class AbstractTargetScheduler(AbstractScheduler):
         Task.get_task_dir(task_id, create=True)
         sb = ScanBinding.create_sb(task=task, scan=self.scan)
         task.free_task()
+
+        child = ScanBinding.objects.latest_scan_of_package(self.package, self.tag.release)
+
+        if child and child.scan:
+            child_scan = child.scan
+            child_scan.parent = self.scan
+            child_scan.enabled = False
+            child_scan.save()
         self.is_spawned = True
         return sb
 
