@@ -79,7 +79,8 @@ class FileCapabilityChecker(CapabilityChecker):
             logger.error("Cannot extract srpm '%s'", self.srpm)
             raise
         # do prep
-        prep_cmd = 'rpmbuild --nodeps -bp ./*spec --define="_sourcedir %(path)s" '\
+        prep_cmd = 'rpmbuild --nodeps -bp ./*spec --define="_sourcedir %(path)s" ' \
+                   '--define="_topdir %(path)s" ' \
                    '--define="_builddir %(path)s"' % {"path": self.tmp_dir}
         try:
             run(prep_cmd, stdout=True, workdir=self.tmp_dir, can_fail=False)
