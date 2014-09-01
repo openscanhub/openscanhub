@@ -38,7 +38,7 @@ def get_total_scans():
 
         Number of all submitted scans.
     """
-    return Scan.objects.target().count()
+    return Scan.objects.enabled().target().count()
 
 
 @stat_function(1, "SCANS")
@@ -51,7 +51,7 @@ def get_scans_by_release():
     releases = SystemRelease.objects.filter(active=True)
     result = {}
     for r in releases:
-        result[r] = Scan.objects.target().by_release(r).count()
+        result[r] = Scan.objects.enabled().target().by_release(r).count()
     return result
 
 

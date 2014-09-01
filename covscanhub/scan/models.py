@@ -508,14 +508,17 @@ class ScanMixin(object):
     def target(self):
         return self.filter(scan_type__in=SCAN_TYPES_TARGET)
 
+    def enabled(self):
+        return self.filter(enabled=True)
+
     def updates(self):
-        return self.filter(scan_type=SCAN_TYPES['ERRATA'])
+        return self.enabled().filter(scan_type=SCAN_TYPES['ERRATA'])
 
     def newpkgs(self):
-        return self.filter(scan_type=SCAN_TYPES['NEWPKG'])
+        return self.enabled().filter(scan_type=SCAN_TYPES['NEWPKG'])
 
     def rebases(self):
-        return self.filter(scan_type=SCAN_TYPES['REBASE'])
+        return self.enabled().filter(scan_type=SCAN_TYPES['REBASE'])
 
 
 class ScanQuerySet(models.query.QuerySet, ScanMixin):
