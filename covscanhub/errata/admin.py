@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
 
-from covscanhub.other.admin import register_admin_module
+from covscanhub.other.autoregister import autoregister_admin
 
-register_admin_module('covscanhub.errata.models')
+autoregister_admin('covscanhub.errata.models')

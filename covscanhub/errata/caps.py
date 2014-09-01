@@ -95,21 +95,26 @@ class FileCapabilityChecker(CapabilityChecker):
         """ find matching files using command `file` """
         for root, dirs, files in os.walk(self.tmp_dir):
             for f in files:
-                match = False
+                mmatch = True
+                ematch = True
                 fullpath = os.path.join(root, f)
                 if self.mimetypes:
+                    mmatch = False
                     code, mimetype = run("file -b --mime-type %s" % fullpath,
                                          can_fail=True, return_stdout=True, workdir=self.tmp_dir)
                     mimetype = mimetype.strip()
                     if mimetype in self.mimetypes:
-                        match = True
+                        logger.debug("file %s matches mimetype %s", f, mimetype)
+                        mmatch = True
                 if self.extensions:
+                    ematch = False
                     for ext in self.extensions:
                         if fullpath.endswith(ext):
-                            match = True
+                            logger.debug("file %s matches extension %s", f, ext)
+                            ematch = True
                             break
-                if match:
-                    return match
+                if ematch and mmatch:
+                    return True
         return False
 
     def check(self, **kwargs):
@@ -260,6 +265,14 @@ def unified_cap_checker(**kwargs):
     return u.check(**kwargs)
 
 
+def rpmdep_cap_checker(**kwargs):
+    """
+
+    """
+    u = RPMDepCapabilityChecker(**kwargs)
+    return u.check(**kwargs)
+
+
 def main():
     conf = {
         'dependency': 'libc.so',
@@ -274,7 +287,7 @@ def main():
         nvr = "system-config-lvm-1.1.12-16.el6"
 
     u = UnifiedCapabilityChecker(nvr, conf)
-    mock = 'rhel-6-x86_64'
+    mock = 'rhel-7-x86_64'
     print u.check(mock_profile=mock, arch="x86_64")
 
 

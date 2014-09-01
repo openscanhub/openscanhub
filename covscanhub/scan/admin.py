@@ -1,12 +1,14 @@
 # -*- coding: utf-8 -*-
-
+import os
+from glob import glob
 
 from kobo.hub.models import Task, TASK_STATES
 
 from covscanhub.other.shortcuts import add_link_field
 from covscanhub.scan.notify import send_scan_notification
 from covscanhub.errata.service import rescan
-
+from covscanhub.scan.models import Scan, ScanBinding, SCAN_STATES
+from covscanhub.other.autoregister import autoregister_admin
 from covscanhub.scan.xmlrpc_helper import finish_scan as h_finish_scan, \
     fail_scan as h_fail_scan, cancel_scan as h_cancel_scan, cancel_scan_tasks
 
@@ -16,16 +18,18 @@ from django.shortcuts import render_to_response
 from django.utils.safestring import mark_safe
 from django.contrib import admin
 
-from covscanhub.scan.models import Scan, ScanBinding, SCAN_STATES
-from covscanhub.scan.service import extract_logs_from_tarball
-from covscanhub.other.admin import register_admin_module
 
-register_admin_module('covscanhub.scan.models', exclude=['Scan'],
-                      search_fields=[('Package', ['name']),
-                                     ('ScanBinding', ['scan__nvr']),
-                                     ('PackageAttribute', ['package__name'], )])
-register_admin_module('django.contrib.admin.models')
-register_admin_module('south.models')
+autoregister_admin('covscanhub.scan.models',
+                   exclude_models=['Scan'],
+                   reversed_relations={'MockConfig': ['analyzers']},
+                   admin_fields={
+                       'Tag': {'search_fields': ['name', 'mock__name', 'release__tag']},
+                       'ScanBinding': {'search_fields': ['scan__nvr', 'scan__package__name']},
+                       'Package': {'search_fields': ['name']},
+                       'AnalyzerVersion': {'search_fields': ['version', 'analyzer__name', 'mocks__name']},
+                   })
+autoregister_admin('django.contrib.admin.models')
+autoregister_admin('south.models')
 
 
 @add_link_field('scanbinding', 'scanbinding', field_label="Binding",

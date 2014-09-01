@@ -2,12 +2,6 @@
 
 #from models import DEFECT_STATES
 
-from covscanhub.other.admin import register_admin_module
+from covscanhub.other.autoregister import autoregister_admin
 
-#defect_states = lambda self, instance: \
-#    DEFECT_STATES.get_value(instance.defect_type)
-#defect_states.short_description = 'Defects state'
-
-register_admin_module('covscanhub.waiving.models')  # new_fields={
-#    'ResultGroup': ('defect_type_text', defect_states),
-#})
+autoregister_admin('covscanhub.waiving.models')
