@@ -29,8 +29,8 @@ else:
     logger = logging.getLogger(__name__)
 
 try:
-    s = koji.ClientSession(settings.BREW_HUB)
-except (ImportError, NameError, ImproperlyConfigured):
+    s = koji.ClientSession(settings.MAIN_KOJI_BUILDSYSTEM[0])
+except AttributeError:
     s = koji.ClientSession("http://brewhub.devel.redhat.com/brewhub")
 
 

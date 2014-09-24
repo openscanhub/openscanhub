@@ -103,7 +103,7 @@ def connect(rpc_url):
     #    kobo.xmlrpc.SafeCookieTransport)
     #TransportClass = kobo.xmlrpc.retry_request_decorator(
     #    kobo.xmlrpc.CookieTransport)
-    transport = kobo.xmlrpc.SafeCookieTransport()
+    transport = kobo.xmlrpc.CookieTransport()
 
     client = xmlrpclib.ServerProxy(rpc_url, allow_none=True,
                                    transport=transport)

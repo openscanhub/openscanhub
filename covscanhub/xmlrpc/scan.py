@@ -11,9 +11,10 @@ import koji
 from kobo.hub.models import Task, TASK_STATES
 from kobo.django.upload.models import FileUpload
 from kobo.django.xmlrpc.decorators import login_required, admin_required
+from covscanhub.errata.scanner import create_diff_task2
 
 from covscanhub.scan.models import MockConfig, Package, Tag, TaskExtension, \
-    Analyzer
+    Analyzer, ClientAnalyzer
 from covscanhub.scan.service import create_diff_task
 from covscanhub.errata.service import create_errata_base_scan
 
@@ -178,7 +179,7 @@ def create_user_diff_task(request, hub_opts, task_opts):
          - base_mock - mock config
     """
     hub_opts['task_user'] = request.user.username
-    return create_diff_task(hub_opts, task_opts)
+    return create_diff_task2(hub_opts, task_opts)
 
 
 @admin_required
@@ -261,12 +262,12 @@ def find_tasks(request, query):
 
 
 def list_analyzers(request):
-    return Analyzer.objects.export_available()
+    return ClientAnalyzer.objects.export_available()
 
 
 def check_analyzers(request, analyzers):
     a_list = re.split('[,:;]', analyzers.strip())
 
     for analyzer in a_list:
-        if not Analyzer.objects.is_valid(analyzer):
+        if not ClientAnalyzer.objects.is_valid(analyzer):
             return "Analyzer %s is not available." % analyzer

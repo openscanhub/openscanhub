@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
 
-from covscanhub.scan.models import MockConfig, Tag
-from covscanhub.other.exceptions import BrewException
+import os
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.utils.safestring import mark_safe
-
 import brew
-import os
+
+from covscanhub.scan.models import MockConfig, Tag
+from covscanhub.other.exceptions import BrewException
 
 
 __all__ = (
@@ -85,10 +85,3 @@ def check_and_create_dirs(directory):
         except OSError, ex:
             if ex.errno != 17:
                 raise
-
-
-def get_or_none(model, **kwargs):
-    try:
-        return model.objects.get(**kwargs)
-    except ObjectDoesNotExist:
-        return None

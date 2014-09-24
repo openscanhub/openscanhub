@@ -10,6 +10,7 @@ import shutil
 from kobo.rpmlib import get_rpm_header
 from kobo.worker import TaskBase
 import kobo.tback
+from covscanhub.service.csmock_parser import CsmockRunner
 
 kobo.tback.set_except_hook()
 
@@ -34,97 +35,58 @@ class ErrataDiffBuild(TaskBase):
     weight = 1.0
 
     def run(self):
-        self.hub.worker.set_scan_to_scanning(self.args['scan_id'])
-
+        scan_id = self.args.pop('scan_id')
         mock_config = self.args.pop("mock_config")
+        scanning_session_id = self.args.pop("scanning_session")
         build = self.args.pop("build")
 
-        # create a temp dir
-        tmp_dir = tempfile.mkdtemp(prefix="covscan_")
-        os.chmod(tmp_dir, 0775)
-        srpm_path = os.path.join(tmp_dir, "%s.src.rpm" % build)
+        self.hub.worker.set_scan_to_scanning(scan_id)
 
-        # make the dir writable by 'coverity' user
-        coverity_gid = grp.getgrnam("coverity").gr_gid
-        os.chown(tmp_dir, -1, coverity_gid)
+        # update analyzers version cache if needed
+        cache_task_args = self.hub.worker.ensure_cache(mock_config, scanning_session_id)
+        if cache_task_args is not None:
+            cache_subtask_id = self.spawn_subtask(*tuple(cache_task_args))
+            self.hub.worker.assign_task(cache_subtask_id)
+            self.wait()
 
-        try:
-            subtask_id = self.spawn_subtask(*tuple(self.args['base_task']))
-        except KeyError:
-            pass
-        else:
+        # (re)scan base if needed
+        base_task_args = self.hub.worker.ensure_base_is_scanned_properly(scan_id, self.task_id)
+        if base_task_args is not None:
+            subtask_id = self.spawn_subtask(*tuple(base_task_args))
+            self.hub.worker.set_scan_to_basescanning(scan_id)
             self.hub.worker.assign_task(subtask_id)
             self.hub.worker.create_sb(subtask_id)
             self.wait()
-            self.hub.worker.set_scan_to_scanning(self.args['scan_id'])
+            self.hub.worker.set_scan_to_scanning(scan_id)
 
-        #download srpm from brew
-        cmd = ["brew", "download-build", "--quiet",
-               "--arch=src", build]
-        try:
-            run(cmd, workdir=tmp_dir)
-        except RuntimeError:
-            print >> sys.stderr, \
-                "Error while downloading build: %s" % \
-                (kobo.tback.get_exception())
-            self.hub.worker.fail_scan(self.args['scan_id'],
-                'Can\'t download build %s.' % build)
-            self.fail()
+        self.hub.worker.set_scan_to_scanning(scan_id)
 
-        if not os.path.exists(srpm_path):
-            print >> sys.stderr, \
-                "Invalid path %s to SRPM file (%s): %s" % \
-                (srpm_path, build, kobo.tback.get_exception())
-            self.hub.worker.fail_scan(self.args['scan_id'], 'Invalid path %s to SRPM file.' % srpm_path)
-            self.fail()
+        scanning_args = self.hub.worker.get_scanning_args(scanning_session_id)
+        add_args = scanning_args.get('args', None)
+        koji_bin = scanning_args.get('koji_bin', None)
 
-        #is srpm allright?
-        try:
-            get_rpm_header(srpm_path)
-        except Exception:
-            print >> sys.stderr, "Invalid RPM file (%s): %s" % \
-                (build, kobo.tback.get_exception())
-            self.hub.worker.fail_scan(self.args['scan_id'],
-                                      'Invalid RPM file.')
-            self.fail()
+        with CsmockRunner() as runner:
+            if koji_bin:
+                results, retcode = runner.koji_analyze(scanning_args['analyzers'],
+                                                       build,
+                                                       profile=mock_config,
+                                                       additional_arguments=add_args,
+                                                       koji_bin=koji_bin)
+            else:
+                results, retcode = runner.koji_analyze(scanning_args['analyzers'],
+                                                       build,
+                                                       profile=mock_config,
+                                                       additional_arguments=add_args)
+            base_results = os.path.basename(results)
+            self.hub.upload_task_log(open(results, "r"),
+                                     self.task_id, base_results)
+            if retcode > 0:
+                print >> sys.stderr, "Scanning have not completed successfully (%d)" % retcode
+                self.hub.worker.fail_scan(scan_id,
+                                          'csmock return code: %d' % retcode)
+                self.fail()
 
-        command_base = self.hub.worker.get_scanning_command(self.args['scan_id'])
-        command = command_base % {
-            'mock_profile': mock_config,
-            'tmp_dir': tmp_dir,
-            'srpm_path': srpm_path,
-        }
-
-        retcode, output = run(command, can_fail=True, stdout=True,
-                              buffer_size=1, show_cmd=True)
-
-        # upload results back to hub
-        xz_path = srpm_path[:-8] + ".tar.xz"
-        if not os.path.exists(xz_path):
-            xz_path = srpm_path[:-8] + ".tar.lzma"
-        self.hub.upload_task_log(open(xz_path, "r"),
-                                 self.task_id, os.path.basename(xz_path))
-
-        try:
-            self.hub.worker.extract_tarball(self.task_id, '')
-        except Exception:
-            print >> sys.stderr, "Tarball extraction failed (%s): %s" % \
-                (build, kobo.tback.get_exception())
-            self.hub.worker.fail_scan(self.args['scan_id'],
-                                      'Tarball extraction failed.')
-            self.fail()
-
-        # remove temp files
-        shutil.rmtree(tmp_dir)
-
-        if retcode:
-            print >> sys.stderr, "Scanning have not completed successfully \
-(%s)" % (build)
-            self.hub.worker.fail_scan(self.args['scan_id'],
-                'Scanning have not completed successfully.')
-            self.fail()
-
-        self.hub.worker.finish_scan(self.args['scan_id'], self.task_id)
+        self.hub.worker.finish_scan(scan_id, base_results)
 
     @classmethod
     def cleanup(cls, hub, conf, task_info):

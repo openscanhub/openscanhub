@@ -5,10 +5,9 @@ import xmlrpclib
 
 from django.conf import settings
 from django.core.urlresolvers import reverse
+from covscanhub.other import get_or_none
 
 from models import Waiver, WAIVER_TYPES, Bugzilla, ResultGroup
-
-from covscanhub.other.shortcuts import get_or_none
 
 
 def has_bugzilla(package, release):

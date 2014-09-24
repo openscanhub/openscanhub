@@ -5,18 +5,18 @@
     place.
 """
 
-ERROR_DIFF_FILE = 'csdiff.js'
-FIXED_DIFF_FILE = 'csdiff_fixed.js'
+ERROR_DIFF_FILE = 'added.js'
+FIXED_DIFF_FILE = 'fixed.js'
 
-ERROR_HTML_FILE = 'csdiff.html'
-FIXED_HTML_FILE = 'csdiff_fixed.html'
+ERROR_HTML_FILE = 'added.html'
+FIXED_HTML_FILE = 'fixed.html'
 
-ERROR_TXT_FILE = 'csdiff.err'
-FIXED_TXT_FILE = 'csdiff_fixed.err'
+ERROR_TXT_FILE = 'added.err'
+FIXED_TXT_FILE = 'fixed.err'
 
 DEFAULT_CHECKER_GROUP = "Unsorted"
 
-SCAN_RESULTS_FILENAME = 'results.js'
+SCAN_RESULTS_FILENAME = 'scan-results.js'
 CSDIFF_ARGS = '-jz'
 
 DEFECTS_IN_PATCHES_FILE = "defects-in-patches.js"

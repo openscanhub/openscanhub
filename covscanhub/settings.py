@@ -69,7 +69,7 @@ MIDDLEWARE_CLASSES = (
     'kobo.hub.middleware.WorkerMiddleware',
     'kobo.django.menu.middleware.MenuMiddleware',
 
-    'debug_toolbar.middleware.DebugToolbarMiddleware',
+    #'debug_toolbar.middleware.DebugToolbarMiddleware',
 )
 
 INTERNAL_IPS = ('127.0.0.1',)
@@ -119,7 +119,7 @@ INSTALLED_APPS = (
 
     # better ./manage.py shell
     'django_extensions',
-    'debug_toolbar',
+    #'debug_toolbar',
 
     # migrations
     'south'
@@ -175,7 +175,8 @@ XMLRPC_METHODS = {
 
 }
 
-BREW_HUB = 'http://brewhub.devel.redhat.com/brewhub'
+MAIN_KOJI_BUILDSYSTEM = ('http://brewhub.devel.redhat.com/brewhub', 'brew')
+OTHER_KOJI_BUILDSYSTEMS = [('http://koji.fedoraproject.org/kojihub', 'koji')]
 ET_SCAN_PRIORITY = 20
 
 VALID_TASK_LOG_EXTENSIONS = ['.log', '.ini', '.err', '.out', '.js', '.txt']

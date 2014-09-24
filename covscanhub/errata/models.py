@@ -4,7 +4,7 @@ import logging
 from django.core.exceptions import ObjectDoesNotExist
 from covscanhub.other.exceptions import PackageNotEligibleException
 
-from covscanhub.scan.models import Analyzer, PackageCapability
+from covscanhub.scan.models import PackageCapability, Analyzer, Profile
 
 from kobo.django.fields import JSONField
 from django.db import models
@@ -24,6 +24,7 @@ class Capability(models.Model):
 
     options = JSONField(default={}, blank=True)
 
+    # TODO: change this to foreign key in package capability!
     caps = models.ManyToManyField(PackageCapability)
     analysers = models.ManyToManyField(Analyzer)
 
@@ -67,6 +68,9 @@ class ScanningSessionBindingMixin(object):
     def get_by_name(self, name):
         return self.get(name=name)
 
+    def get_analyzers(self, session_id):
+        return self.get(id=session_id).profile.analyzers
+
 
 class ScanningSessionBindingQuerySet(models.query.QuerySet, ScanningSessionBindingMixin):
     pass
@@ -90,6 +94,8 @@ class ScanningSession(models.Model):
 
     caps = models.ManyToManyField(Capability)
 
+    profile = models.ForeignKey(Profile)
+
     objects = ScanningSessionBindingManager()
 
     def __unicode__(self):
@@ -112,3 +118,4 @@ class ScanningSession(models.Model):
             if not is_capable:
                 raise PackageNotEligibleException(
                     'Package %s is not eligible for scanning.' % (package.name))
+

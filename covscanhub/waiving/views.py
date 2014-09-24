@@ -11,6 +11,7 @@ from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from django.core.exceptions import ObjectDoesNotExist
 from django.views.generic.list import ListView
+from covscanhub.other import get_or_none
 
 from covscanhub.scan.models import SCAN_STATES, ScanBinding, Package,\
     SystemRelease, ETMapping, Scan, SCAN_TYPES_TARGET
@@ -19,9 +20,8 @@ from covscanhub.scan.service import get_latest_sb_by_package
 from covscanhub.scan.xmlrpc_helper import scan_notification_email
 from covscanhub.scan.notify import send_notif_new_comment
 
-from covscanhub.service.processing import task_has_newstyle_results
+from covscanhub.service.processing import task_has_results
 
-from covscanhub.other.shortcuts import get_or_none
 from covscanhub.other.constants import *
 
 from covscanhub.waiving.bugzilla_reporting import create_bugzilla, \
@@ -151,7 +151,7 @@ def add_logs_to_context(sb):
     logs = []
     logs_list = sb.task.logs.list
 
-    if task_has_newstyle_results(sb.task):
+    if task_has_results(sb.task):
         log_prefix = os.path.join(sb.scan.nvr, 'run1', 'results')
     else:
         log_prefix = os.path.join(sb.scan.nvr, 'run1', sb.scan.nvr)

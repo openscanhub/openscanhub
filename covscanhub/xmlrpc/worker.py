@@ -1,41 +1,33 @@
 # -*- coding: utf-8 -*-
 
 
+import os
 import logging
 
 from kobo.hub.decorators import validate_worker
 from kobo.hub.models import Task
-from covscanhub.errata.scanner import prepare_base_scan, obtain_base2
+from covscanhub.errata.models import ScanningSession
+from covscanhub.errata.scanner import prepare_base_scan, obtain_base2, BaseNotValidException
+from covscanhub.other.decorators import public
 
 from covscanhub.scan.service import extract_logs_from_tarball
-from covscanhub.scan.models import ScanBinding
-from covscanhub.service.processing import diff_results
+from covscanhub.scan.models import ScanBinding, AnalyzerVersion
+from covscanhub.service.csmock_parser import CsmockAPI, unpack_and_return_api
 from covscanhub.scan.notify import send_task_notification
 from covscanhub.scan.xmlrpc_helper import finish_scan as h_finish_scan,\
-    fail_scan as h_fail_scan, scan_notification_email
+    fail_scan as h_fail_scan, scan_notification_email, prepare_version_retriever
 from covscanhub.scan.models import SCAN_STATES, Scan, TaskExtension, \
     SCAN_STATES_IN_PROGRESS, AppSettings
 
 from django.core.exceptions import ObjectDoesNotExist
+from covscanhub.waiving.results_loader import TaskResultsProcessor
 
-
-__all__ = (
-    "email_task_notification",
-    "email_scan_notification",
-    "get_additional_arguments",
-    "extract_tarball",
-    "finish_scan",
-    "fail_scan",
-    "finish_task",
-    "set_scan_to_scanning",
-    "get_scanning_command",
-    'create_sb',
-)
 
 logger = logging.getLogger(__name__)
 
 
 @validate_worker
+@public
 def extract_tarball(request, task_id, name):
     #name != None and len(name) > 0
     if name:
@@ -47,32 +39,28 @@ def extract_tarball(request, task_id, name):
 # REGULAR TASKS
 
 @validate_worker
+@public
 def email_task_notification(request, task_id):
     return send_task_notification(request, task_id)
 
 
-@validate_worker
+#@validate_worker
+@public
 def finish_task(request, task_id):
+    logger.info("Finishing task %s", task_id)
     task = Task.objects.get(id=task_id)
-    if task.subtask_count == 1:
-        logger.info("Finishing parent task %s", task_id)
+    base_task = None
+    if not task.parent:
         base_task = task.subtasks()[0]
-        if base_task.is_failed():
-            task.fail_task()
-            return
-        else:
-            while not base_task.is_finished():
-                # FIXME: implement this properly
-                import time
-                base_task = Task.objects.get(id=base_task.id)
-                time.sleep(10)
-        task_dir = Task.get_task_dir(task.id)
-        base_task_dir = Task.get_task_dir(base_task.id)
-        return diff_results(task_dir, base_task_dir, task.label, base_task.label)
-    elif task.subtask_count > 1:
-        raise RuntimeError('Task %s contains too many subtasks' % task.id)
+    exclude_dirs = AppSettings.settings_get_results_tb_exclude_dirs()
+    td = TaskResultsProcessor(task, base_task, exclude_dirs)
+    td.unpack_results()
+    if base_task:
+        return td.generate_diffs()
 
 
+@validate_worker
+@public
 def get_additional_arguments(request, task_id):
     try:
         return TaskExtension.objects.get(task__id=task_id).secret_args
@@ -83,66 +71,114 @@ def get_additional_arguments(request, task_id):
 # ET SCANS
 
 @validate_worker
+@public
 def email_scan_notification(request, scan_id):
     scan_notification_email(request, scan_id)
 
 
 @validate_worker
-def finish_scan(request, scan_id, task_id):
-    h_finish_scan(request, scan_id, task_id)
+@public
+def finish_scan(request, scan_id, filename):
+    h_finish_scan(request, scan_id, filename)
 
 
 @validate_worker
+@public
+def finish_analyzers_version_retrieval(request, task_id, filename):
+    task = Task.objects.get(id=task_id)
+    task_dir = Task.get_task_dir(task_id)
+    tb_path = os.path.join(task_dir, filename)
+    csmock = unpack_and_return_api(tb_path, task_dir)
+    analyzers = csmock.get_analyzers()
+    mock_config = task.args['mock_config']
+    AnalyzerVersion.objects.update_analyzers_versions(analyzers, mock_config)
+
+
+@validate_worker
+@public
+def get_su_user(request):
+    return None
+
+
+@validate_worker
+@public
+def set_scan_to_basescanning(request, scan_id):
+    scan = Scan.objects.get(id=scan_id)
+    scan.set_state_basescanning()
+
+
+@validate_worker
+@public
 def set_scan_to_scanning(request, scan_id):
     scan = Scan.objects.get(id=scan_id)
-    scan.set_state(SCAN_STATES['SCANNING'])
-    if not scan.base:
-        try:
-            Scan.objects.get(
-                state__in=SCAN_STATES_IN_PROGRESS,
-                base=scan,
-            ).set_state(SCAN_STATES['BASE_SCANNING'])
-        except Exception, ex:
-            logger.error("Can't find target for base %s: %s" % (scan, ex))
+    scan.set_state_scanning()
 
 
 @validate_worker
+@public
 def fail_scan(request, scan_id, reason=None):
     h_fail_scan(scan_id, reason)
 
 
 @validate_worker
-def get_scanning_command(request, scan_id):
-    scan = Scan.objects.get(id=scan_id)
-    if scan.is_errata_base_scan():
-        rel_tag = scan.target.tag.release.tag
-    else:
-        rel_tag = scan.tag.release.tag
-    return AppSettings.settings_scanning_command(rel_tag)
+@public
+def get_scanning_args(request, scanning_session_id):
+    scanning_session = ScanningSession.objects.get(id=scanning_session_id)
+    return scanning_session.profile.command_arguments
 
 
 @validate_worker
+@public
 def create_sb(request, task_id):
     task = Task.objects.get(id=task_id)
     scan = Scan.objects.get(id=task.args['scan_id'])
     ScanBinding.create_sb(task=task, scan=scan)
 
 
-#@validate_worker
-#def ensure_base_is_valid(request, scan, task):
-#    """
-#    Make sure that base is scanned properly, if not, do it (by spawning subtask)
-#
-#    we mean by valid that it has to be scanned by appropriate scanners
-#    """
-#    base_nvr = None
-#    base = obtain_base2(base_nvr)
-#    if not base:
-#        options = {
-#            'mock_config': task.args['mock_config'],
-#            'target': task.args['base'],
-#            'package_owner': scan.username.username,
-#        }
-#        spawn_subtask_args = prepare_base_scan(options)
-#        return spawn
-#        spawn_base
+@validate_worker
+@public
+def ensure_cache(request, mock_config, scanning_session_id):
+    """
+    make sure that cache with version of analyzers is not stale
+    """
+    if not AnalyzerVersion.objects.is_cache_uptodate(mock_config):
+        analyzers = ScanningSession.objects.get_analyzers(scanning_session_id)
+        return prepare_version_retriever(mock_config, analyzers)
+
+
+@validate_worker
+@public
+def ensure_base_is_scanned_properly(request, scan_id, task_id):
+    """
+    Make sure that base is scanned properly (with up-to-date analyzers)
+    if not, do it (by spawning subtask)
+
+    return (method, args, label)
+    """
+    scan = Scan.objects.get(id=scan_id)
+    if scan.can_have_base():
+        task = Task.objects.get(id=task_id)
+        scanning_session = ScanningSession.objects.get(id=task.args['scanning_session'])
+        base_nvr = task.args['base_nvr']
+        logger.debug("Looking for base scan '%s'.", base_nvr)
+        try:
+            base_scan = obtain_base2(base_nvr)
+        except BaseNotValidException:
+            logger.info("Preparing base scan")
+            options = {
+                'mock_config': scan.tag.mock.name,
+                'target': base_nvr,
+                'package': scan.package,
+                'tag': scan.tag,
+                'package_owner': scan.username.username,
+                'parent_scan': scan,
+                'method': task.method,
+            }
+            base_task_args = prepare_base_scan(options, scanning_session)
+            return base_task_args
+        else:
+            logger.info("Using cached base scan '%s'", base_scan)
+            scan.set_base(base_scan)
+    else:
+        logger.info('Scan %s does not need base' % scan)
+

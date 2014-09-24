@@ -1,14 +1,17 @@
 # -*- coding: utf-8 -*-
+from glob import glob
 import json
 import re
+import os
 import datetime
 import logging
 import cPickle as pickle
+from covscanhub.other import get_or_none
 
 from covscanhub.scan.messaging import post_qpid_message
 from covscanhub.other.scan import remove_duplicities
 
-from django.db import models
+from django.db import models, transaction
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
@@ -120,9 +123,33 @@ class Permissions(models.Model):
         )
 
 
+class MockConfigMixin(object):
+    def verify_by_name(self, name):
+        try:
+            model = self.get(name=name)
+        except ObjectDoesNotExist:
+            logger.warning("Mock config %s does not exist", name)
+            raise
+        else:
+            if not model.enabled:
+                raise RuntimeError('Mock config %s is disabled', model)
+            return model
+
+
+class MockConfigQuerySet(models.query.QuerySet, MockConfigMixin):
+    pass
+
+
+class MockConfigManager(models.Manager, MockConfigMixin):
+    def get_query_set(self):
+        return MockConfigQuerySet(self.model, using=self._db)
+
+
 class MockConfig(models.Model):
     name = models.CharField(max_length=256, unique=True)
     enabled = models.BooleanField(default=True)
+
+    objects = MockConfigManager()
 
     class Meta:
         ordering = ("name", )
@@ -251,9 +278,9 @@ class Package(models.Model):
                             blank=False, null=False)
     blocked = models.NullBooleanField(default=False, help_text="If this is set to \
 True, the package is blacklisted -- not accepted for scanning.", blank=True, null=True)
-    eligible = models.NullBooleanField(default=True, help_text="Is package \
-scannable? You may have package written in different language that is \
-supported by your scanner.", blank=True, null=True)
+    eligible = models.NullBooleanField(default=True,
+                                       help_text="DEPRECATED, do not use; use package attribute instead.",
+                                       blank=True, null=True)
 
     objects = PackageManager()
 
@@ -637,15 +664,6 @@ counted in statistics.")
     def is_in_progress(self):
         return self.state in SCAN_STATES_IN_PROGRESS
 
-    def is_actual(self):
-        """ is scan scanned with up to date analysers & arguments? """
-        # TODO: implement this for all analysers
-        actual_scanner = AppSettings.settings_actual_scanner()
-        if self.scanbinding.result.scanner_version != actual_scanner[1] or \
-           self.scanbinding.result.scanner != actual_scanner[0]:
-            return False
-        return True
-
     @property
     def target(self):
         if self.is_errata_base_scan():
@@ -746,6 +764,12 @@ setting: %s', e)
         self.save()
         self.scan_state_notice()
 
+    def set_state_scanning(self):
+        self.set_state(SCAN_STATES['SCANNING'])
+
+    def set_state_basescanning(self):
+        self.set_state(SCAN_STATES['BASE_SCANNING'])
+
     def set_state_queued(self):
         self.set_state(SCAN_STATES['QUEUED'])
 
@@ -809,6 +833,9 @@ class ScanBindingMixin(object):
             for base in p.values_list('scan__base__nvr', flat=True).distinct():
                 ids.append(p.filter(scan__base__nvr=base).latest().id)
         return self.filter(id__in=ids)
+
+    def by_scan_id(self, scan_id):
+        return self.get(scan__id=scan_id)
 
     def by_package(self, package):
         return self.filter(scan__package=package)
@@ -898,6 +925,32 @@ class ScanBinding(models.Model):
                 return None
         return None
 
+    def analyzers_match(self, analyzers):
+        """ list of dicts with info about analyzers """
+        if not self.result:
+            return False
+        sb_analyzers = self.result.analyzers.all()
+        if len(analyzers) != len(sb_analyzers):
+            logger.info("Analyzer sets don't match: %s != %s", analyzers, sb_analyzers)
+            return False
+        for a in analyzers:
+            for sb_a in sb_analyzers:
+                if a.analyzer.name == sb_a.analyzer.name:
+                    if not a.version == sb_a.version:
+                        logger.info("%s-%s != %s-%s", a.analyzer.name, a.version,
+                                    sb_a.analyzer.name, sb_a.version)
+                        # one of the version doesn't match
+                        return False
+                    else:
+                        # continue with another analyzer
+                        break
+        return True
+
+    def is_actual(self):
+        """ is scan actual? ~ scanned with up to date analyzers """
+        analyzers = AnalyzerVersion.objects.get_analyzer_versions_for_mockprofile(self.scan.tag.mock.name)
+        return self.analyzers_match(analyzers)
+
 
 class ReleaseMapping(models.Model):
     # regular expression
@@ -970,7 +1023,7 @@ class AppSettings(models.Model):
       * mock_profile -- mock profile used for analysis
     SCANNING_COMMAND_RELSPEC -- override of default
     """
-    key = models.CharField(max_length=32, blank=False, null=False)
+    key = models.CharField(max_length=128, blank=False, null=False)
     value = models.TextField(blank=True, null=True)
 
     class Meta:
@@ -1030,18 +1083,42 @@ class AppSettings(models.Model):
         return cls.settings_waiver_is_overdue_relspec()[short_tag]
 
     @classmethod
-    def settings_actual_scanner(cls):
-        """
-        Return tuple (FUTURE: list of tuples) with scanner name and version
-        """
+    def settings_get_analyzers_versions_cache_duration(cls):
+        """ how long before next check (in hours)"""
         try:
-            return pickle.loads(
-                str(cls.objects.get(key="ACTUAL_SCANNER").value)
-            )
-        except Exception:
-            return json.loads(
-                str(cls.objects.get(key="ACTUAL_SCANNER").value)
-            )
+            return int(get_or_none(cls, key="ANALYZERS_VERSIONS_CACHE_DURATION").value)
+        except AttributeError:
+            return None
+
+    @classmethod
+    def settings_set_last_versions_check(cls, mock_config):
+        obj, _ = cls.objects.get_or_create(key="ANALYZERS_VERSIONS_LAST_CHECKED")
+        try:
+            value = json.loads(obj.value)
+        except TypeError:
+            value = {}
+        value[mock_config] = datetime.datetime.now().isoformat()
+        obj.value = json.dumps(value)
+        obj.save()
+
+    @classmethod
+    def settings_get_last_versions_check(cls, mock_config=None):
+        """
+        Timestamp when last check was performed
+        {'mock_config': 'iso_timestamp', ...}
+        """
+        versions = get_or_none(cls, key="ANALYZERS_VERSIONS_LAST_CHECKED")
+        if versions:
+            versions = json.loads(versions.value)
+            if mock_config:
+                return versions.get(mock_config, None)
+            return versions
+
+    @classmethod
+    def settings_get_results_tb_exclude_dirs(cls):
+        dirs = get_or_none(cls, key="RESULTS_TB_EXCLUDE_DIRS")
+        if dirs:
+            return json.loads(dirs.value)
 
     @classmethod
     def _settings_scanning_command_relspec(cls):
@@ -1082,10 +1159,23 @@ class TaskExtension(models.Model):
         return u"%s %s" % (self.task, self.secret_args)
 
 
-class AnalyzerManager(models.Manager):
-    def get_query_set(self):
-        """ return all active waivers """
-        return super(AnalyzerManager, self).get_query_set()
+class ClientAnalyzerMixin(object):
+    def verify_by_name(self, name):
+        try:
+            model = self.get(cli_long_command=name)
+        except ObjectDoesNotExist:
+            logger.error("Analyzer %s doesn't exist", name)
+            raise
+        else:
+            if not model.enabled:
+                raise RuntimeError('Analyzer %s is disabled', model)
+            return model
+
+    def verify_in_bulk(self, analyzers):
+        result = []
+        for a in analyzers:
+            result.append(self.verify_by_name(a).id)
+        return self.filter(id__in=result)
 
     def list_available(self):
         return self.filter(enabled=True)
@@ -1100,62 +1190,142 @@ class AnalyzerManager(models.Manager):
     def filter_by_long_arg(self, long_opts):
         return self.list_available().filter(cli_long_command__in=long_opts)
 
-    def get_paths(self, query):
-        return query.exclude(path__exact='', path__isnull=False)
-
-    def get_path(self, query):
-        try:
-            return self.get_paths(query)[0].path
-        except IndexError:
-            return None
-
     def get_opts(self, analyzers):
         """
-        get_opts(['clang', 'cov-6.6.1'])
-         -> {'path': '/opt/...', 'args': ['-a', '-b']}
+        get_opts([<ClientAnalyzer>, <...>, ...])
+         -> {'analyzers': 'gcc,cppcheck,...', 'args': '-a -b']}
         """
-        a_list = re.split('[,:;]', analyzers.strip())
-        a_list = remove_duplicities(a_list)
-
-        ans = self.filter_by_long_arg(a_list)
-
-        response = {}
-        path = self.get_path(ans)
-        if path:
-            response['path'] = path
-
-        # get rid of entries with empty build_append with filter function
-        args = filter(lambda y: y, ans.values_list('build_append', flat=True))
-        if args:
-            response['args'] = args
-
-        if not bool(filter(lambda x: x.startswith('cov-'), a_list)):
-            response['no_coverity'] = True
-
+        analyzer_chain = analyzers.values_list('build_append', flat=True)
+        args = analyzers.values_list('build_append_args', flat=True)
+        response = {
+            'analyzers': ','.join(analyzer_chain),
+            'args': ' '.join(args),
+        }
         return response
 
     def is_valid(self, analyzer):
         return self.list_available().filter(cli_long_command=analyzer).exists()
 
 
-class Analyzer(models.Model):
-    name = models.CharField(max_length=64, blank=False, null=False)
+class ClientAnalyzerQuerySet(models.query.QuerySet, ClientAnalyzerMixin):
+    pass
+
+
+class ClientAnalyzerManager(models.Manager, ClientAnalyzerMixin):
+    def get_query_set(self):
+        return ClientAnalyzerQuerySet(self.model, using=self._db)
+
+
+class ClientAnalyzer(models.Model):
+    analyzer = models.ForeignKey("Analyzer", blank=True, null=True)
+    #name = models.CharField(max_length=64)
     version = models.CharField(max_length=32, blank=True, null=True)
     enabled = models.BooleanField(default=True)
     # what covscan-client options enables analyzer
     cli_short_command = models.CharField(max_length=32, blank=True, null=True)
     cli_long_command = models.CharField(max_length=32, blank=False, null=False)
-    # what should worker put to builder to enable this
-    build_append = models.CharField(max_length=32, blank=True, null=True)
-    # how should be $PATH altered
-    path = models.CharField(max_length=64, blank=True, null=True)
+    # enable this analyzer with csmock -t <build_append>[,<build_append>...]
+    build_append = models.CharField(max_length=32, blank=True, null=True,
+                                    help_text="analyzer name to put in --tools")
+    # args to append, e.g. --use-host-cppcheck
+    build_append_args = models.CharField(max_length=256, blank=True, null=True)
     # default analyzer when there is none specified
     default = models.BooleanField(default=False)
 
-    objects = AnalyzerManager()
-
-    class Meta:
-        ordering = ('id', )
+    objects = ClientAnalyzerManager()
 
     def __unicode__(self):
-        return u"%s %s" % (self.name, self.version)
+        return u"%s %s" % (self.analyzer, self.version)
+
+
+class Analyzer(models.Model):
+    name = models.CharField(max_length=64)
+
+    def __unicode__(self):
+        return u"%s" % (self.name)
+
+
+class AnalyzerVersionManager(models.Manager):
+    def get_or_create_(self, analyzer_name, version):
+        analyzer, _ = Analyzer.objects.get_or_create(name=analyzer_name)
+        version_model, _ = self.get_or_create(version=version, analyzer=analyzer)
+        return version_model
+
+    def get_or_create_bulk(self, analyzers, mock):
+        for analyzer in analyzers:
+            v = self.get_or_create_(analyzer['name'], analyzer['version'])
+            v.mocks.add(mock)
+
+    def update_analyzers_versions(self, analyzers, mock_name):
+        """ update mock profile with latest analyzer versions """
+        # has to be in one transaction because we clear all analyzers first
+        # and then populate the set with actual analyzers
+        with transaction.atomic():
+            mock = MockConfig.objects.get(name=mock_name)
+            mock.analyzers.clear()
+            self.get_or_create_bulk(analyzers, mock)
+            AppSettings.settings_set_last_versions_check(mock_name)
+
+    def is_cache_uptodate(self, mock_name):
+        """ according to configuration, are versions up to date, or should we check? """
+        duration = AppSettings.settings_get_analyzers_versions_cache_duration()
+        if duration is None:
+            raise RuntimeError('Configure ANALYZERS_VERSIONS_CACHE_DURATION in AppSettings.')
+        now = datetime.datetime.now()
+        last_checked_iso = AppSettings.settings_get_last_versions_check(mock_name)
+        if last_checked_iso is None:
+            return False
+        last_checked = datetime.datetime.strptime(last_checked_iso, "%Y-%m-%dT%H:%M:%S.%f")
+        delta = datetime.timedelta(hours=duration)
+        return last_checked + delta > now
+
+    def get_analyzer_versions_for_mockprofile(self, mock_name):
+        """
+        return serializable data wrt analyzers for given mock profile
+        {'gcc': '123', 'clang': '456', ...}
+        """
+        return self.filter(mocks__name=mock_name)
+
+
+class AnalyzerVersion(models.Model):
+    version = models.CharField(max_length=64)
+    analyzer = models.ForeignKey(Analyzer)
+    mocks = models.ManyToManyField(MockConfig, blank=True, null=True, related_name="analyzers")
+    date_created = models.DateTimeField(auto_now_add=True)
+
+    objects = AnalyzerVersionManager()
+
+    class Meta:
+        get_latest_by = 'date_created'
+
+    def __unicode__(self):
+        return u"%s-%s" % (self.analyzer, self.version)
+
+
+class Profile(models.Model):
+    """
+    Preconfigured setups, e.g.: python, c, aggresive c, ...
+    """
+    name = models.CharField(max_length=64)
+    description = models.TextField(null=True, blank=True)
+    enabled = models.BooleanField(default=True)
+    # commans is assembled as `template % args`
+    command_template = models.TextField(default='csmock -t %(analyzers)s -r %%(mock_config)s')
+    command_arguments = JSONField(default={},
+        help_text="this field has to contain key 'analyzers', "
+                  "which is a comma separated list of analyzers")
+
+    def __unicode__(self):
+        return u"%s: %s" % (self.name, self.scanning_command)
+
+    @property
+    def scanning_command(self):
+        return self.command_template % self.command_arguments
+
+    @property
+    def analyzers(self):
+        try:
+            return self.command_arguments['analyzers']
+        except KeyError:
+            logger.error('profile doesn\'t have any analyzers: %s', self.command_arguments)
+            raise RuntimeError('no analyzers in profile %s', self)

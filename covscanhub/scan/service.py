@@ -15,7 +15,7 @@ from kobo.django.upload.models import FileUpload
 from kobo.client.constants import TASK_STATES
 from django.core.exceptions import ObjectDoesNotExist
 
-from covscanhub.service.processing import add_title_to_json, diff_results
+from covscanhub.service.processing import add_title_to_json
 from models import SCAN_STATES, ScanBinding, Scan, SCAN_TYPES_TARGET, \
     SCAN_STATES_FINISHED_WELL, Analyzer
 from covscanhub.other.exceptions import ScanException
@@ -353,14 +353,6 @@ def create_diff_task(hub_opts, task_opts):
     parent_task.wait()
 
     return task_id
-
-
-@public
-def prepare_and_execute_diff(task, base_task, nvr, base_nvr):
-    task_dir = Task.get_task_dir(task.id)
-    base_task_dir = Task.get_task_dir(base_task.id)
-
-    return diff_results(task_dir, base_task_dir, nvr, base_nvr)
 
 
 @public

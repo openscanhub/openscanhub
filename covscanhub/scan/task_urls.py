@@ -15,7 +15,7 @@ urlpatterns = patterns("",
 
     url(r"^$",
         TaskListView.as_view(),
-        kwargs={'method__in': ['DiffBuild', 'MockBuild', 'VersionDiffBuild']},
+        #kwargs={'method__in': ['DiffBuild', 'MockBuild', 'VersionDiffBuild']},
         name="task/index"),
 
     url(r"^(?P<pk>\d+)/$",

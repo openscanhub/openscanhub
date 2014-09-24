@@ -6,12 +6,13 @@ Util functions related to processing data -- results of analysis
 import os
 import pipes
 import logging
-from django.utils import simplejson as json
+import json
 
 from covscanhub.other.decorators import public
 from covscanhub.other.constants import *
 
 from kobo.shortcuts import run
+from covscanhub.service.path import TaskResultPaths
 
 
 logger = logging.getLogger(__name__)
@@ -68,86 +69,58 @@ def csgrep_err(input_file, output_file, workdir):
     return _run(cmd, workdir)
 
 
-def generate_diff_files(paths, task_dir):
-    """
-    create diffs, html reports and .err files using provided 'paths' (dict):
-    { 'new': err file of newer run
-      'old': err file of older run
-      'added': js file of newly introduced defects
-      'fixed': js file of fixed defects
-      'added_err': err text file of newly introduced defects
-      'fixed_err': err text file of fixed defects
-      'added_html': HTML report of newly introduced defects
-      'fixed_html': HTML report of fixed defects
-    }
-    taskdir -- name of dir where all the files exist
-    """
-    p = paths  # shortcut
-    succ = csdiff_new_defects(p['old'], p['new'], p['added'], task_dir)
-    if succ:
-        f_succ = csdiff_fixed_defects(p['old'], p['new'], p['fixed'], task_dir)
+class TaskDiffer(object):
+    def __init__(self, task, base_task):
+        self.task = task
+        self.base_task = base_task
+        self.paths = TaskResultPaths(task)
+        self.base_paths = TaskResultPaths(base_task)
 
-        if f_succ:
-            # these are basicly optional, don't fail if one of them
-            # was not successfull
-            add_title_to_json(p['added'], 'Newly introduced defects')
-            add_title_to_json(p['fixed'], 'Fixed defects')
+    def generate_diff_files(self):
+        """
+        create diffs, html reports and .err files
+        """
+        succ = csdiff_new_defects(
+            self.base_paths.get_json_results(),
+            self.paths.get_json_results(),
+            self.paths.get_json_added(),
+            self.paths.task_dir
+        )
+        if succ:
+            f_succ = csdiff_new_defects(
+                self.paths.get_json_results(),
+                self.base_paths.get_json_results(),
+                self.paths.get_json_fixed(),
+                self.paths.task_dir
+            )
 
-            cshtml(p['added'], p['added_html'], task_dir)
-            cshtml(p['fixed'], p['fixed_html'], task_dir)
-            csgrep_err(p['added'], p['added_err'], task_dir)
-            csgrep_err(p['fixed'], p['fixed_err'], task_dir)
+            if f_succ:
+                # these are basicly optional, don't fail if one of them
+                # was not successfull
+                add_title_to_json(self.paths.get_json_added(), 'Newly introduced defects')
+                add_title_to_json(self.paths.get_json_fixed(), 'Fixed defects')
+
+                cshtml(self.paths.get_json_added(), self.paths.get_html_added(), self.paths.task_dir)
+                cshtml(self.paths.get_json_fixed(), self.paths.get_html_fixed(), self.paths.task_dir)
+                csgrep_err(self.paths.get_json_added(), self.paths.get_txt_added(), self.paths.task_dir)
+                csgrep_err(self.paths.get_json_fixed(), self.paths.get_txt_fixed(), self.paths.task_dir)
+            else:
+                return False
         else:
             return False
-    else:
-        return False
-    return True
+        return True
 
-
-def get_output_filenames(path):
-    """ build path names for output files """
-    p = {}
-    p['added'] = os.path.join(path, ERROR_DIFF_FILE)
-    p['fixed'] = os.path.join(path, FIXED_DIFF_FILE)
-    p['added_html'] = os.path.join(path, ERROR_HTML_FILE)
-    p['fixed_html'] = os.path.join(path, FIXED_HTML_FILE)
-    p['added_err'] = os.path.join(path, ERROR_TXT_FILE)
-    p['fixed_err'] = os.path.join(path, FIXED_TXT_FILE)
-    return p
-
-
-def get_input_filenames_task(base_path, base_nvr, path, nvr):
-    """ build path names for VersionDiffBuild task """
-    p = {}
-    # task dir structure: <task_dir>/<nvr>/run1/<nvr>.js
-    p['old'] = os.path.join(base_path, base_nvr, 'run1', SCAN_RESULTS_FILENAME)
-    p['new'] = os.path.join(path, nvr, 'run1', SCAN_RESULTS_FILENAME)
-    return p
-
-
-def get_input_filenames_scan(base_path, base_nvr, path, nvr):
-    """ build path names for ErrataDiffBuild task """
-    p = {}
-    # task dir structure: <task_dir>/<nvr>/run1/<nvr>.js
-    p['old'] = os.path.join(base_path, base_nvr, 'run1', base_nvr + '.js')
-    p['new'] = os.path.join(path, nvr, 'run1', nvr + '.js')
-    return p
-
-
-@public
-def diff_results(task_dir, base_task_dir, nvr, base_nvr):
-    """ generate diff files for VersionDiffBuild task """
-    p = get_output_filenames(task_dir)
-    p.update(get_input_filenames_task(base_task_dir, base_nvr, task_dir, nvr))
-    return generate_diff_files(p, task_dir)
-
-
-@public
-def scan_diff(task_dir, base_task_dir, nvr, base_nvr):
-    """ generate diff files for ErrataDiffBuild task """
-    p = get_output_filenames(task_dir)
-    p.update(get_input_filenames_scan(base_task_dir, base_nvr, task_dir, nvr))
-    return generate_diff_files(p, task_dir)
+    def diff_results(self):
+        """ generate diff files for VersionDiffBuild task """
+        try:
+            self.paths.get_json_results()
+        except RuntimeError:
+            raise RuntimeError('Base results do not exist')
+        try:
+            self.base_paths.get_json_results()
+        except RuntimeError:
+            raise RuntimeError('Target results do not exist')
+        return self.generate_diff_files()
 
 
 @public
@@ -162,9 +135,15 @@ def add_title_to_json(path, title):
 
 
 @public
-def task_has_newstyle_results(task):
-    logs_list = task.logs.list
+def task_has_results(task):
+    trp = TaskResultPaths(task)
+    try:
+        return os.path.exists(trp.get_json_results())
+    except RuntimeError:
+        return False
 
-    res_3 = lambda x: x.endswith(('results.html',
-                                  'results.err', 'results.js'))
-    return len(filter(res_3, logs_list)) >= 3
+
+@public
+def task_is_diffed(task):
+    trp = TaskResultPaths(task)
+    return os.path.exists(trp.get_json_added()) or os.path.exists(trp.get_json_fixed())

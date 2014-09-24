@@ -28,7 +28,7 @@ MANAGERS = ADMINS
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': '/var/covscanhub/db.sqlite',
+        'NAME': os.path.join(PROJECT_DIR, 'db.sqlite'),
         'USER': '',
         'PASSWORD': '',
         'HOST': '',

@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import logging
 import datetime
 from django.conf import settings
 
@@ -7,9 +8,13 @@ from kobo.types import Enum, EnumItem
 from kobo.django.fields import JSONField
 
 from django.core.exceptions import ObjectDoesNotExist
-import django.db.models as models
+from django.db import models, transaction
 
-from covscanhub.scan.models import Package, SystemRelease, SCAN_TYPES
+from covscanhub.scan.models import Package, SystemRelease, SCAN_TYPES, AnalyzerVersion
+
+
+logger = logging.getLogger(__name__)
+
 
 DEFECT_STATES = Enum(
     # newly introduced defect
@@ -92,15 +97,18 @@ class Result(models.Model):
     Result of submited scan is held by this method.
     """
     scanner = models.CharField("Analyser", max_length=32,
-                               blank=True, null=True)
+                               blank=True, null=True, help_text="DEPRECATED, not used anymore")
     scanner_version = models.CharField("Analyser's Version",
-                                       max_length=32, blank=True, null=True)
+                                       max_length=32, blank=True, null=True,
+                                       help_text="DEPRECATED, not used anymore")
     lines = models.IntegerField(help_text='Lines of code scanned', blank=True,
                                 null=True)
     #time in seconds that scanner spent scanning
     scanning_time = models.IntegerField(verbose_name='Time spent scanning',
                                         blank=True, null=True)
     date_submitted = models.DateTimeField()
+
+    analyzers = models.ManyToManyField(AnalyzerVersion)
 
     def save(self, *args, **kwargs):
         ''' On save, update timestamps '''
@@ -155,13 +163,25 @@ class Result(models.Model):
             state=RESULT_GROUP_STATES['CONTAINS_BUG']
         ).exists()
 
+    def set_analyzers(self, analyzers_list):
+        """
+        set analyzers, input is list of dicts:
+            [{'name': ..., 'version': ...}, ...]
+        """
+        # apparently, if this is NOT wrapped in transaction, none of the relations is saved
+        # this is happening in django 1.6, sqlite
+        with transaction.atomic():
+            for a in analyzers_list:
+                try:
+                    av = AnalyzerVersion.objects.get_or_create_(a['name'], a['version'])
+                except KeyError:
+                    logger.error("%s misses either name or version" % a)
+                    continue
+                self.analyzers.add(av)
+        logger.debug("used analyzers = %s", self.analyzers.all())
+
     def __unicode__(self):
-        try:
-            self.scanbinding
-        except ObjectDoesNotExist:
-            return "#%d %s %s" % (self.id, self.scanner, self.scanner_version)
-        return "#%d %s %s %s" % (self.id, self.scanner, self.scanner_version,
-                                 self.scanbinding.scan)
+        return u"#%d" % self.id
 
 
 class DefectMixin(object):

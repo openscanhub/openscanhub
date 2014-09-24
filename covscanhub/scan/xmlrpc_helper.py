@@ -6,57 +6,47 @@ import logging
 
 from kobo.client.constants import TASK_STATES
 from kobo.hub.models import Task
+from covscanhub.waiving.results_loader import process_scan
 
-from covscanhub.other.exceptions import ScanException
-from covscanhub.scan.service import prepare_and_execute_diff, \
-    get_latest_binding, get_latest_sb_by_package
-from covscanhub.waiving.service import create_results, get_unwaived_rgs
+from covscanhub.waiving.service import get_unwaived_rgs
 from covscanhub.scan.models import SCAN_STATES, Scan, ScanBinding, SCAN_STATES_SEND_MAIL
 from covscanhub.scan.notify import send_scan_notification
 
 logger = logging.getLogger(__name__)
 
 
-def finish_scan(request, scan_id, task_id):
+def finish_scan(request, scan_id, filename):
     """analysis ended, so process results"""
-    sb = ScanBinding.objects.get(scan=scan_id, task=task_id)
+    sb = ScanBinding.objects.by_scan_id(scan_id)
     scan = sb.scan
+    task = sb.task
 
-    if sb.task.state == TASK_STATES['FAILED'] or \
-            sb.task.state == TASK_STATES['CANCELED']:
-        fail_scan(scan_id, "Task failed.")
-        send_scan_notification(request, scan_id)
-        return
-    else:
-        if not scan.is_newpkg_scan() and scan.is_errata_scan() and scan.base:
-            try:
-                prepare_and_execute_diff(
-                    sb.task,
-                    get_latest_binding(scan.base.nvr).task,
-                    scan.nvr, scan.base.nvr
-                )
-            except ScanException, ex:
-                fail_scan(scan_id, ex.message)
-                return
+    # TODO: exclude debug dirs
+    #try:
+    process_scan(sb)
+    #except Exception as ex:
+    #    fail_scan(scan_id, ex.message)
+    #    return
 
-        result = create_results(scan, sb)
+    result = sb.result
 
-        if scan.is_errata_scan():
-            # if there are no missing waivers = there are some newly added
-            # unwaived defects
-            if not get_unwaived_rgs(result):
-                if result.has_bugs():
-                    # there are no new defects bug some groups are marked as bugs from previous runs
-                    scan.set_state_bug_confirmed()
-                else:
-                    # result does not have bugs and new defects
-                    scan.set_state(SCAN_STATES['PASSED'])
+    # TODO: create separate function
+    if scan.is_errata_scan():
+        # if there are no missing waivers = there are some newly added
+        # unwaived defects
+        if not get_unwaived_rgs(result):
+            if result.has_bugs():
+                # there are no new defects but some groups are marked as bugs from previous runs
+                scan.set_state_bug_confirmed()
             else:
-                # set newpkg scan to needs_insp too so e-mail will be sent
-                scan.set_state(SCAN_STATES['NEEDS_INSPECTION'])
+                # result does not have bugs and new defects
+                scan.set_state(SCAN_STATES['PASSED'])
+        else:
+            # set newpkg scan to needs_insp too so e-mail will be sent
+            scan.set_state(SCAN_STATES['NEEDS_INSPECTION'])
 
-        elif scan.is_errata_base_scan():
-            scan.set_state(SCAN_STATES['FINISHED'])
+    elif scan.is_errata_base_scan():
+        scan.set_state(SCAN_STATES['FINISHED'])
     scan.save()
 
 
@@ -75,7 +65,7 @@ def fail_scan(scan_id, reason=None):
         #set last successfully finished scan as enabled
         scan.enable_last_successfull()
     else:
-        scan.scanbinding.task.parent.cancel_task(recursive=False)
+        #scan.scanbinding.task.parent.cancel_task(recursive=False)
         fail_scan(scan.scanbinding.task.parent.scanbinding.scan.id,
                   "Base scan failed.")
 
@@ -100,6 +90,7 @@ def cancel_scan(binding):
 
 
 def scan_notification_email(request, scan_id):
+
     scan = Scan.objects.get(id=scan_id)
     logger.info("Send e-mail for scan %s", scan)
     if scan.is_errata_scan():
@@ -110,3 +101,10 @@ def scan_notification_email(request, scan_id):
             return send_scan_notification(
                 request,
                 scan.scanbinding.task.parent.scanbinding.scan.id)
+
+
+def prepare_version_retriever(mock_config, analyzers):
+    method = 'AnalyzerVersionRetriever'
+    args = {'mock_config': mock_config, 'analyzers': analyzers}
+    label = 'Refresh version cache.'
+    return method, args, label

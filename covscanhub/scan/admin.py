@@ -95,8 +95,8 @@ class ScanAdmin(admin.ModelAdmin):
         task = Task.objects.get(scanbinding__scan__id=scan_id)
         task.state = TASK_STATES['CLOSED']
         task.save()
-        extract_logs_from_tarball(task.id)
-        h_finish_scan(request, scan_id, task.id)
+        tb_path = glob(os.path.join(Task.get_task_dir(task.id), '*.tar.xz'))[0]
+        h_finish_scan(request, scan_id, os.path.basename(tb_path))
         scan = Scan.objects.get(id=scan_id)
 
         return render_to_response('admin/scan/scan/state_change.html', {

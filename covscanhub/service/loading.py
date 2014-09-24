@@ -47,7 +47,7 @@ def load_defects(task_id, with_diff=True, with_defects_in_patches=False):
     dir_name = task.label
     if dir_name.endswith('.src.rpm'):
         dir_name = dir_name[:-8]
-    defects_path = os.path.join(task_dir, dir_name, 'run1', SCAN_RESULTS_FILENAME)
+    defects_path = os.path.join(task_dir, dir_name, SCAN_RESULTS_FILENAME)
     if with_diff:
         fixed_file_path = os.path.join(task_dir, FIXED_DIFF_FILE)
         added_file_path = os.path.join(task_dir, ERROR_DIFF_FILE)
@@ -70,7 +70,8 @@ def get_defect_stats(defects):
     }
     """
     result = {}
-    for defect in defects:
-        result.setdefault(defect['checker'], 0)
-        result[defect['checker']] += 1
+    if defects:
+        for defect in defects:
+            result.setdefault(defect['checker'], 0)
+            result[defect['checker']] += 1
     return result
