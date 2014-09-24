@@ -194,9 +194,7 @@ is not even one in your user configuration file \
 
         # options setting
 
-        options = {
-            "keep_covdata": keep_covdata,
-        }
+        options = {}
         # check CIM string, it might be empty, so `if commit_string` is
         #  a bad idea
         if commit_string is not None:
@@ -209,6 +207,8 @@ is not even one in your user configuration file \
         if priority is not None:
             options["priority"] = priority
 
+        if keep_covdata:
+            options["keep_covdata"] = keep_covdata
         if aggressive:
             options["aggressive"] = aggressive
         if cppcheck:

@@ -1302,6 +1302,18 @@ class AnalyzerVersion(models.Model):
         return u"%s-%s" % (self.analyzer, self.version)
 
 
+class ProfileManager(models.Manager):
+    def get_analyzers_and_args_for_profile(self, profile_name):
+        try:
+            profile = self.get(name=profile_name)
+        except ObjectDoesNotExist:
+            logger.error("profile %s does not exist", profile_name)
+            raise ObjectDoesNotExist("profile %s does not exist" % profile_name)
+        else:
+            return profile.command_arguments.get('analyzers', None), \
+                   profile.command_arguments.get('csmock_args', None)
+
+
 class Profile(models.Model):
     """
     Preconfigured setups, e.g.: python, c, aggresive c, ...
@@ -1309,11 +1321,13 @@ class Profile(models.Model):
     name = models.CharField(max_length=64)
     description = models.TextField(null=True, blank=True)
     enabled = models.BooleanField(default=True)
-    # commans is assembled as `template % args`
-    command_template = models.TextField(default='csmock -t %(analyzers)s -r %%(mock_config)s')
-    command_arguments = JSONField(default={},
+    command_arguments = JSONField(
+        default={},
         help_text="this field has to contain key 'analyzers', "
-                  "which is a comma separated list of analyzers")
+                  "which is a comma separated list of analyzers, "
+                  "optionally add key csmock_args, which is a string")
+
+    objects = ProfileManager()
 
     def __unicode__(self):
         return u"%s: %s" % (self.name, self.scanning_command)

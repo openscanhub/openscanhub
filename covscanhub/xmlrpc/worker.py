@@ -6,11 +6,11 @@ import logging
 
 from kobo.hub.decorators import validate_worker
 from kobo.hub.models import Task
+from covscand.tasks.common import construct_cim_string
 from covscanhub.errata.models import ScanningSession
 from covscanhub.errata.scanner import prepare_base_scan, obtain_base2, BaseNotValidException
 from covscanhub.other.decorators import public
 
-from covscanhub.scan.service import extract_logs_from_tarball
 from covscanhub.scan.models import ScanBinding, AnalyzerVersion
 from covscanhub.service.csmock_parser import CsmockAPI, unpack_and_return_api
 from covscanhub.scan.notify import send_task_notification
@@ -26,16 +26,6 @@ from covscanhub.waiving.results_loader import TaskResultsProcessor
 logger = logging.getLogger(__name__)
 
 
-@validate_worker
-@public
-def extract_tarball(request, task_id, name):
-    #name != None and len(name) > 0
-    if name:
-        extract_logs_from_tarball(task_id, name=name)
-    else:
-        extract_logs_from_tarball(task_id)
-
-
 # REGULAR TASKS
 
 @validate_worker
@@ -44,13 +34,13 @@ def email_task_notification(request, task_id):
     return send_task_notification(request, task_id)
 
 
-#@validate_worker
+@validate_worker
 @public
 def finish_task(request, task_id):
     logger.info("Finishing task %s", task_id)
     task = Task.objects.get(id=task_id)
     base_task = None
-    if not task.parent:
+    if task.parent:
         base_task = task.subtasks()[0]
     exclude_dirs = AppSettings.settings_get_results_tb_exclude_dirs()
     td = TaskResultsProcessor(task, base_task, exclude_dirs)
@@ -61,12 +51,14 @@ def finish_task(request, task_id):
 
 @validate_worker
 @public
-def get_additional_arguments(request, task_id):
+def get_cim_arg(request, task_id):
     try:
-        return TaskExtension.objects.get(task__id=task_id).secret_args
+        cim_dict = TaskExtension.objects.get(task__id=task_id).secret_args
     except ObjectDoesNotExist:
         return None
-
+    else:
+        cim_str = construct_cim_string(cim_dict)
+        return "--cov-commit-to '%s'" % cim_str
 
 # ET SCANS
 

@@ -62,21 +62,15 @@ class ErrataDiffBuild(TaskBase):
         self.hub.worker.set_scan_to_scanning(scan_id)
 
         scanning_args = self.hub.worker.get_scanning_args(scanning_session_id)
-        add_args = scanning_args.get('args', None)
-        koji_bin = scanning_args.get('koji_bin', None)
+        add_args = scanning_args.get('csmock_args', '')
+        koji_bin = scanning_args.get('koji_bin', 'koji')
 
         with CsmockRunner() as runner:
-            if koji_bin:
-                results, retcode = runner.koji_analyze(scanning_args['analyzers'],
-                                                       build,
-                                                       profile=mock_config,
-                                                       additional_arguments=add_args,
-                                                       koji_bin=koji_bin)
-            else:
-                results, retcode = runner.koji_analyze(scanning_args['analyzers'],
-                                                       build,
-                                                       profile=mock_config,
-                                                       additional_arguments=add_args)
+            results, retcode = runner.koji_analyze(scanning_args['analyzers'],
+                                                   build,
+                                                   profile=mock_config,
+                                                   additional_arguments=add_args,
+                                                   koji_bin=koji_bin)
             base_results = os.path.basename(results)
             self.hub.upload_task_log(open(results, "r"),
                                      self.task_id, base_results)

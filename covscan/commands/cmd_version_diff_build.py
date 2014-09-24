@@ -270,7 +270,6 @@ is not even one in your user configuration file \
             upload_id, err_code, err_msg = upload_file(self.hub, srpm,
                                                        target_dir, self.parser)
             options_consumed["nvr_upload_id"] = upload_id
-            options_consumed['nvr_srpm'] = os.path.basename(srpm)
 
         if base_brew_build:
             options_consumed["base_brew_build"] = base_brew_build
@@ -279,7 +278,6 @@ is not even one in your user configuration file \
             upload_id, err_code, err_msg = upload_file(self.hub, base_srpm,
                                                        target_dir, self.parser)
             options_consumed["base_upload_id"] = upload_id
-            options_consumed['base_srpm'] = os.path.basename(base_srpm)
 
         task_id = self.submit_task(options_consumed, options_forwarded)
 

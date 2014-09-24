@@ -11,7 +11,7 @@ from kobo.django.upload.models import FileUpload
 
 from covscanhub.errata.utils import depend_on
 from covscanhub.other.exceptions import PackageBlacklistedException, PackageNotEligibleException
-from covscanhub.scan.models import PackageAttribute, ScanBinding, ClientAnalyzer
+from covscanhub.scan.models import PackageAttribute, ScanBinding, ClientAnalyzer, Profile
 from covscanhub.scan.xmlrpc_helper import cancel_scan
 
 import koji
@@ -89,9 +89,13 @@ def check_build(nvr, check_additional=False):
     return nvr, url, bin
 
 
-def check_analyzers(analyzers_chain):
+def check_analyzers(analyzers_chain, profile=None):
     a_list = re.split('[,:;]', analyzers_chain.strip())
-    return ClientAnalyzer.objects.verify_in_bulk(a_list)
+    args = None
+    if profile:
+        profile_analyzers, args = Profile.objects.get_analyzers_and_args_for_profile(profile)
+        a_list += re.split('[,;;]', profile_analyzers.strip())
+    return ClientAnalyzer.objects.verify_in_bulk(a_list), args
 
 
 def check_upload(upload_id, task_user):
@@ -114,7 +118,7 @@ def check_upload(upload_id, task_user):
     return nvr, srpm_name, srpm_path
 
 
-def check_srpm(srpm_name, upload_id, build_nvr, task_user):
+def check_srpm(upload_id, build_nvr, task_user):
     if build_nvr:
         cb_response = check_build(build_nvr, check_additional=True)
         response = {
