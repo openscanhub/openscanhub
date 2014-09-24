@@ -273,6 +273,9 @@ class ClassicScheduler(AbstractTargetScheduler):
 class AbstractClientScanScheduler(object):
     def prepare_csmock_args(self, additional_csmock_args=None):
         """ additional_csmock_args are additional arguments as string """
+        def add_if(x, collection):
+            if x:
+                collection.append(x)
         cov_args = {
             'all': '--all',
             'security': '--security',
@@ -285,11 +288,10 @@ class AbstractClientScanScheduler(object):
         }
         cov_opts = self.options.get('args', [])
         csmock_opts = []
-        add_args = [
-            additional_csmock_args,
-            self.additional_csmock_args,
-            self.additional_csmock_args_profile
-        ]
+        add_args = []
+        add_if(additional_csmock_args, add_args)
+        add_if(self.additional_csmock_args, add_args)
+        add_if(self.additional_csmock_args_profile, add_args)
         for opt in self.options:
             if opt in cov_args:
                 cov_opts.append(cov_args[opt])
@@ -334,8 +336,9 @@ class ClientScanScheduler(AbstractClientScanScheduler):
             self.srpm_name = check_srpm_response['srpm_name']
 
         # analyzers
-        self.analyzers = get_or_fail('analyzers', self.options)
-        self.analyzer_models, self.additional_csmock_args_profile = check_analyzers(self.analyzers, profile='default')
+        self.analyzers = self.options.get('analyzers', '')
+        self.profile = self.options.get('profile', 'default')
+        self.analyzer_models, self.additional_csmock_args_profile = check_analyzers(self.analyzers, profile=self.profile)
 
         # mock profile
         self.mock_config = get_or_fail('mock_config', self.options)
@@ -438,8 +441,9 @@ class ClientDiffScanScheduler(AbstractClientScanScheduler):
             self.base_srpm_name = base_check_srpm_response['srpm_name']
 
         # analyzers
-        self.analyzers = get_or_fail('analyzers', self.consume_options)
-        self.analyzer_models, self.additional_csmock_args_profile = check_analyzers(self.analyzers, profile='default')
+        self.analyzers = self.consume_options.get('analyzers', '')
+        self.profile = self.consume_options.get('profile', 'default')
+        self.analyzer_models, self.additional_csmock_args_profile = check_analyzers(self.analyzers, profile=self.profile)
 
         # mock profile
         self.target_mock_config = get_or_fail('nvr_mock', self.consume_options)

@@ -1313,6 +1313,9 @@ class ProfileManager(models.Manager):
             return profile.command_arguments.get('analyzers', None), \
                    profile.command_arguments.get('csmock_args', None)
 
+    def export_available(self):
+        return self.filter(enabled=True).values("name", "description")
+
 
 class Profile(models.Model):
     """

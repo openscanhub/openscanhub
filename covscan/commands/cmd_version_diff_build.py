@@ -32,6 +32,7 @@ class Version_Diff_Build(covscan.CovScanCommand):
         add_no_cov_option(self.parser)
         add_comp_warnings_option(self.parser)
         add_analyzers_option(self.parser)
+        add_profile_option(self.parser)
 
         self.parser.add_option(
             "--base-config",
@@ -149,6 +150,7 @@ local file"
         no_cov = kwargs.pop('no_cov', False)
         warn_level = kwargs.pop('warn_level', '0')
         analyzers = kwargs.pop('analyzers', '')
+        profile = kwargs.pop('profile', None)
 
         if comment:
             options_consumed['comment'] = comment
@@ -256,6 +258,8 @@ is not even one in your user configuration file \
             except RuntimeError as ex:
                 self.parser.error(str(ex))
             options_consumed['analyzers'] = analyzers
+        if profile:
+            options_consumed['profile'] = profile
         if all_checker:
             options_forwarded["all"] = all_checker
         if security:

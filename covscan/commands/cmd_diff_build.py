@@ -41,6 +41,7 @@ if not specified)"
         add_no_cov_option(self.parser)
         add_comp_warnings_option(self.parser)
         add_analyzers_option(self.parser)
+        add_profile_option(self.parser)
 
         self.parser.add_option(
             "-i",
@@ -161,6 +162,7 @@ exist." % self.results_store_file)
         no_cov = kwargs.pop('no_cov', False)
         warn_level = kwargs.pop('warn_level', '0')
         analyzers = kwargs.pop('analyzers', '')
+        profile = kwargs.pop('profile', None)
 
         if len(args) != 1:
             self.parser.error("please specify exactly one SRPM")
@@ -225,6 +227,8 @@ is not even one in your user configuration file \
             except RuntimeError as ex:
                 self.parser.error(str(ex))
             options['analyzers'] = analyzers
+        if profile:
+            options['profile'] = profile
         if all_option:
             options["all"] = all_option
         if security:

@@ -90,7 +90,10 @@ def check_build(nvr, check_additional=False):
 
 
 def check_analyzers(analyzers_chain, profile=None):
-    a_list = re.split('[,:;]', analyzers_chain.strip())
+    if analyzers_chain:
+        a_list = re.split('[,:;]', analyzers_chain.strip())
+    else:
+        a_list = []
     args = None
     if profile:
         profile_analyzers, args = Profile.objects.get_analyzers_and_args_for_profile(profile)

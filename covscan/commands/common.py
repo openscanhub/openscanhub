@@ -81,3 +81,13 @@ def add_analyzers_option(parser):
         help="list of analyzers to use (see command 'list-analyzers'); use \
 comma as a separator: e.g. \"--analyzer=clang,cov-6.6.1\""
     )
+
+
+def add_profile_option(parser):
+    parser.add_option(
+        "-p",
+        "--profile",
+        dest="profile",
+        action="store",
+        help="use predefined scanning profile (for list of profiles see command list-profiles)"
+    )

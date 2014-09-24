@@ -37,7 +37,7 @@ http://$hostname/covscan/xmlrpc"
 
         format = "%-20s %-10s %-25s %-25s"
         columns = ("NAME", "VERSION", "SHORT OPTION", "LONG OPTION")
-        print >> sys.stderr, format % columns
+        print format % columns
         available_analyzers = self.hub.scan.list_analyzers()
         for i in available_analyzers:
             print format % (i["name"], i['version'], i["cli_short_command"],

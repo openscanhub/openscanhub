@@ -40,7 +40,7 @@ def finish_task(request, task_id):
     logger.info("Finishing task %s", task_id)
     task = Task.objects.get(id=task_id)
     base_task = None
-    if task.parent:
+    if task.subtasks():
         base_task = task.subtasks()[0]
     exclude_dirs = AppSettings.settings_get_results_tb_exclude_dirs()
     td = TaskResultsProcessor(task, base_task, exclude_dirs)

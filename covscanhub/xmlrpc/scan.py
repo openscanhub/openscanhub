@@ -8,7 +8,7 @@ from kobo.hub.models import Task
 from kobo.django.xmlrpc.decorators import login_required, admin_required
 
 from covscanhub.errata.scanner import create_diff_task2, ClientScanScheduler, ClientDiffPatchesScanScheduler
-from covscanhub.scan.models import Package, Tag, ClientAnalyzer
+from covscanhub.scan.models import Package, Tag, ClientAnalyzer, Profile
 from covscanhub.errata.service import create_errata_base_scan
 
 
@@ -19,6 +19,7 @@ __all__ = (
     "get_task_info",
     "find_tasks",
     "list_analyzers",
+    "list_profiles",
     "check_analyzers",
 )
 
@@ -132,6 +133,10 @@ def find_tasks(request, query):
 
 def list_analyzers(request):
     return ClientAnalyzer.objects.export_available()
+
+
+def list_profiles(request):
+    return list(Profile.objects.export_available())
 
 
 def check_analyzers(request, analyzers):
