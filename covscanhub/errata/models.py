@@ -24,9 +24,8 @@ class Capability(models.Model):
 
     options = JSONField(default={}, blank=True)
 
-    # TODO: change this to foreign key in package capability!
     caps = models.ManyToManyField(PackageCapability)
-    analysers = models.ManyToManyField(Analyzer)
+    analyzers = models.ManyToManyField(Analyzer)
 
     def __unicode__(self):
         return u"%s (%s)" % (self.name, self.function)
@@ -94,7 +93,7 @@ class ScanningSession(models.Model):
 
     caps = models.ManyToManyField(Capability)
 
-    profile = models.ForeignKey(Profile)
+    profile = models.ForeignKey(Profile, blank=True, null=True)
 
     objects = ScanningSessionBindingManager()
 

@@ -1229,8 +1229,6 @@ class ClientAnalyzer(models.Model):
                                     help_text="analyzer name to put in --tools")
     # args to append, e.g. --use-host-cppcheck
     build_append_args = models.CharField(max_length=256, blank=True, null=True)
-    # default analyzer when there is none specified
-    default = models.BooleanField(default=False)
 
     objects = ClientAnalyzerManager()
 
@@ -1333,11 +1331,7 @@ class Profile(models.Model):
     objects = ProfileManager()
 
     def __unicode__(self):
-        return u"%s: %s" % (self.name, self.scanning_command)
-
-    @property
-    def scanning_command(self):
-        return self.command_template % self.command_arguments
+        return u"%s: %s" % (self.name, self.command_arguments)
 
     @property
     def analyzers(self):

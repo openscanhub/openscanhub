@@ -1,0 +1,196 @@
+[
+{
+  "pk": 1, 
+  "model": "scan.mockconfig", 
+  "fields": {
+    "enabled": true, 
+    "name": "rhel-6-x86_64"
+  }
+},
+{
+  "pk": 2, 
+  "model": "scan.mockconfig", 
+  "fields": {
+    "enabled": true, 
+    "name": "rhel-5-x86_64"
+  }
+},
+{
+  "pk": 3, 
+  "model": "scan.mockconfig", 
+  "fields": {
+    "enabled": true, 
+    "name": "rhel-7-x86_64"
+  }
+},
+{
+  "pk": 5, 
+  "model": "scan.mockconfig", 
+  "fields": {
+    "enabled": true, 
+    "name": "fedora-rawhide-x86_64"
+  }
+},
+{
+  "pk": 1, 
+  "model": "scan.releasemapping", 
+  "fields": {
+    "priority": 1, 
+    "release_tag": "^RHEL-(\\d+).(\\d+)", 
+    "template": "RHEL-%s.%s"
+  }
+},
+{
+  "pk": 2, 
+  "model": "scan.releasemapping", 
+  "fields": {
+    "priority": 2, 
+    "release_tag": "^FAST(\\d+).(\\d+)", 
+    "template": "RHEL-%s.%s"
+  }
+},
+{
+  "pk": 1, 
+  "model": "scan.appsettings", 
+  "fields": {
+    "value": "N", 
+    "key": "SEND_MAIL"
+  }
+},
+{
+  "pk": 2, 
+  "model": "scan.appsettings", 
+  "fields": {
+    "value": "N", 
+    "key": "SEND_BUS_MESSAGE"
+  }
+},
+{
+  "pk": 3, 
+  "model": "scan.appsettings", 
+  "fields": {
+    "value": "Y", 
+    "key": "CHECK_USER_CAN_SUBMIT_SCAN"
+  }
+},
+{
+  "pk": 6, 
+  "model": "scan.appsettings", 
+  "fields": {
+    "value": "cdatetime\ntimedelta\np1\n(I-7\nI0\nI0\ntRp2\n.", 
+    "key": "WAIVER_IS_OVERDUE"
+  }
+},
+{
+  "pk": 7, 
+  "model": "scan.appsettings", 
+  "fields": {
+    "value": "(S'rhel-6.4'\np1\ncdatetime\ntimedelta\np2\n(I-13\nI0\nI0\ntRp3\ntp4\n.", 
+    "key": "WAIVER_IS_OVERDUE_RELSPEC"
+  }
+},
+{
+  "pk": 11, 
+  "model": "scan.appsettings", 
+  "fields": {
+    "value": "{}", 
+    "key": "ANALYZERS_VERSIONS_LAST_CHECKED"
+  }
+},
+{
+  "pk": 12, 
+  "model": "scan.appsettings", 
+  "fields": {
+    "value": "8", 
+    "key": "ANALYZERS_VERSIONS_CACHE_DURATION"
+  }
+},
+{
+  "pk": 13, 
+  "model": "scan.appsettings", 
+  "fields": {
+    "value": "[\"*cov\"]", 
+    "key": "RESULTS_TB_EXCLUDE_DIRS"
+  }
+},
+{
+  "pk": 1, 
+  "model": "scan.clientanalyzer", 
+  "fields": {
+    "build_append_args": "", 
+    "cli_short_command": "-l", 
+    "enabled": true, 
+    "analyzer": 1, 
+    "build_append": "clang", 
+    "version": "distribution", 
+    "cli_long_command": "clang"
+  }
+},
+{
+  "pk": 2, 
+  "model": "scan.clientanalyzer", 
+  "fields": {
+    "build_append_args": "", 
+    "cli_short_command": "", 
+    "enabled": true, 
+    "analyzer": 2, 
+    "build_append": "gcc", 
+    "version": "distribution", 
+    "cli_long_command": "gcc"
+  }
+},
+{
+  "pk": 3, 
+  "model": "scan.clientanalyzer", 
+  "fields": {
+    "build_append_args": "", 
+    "cli_short_command": "-c", 
+    "enabled": true, 
+    "analyzer": 3, 
+    "build_append": "cppcheck", 
+    "version": "dist", 
+    "cli_long_command": "cppcheck"
+  }
+},
+{
+  "pk": 1, 
+  "model": "scan.analyzer", 
+  "fields": {
+    "name": "clang"
+  }
+},
+{
+  "pk": 2, 
+  "model": "scan.analyzer", 
+  "fields": {
+    "name": "gcc"
+  }
+},
+{
+  "pk": 3, 
+  "model": "scan.analyzer", 
+  "fields": {
+    "name": "cppcheck"
+  }
+},
+{
+  "pk": 1, 
+  "model": "scan.profile", 
+  "fields": {
+    "command_arguments": "{\"analyzers\": \"gcc,clang,cppcheck,coverity\", \"koji_bin\": \"brew\", \"csmock_args\": \"--cov-analyze-opts '--security --concurrency'\"}", 
+    "enabled": true, 
+    "name": "errata", 
+    "description": "profile used in errata scans"
+  }
+},
+{
+  "pk": 2, 
+  "model": "scan.profile", 
+  "fields": {
+    "command_arguments": "{\"analyzers\": \"coverity\", \"csmock_args\": \"--security\"}", 
+    "enabled": true, 
+    "name": "default", 
+    "description": "default profile for client scans"
+  }
+}
+]
