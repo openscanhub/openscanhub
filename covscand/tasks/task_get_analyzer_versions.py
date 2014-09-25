@@ -32,7 +32,7 @@ class AnalyzerVersionRetriever(TaskBase):
         # string, comma separated list of analyzers
         analyzers = self.args.pop('analyzers')
         mock_config = self.args.pop('mock_config')
-        su_user = self.hub.worker.get_su_user()
+        su_user = self.args.pop('su_user', None)
         with CsmockRunner() as runner:
             path = runner.no_scan(analyzers, profile=mock_config, su_user=su_user)
 

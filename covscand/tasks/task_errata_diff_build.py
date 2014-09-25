@@ -39,6 +39,7 @@ class ErrataDiffBuild(TaskBase):
         mock_config = self.args.pop("mock_config")
         scanning_session_id = self.args.pop("scanning_session")
         build = self.args.pop("build")
+        su_user = self.args.pop("su_user", None)
 
         self.hub.worker.set_scan_to_scanning(scan_id)
 
@@ -70,7 +71,8 @@ class ErrataDiffBuild(TaskBase):
                                                    build,
                                                    profile=mock_config,
                                                    additional_arguments=add_args,
-                                                   koji_bin=koji_bin)
+                                                   koji_bin=koji_bin,
+                                                   su_user=su_user)
             base_results = os.path.basename(results)
             self.hub.upload_task_log(open(results, "r"),
                                      self.task_id, base_results)

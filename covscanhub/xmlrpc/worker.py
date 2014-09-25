@@ -135,7 +135,8 @@ def ensure_cache(request, mock_config, scanning_session_id):
     """
     if not AnalyzerVersion.objects.is_cache_uptodate(mock_config):
         analyzers = ScanningSession.objects.get_analyzers(scanning_session_id)
-        return prepare_version_retriever(mock_config, analyzers)
+        su_user = AppSettings.setting_get_su_user()
+        return prepare_version_retriever(mock_config, analyzers, su_user)
 
 
 @validate_worker

@@ -1053,6 +1053,13 @@ class AppSettings(models.Model):
             value.upper() == "Y"
 
     @classmethod
+    def setting_get_su_user(cls):
+        """
+        Username for running 'su -' so scans are not run as root
+        """
+        return cls.objects.get(key="SU_USER").value
+
+    @classmethod
     def setting_waiver_is_overdue(cls):
         """Time period when run is marked as not processed -- default value"""
         try:
@@ -1119,36 +1126,6 @@ class AppSettings(models.Model):
         dirs = get_or_none(cls, key="RESULTS_TB_EXCLUDE_DIRS")
         if dirs:
             return json.loads(dirs.value)
-
-    @classmethod
-    def _settings_scanning_command_relspec(cls):
-        """
-        Release specific scanning command
-        The are stored in DB like this:
-            json.dumps({'release__tag': 'command'})
-        """
-        q = cls.objects.filter(key="SCANNING_COMMAND_RELSPEC")
-        r = {}
-        for o in q:
-            r.update(json.loads(str(o.value)))
-        return r
-
-    @classmethod
-    def settings_default_scanning_command(cls):
-        """
-        Return default scanning command
-        """
-        return cls.objects.get(key="DEFAULT_SCANNING_COMMAND").value
-
-    @classmethod
-    def settings_scanning_command(cls, short_tag):
-        """
-        Return release specific scanning command
-        """
-        try:
-            return cls._settings_scanning_command_relspec()[short_tag]
-        except KeyError:
-            return cls.settings_default_scanning_command()
 
 
 class TaskExtension(models.Model):

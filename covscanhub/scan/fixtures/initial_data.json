@@ -112,6 +112,13 @@
     "value": "[\"*cov\"]", 
     "key": "RESULTS_TB_EXCLUDE_DIRS"
   }
+}{
+  "pk": 14,
+  "model": "scan.appsettings",
+  "fields": {
+    "value": "coverity",
+    "key": "SU_USER"
+  }
 },
 {
   "pk": 1, 

@@ -44,6 +44,7 @@ class VersionDiffBuild(TaskBase):
         csmock_args = self.args.pop("csmock_args", None)
         analyzers = self.args.pop('analyzers')
         base_task_args = self.args.pop('base_task_args', None)
+        su_user = self.args.pop('su_user', None)
 
         # scan base
         if base_task_args:
@@ -58,7 +59,8 @@ class VersionDiffBuild(TaskBase):
                     build['nvr'],
                     profile=mock_config,
                     additional_arguments=csmock_args,
-                    koji_bin=build['koji_bin'])
+                    koji_bin=build['koji_bin'],
+                    su_user=su_user)
             elif srpm_name:
                 task_url = self.hub.client.task_url(self.task_id)
                 url = urlparse.urljoin(task_url, 'log/%s?format=raw' % srpm_name)
@@ -67,7 +69,8 @@ class VersionDiffBuild(TaskBase):
                     srpm_name,
                     url,
                     profile=mock_config,
-                    additional_arguments=csmock_args)
+                    additional_arguments=csmock_args,
+                    su_user=su_user)
             else:
                 print >> sys.stderr, "No srpm specified"
                 self.fail()

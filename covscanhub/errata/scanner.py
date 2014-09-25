@@ -22,7 +22,7 @@ from covscanhub.service.processing import task_has_results
 from utils import get_or_fail
 from check import check_nvr, check_obsolete_scan, check_build, check_package_is_blocked
 from covscanhub.scan.models import Package, Tag, Scan, SCAN_TYPES, ScanBinding, ETMapping, REQUEST_STATES, MockConfig, \
-    ClientAnalyzer, TaskExtension
+    ClientAnalyzer, TaskExtension, AppSettings
 
 from kobo.hub.models import Task, TASK_STATES
 
@@ -67,6 +67,7 @@ class AbstractScheduler(object):
         self.task_args['args'] = {}
         self.task_args['args']['build'] = self.nvr
         self.task_args['args']['scanning_session'] = self.scanning_session.id
+        self.task_args['args']['su_user'] = AppSettings.setting_get_su_user()
         self.scan_args['nvr'] = self.nvr
         self.scan_args['username'] = self.package_owner
 
@@ -366,6 +367,7 @@ class ClientScanScheduler(AbstractClientScanScheduler):
         analyzer_opts = ClientAnalyzer.objects.get_opts(self.analyzer_models)
         self.task_args['args']['analyzers'] = analyzer_opts['analyzers']
         self.task_args['args']['mock_config'] = self.mock_config
+        self.task_args['args']['su_user'] = AppSettings.setting_get_su_user()
         self.task_args['args']['csmock_args'] = self.prepare_csmock_args(additional_csmock_args=analyzer_opts['args'])
 
     def spawn(self):
@@ -476,6 +478,7 @@ class ClientDiffScanScheduler(AbstractClientScanScheduler):
         self.task_args['args']['analyzers'] = analyzer_opts['analyzers']
         self.task_args['args']['mock_config'] = self.target_mock_config
         self.task_args['args']['csmock_args'] = self.prepare_csmock_args(additional_csmock_args=analyzer_opts['args'])
+        self.task_args['args']['su_user'] = AppSettings.setting_get_su_user()
         # base task args has to be last!
         self.task_args['args']['base_task_args'] = self.prepare_basetask_args()
 
@@ -485,6 +488,7 @@ class ClientDiffScanScheduler(AbstractClientScanScheduler):
             'mock_config': self.base_mock_config,
             'analyzers': self.task_args['args']['analyzers'],
             'csmock_args': self.task_args['args']['csmock_args'],
+            'su_user': self.task_args['args']['su_user'],
         }
         if self.base_build_nvr:
             args['build'] = {
