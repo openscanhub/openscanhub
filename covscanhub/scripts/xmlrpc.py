@@ -103,7 +103,7 @@ def connect(rpc_url):
     #    kobo.xmlrpc.SafeCookieTransport)
     #TransportClass = kobo.xmlrpc.retry_request_decorator(
     #    kobo.xmlrpc.CookieTransport)
-    transport = kobo.xmlrpc.CookieTransport()
+    transport = kobo.xmlrpc.SafeCookieTransport()
 
     client = xmlrpclib.ServerProxy(rpc_url, allow_none=True,
                                    transport=transport)
@@ -302,7 +302,7 @@ if __name__ == '__main__':
             rpc_url = "http://cov01.lab.eng.brq.redhat.com/covscanhub/xmlrpc/kerbauth/"
         #rpc_url = "https://cov01.lab.eng.brq.redhat.com/covscan/xmlrpc/client/"
     elif options.hub_staging:
-        rpc_url = "http://uqtm.lab.eng.brq.redhat.com/covscan/xmlrpc/client/"
+        rpc_url = "https://uqtm.lab.eng.brq.redhat.com/covscanhub/xmlrpc/client/"
     elif options.hub:
         rpc_url = options.hub
 

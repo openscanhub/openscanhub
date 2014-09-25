@@ -31,12 +31,6 @@ yum reinstall -y rpms/${HUB_RPM_NAME} rpms/${WORKER_RPM_NAME}
 service httpd restart || :
 service covscand restart || :
 END
-#    rsync ${WORKER_RPM_PATH} ${COV02_TARGET}:rpms/
-#    ssh ${COV02_TARGET} <<END
-#yum update -y rpms/${WORKER_RPM_NAME}
-#yum reinstall -y rpms/${WORKER_RPM_NAME}
-#service covscand restart || :
-#END
 }
 
 deploy_prod(){

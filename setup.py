@@ -17,7 +17,7 @@ project_author_email = "ttomecek@redhat.com"
 project_description  = "Coverity scan scheduler"
 package_name         = "%s" % project_name
 package_module_name  = project_name
-package_version      = [0, 5, 2, "final", ""]
+package_version      = [0, 6, 0, "a", ""]
 
 
 script_files = []
@@ -54,6 +54,8 @@ package_data = {
     "covscanhub": get_files("covscanhub", "static") + \
             get_files("covscanhub", "templates") + \
             get_files("covscanhub", "media") + \
+            get_files("covscanhub", "scan/fixtures") + \
+            get_files("covscanhub", "errata/fixtures") + \
             get_files("covscanhub", "fixtures") + \
             ["covscanhub.wsgi",
              'scripts/checker_groups.txt']
