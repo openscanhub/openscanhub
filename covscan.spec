@@ -43,6 +43,7 @@ Group: Applications/Engineering
 # Requires: covscan-client = %{version}-%{release}
 Requires: kobo-worker >= 0.3.4
 Requires: kobo-rpmlib
+Requires: kobo-client
 Requires: cppcheck
 %description worker-%{hub_instance}
 CovScan worker
