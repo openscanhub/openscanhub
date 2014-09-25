@@ -52,7 +52,7 @@
             {% if event.line == 0 and not event.file_name and event.event == '#' %}
                 <div class="code">{{ event.event }} {{ event.message }}</div>
             {% else %}
-                {{ forloop.counter }}. {{ event.file_name }}:{{ event|line_and_column }}:{{ event.event }} &#8211; {{ event.message }}
+                {{ forloop.counter }}. {{ event.file_name }}:{{ event|line_and_column }}: {{ event.event }}: {{ event.message }}
             {% endif %}
             </div>
     {% endfor %}
