@@ -81,9 +81,13 @@ def finish_analyzers_version_retrieval(request, task_id, filename):
     task_dir = Task.get_task_dir(task_id)
     tb_path = os.path.join(task_dir, filename)
     csmock = unpack_and_return_api(tb_path, task_dir)
-    analyzers = csmock.get_analyzers()
-    mock_config = task.args['mock_config']
-    AnalyzerVersion.objects.update_analyzers_versions(analyzers, mock_config)
+    if csmock:
+        analyzers = csmock.get_analyzers()
+        mock_config = task.args['mock_config']
+        AnalyzerVersion.objects.update_analyzers_versions(analyzers, mock_config)
+    else:
+        logger.error("Can't process results of task %s", task)
+        task.fail()
 
 
 @validate_worker

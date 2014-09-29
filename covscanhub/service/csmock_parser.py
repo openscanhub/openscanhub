@@ -77,6 +77,8 @@ class ResultsExtractor(object):
     def json_path(self):
         if self._json_path is None:
             self.process()
+        if not os.path.exists(self._json_path):
+            raise RuntimeError('json results do not exist: %s' % self._json_path)
         return self._json_path
 
     def extract_tarball(self, exclude_patterns=None):
@@ -107,7 +109,11 @@ class ResultsExtractor(object):
             self._json_path = os.path.join(self.path, RESULT_FILE_JSON)
         else:
             self.extract_tarball()
-            self._json_path = glob.glob(os.path.join(self.output_dir, '*', RESULT_FILE_JSON))[0]
+            try:
+                self._json_path = glob.glob(os.path.join(self.output_dir, '*', RESULT_FILE_JSON))[0]
+            except IndexError:
+                logger.error("no results (%s) in dir %s", RESULT_FILE_JSON, self.output_dir)
+                self._json_path = ''
 
 
 class CsmockAPI(object):
@@ -295,4 +301,8 @@ def unpack_and_return_api(tb_path, in_dir=""):
     """ convenience shortcut """
     in_dir = in_dir or os.path.dirname(tb_path)
     rex = ResultsExtractor(tb_path, output_dir=in_dir, unpack_in_temp=False)
-    return CsmockAPI(rex.json_path)
+    try:
+        return CsmockAPI(rex.json_path)
+    except RuntimeError as ex:
+        logger.error('Error while creating csmock api: %s', ex)
+        return None
