@@ -948,8 +948,13 @@ class ScanBinding(models.Model):
 
     def is_actual(self):
         """ is scan actual? ~ scanned with up to date analyzers """
-        analyzers = AnalyzerVersion.objects.get_analyzer_versions_for_mockprofile(self.scan.tag.mock.name)
-        return self.analyzers_match(analyzers)
+        try:
+            mock_profile = self.scan.tag.mock.name
+        except AttributeError:
+            return False
+        else:
+            analyzers = AnalyzerVersion.objects.get_analyzer_versions_for_mockprofile(mock_profile)
+            return self.analyzers_match(analyzers)
 
 
 class ReleaseMapping(models.Model):
