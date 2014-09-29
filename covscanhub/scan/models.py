@@ -1057,7 +1057,10 @@ class AppSettings(models.Model):
         """
         Username for running 'su -' so scans are not run as root
         """
-        return cls.objects.get(key="SU_USER").value
+        try:
+            return cls.objects.get(key="SU_USER").value
+        except ObjectDoesNotExist:
+            return None
 
     @classmethod
     def setting_waiver_is_overdue(cls):

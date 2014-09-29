@@ -89,7 +89,7 @@ def finish_analyzers_version_retrieval(request, task_id, filename):
 @validate_worker
 @public
 def get_su_user(request):
-    return None
+    return AppSettings.setting_get_su_user()
 
 
 @validate_worker
