@@ -127,7 +127,8 @@ class ScanAdmin(admin.ModelAdmin):
         }, context_instance=RequestContext(request))
 
     def cancel_scan(self, request, scan_id):
-        scan = h_cancel_scan(scan_id)
+        scan_binding = ScanBinding.objects.by_scan_id(scan_id)
+        scan = h_cancel_scan(scan_binding)
         return render_to_response('admin/scan/scan/state_change.html', {
             'title': 'Cancelation of scan: %s' % scan,
             'object': scan,
