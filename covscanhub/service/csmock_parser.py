@@ -202,7 +202,7 @@ class CsmockRunner(object):
 
         command = "csmock " + args
 
-        subprocess.check_call(command, shell=True)
+        subprocess.check_call(command, shell=True, stdout=subprocess.STDOUT, stderr=subprocess.STDOUT)
 
     def do(self, args, output_path=None, su_user=None):
         """ we are expecting that csmock will produce and output """
