@@ -26,6 +26,7 @@ csmock python api
 """
 import glob
 import os
+import sys
 import json
 import pipes
 import shutil
@@ -198,19 +199,7 @@ class CsmockRunner(object):
                 # could be erased with sudo rm -rf self.tmpdir
                 pass
 
-    def _run(self, args):
-        """
-        run csmock with provided arguments
-        """
-        if not args:
-            logger.error("no args for csmock specified!")
-            raise RuntimeError("no args for csmock specified!")
-
-        command = "csmock " + args
-
-        subprocess.check_call(command, shell=True, stdout=subprocess.STDOUT, stderr=subprocess.STDOUT)
-
-    def do(self, args, output_path=None, su_user=None, use_sudo=False):
+    def do(self, args, output_path=None, su_user=None, use_sudo=False, **kwargs):
         """ we are expecting that csmock will produce and output """
         if not args:
             logger.error("no args for csmock specified!")
@@ -235,7 +224,7 @@ class CsmockRunner(object):
             command = 'su - %s -c "%s"' % (pipes.quote(su_user), command)
         if use_sudo:
             command = 'sudo ' + command
-        retcode = subprocess.call(command, shell=True)
+        retcode = subprocess.call(command, shell=True, stdout=sys.stdout)
         if output_path:
             return output_path, retcode
         if self.tmpdir:
@@ -258,7 +247,7 @@ class CsmockRunner(object):
         if additional_arguments:
             cmd += ' ' + additional_arguments
         cmd += ' ' + srpm_path
-        return self.do(cmd, su_user=su_user)
+        return self.do(cmd, su_user=su_user, use_sudo=use_sudo, **kwargs)
 
     def srpm_download_analyze(self, analyzers, srpm_name, srpm_url, profile=None,
                               su_user=None, additional_arguments=None, use_sudo=False, **kwargs):
@@ -297,7 +286,7 @@ class CsmockRunner(object):
         cmd += ' --no-scan'
         if additional_arguments:
             cmd += ' ' + additional_arguments
-        self.do(cmd, output_path=output_path, su_user=su_user, use_sudo=use_sudo)
+        self.do(cmd, output_path=output_path, su_user=su_user, use_sudo=use_sudo, **kwargs)
         return output_path
 
 
