@@ -28,12 +28,14 @@ MANAGERS = ADMINS
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': '/var/covscanhub/db.sqlite',
-        'USER': '',
-        'PASSWORD': '',
-        'HOST': '',
-        'PORT': '',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        #'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': 'pg_user_db',
+        #'NAME': '/var/covscanhub/db.sqlite',
+        'USER': 'pg_user',
+        'PASSWORD': 'ropucha',
+        'HOST': 'localhost',
+        'PORT': '5432',
         'ATOMIC_REQUESTS': True
     }
 }
