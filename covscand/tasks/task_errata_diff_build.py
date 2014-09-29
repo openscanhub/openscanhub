@@ -57,7 +57,20 @@ class ErrataDiffBuild(TaskBase):
             self.hub.worker.set_scan_to_basescanning(scan_id)
             self.hub.worker.assign_task(subtask_id)
             self.hub.worker.create_sb(subtask_id)
-            self.wait()
+            try:
+                self.wait()
+            except ValueError:
+                # there is a race condition here:
+                #   File "/usr/lib/python2.6/site-packages/covscand/tasks/task_errata_diff_build.py", line 60, in run
+                #     self.wait()
+                #   File "/usr/lib/python2.6/site-packages/kobo/worker/task.py", line 153, in wait
+                #     self._subtask_list.remove(i)
+                # ValueError: list.remove(x): x not in list
+                #
+                # https://uqtm.lab.eng.brq.redhat.com/covscanhub/task/749/log/traceback.log
+                #
+                # FIXME: workaround it here for now
+                pass
             self.hub.worker.set_scan_to_scanning(scan_id)
 
         self.hub.worker.set_scan_to_scanning(scan_id)
