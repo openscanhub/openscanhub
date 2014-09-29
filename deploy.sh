@@ -29,7 +29,7 @@ deploy_staging(){
 yum update -y rpms/${HUB_RPM_NAME} rpms/${WORKER_RPM_NAME}
 yum reinstall -y rpms/${HUB_RPM_NAME} rpms/${WORKER_RPM_NAME}
 service httpd restart || :
-service covscand restart || :
+# service covscand restart || :
 END
 }
 

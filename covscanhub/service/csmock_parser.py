@@ -69,9 +69,12 @@ class ResultsExtractor(object):
         path is either path to tarball or to a dir with results
         """
         self.path = path
-        self.output_dir = output_dir
-        if unpack_in_temp:
+        if output_dir:
+            self.output_dir = output_dir
+        elif unpack_in_temp:
             self.output_dir = tempfile.mkdtemp(prefix='csmock-')
+        else:
+            self.output_dir = os.path.dirname(os.path.expanduser(path))
         self._json_path = None
 
     @property
@@ -230,7 +233,13 @@ class CsmockRunner(object):
         if self.tmpdir:
             return glob.glob(os.path.join(self.tmpdir, '*.tar.xz'))[0], retcode
         else:
-            return glob.glob('./*.tar.xz')[0], retcode
+            glob_pattern = './*.tar.xz'
+            try:
+                return glob.glob(glob_pattern)[0], retcode
+            except IndexError:
+                # user could call --help, that's why this is not an error
+                logger.info("No tarballs in '%s'", glob_pattern)
+                return None, retcode
 
     def analyze(self, analyzers, srpm_path, profile=None, su_user=None, additional_arguments=None,
                 use_sudo=False, **kwargs):
@@ -286,8 +295,7 @@ class CsmockRunner(object):
         cmd += ' --no-scan'
         if additional_arguments:
             cmd += ' ' + additional_arguments
-        self.do(cmd, output_path=output_path, su_user=su_user, use_sudo=use_sudo, **kwargs)
-        return output_path
+        return self.do(cmd, output_path=output_path, su_user=su_user, use_sudo=use_sudo, **kwargs)
 
 
 def unpack_and_return_api(tb_path, in_dir=""):

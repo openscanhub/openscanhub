@@ -104,46 +104,45 @@ import pwd
 import glob
 import pytest
 
-from covscanhub.service.csmock_parser import CsmockRunner, CsmockAPI
+from covscanhub.service.csmock_parser import CsmockRunner, CsmockAPI, ResultsExtractor
 
-SRPM = os.path.join(os.getcwd(), 'isync-1.1.1-3.fc22.src.rpm')
-
-@pytest.fixture
-def simple_scan():
-    runner = CsmockRunner(create_tmpdir=True)
-    return runner.analyze('cppcheck,clang', SRPM)
+# SRPM = os.path.join(os.getcwd(), 'isync-1.1.1-3.fc22.src.rpm')
+#
+# @pytest.fixture
+# def simple_scan():
+#     runner = CsmockRunner(create_tmpdir=True)
+#     return runner.analyze('cppcheck,clang', SRPM)
 
 
 class TestCsmockAPI(object):
     """ intergration tests for csmock api """
 
     def test_run(self):
-        with CsmockRunner() as runner:
-            runner._run('--help')
+        runner = CsmockRunner()
+        runner.do('--help')
 
     def test_get_analyzers(self):
         with CsmockRunner() as runner:
-            tb_path = runner.no_scan('cppcheck,clang',
-                                     profile='fedora-rawhide-x86_64')
-            api = CsmockAPI(tb_path)
+            tb_path, err_code = runner.no_scan('cppcheck,clang',
+                                               profile='fedora-rawhide-x86_64')
+            api = CsmockAPI(ResultsExtractor(tb_path, output_dir=runner.tmpdir, unpack_in_temp=False).json_path)
             analyzers = api.get_analyzers()
             print analyzers
         assert isinstance(analyzers, list)
-
-    def test_get_defects(self, simple_scan):
-        api = CsmockAPI(simple_scan)
-        defects = api.get_defects()
-        assert isinstance(defects, list)
 
     def test_do_with_su(self):
         with CsmockRunner() as runner:
             user = 'asd'
             path = os.path.join(runner.tmpdir, 'output.tar.xz')
-            output_path = runner.do('-t clang,cppcheck --no-scan', output_path=path, su_user=user, use_sudo=True)
+            output_path, err_code = runner.do('-t clang,cppcheck --no-scan',
+                                              output_path=path, su_user=user, use_sudo=True)
             assert pwd.getpwuid(os.stat(output_path).st_uid).pw_name == user
 
     def test_koji_analyze(self):
         with CsmockRunner() as runner:
             nvr = 'notmuch-0.18.1-4.fc21'
-            runner.koji_analyze('clang,cppcheck', nvr, profile='fedora-21-x86_64')
-            assert os.path.exists(os.path.join(runner.tmpdir, nvr + '.tar.xz'))
+            tb_path, err_code = runner.koji_analyze('clang,cppcheck', nvr, profile='fedora-21-x86_64')
+            assert os.path.exists(tb_path)
+            api = CsmockAPI(ResultsExtractor(tb_path, output_dir=runner.tmpdir, unpack_in_temp=False).json_path)
+            defects = api.get_defects()
+            assert isinstance(defects, list)
