@@ -77,11 +77,10 @@ class VersionDiffBuild(TaskBase):
             base_results = os.path.basename(results)
             self.hub.upload_task_log(open(results, "r"),
                                      self.task_id, base_results)
+        self.hub.worker.finish_task(self.task_id)
         if retcode > 0:
             print >> sys.stderr, "Scanning have not completed successfully (%d)" % retcode
             self.fail()
-
-        self.hub.worker.finish_task(self.task_id)
 
     @classmethod
     def cleanup(cls, hub, conf, task_info):
