@@ -227,14 +227,18 @@ class CsmockRunner(object):
                                            'chmod', 'go+rx', self.tmpdir])
                 else:
                     inner_cmd = 'chown %s:%s %s' % (su_user, su_user, self.tmpdir)
-                    subprocess.check_call(['su', '-c', "%s" % pipes.quote(inner_cmd)])
+                    try:
+                        subprocess.check_call(inner_cmd)
+                    except subprocess.CalledProcessError:
+                        subprocess.check_call(['su', '-',  '-c', "%s" % pipes.quote(inner_cmd)])
                     inner_cmd2 = 'chmod go+rx %s' % (self.tmpdir, )
-                    subprocess.check_call(['su', '-', su_user, '-c', "%s" % pipes.quote(inner_cmd2)])
+                    try:
+                        subprocess.check_call(inner_cmd2)
+                    except subprocess.CalledProcessError:
+                        subprocess.check_call(['su', '-', su_user, '-c', "%s" % pipes.quote(inner_cmd2)])
             command = 'su - %s -c "%s"' % (pipes.quote(su_user), command)
         if use_sudo:
             command = 'sudo ' + command
-        print 'sys.stdout=', sys.stdout
-        print 'sys.stderr=', sys.stderr
         retcode = subprocess.call(command, shell=True, stdout=subprocess.STDOUT)
         if output_path:
             return output_path, retcode
