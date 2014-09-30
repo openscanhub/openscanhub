@@ -17,6 +17,8 @@ FIXED_TXT_FILE = 'fixed.err'
 DEFAULT_CHECKER_GROUP = "Unsorted"
 
 SCAN_RESULTS_FILENAME = 'scan-results.js'
+SCAN_RESULTS_SUMMARY = 'scan-results-summary.txt'
+
 CSDIFF_ARGS = '-jz'
 
 DEFECTS_IN_PATCHES_FILE = "defects-in-patches.js"
