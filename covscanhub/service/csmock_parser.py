@@ -35,6 +35,7 @@ import tempfile
 import logging
 import urllib
 
+from kobo.shortcuts import run
 
 __all__ = ('CsmockAPI', 'CsmockRunner', 'ResultsExtractor')
 
@@ -239,7 +240,8 @@ class CsmockRunner(object):
             command = 'su - %s -c "%s"' % (pipes.quote(su_user), command)
         if use_sudo:
             command = 'sudo ' + command
-        retcode = subprocess.call(command, shell=True, stdout=subprocess.STDOUT)
+        #retcode = subprocess.call(command, shell=True, stdout=subprocess.PIPE)
+        _, retcode = run(command, stdout=True, can_fail=True, return_stdout=False, buffer_size=2, show_cmd=True)
         if output_path:
             return output_path, retcode
         if self.tmpdir:
