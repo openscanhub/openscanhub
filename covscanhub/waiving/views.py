@@ -20,7 +20,7 @@ from covscanhub.scan.service import get_latest_sb_by_package
 from covscanhub.scan.xmlrpc_helper import scan_notification_email
 from covscanhub.scan.notify import send_notif_new_comment
 
-from covscanhub.service.processing import task_has_results
+from covscanhub.service.processing import task_has_results, task_is_diffed
 
 from covscanhub.other.constants import *
 
@@ -153,6 +153,8 @@ def add_logs_to_context(sb):
 
     if task_has_results(sb.task):
         log_prefix = os.path.join(sb.scan.nvr, 'run1', 'results')
+    elif task_is_diffed(sb.task):
+        log_prefix = os.path.join(sb.scan.nvr, 'scan-results')
     else:
         log_prefix = os.path.join(sb.scan.nvr, 'run1', sb.scan.nvr)
 
