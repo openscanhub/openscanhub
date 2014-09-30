@@ -141,7 +141,7 @@ class TestCsmockAPI(object):
     def test_koji_analyze(self):
         with CsmockRunner() as runner:
             nvr = 'notmuch-0.18.1-4.fc21'
-            tb_path, err_code = runner.koji_analyze('clang,cppcheck', nvr, profile='fedora-21-x86_64')
+            tb_path, err_code = runner.koji_analyze('clang,cppcheck', nvr, profile='fedora-rawhide-x86_64')
             assert os.path.exists(tb_path)
             api = CsmockAPI(ResultsExtractor(tb_path, output_dir=runner.tmpdir, unpack_in_temp=False).json_path)
             defects = api.get_defects()
