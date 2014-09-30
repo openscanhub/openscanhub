@@ -63,10 +63,11 @@ def generate_stats(task, diff_task=False, with_defects_in_patches=False):
             if label_name:
                 result_list.append(label_name)
                 result_list.append('')
-            result_list += ["%s: %s%d" % (checker, diff_sign, count) for checker, count in defects_dict.items()]
+            sorted_list = sorted(defects_dict.items(), key=lambda x: x[0])
+            result_list += ["%s: %s%d" % (checker, diff_sign, count) for checker, count in sorted_list]
             result_list.append('')
         return result_list
-    defects_json = load_defects(task.id, diff_task, with_defects_in_patches)
+    defects_json = load_defects(task.id, diff_task)
     result = []
     if diff_task:
         added = get_defect_stats(defects_json['added'])
@@ -74,7 +75,7 @@ def generate_stats(task, diff_task=False, with_defects_in_patches=False):
         display_defects(result, "Added (+), Fixed (-)", added, '+')
         display_defects(result, "", fixed, '-')
     elif with_defects_in_patches:
-        defects = get_defect_stats(defects_json['defects_in_patches'])
+        defects = get_defect_stats(defects_json['defects'])
         display_defects(result, 'Defects in patches', defects)
     else:
         defects = get_defect_stats(defects_json['defects'])
@@ -89,14 +90,16 @@ def send_task_notification(request, task_id):
     if task.parent:
         return
     state = TASK_STATES.get_value(task.state)
-    recipient = get_recipient(task.owner)
+    recipient = "covscan-auto@redhat.com"
+    if AppSettings.setting_send_mail():
+        recipient = get_recipient(task.owner)
     hostname = socket.gethostname()
     task_url = kobo.hub.xmlrpc.client.task_url(request, task_id)
 
     try:
-        nvr = task.args['brew_build']
-        source = "Brew Build"
-        package = task.args['brew_build']
+        nvr = task.args['build']
+        source = "Build"
+        package = task.args['build']
     except KeyError:
         nvr = task.args['srpm_name'][:-8]
         source = "SRPM"
@@ -108,6 +111,8 @@ def send_task_notification(request, task_id):
         stats = generate_stats(task, diff_task=False, with_defects_in_patches=True)
     elif task.method == 'VersionDiffBuild':
         stats = generate_stats(task, diff_task=True, with_defects_in_patches=False)
+    else:
+        return
 
     message = [
         "Hostname: %s" % hostname,
@@ -291,7 +296,7 @@ def send_notif_new_comment(request, scan, wl):
     if AppSettings.setting_send_mail():
         recipient = get_recipient(scan.username)
     else:
-        recipient = "ttomecek@redhat.com"
+        recipient = "covscan-auto@redhat.com"
 
     logger.info('Notifying %s about new comment in %s', recipient, scan.nvr)
 

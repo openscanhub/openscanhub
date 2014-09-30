@@ -31,6 +31,7 @@ logger = logging.getLogger(__name__)
 @validate_worker
 @public
 def email_task_notification(request, task_id):
+    logger.debug('email_task_notification for %s', task_id)
     return send_task_notification(request, task_id)
 
 
