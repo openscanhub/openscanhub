@@ -220,14 +220,22 @@ class CsmockRunner(object):
 
         if su_user:
             if self.our_temp_dir:
-                subprocess.check_call(['sudo', '--',
-                                       'chown', '%s:%s' % (su_user, su_user), self.tmpdir])
-                subprocess.check_call(['sudo', '-u', pipes.quote(su_user), '--',
-                                       'chmod', 'go+rx', self.tmpdir])
+                if use_sudo:
+                    subprocess.check_call(['sudo', '--',
+                                           'chown', '%s:%s' % (su_user, su_user), self.tmpdir])
+                    subprocess.check_call(['sudo', '-u', pipes.quote(su_user), '--',
+                                           'chmod', 'go+rx', self.tmpdir])
+                else:
+                    inner_cmd = 'chown %s:%s %s' % (su_user, su_user, self.tmpdir)
+                    subprocess.check_call(['su', '-c', "%s" % pipes.quote(inner_cmd)])
+                    inner_cmd2 = 'chmod go+rx %s' % (self.tmpdir, )
+                    subprocess.check_call(['su', '-', su_user, '-c', "%s" % pipes.quote(inner_cmd2)])
             command = 'su - %s -c "%s"' % (pipes.quote(su_user), command)
         if use_sudo:
             command = 'sudo ' + command
-        retcode = subprocess.call(command, shell=True, stdout=sys.stdout)
+        print 'sys.stdout=', sys.stdout
+        print 'sys.stderr=', sys.stderr
+        retcode = subprocess.call(command, shell=True, stdout=subprocess.STDOUT)
         if output_path:
             return output_path, retcode
         if self.tmpdir:

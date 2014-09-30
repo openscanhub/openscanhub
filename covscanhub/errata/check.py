@@ -91,7 +91,7 @@ def check_build(nvr, check_additional=False):
 
 def check_analyzers(analyzers_chain):
     if analyzers_chain:
-        a_list = re.split('[,:;]', analyzers_chain.strip())
+        a_list = ClientAnalyzer.chain_to_list(analyzers_chain)
     else:
         a_list = []
     logger.debug("Analyzers specified by client: %s", a_list)

@@ -272,7 +272,7 @@ class ClassicScheduler(AbstractTargetScheduler):
 
 
 class AbstractClientScanScheduler(object):
-    def prepare_csmock_args(self, additional_csmock_args=None):
+    def prepare_csmock_args(self, *additional_csmock_args):
         """ additional_csmock_args are additional arguments as string """
         def add_if(x, collection):
             if x:
@@ -290,9 +290,9 @@ class AbstractClientScanScheduler(object):
         cov_opts = self.options.get('args', [])
         csmock_opts = []
         add_args = []
-        add_if(additional_csmock_args, add_args)
+        for a in additional_csmock_args:
+            add_if(a, add_args)
         add_if(self.additional_csmock_args, add_args)
-        add_if(self.additional_csmock_args_profile, add_args)
         for opt in self.options:
             if opt in cov_args:
                 cov_opts.append(cov_args[opt])
@@ -369,10 +369,9 @@ class ClientScanScheduler(AbstractClientScanScheduler):
         analyzer_opts = ClientAnalyzer.objects.get_opts(self.analyzer_models)
         analyzers_set = set(analyzer_opts['analyzers'] + self.profile_analyzers)
         analyzer_chain = ','.join(analyzers_set)
-        analyzer_opts_set = set(analyzer_opts['args'] + self.profile_args)
         self.task_args['args']['analyzers'] = analyzer_chain
         self.task_args['args']['mock_config'] = self.mock_config
-        self.task_args['args']['csmock_args'] = self.prepare_csmock_args(additional_csmock_args=analyzer_opts_set)
+        self.task_args['args']['csmock_args'] = self.prepare_csmock_args(analyzer_opts['args'], self.profile_args)
         self.task_args['args']['su_user'] = AppSettings.setting_get_su_user()
 
     def spawn(self):
@@ -484,10 +483,9 @@ class ClientDiffScanScheduler(AbstractClientScanScheduler):
         analyzer_opts = ClientAnalyzer.objects.get_opts(self.analyzer_models)
         analyzers_set = set(analyzer_opts['analyzers'] + self.profile_analyzers)
         analyzer_chain = ','.join(analyzers_set)
-        analyzer_opts_set = set(analyzer_opts['args'] + self.profile_args)
         self.task_args['args']['analyzers'] = analyzer_chain
         self.task_args['args']['mock_config'] = self.target_mock_config
-        self.task_args['args']['csmock_args'] = self.prepare_csmock_args(additional_csmock_args=analyzer_opts_set)
+        self.task_args['args']['csmock_args'] = self.prepare_csmock_args(analyzer_opts['args'], self.profile_args)
         self.task_args['args']['su_user'] = AppSettings.setting_get_su_user()
         # base task args has to be last!
         self.task_args['args']['base_task_args'] = self.prepare_basetask_args()

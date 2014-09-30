@@ -47,7 +47,11 @@ def finish_task(request, task_id):
     td = TaskResultsProcessor(task, base_task, exclude_dirs)
     td.unpack_results()
     if base_task:
-        return td.generate_diffs()
+        try:
+            return td.generate_diffs()
+        except RuntimeError as ex:
+            logger.error("Can't diff tasks %s %s: %s", base_task, task, ex)
+            task.fail()
 
 
 @validate_worker

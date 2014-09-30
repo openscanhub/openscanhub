@@ -42,6 +42,14 @@ class TaskResultPaths(object):
     def get_txt_fixed(self):
         return os.path.join(self.task_dir, FIXED_TXT_FILE)
 
+    def get_json_defects_in_patches(self):
+        g = glob(os.path.join(self.task_dir, '*', DEFECTS_IN_PATCHES_FILE))
+        if len(g) == 1:
+            return g[0]
+        else:
+            logger.warning("defects in patches file not found: '%s', task %s", g, self.task)
+            raise RuntimeError('defects in patches file not found: "%s"' % g)
+
     def get_json_results(self):
         g = glob(os.path.join(self.task_dir, '*', SCAN_RESULTS_FILENAME))
         if len(g) == 1:
@@ -49,6 +57,14 @@ class TaskResultPaths(object):
         else:
             logger.warning("json results not found: '%s', task %s", g, self.task)
             raise RuntimeError('json results not found: "%s"' % g)
+
+    def get_txt_summary(self):
+        g = glob(os.path.join(self.task_dir, '*', SCAN_RESULTS_SUMMARY))
+        if len(g) == 1:
+            return g[0]
+        else:
+            logger.warning("result's summary not found: '%s', task %s", g, self.task)
+            raise RuntimeError("result's summary not found: '%s'" % g)
 
     def get_tarball_path(self):
         glob_paths = glob(os.path.join(self.task_dir, '*.tar.xz'))

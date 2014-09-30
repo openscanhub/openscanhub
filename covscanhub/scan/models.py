@@ -1177,11 +1177,11 @@ class ClientAnalyzerMixin(object):
         get_opts([<ClientAnalyzer>, <...>, ...])
          -> {'analyzers': 'gcc,cppcheck,...', 'args': '-a -b']}
         """
-        analyzer_chain = analyzers.values_list('build_append', flat=True)
-        args = analyzers.values_list('build_append_args', flat=True)
+        analyzer_list = list(analyzers.values_list('build_append', flat=True))
+        args_list = list(analyzers.values_list('build_append_args', flat=True))
         response = {
-            'analyzers': analyzer_chain,
-            'args': args,
+            'analyzers': analyzer_list,
+            'args': args_list,
         }
         return response
 
@@ -1216,6 +1216,10 @@ class ClientAnalyzer(models.Model):
 
     def __unicode__(self):
         return u"%s %s" % (self.analyzer, self.version)
+
+    @classmethod
+    def chain_to_list(cls, chain):
+        return re.split(r'[;,:]', chain.strip())
 
 
 class Analyzer(models.Model):
@@ -1284,14 +1288,16 @@ class AnalyzerVersion(models.Model):
 
 class ProfileManager(models.Manager):
     def get_analyzers_and_args_for_profile(self, profile_name):
+        """return list of string of analyzers' names and string with additional args"""
         try:
             profile = self.get(name=profile_name)
         except ObjectDoesNotExist:
             logger.error("profile %s does not exist", profile_name)
             raise ObjectDoesNotExist("profile %s does not exist" % profile_name)
         else:
-            return profile.command_arguments.get('analyzers', []), \
-                   profile.command_arguments.get('csmock_args', [])
+            analyzer_list = ClientAnalyzer.chain_to_list(profile.command_arguments.get('analyzers', ''))
+            args_list = profile.command_arguments.get('csmock_args', '')
+            return analyzer_list, args_list
 
     def export_available(self):
         return self.filter(enabled=True).values("name", "description")
