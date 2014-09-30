@@ -1169,9 +1169,6 @@ class ClientAnalyzerMixin(object):
         return list(self.list_available().values(
             'name', 'version', 'cli_short_command', 'cli_long_command'))
 
-    def get_default(self):
-        return self.filter(default=True)[0]
-
     def filter_by_long_arg(self, long_opts):
         return self.list_available().filter(cli_long_command__in=long_opts)
 
@@ -1183,8 +1180,8 @@ class ClientAnalyzerMixin(object):
         analyzer_chain = analyzers.values_list('build_append', flat=True)
         args = analyzers.values_list('build_append_args', flat=True)
         response = {
-            'analyzers': ','.join(analyzer_chain),
-            'args': ' '.join(args),
+            'analyzers': analyzer_chain,
+            'args': args,
         }
         return response
 
@@ -1206,7 +1203,7 @@ class ClientAnalyzer(models.Model):
     #name = models.CharField(max_length=64)
     version = models.CharField(max_length=32, blank=True, null=True)
     enabled = models.BooleanField(default=True)
-    # what covscan-client options enables analyzer
+    # what covscan-client option enables analyzer
     cli_short_command = models.CharField(max_length=32, blank=True, null=True)
     cli_long_command = models.CharField(max_length=32, blank=False, null=False)
     # enable this analyzer with csmock -t <build_append>[,<build_append>...]
@@ -1293,8 +1290,8 @@ class ProfileManager(models.Manager):
             logger.error("profile %s does not exist", profile_name)
             raise ObjectDoesNotExist("profile %s does not exist" % profile_name)
         else:
-            return profile.command_arguments.get('analyzers', None), \
-                   profile.command_arguments.get('csmock_args', None)
+            return profile.command_arguments.get('analyzers', []), \
+                   profile.command_arguments.get('csmock_args', [])
 
     def export_available(self):
         return self.filter(enabled=True).values("name", "description")

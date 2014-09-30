@@ -22,7 +22,7 @@ from covscanhub.service.processing import task_has_results
 from utils import get_or_fail
 from check import check_nvr, check_obsolete_scan, check_build, check_package_is_blocked
 from covscanhub.scan.models import Package, Tag, Scan, SCAN_TYPES, ScanBinding, ETMapping, REQUEST_STATES, MockConfig, \
-    ClientAnalyzer, TaskExtension, AppSettings
+    ClientAnalyzer, TaskExtension, AppSettings, Profile
 
 from kobo.hub.models import Task, TASK_STATES
 
@@ -339,7 +339,8 @@ class ClientScanScheduler(AbstractClientScanScheduler):
         # analyzers
         self.analyzers = self.options.get('analyzers', '')
         self.profile = self.options.get('profile', 'default')
-        self.analyzer_models, self.additional_csmock_args_profile = check_analyzers(self.analyzers, profile=self.profile)
+        self.analyzer_models = check_analyzers(self.analyzers)
+        self.profile_analyzers, self.profile_args = Profile.objects.get_analyzers_and_args_for_profile(self.profile)
 
         # mock profile
         self.mock_config = get_or_fail('mock_config', self.options)
@@ -364,11 +365,15 @@ class ClientScanScheduler(AbstractClientScanScheduler):
             }
         else:
             self.task_args['args']['srpm_name'] = self.srpm_name
+
         analyzer_opts = ClientAnalyzer.objects.get_opts(self.analyzer_models)
-        self.task_args['args']['analyzers'] = analyzer_opts['analyzers']
+        analyzers_set = set(analyzer_opts['analyzers'] + self.profile_analyzers)
+        analyzer_chain = ','.join(analyzers_set)
+        analyzer_opts_set = set(analyzer_opts['args'] + self.profile_args)
+        self.task_args['args']['analyzers'] = analyzer_chain
         self.task_args['args']['mock_config'] = self.mock_config
+        self.task_args['args']['csmock_args'] = self.prepare_csmock_args(additional_csmock_args=analyzer_opts_set)
         self.task_args['args']['su_user'] = AppSettings.setting_get_su_user()
-        self.task_args['args']['csmock_args'] = self.prepare_csmock_args(additional_csmock_args=analyzer_opts['args'])
 
     def spawn(self):
         """ """
@@ -445,7 +450,8 @@ class ClientDiffScanScheduler(AbstractClientScanScheduler):
         # analyzers
         self.analyzers = self.consume_options.get('analyzers', '')
         self.profile = self.consume_options.get('profile', 'default')
-        self.analyzer_models, self.additional_csmock_args_profile = check_analyzers(self.analyzers, profile=self.profile)
+        self.analyzer_models = check_analyzers(self.analyzers)
+        self.profile_analyzers, self.profile_args = Profile.objects.get_analyzers_and_args_for_profile(self.profile)
 
         # mock profile
         self.target_mock_config = get_or_fail('nvr_mock', self.consume_options)
@@ -474,10 +480,14 @@ class ClientDiffScanScheduler(AbstractClientScanScheduler):
             }
         else:
             self.task_args['args']['srpm_name'] = self.target_srpm_name
+
         analyzer_opts = ClientAnalyzer.objects.get_opts(self.analyzer_models)
-        self.task_args['args']['analyzers'] = analyzer_opts['analyzers']
+        analyzers_set = set(analyzer_opts['analyzers'] + self.profile_analyzers)
+        analyzer_chain = ','.join(analyzers_set)
+        analyzer_opts_set = set(analyzer_opts['args'] + self.profile_args)
+        self.task_args['args']['analyzers'] = analyzer_chain
         self.task_args['args']['mock_config'] = self.target_mock_config
-        self.task_args['args']['csmock_args'] = self.prepare_csmock_args(additional_csmock_args=analyzer_opts['args'])
+        self.task_args['args']['csmock_args'] = self.prepare_csmock_args(additional_csmock_args=analyzer_opts_set)
         self.task_args['args']['su_user'] = AppSettings.setting_get_su_user()
         # base task args has to be last!
         self.task_args['args']['base_task_args'] = self.prepare_basetask_args()

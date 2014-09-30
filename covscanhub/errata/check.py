@@ -89,16 +89,13 @@ def check_build(nvr, check_additional=False):
     return nvr, url, bin
 
 
-def check_analyzers(analyzers_chain, profile=None):
+def check_analyzers(analyzers_chain):
     if analyzers_chain:
         a_list = re.split('[,:;]', analyzers_chain.strip())
     else:
         a_list = []
-    args = None
-    if profile:
-        profile_analyzers, args = Profile.objects.get_analyzers_and_args_for_profile(profile)
-        a_list += re.split('[,;;]', profile_analyzers.strip())
-    return ClientAnalyzer.objects.verify_in_bulk(a_list), args
+    logger.debug("Analyzers specified by client: %s", a_list)
+    return ClientAnalyzer.objects.verify_in_bulk(a_list)
 
 
 def check_upload(upload_id, task_user):
