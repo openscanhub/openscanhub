@@ -56,18 +56,14 @@ def fail_scan(scan_id, reason=None):
     scan.set_state(SCAN_STATES['FAILED'])
     if scan.is_errata_scan():
         scan.enabled = False
-        scan.save()
-
-        if reason:
-            Task.objects.filter(id=scan.scanbinding.task.id).update(
-                result="Scan failed due to: %s" % reason)
-
         #set last successfully finished scan as enabled
         scan.enable_last_successfull()
-    else:
-        #scan.scanbinding.task.parent.cancel_task(recursive=False)
-        fail_scan(scan.scanbinding.task.parent.scanbinding.scan.id,
-                  "Base scan failed.")
+    scan.save()
+    if reason:
+        Task.objects.filter(id=scan.scanbinding.task.id).update(
+            result="Scan failed due to: %s" % reason)
+    if scan.is_errata_base_scan():
+        fail_scan(scan.scanbinding.task.parent.scanbinding.scan.id, "Bask scan failed")
 
 
 def cancel_scan_tasks(task):

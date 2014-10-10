@@ -147,7 +147,11 @@ class CsmockAPI(object):
         return self.json_result['defects']
 
     def get_scan_metadata(self):
-        return self.json_result['scan']
+        try:
+            return self.json_result['scan']
+        except Exception:
+            return {}
+
 
     def json(self):
         """

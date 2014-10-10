@@ -91,11 +91,12 @@ class ErrataDiffBuild(TaskBase):
                                      self.task_id, base_results)
             if retcode > 0:
                 print >> sys.stderr, "Scanning have not completed successfully (%d)" % retcode
-                self.hub.worker.fail_scan(scan_id,
-                                          'csmock return code: %d' % retcode)
-                self.fail()
+                self.hub.worker.fail_scan(scan_id, 'csmock return code: %d' % retcode)
 
         self.hub.worker.finish_scan(scan_id, base_results)
+
+        if retcode > 0:
+            self.fail()
 
     @classmethod
     def cleanup(cls, hub, conf, task_info):

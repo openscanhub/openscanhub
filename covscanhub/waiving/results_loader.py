@@ -112,8 +112,9 @@ class ResultsLoader(object):
         self.result = Result()
         self.result.save()  # save for sake of m2m analyzers relation
         analyzers = self.all.get_analyzers()
-        self.result.set_analyzers(analyzers)
-        AnalyzerVersion.objects.update_analyzers_versions(analyzers, self.scan.tag.mock.name)
+        if analyzers:
+            self.result.set_analyzers(analyzers)
+            AnalyzerVersion.objects.update_analyzers_versions(analyzers, self.scan.tag.mock.name)
         scan_metadata = self.all.get_scan_metadata()
         self.result.lines = scan_metadata.get('cov-lines-processed', None)
         time = scan_metadata.get('cov-time-elapsed-analysis', None)
