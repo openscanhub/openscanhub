@@ -86,6 +86,7 @@ class ErrataDiffBuild(TaskBase):
                                                    additional_arguments=add_args,
                                                    koji_bin=koji_bin,
                                                    su_user=su_user)
+            print 'Retcode: %d' % retcode
             base_results = os.path.basename(results)
             self.hub.upload_task_log(open(results, "r"),
                                      self.task_id, base_results)
