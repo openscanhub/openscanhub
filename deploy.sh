@@ -18,8 +18,6 @@ deploy_staging(){
         --define "hub_host uqtm.lab.eng.brq.redhat.com" \
         --define "xmlrpc_url https://uqtm.lab.eng.brq.redhat.com/covscanhub/xmlrpc" \
         || exit 3
-    local RPM_NAME
-    local RPM_PATH
     HUB_RPM_PATH="$(ls /var/lib/mock/${PROFILE_6}/result/covscan-hub-*.noarch.rpm)"
     WORKER_RPM_PATH="$(ls /var/lib/mock/${PROFILE_6}/result/covscan-worker-*.noarch.rpm)"
     HUB_RPM_NAME="$(basename ${HUB_RPM_PATH})"
@@ -29,7 +27,7 @@ deploy_staging(){
 yum update -y rpms/${HUB_RPM_NAME} rpms/${WORKER_RPM_NAME}
 yum reinstall -y rpms/${HUB_RPM_NAME} rpms/${WORKER_RPM_NAME}
 service httpd restart || :
-# service covscand restart || :
+service covscand restart || :
 END
 }
 
@@ -41,8 +39,6 @@ deploy_prod(){
         --define "hub_host cov01.lab.eng.brq.redhat.com" \
         --define "xmlrpc_url http://cov01.lab.eng.brq.redhat.com/covscanhub/xmlrpc" \
         || exit 3
-    local RPM_NAME
-    local RPM_PATH
     HUB_RPM_PATH="$(ls /var/lib/mock/${PROFILE_6}/result/covscan-hub-*.noarch.rpm)"
     WORKER_RPM_PATH="$(ls /var/lib/mock/${PROFILE_6}/result/covscan-worker-*.noarch.rpm)"
     HUB_RPM_NAME="$(basename ${HUB_RPM_PATH})"
