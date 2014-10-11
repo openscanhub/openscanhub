@@ -9,7 +9,7 @@
 %{!?xmlrpc_url:%define xmlrpc_url http://localhost/xmlrpc}
 
 Name:           covscan
-Version:        0.6.0.a
+Version:        0.6.0
 Release:        1%{?dist}
 License:        Commercial
 Summary:        Coverity scan scheduler
@@ -183,7 +183,7 @@ fi
 %files worker-%{hub_instance}
 %defattr(644,root,root,755)
 %{py_sitedir}/covscand
-%attr(640,root,root) /etc/covscan/covscand.conf
+%attr(640,root,root) %config(noreplace) /etc/covscan/covscand.conf
 %attr(755,root,root) /etc/init.d/covscand
 %attr(754,root,root) /usr/sbin/covscand
 
@@ -198,14 +198,18 @@ fi
 # %attr(640,root,apache) %{py_sitedir}/covscanhub/settings.py[co]
 # %attr(640,root,apache) %{py_sitedir}/covscanhub/settings_local.py[co]
 %attr(640,root,root) /etc/httpd/conf.d/covscanhub-httpd.conf
-%ghost /var/log/covscanhub.log
+%ghost %attr(775,apache,apache) /var/log/covscanhub.log
 %dir %attr(775,root,apache) /var/lib/covscanhub
 %dir %attr(775,root,apache) /var/lib/covscanhub/tasks
 %dir %attr(775,root,apache) /var/lib/covscanhub/upload
 
 
 %changelog
-* Thu Sep 25 2014 Tomas Tomecek <ttomecek@redhat.com> - 0.6.0-1
+* Sat Oct 11 2014 Tomas Tomecek <ttomecek@redhat.com> - 0.6.0-1
+- 0.6.0 release
+- add profiles
+
+* Thu Sep 25 2014 Tomas Tomecek <ttomecek@redhat.com> - 0.6.0-1.a
 - 0.6.0a alpha release
 
 * Mon Aug 04 2014 Tomas Tomecek <ttomecek@redhat.com> - 0.5.2-1
