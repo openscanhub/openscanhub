@@ -2,7 +2,7 @@
 
 import os
 import logging
-from datetime import datetime
+import datetime
 from django.core.exceptions import ObjectDoesNotExist
 from kobo.hub.models import Task
 from covscanhub.other.constants import ERROR_DIFF_FILE, FIXED_DIFF_FILE, SCAN_RESULTS_FILENAME, DEFAULT_CHECKER_GROUP

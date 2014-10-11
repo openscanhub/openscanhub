@@ -1167,7 +1167,7 @@ class ClientAnalyzerMixin(object):
 
     def export_available(self):
         return list(self.list_available().values(
-            'name', 'version', 'cli_short_command', 'cli_long_command'))
+            'analyzer__name', 'version', 'cli_short_command', 'cli_long_command'))
 
     def filter_by_long_arg(self, long_opts):
         return self.list_available().filter(cli_long_command__in=long_opts)

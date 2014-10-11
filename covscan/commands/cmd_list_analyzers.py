@@ -40,7 +40,7 @@ http://$hostname/covscan/xmlrpc"
         print format % columns
         available_analyzers = self.hub.scan.list_analyzers()
         for i in available_analyzers:
-            print format % (i["name"], i['version'], i["cli_short_command"],
+            print format % (i["analyzer__name"], i['version'], i["cli_short_command"],
                             i["cli_long_command"])
 
         shuffled_list = available_analyzers[:]
