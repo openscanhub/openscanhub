@@ -71,7 +71,7 @@ class ScanResultsProcessor(object):
         self.sb = sb
         self.task = sb.task
         self.base_task = None
-        if sb.scan.is_errata_scan():
+        if sb.scan.can_have_base():
             self.base_sb = sb.scan.base.scanbinding
             self.base_task = self.base_sb.task
         self.rp = TaskResultsProcessor(self.task, self.base_task, exclude_dirs)

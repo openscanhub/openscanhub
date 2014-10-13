@@ -35,7 +35,7 @@ http://$hostname/covscan/xmlrpc"
                                 AUTH_METHOD='krbv',
                                 HUB_URL=hub_url)
 
-        format = "%-20s %-10s %-25s %-25s"
+        format = "%-20s %-20s %-15s %-25s"
         columns = ("NAME", "VERSION", "SHORT OPTION", "LONG OPTION")
         print format % columns
         available_analyzers = self.hub.scan.list_analyzers()

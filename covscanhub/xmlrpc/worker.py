@@ -3,9 +3,11 @@
 
 import os
 import logging
+import shutil
 
 from kobo.hub.decorators import validate_worker
 from kobo.hub.models import Task
+from kobo.django.upload.models import FileUpload
 from covscand.tasks.common import construct_cim_string
 from covscanhub.errata.models import ScanningSession
 from covscanhub.errata.scanner import prepare_base_scan, obtain_base2, BaseNotValidException
@@ -126,6 +128,16 @@ def fail_scan(request, scan_id, reason=None):
 def get_scanning_args(request, scanning_session_id):
     scanning_session = ScanningSession.objects.get(id=scanning_session_id)
     return scanning_session.profile.command_arguments
+
+
+@validate_worker
+@public
+def move_upload(request, task_id, upload_id):
+    """ child task's srpm is uploaded, move it to task's dir """
+    task_dir = Task.get_task_dir(task_id, create=True)
+    upload = FileUpload.objects.get(id=upload_id)
+    shutil.move(os.path.join(upload.target_dir, upload.name), os.path.join(task_dir, upload.name))
+    upload.delete()
 
 
 @validate_worker

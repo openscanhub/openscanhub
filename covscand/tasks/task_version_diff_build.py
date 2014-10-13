@@ -44,6 +44,7 @@ class VersionDiffBuild(TaskBase):
         csmock_args = self.args.pop("csmock_args", None)
         analyzers = self.args.pop('analyzers')
         base_task_args = self.args.pop('base_task_args', None)
+        upload_id = self.args.pop('upload_id', None)  # only base may have this
         su_user = self.args.pop('su_user', None)
 
         # scan base
@@ -51,6 +52,9 @@ class VersionDiffBuild(TaskBase):
             subtask_id = self.spawn_subtask(*tuple(base_task_args))
             self.hub.worker.assign_task(subtask_id)
             self.wait()
+
+        if upload_id:
+            self.hub.worker.move_upload(self.task_id, upload_id)
 
         with CsmockRunner() as runner:
             if build:

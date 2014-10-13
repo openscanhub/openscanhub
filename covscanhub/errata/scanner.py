@@ -287,22 +287,30 @@ class AbstractClientScanScheduler(object):
             'keep_covdata': '--cov-keep-int-dir',
             'warning_level': '-w%s',
         }
+        # client args
         cov_opts = self.options.get('args', [])
         csmock_opts = []
         add_args = []
+        # profile, analuzer args
         for a in additional_csmock_args:
             add_if(a, add_args)
+        # args supplied to scheduler class
         add_if(self.additional_csmock_args, add_args)
+        # client args
+        # these has to be last -- highest importance
         for opt in self.options:
             if opt in cov_args:
                 cov_opts.append(cov_args[opt])
         for opt in self.options:
             if opt in csmock_args:
-                csmock_opts.append(csmock_args[opt])
+                if opt == 'warning_level':
+                    csmock_opts.append(csmock_args[opt] % self.options[opt])
+                else:
+                    csmock_opts.append(csmock_args[opt])
         if cov_opts:
-            add_args.append("--cov-analyze-opts %s" % (pipes.quote(" ".join(cov_opts))))
+            add_args.append("--cov-analyze-opts=%s" % (pipes.quote(" ".join(cov_opts))))
         if csmock_opts:
-            add_args.append(csmock_opts)
+            add_args.append(' '.join(csmock_opts))
         opts = " ".join(add_args)
         logger.info("Task opts are '%s'", opts)
         return opts
@@ -339,7 +347,14 @@ class ClientScanScheduler(AbstractClientScanScheduler):
         # analyzers
         self.analyzers = self.options.get('analyzers', '')
         self.profile = self.options.get('profile', 'default')
-        self.analyzer_models = check_analyzers(self.analyzers)
+
+        # TODO: refactor this
+        additional_analyzers = []
+        if 'cppcheck' in self.options:
+            additional_analyzers.append('cppcheck')
+        if 'clang' in self.options:
+            additional_analyzers.append('clang')
+        self.analyzer_models = check_analyzers(self.analyzers, additional_analyzers)
         self.profile_analyzers, self.profile_args = Profile.objects.get_analyzers_and_args_for_profile(self.profile)
 
         # mock profile
@@ -371,7 +386,9 @@ class ClientScanScheduler(AbstractClientScanScheduler):
         analyzer_chain = ','.join(analyzers_set)
         self.task_args['args']['analyzers'] = analyzer_chain
         self.task_args['args']['mock_config'] = self.mock_config
-        self.task_args['args']['csmock_args'] = self.prepare_csmock_args(analyzer_opts['args'], self.profile_args)
+        # profile args < analyzer args < client opts
+        csmock_args = self.prepare_csmock_args(self.profile_args, *tuple(analyzer_opts['args']))
+        self.task_args['args']['csmock_args'] = csmock_args
         self.task_args['args']['su_user'] = AppSettings.setting_get_su_user()
 
     def spawn(self):
@@ -403,7 +420,7 @@ class ClientDiffPatchesScanScheduler(ClientScanScheduler):
             **kwargs
         )
 
-
+# TODO: make ClientDiff subclass of clientsched: reuse all code
 class ClientDiffScanScheduler(AbstractClientScanScheduler):
     """
     scheduler for diff tasks submitted from client -- users
@@ -449,7 +466,13 @@ class ClientDiffScanScheduler(AbstractClientScanScheduler):
         # analyzers
         self.analyzers = self.consume_options.get('analyzers', '')
         self.profile = self.consume_options.get('profile', 'default')
-        self.analyzer_models = check_analyzers(self.analyzers)
+        # TODO: refactor this
+        additional_analyzers = []
+        if 'cppcheck' in self.options:
+            additional_analyzers.append('cppcheck')
+        if 'clang' in self.options:
+            additional_analyzers.append('clang')
+        self.analyzer_models = check_analyzers(self.analyzers, additional_analyzers)
         self.profile_analyzers, self.profile_args = Profile.objects.get_analyzers_and_args_for_profile(self.profile)
 
         # mock profile
@@ -485,7 +508,8 @@ class ClientDiffScanScheduler(AbstractClientScanScheduler):
         analyzer_chain = ','.join(analyzers_set)
         self.task_args['args']['analyzers'] = analyzer_chain
         self.task_args['args']['mock_config'] = self.target_mock_config
-        self.task_args['args']['csmock_args'] = self.prepare_csmock_args(analyzer_opts['args'], self.profile_args)
+        csmock_args = self.prepare_csmock_args(self.profile_args, *tuple(analyzer_opts['args']))
+        self.task_args['args']['csmock_args'] = csmock_args
         self.task_args['args']['su_user'] = AppSettings.setting_get_su_user()
         # base task args has to be last!
         self.task_args['args']['base_task_args'] = self.prepare_basetask_args()
@@ -505,6 +529,7 @@ class ClientDiffScanScheduler(AbstractClientScanScheduler):
             }
         else:
             args['srpm_name'] = self.base_srpm_name
+            args['upload_id'] = self.base_upload_id
         return self.task_args['method'], args, label
 
     def spawn(self):
