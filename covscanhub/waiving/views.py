@@ -151,12 +151,10 @@ def add_logs_to_context(sb):
     logs = []
     logs_list = sb.task.logs.list
 
-    if task_has_results(sb.task):
-        log_prefix = os.path.join(sb.scan.nvr, 'run1', 'results')
-    elif task_is_diffed(sb.task):
+    if task_is_diffed(sb.task):
         log_prefix = os.path.join(sb.scan.nvr, 'scan-results')
     else:
-        log_prefix = os.path.join(sb.scan.nvr, 'run1', sb.scan.nvr)
+        log_prefix = os.path.join(sb.scan.nvr, 'run1', 'results')
 
     logs.append(create_log_dict('Added defects', 'Warning_32.png',
                                 ERROR_HTML_FILE,
