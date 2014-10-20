@@ -338,7 +338,7 @@ class ClientScanScheduler(AbstractClientScanScheduler):
         # srpm
         self.build_nvr = self.options.get('brew_build', None)
         self.upload_id = self.options.get('upload_id', None)
-        check_srpm_response = check_srpm(self.upload_id, self.build_nvr, self.user)
+        check_srpm_response = check_srpm(self.upload_id, self.build_nvr, self.username)
         if check_srpm_response['type'] == 'build':
             self.build_kojibin = check_srpm_response['koji_bin']
         elif check_srpm_response['type'] == 'upload':
@@ -459,13 +459,13 @@ class ClientDiffScanScheduler(AbstractClientScanScheduler):
         self.target_upload_id = self.consume_options.get('nvr_upload_id', None)
         self.base_build_nvr = self.consume_options.get('base_brew_build', None)
         self.base_upload_id = self.consume_options.get('base_upload_id', None)
-        target_check_srpm_response = check_srpm(self.target_upload_id, self.target_build_nvr, self.user)
+        target_check_srpm_response = check_srpm(self.target_upload_id, self.target_build_nvr, self.username)
         if target_check_srpm_response['type'] == 'build':
             self.target_build_kojibin = target_check_srpm_response['koji_bin']
         elif target_check_srpm_response['type'] == 'upload':
             self.target_srpm_path = target_check_srpm_response['srpm_path']
             self.target_srpm_name = target_check_srpm_response['srpm_name']
-        base_check_srpm_response = check_srpm(self.base_upload_id, self.base_build_nvr, self.user)
+        base_check_srpm_response = check_srpm(self.base_upload_id, self.base_build_nvr, self.username)
         if base_check_srpm_response['type'] == 'build':
             self.base_build_kojibin = base_check_srpm_response['koji_bin']
         elif base_check_srpm_response['type'] == 'upload':
