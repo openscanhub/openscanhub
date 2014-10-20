@@ -37,6 +37,7 @@ def diff_build(request, mock_config, comment, options, *args, **kwargs):
     options['comment'] = comment
     options['mock_config'] = mock_config
     options['task_user'] = request.user.username
+    options['user'] = request.user
     cs = ClientDiffPatchesScanScheduler(options)
     cs.prepare_args()
     return cs.spawn()
@@ -55,6 +56,7 @@ def mock_build(request, mock_config, comment, options, *args, **kwargs):
     options['comment'] = comment
     options['mock_config'] = mock_config
     options['task_user'] = request.user.username
+    options['user'] = request.user
     cs = ClientScanScheduler(options)
     cs.prepare_args()
     return cs.spawn()
@@ -77,6 +79,7 @@ def create_user_diff_task(request, hub_opts, task_opts):
          - base_mock - mock config
     """
     hub_opts['task_user'] = request.user.username
+    hub_opts['user'] = request.user
     return create_diff_task2(hub_opts, task_opts)
 
 

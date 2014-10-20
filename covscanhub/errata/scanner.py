@@ -332,7 +332,8 @@ class ClientScanScheduler(AbstractClientScanScheduler):
         self.validate_options()
 
     def validate_options(self):
-        self.user = get_or_fail('task_user', self.options)
+        self.username = get_or_fail('task_user', self.options)
+        self.user = get_or_fail('user', self.options)
 
         # srpm
         self.build_nvr = self.options.get('brew_build', None)
@@ -363,14 +364,21 @@ class ClientScanScheduler(AbstractClientScanScheduler):
 
         self.comment = self.options.get('comment', '')
 
+        self.priority = self.options.get('priority', None)
+        if self.priority:
+            self.priority = int(self.priority)
+            if self.priority >= 20 and not self.user.is_staff:
+                raise RuntimeError("Only admin is able to set higher priority than 20!")
+
         self.cim = self.options.get('CIM', None)
 
     def prepare_args(self):
         """ prepare dicts -- arguments for task and scan """
-        self.task_args['owner_name'] = self.user
+        self.task_args['owner_name'] = self.username
         self.task_args['label'] = self.build_nvr or self.srpm_name
         self.task_args['method'] = self.method
         self.task_args['comment'] = self.comment
+        self.task_args['priority'] = self.priority or 10
         self.task_args['state'] = TASK_STATES['CREATED']
         self.task_args['args'] = {}
         if self.build_nvr:
@@ -443,7 +451,8 @@ class ClientDiffScanScheduler(AbstractClientScanScheduler):
         self.validate_options()
 
     def validate_options(self):
-        self.user = get_or_fail('task_user', self.consume_options)
+        self.username = get_or_fail('task_user', self.options)
+        self.user = get_or_fail('user', self.options)
 
         # srpm
         self.target_build_nvr = self.consume_options.get('nvr_brew_build', None)
@@ -485,14 +494,21 @@ class ClientDiffScanScheduler(AbstractClientScanScheduler):
         else:
             MockConfig.objects.verify_by_name(self.base_mock_config)
 
+        self.priority = self.options.get('priority', None)
+        if self.priority:
+            self.priority = int(self.priority)
+            if self.priority >= 20 and not self.user.is_staff:
+                raise RuntimeError("Only admin is able to set higher priority than 20!")
+
         self.comment = self.consume_options.get('comment', '')
 
     def prepare_args(self):
         """ prepare dicts -- arguments for task and scan """
-        self.task_args['owner_name'] = self.user
+        self.task_args['owner_name'] = self.username
         self.task_args['label'] = self.target_build_nvr or self.target_srpm_name
         self.task_args['method'] = 'VersionDiffBuild'
         self.task_args['comment'] = self.comment
+        self.task_args['priority'] = self.priority or 10
         self.task_args['state'] = TASK_STATES['CREATED']
         self.task_args['args'] = {}
         if self.target_build_nvr:

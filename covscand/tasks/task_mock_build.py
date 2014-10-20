@@ -16,7 +16,7 @@ class MockBuild(TaskBase):
     channels = ["default"] # list of channels
     exclusive = False      # leave False here unless you really know what you're doing
     foreground = False     # if True the task is not forked and runs in the worker process (no matter you run worker without -f)
-    priority = 19
+    priority = 10
     weight = 1.0
 
     def run(self):
