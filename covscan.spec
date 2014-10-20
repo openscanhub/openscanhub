@@ -9,7 +9,7 @@
 %{!?xmlrpc_url:%define xmlrpc_url http://localhost/xmlrpc}
 
 Name:           covscan
-Version:        0.6.1
+Version:        0.6.2
 Release:        1%{?dist}
 License:        Commercial
 Summary:        Coverity scan scheduler
@@ -205,6 +205,10 @@ fi
 
 
 %changelog
+* Mon Oct 20 2014 Tomas Tomecek <ttomecek@redhat.com> - 0.6.2-1
+- enable submitting prio from cli
+- pass cmock args to version task
+
 * Mon Oct 13 2014 Tomas Tomecek <ttomecek@redhat.com> - 0.6.1-1
 - bugfix update: fix version-diff-build
 
