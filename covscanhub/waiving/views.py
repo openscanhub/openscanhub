@@ -151,7 +151,7 @@ def add_logs_to_context(sb):
     logs = []
     logs_list = sb.task.logs.list
 
-    if task_is_diffed(sb.task):
+    if task_has_results(sb.task):
         log_prefix = os.path.join(sb.scan.nvr, 'scan-results')
     else:
         log_prefix = os.path.join(sb.scan.nvr, 'run1', 'results')
