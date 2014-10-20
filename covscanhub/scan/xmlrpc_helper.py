@@ -99,10 +99,12 @@ def scan_notification_email(request, scan_id):
                 scan.scanbinding.task.parent.scanbinding.scan.id)
 
 
-def prepare_version_retriever(mock_config, analyzers, su_user=None):
+def prepare_version_retriever(mock_config, analyzers, su_user=None, csmock_args=None):
     method = 'AnalyzerVersionRetriever'
     args = {'mock_config': mock_config, 'analyzers': analyzers}
     if su_user:
         args['su_user'] = su_user
+    if csmock_args:
+        args['csmock_args'] = csmock_args
     label = 'Refresh version cache.'
     return method, args, label

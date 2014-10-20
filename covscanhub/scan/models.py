@@ -1328,3 +1328,12 @@ class Profile(models.Model):
         except KeyError:
             logger.error('profile doesn\'t have any analyzers: %s', self.command_arguments)
             raise RuntimeError('no analyzers in profile %s', self)
+
+    @property
+    def csmock_args(self):
+        try:
+            return self.command_arguments['csmock_args']
+        except KeyError:
+            # there are no arguments, this is not an error
+            logger.info("No csmock arguments for profile '%s'", self)
+            return ''

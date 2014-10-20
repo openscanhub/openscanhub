@@ -155,9 +155,11 @@ def ensure_cache(request, mock_config, scanning_session_id):
     make sure that cache with version of analyzers is not stale
     """
     if not AnalyzerVersion.objects.is_cache_uptodate(mock_config):
-        analyzers = ScanningSession.objects.get_analyzers(scanning_session_id)
+        session = ScanningSession.objects.get(id=scanning_session_id)
+        analyzers = session.profile.analyzers
+        csmock_args = session.profile.csmock_args
         su_user = AppSettings.setting_get_su_user()
-        return prepare_version_retriever(mock_config, analyzers, su_user)
+        return prepare_version_retriever(mock_config, analyzers, su_user, csmock_args)
 
 
 @validate_worker

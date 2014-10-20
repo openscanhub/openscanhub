@@ -33,8 +33,11 @@ class AnalyzerVersionRetriever(TaskBase):
         analyzers = self.args.pop('analyzers')
         mock_config = self.args.pop('mock_config')
         su_user = self.args.pop('su_user', None)
+        csmock_args = self.args.pop("csmock_args", None)
+
         with CsmockRunner() as runner:
-            path, err_code = runner.no_scan(analyzers, profile=mock_config, su_user=su_user)
+            path, err_code = runner.no_scan(analyzers, profile=mock_config, su_user=su_user,
+                                            additional_arguments=csmock_args)
 
             # upload results back to hub
             if not os.path.exists(path):
