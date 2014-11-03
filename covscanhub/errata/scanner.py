@@ -451,8 +451,8 @@ class ClientDiffScanScheduler(AbstractClientScanScheduler):
         self.validate_options()
 
     def validate_options(self):
-        self.username = get_or_fail('task_user', self.options)
-        self.user = get_or_fail('user', self.options)
+        self.username = get_or_fail('task_user', self.consume_options)
+        self.user = get_or_fail('user', self.consume_options)
 
         # srpm
         self.target_build_nvr = self.consume_options.get('nvr_brew_build', None)
