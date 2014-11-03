@@ -3,6 +3,7 @@
 """these functions are exported via XML-RPC"""
 
 import logging
+from kobo.tback import get_traceback
 
 from kobo.client.constants import TASK_STATES
 from kobo.hub.models import Task
@@ -21,12 +22,21 @@ def finish_scan(request, scan_id, filename):
     scan = sb.scan
     task = sb.task
 
-    # TODO: exclude debug dirs
-    #try:
-    process_scan(sb)
-    #except Exception as ex:
-    #    fail_scan(scan_id, ex.message)
-    #    return
+    # scan failed, take this into account
+    if scan.is_failed():
+        if task.state == TASK_STATES['CLOSED']:
+            # task is fine -- we are probably just resubmitting; allow this
+            logger.info("Resubmitting previously failed scan (%s).", scan)
+        else:
+            # task is not fine, scan is not fine: do not process results
+            return
+
+    try:
+        process_scan(sb)
+    except Exception as ex:
+        logger.error("got error while processing scan: %s", repr(ex))
+        fail_scan(scan_id, get_traceback())
+        return
 
     result = sb.result
 
