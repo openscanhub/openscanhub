@@ -56,7 +56,7 @@ def add_no_cov_option(parser):
         "--no-cov",
         default=False,
         action="store_true",
-        help="do not use Coverity Static Analysis"
+        help="do not use Coverity Static Analysis (HAS NO EFFECT -- use --analyzers option)"
     )
 
 
