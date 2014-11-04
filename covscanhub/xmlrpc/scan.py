@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import re
+import logging
 
 from django.core.exceptions import ObjectDoesNotExist
 
@@ -9,7 +10,9 @@ from kobo.django.xmlrpc.decorators import login_required, admin_required
 
 from covscanhub.errata.scanner import create_diff_task2, ClientScanScheduler, ClientDiffPatchesScanScheduler
 from covscanhub.scan.models import Package, Tag, ClientAnalyzer, Profile
-from covscanhub.errata.service import create_errata_base_scan
+
+
+logger = logging.getLogger(__name__)
 
 
 __all__ = (
@@ -80,6 +83,7 @@ def create_user_diff_task(request, hub_opts, task_opts):
     """
     hub_opts['task_user'] = request.user.username
     hub_opts['user'] = request.user
+    logger.debug("Client diff task: %s, %s", hub_opts, task_opts)
     return create_diff_task2(hub_opts, task_opts)
 
 

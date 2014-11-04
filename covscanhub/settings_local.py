@@ -57,10 +57,15 @@ LOGGING = {
             'maxBytes': 10 * (1024 ** 2),  # 10 MB
             'backupCount': 14,
         },
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose',
+        }
     },
     'loggers': {
         'covscanhub': {
-            'handlers': ['file'],
+            'handlers': ['file', 'console'],
             'level': 'DEBUG',
             'propagate': True,
         }
