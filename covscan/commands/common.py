@@ -91,3 +91,12 @@ def add_profile_option(parser):
         action="store",
         help="use predefined scanning profile (for list of profiles see command list-profiles)"
     )
+
+
+def add_csmock_args_option(parser):
+    parser.add_option(
+        "--csmock-args",
+        dest="csmock_args",
+        action="store",
+        help="pass additional arguments to csmock (EXPERIMENTAL, USE WISELY)"
+    )

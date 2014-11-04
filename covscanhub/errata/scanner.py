@@ -296,8 +296,7 @@ class AbstractClientScanScheduler(object):
             add_if(a, add_args)
         # args supplied to scheduler class
         add_if(self.additional_csmock_args, add_args)
-        # client args
-        # these has to be last -- highest importance
+        # client args via opts like -a, --security
         for opt in self.options:
             if opt in cov_args:
                 cov_opts.append(cov_args[opt])
@@ -307,6 +306,9 @@ class AbstractClientScanScheduler(object):
                     csmock_opts.append(csmock_args[opt] % self.options[opt])
                 else:
                     csmock_opts.append(csmock_args[opt])
+        # client overrides via --csmock-args
+        if self.client_csmock_args:
+            csmock_opts.append(self.client_csmock_args)
         if cov_opts:
             add_args.append("--cov-analyze-opts=%s" % (pipes.quote(" ".join(cov_opts))))
         if csmock_opts:
@@ -371,6 +373,8 @@ class ClientScanScheduler(AbstractClientScanScheduler):
                 raise RuntimeError("Only admin is able to set higher priority than 20!")
 
         self.cim = self.options.get('CIM', None)
+
+        self.client_csmock_args = self.options.get('csmock_args', None)
 
     def prepare_args(self):
         """ prepare dicts -- arguments for task and scan """
@@ -501,6 +505,9 @@ class ClientDiffScanScheduler(AbstractClientScanScheduler):
                 raise RuntimeError("Only admin is able to set higher priority than 20!")
 
         self.comment = self.consume_options.get('comment', '')
+
+        self.client_csmock_args = self.consume_options.get('csmock_args', None)
+        logger.debug("args from client: %s", self.client_csmock_args)
 
     def prepare_args(self):
         """ prepare dicts -- arguments for task and scan """

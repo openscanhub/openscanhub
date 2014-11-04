@@ -42,6 +42,7 @@ if not specified)"
         add_comp_warnings_option(self.parser)
         add_analyzers_option(self.parser)
         add_profile_option(self.parser)
+        add_csmock_args_option(self.parser)
 
         self.parser.add_option(
             "-i",
@@ -163,6 +164,7 @@ exist." % self.results_store_file)
         warn_level = kwargs.pop('warn_level', '0')
         analyzers = kwargs.pop('analyzers', '')
         profile = kwargs.pop('profile', None)
+        csmock_args = kwargs.pop('csmock_args', None)
 
         if len(args) != 1:
             self.parser.error("please specify exactly one SRPM")
@@ -244,6 +246,9 @@ is not even one in your user configuration file \
             upload_id, err_code, err_msg = upload_file(self.hub, self.srpm,
                                                        target_dir, self.parser)
             options["upload_id"] = upload_id
+
+        if csmock_args:
+            options['csmock_args'] = csmock_args
 
         task_id = self.submit_task(config, comment, options)
 

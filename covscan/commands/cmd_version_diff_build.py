@@ -33,6 +33,7 @@ class Version_Diff_Build(covscan.CovScanCommand):
         add_comp_warnings_option(self.parser)
         add_analyzers_option(self.parser)
         add_profile_option(self.parser)
+        add_csmock_args_option(self.parser)
 
         self.parser.add_option(
             "--base-config",
@@ -151,6 +152,7 @@ local file"
         warn_level = kwargs.pop('warn_level', '0')
         analyzers = kwargs.pop('analyzers', '')
         profile = kwargs.pop('profile', None)
+        csmock_args = kwargs.pop('csmock_args', None)
 
         if comment:
             options_consumed['comment'] = comment
@@ -282,6 +284,9 @@ is not even one in your user configuration file \
             upload_id, err_code, err_msg = upload_file(self.hub, base_srpm,
                                                        target_dir, self.parser)
             options_consumed["base_upload_id"] = upload_id
+
+        if csmock_args:
+            options_consumed['csmock_args'] = csmock_args
 
         task_id = self.submit_task(options_consumed, options_forwarded)
 
