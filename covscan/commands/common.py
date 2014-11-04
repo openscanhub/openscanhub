@@ -46,7 +46,7 @@ def add_clang_option(parser):
         "--clang",
         default=False,
         action="store_true",
-        help="enable clang analyzer (doesn't work on RHEL 5) [EXPERIMENTAL]"
+        help="enable clang analyzer (doesn't work on RHEL 5)"
     )
 
 
