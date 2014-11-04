@@ -53,7 +53,8 @@ def finish_task(request, task_id):
             return td.generate_diffs()
         except RuntimeError as ex:
             logger.error("Can't diff tasks %s %s: %s", base_task, task, ex)
-            task.fail()
+            if not task.is_failed():
+                task.fail_task()
 
 
 @validate_worker
