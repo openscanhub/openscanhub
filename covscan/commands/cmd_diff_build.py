@@ -38,6 +38,7 @@ class Diff_Build(covscan.CovScanCommand):
         add_analyzers_option(self.parser)
         add_profile_option(self.parser)
         add_csmock_args_option(self.parser)
+
         add_keep_covdata_option(self.parser)
         add_comment_option(self.parser)
         add_task_id_file_option(self.parser)
@@ -48,6 +49,9 @@ class Diff_Build(covscan.CovScanCommand):
         add_all_option(self.parser)
         add_security_option(self.parser)
         add_custom_model_option(self.parser)
+
+        add_tarball_option(self.parser)
+        add_install_to_chroot_option(self.parser)
 
         self.parser.add_option(
             "-m",
@@ -113,21 +117,25 @@ exist." % self.results_store_file)
         profile = kwargs.pop('profile', None)
         csmock_args = kwargs.pop('csmock_args', None)
         cov_custom_model = kwargs.pop('cov_custom_model', None)
+        tarball_build_script = kwargs.pop('tarball_build_script', None)
+        packages_to_install = kwargs.pop('install_to_chroot', None)
 
         if len(args) != 1:
             self.parser.error("please specify exactly one SRPM")
-        self.srpm = args[0]
+        self.srpm = os.path.abspath(os.path.expanduser(args[0]))
 
         self.validate_results_store_file()
 
-        if not brew_build and not self.srpm.endswith(".src.rpm"):
-            self.parser.error("provided file doesn't appear to be a SRPM")
-
         if brew_build:
+            # get build from koji
             result = verify_brew_koji_build(self.srpm, self.conf['BREW_URL'],
                                             self.conf['KOJI_URL'])
             if result is not None:
                 self.parser.error(result)
+        elif tarball_build_script:
+            # we are analyzing tarball with build script
+            if not os.path.exists(self.srpm):
+                self.parser.error("Tarball does not exist.")
 
         if not config:
             config = local_conf.get_default_mockconfig()
@@ -202,6 +210,11 @@ is not even one in your user configuration file \
             upload_model_id, err_code, err_msg = upload_file(self.hub, cov_custom_model,
                                                        target_dir, self.parser)
             options["upload_model_id"] = upload_model_id
+
+        if packages_to_install:
+            options['install_to_chroot'] = packages_to_install
+        if tarball_build_script:
+            options['tarball_build_script'] = tarball_build_script
 
         task_id = self.submit_task(config, comment, options)
 

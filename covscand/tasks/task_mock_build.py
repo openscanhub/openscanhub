@@ -28,6 +28,7 @@ class MockBuild(TaskBase):
         su_user = self.args.pop('su_user', None)
         custom_model_name = self.args.pop("custom_model_name", None)
         task_url = self.hub.client.task_url(self.task_id)
+        result_filename = self.args.pop("result_filename")
 
         cim = self.hub.worker.get_cim_arg(self.task_id)
         if cim:
@@ -58,6 +59,7 @@ class MockBuild(TaskBase):
                     url,
                     profile=mock_config,
                     additional_arguments=csmock_args,
+                    result_filename=result_filename,
                     su_user=su_user)
             else:
                 print >> sys.stderr, "No srpm specified"
