@@ -67,7 +67,10 @@ def generate_stats(task, diff_task=False, with_defects_in_patches=False):
             result_list += ["%-25s %s%d" % (checker, diff_sign, count) for checker, count in sorted_list]
             result_list.append('')
         return result_list
-    defects_json = load_defects(task.id, diff_task)
+    try:
+        defects_json = load_defects(task.id, diff_task)
+    except RuntimeError:
+        return ''
     result = []
     if diff_task:
         added = get_defect_stats(defects_json['added'])
