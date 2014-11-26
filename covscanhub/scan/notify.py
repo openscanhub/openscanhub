@@ -93,6 +93,9 @@ def send_task_notification(request, task_id):
     if task.parent:
         return
     state = TASK_STATES.get_value(task.state)
+    if not task.is_finished():
+        logger.warning("Not sending e-mail for task %d with state '%s'", task_id, state)
+        return
     recipient = "covscan-auto@redhat.com"
     if AppSettings.setting_send_mail():
         recipient = get_recipient(task.owner)
