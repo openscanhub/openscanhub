@@ -40,47 +40,13 @@ class Version_Diff_Build(covscan.CovScanCommand):
             help="specify mock config name for base package"
         )
 
-        self.parser.add_option(
-            "--config",
-            help="specify mock config name for target package"
-        )
-
-        self.parser.add_option(
-            "-i",
-            "--keep-covdata",
-            default=False,
-            action="store_true",
-            help="keep coverity data in final archive",
-        )
-
-        self.parser.add_option(
-            "--comment",
-            help="a task description",
-        )
-
-        self.parser.add_option(
-            "--task-id-file",
-            help="task id is written to this file",
-        )
-
-        self.parser.add_option(
-            "--nowait",
-            default=False,
-            action="store_true",
-            help="don't wait until task(s) finish",
-        )
-
-        self.parser.add_option(
-            "--email-to",
-            action="append",
-            help="send notification to this address (can be used multiple times)"
-        )
-
-        self.parser.add_option(
-            "--priority",
-            type="int",
-            help="task priority (20+ is admin only), default is 10"
-        )
+        add_config_option(self.parser)
+        add_keep_covdata_option(self.parser)
+        add_comment_option(self.parser)
+        add_task_id_file_option(self.parser)
+        add_nowait_option(self.parser)
+        add_email_to_option(self.parser)
+        add_priority_option(self.parser)
 
         self.parser.add_option(
             "--base-brew-build",
@@ -88,11 +54,7 @@ class Version_Diff_Build(covscan.CovScanCommand):
 local file"
         )
 
-        self.parser.add_option(
-            "--brew-build",
-            help="use a brew build for target (specified by NVR) instead of a \
-local file"
-        )
+        add_brew_build_option(self.parser)
 
         self.parser.add_option(
             "--base-srpm",
@@ -104,19 +66,8 @@ local file"
             help="path to SRPM used as target"
         )
 
-        self.parser.add_option(
-            "--all",
-            action="store_true",
-            default=False,
-            help="turn all checkers on"
-        )
-
-        self.parser.add_option(
-            "--security",
-            action="store_true",
-            default=False,
-            help="turn security checkers on"
-        )
+        add_all_option(self.parser)
+        add_security_option(self.parser)
 
     def run(self, *args, **kwargs):
         # optparser output is passed via *args (args) and **kwargs (opts)

@@ -27,12 +27,7 @@ class Diff_Build(covscan.CovScanCommand):
         self.parser.epilog = "User configuration file is located at: \
 ~/.config/covscan/covscan.conf"
 
-        self.parser.add_option(
-            "--config",
-            help="specify mock config name (use default one from config files \
-if not specified)"
-        )
-
+        add_config_option(self.parser)
         add_cppcheck_option(self.parser)
         add_aggressive_option(self.parser)
         add_concurrency_option(self.parser)
@@ -43,64 +38,15 @@ if not specified)"
         add_analyzers_option(self.parser)
         add_profile_option(self.parser)
         add_csmock_args_option(self.parser)
-
-        self.parser.add_option(
-            "-i",
-            "--keep-covdata",
-            default=False,
-            action="store_true",
-            help="keep coverity data in final archive",
-        )
-
-        self.parser.add_option(
-            "--comment",
-            help="a task description",
-        )
-
-        self.parser.add_option(
-            "--task-id-file",
-            help="task id is written to this file",
-        )
-
-        self.parser.add_option(
-            "--nowait",
-            default=False,
-            action="store_true",
-            help="don't wait until tasks finish",
-        )
-
-        self.parser.add_option(
-            "--email-to",
-            action="append",
-            help="send notification to this address (can be used multiple times)"
-        )
-
-        self.parser.add_option(
-            "--priority",
-            type="int",
-            help="task priority (20+ is admin only), default is 10"
-        )
-
-        self.parser.add_option(
-            "--brew-build",
-            action="store_true",
-            default=False,
-            help="use a brew build (specified by NVR) instead of a local file"
-        )
-
-        self.parser.add_option(
-            "--all",
-            action="store_true",
-            default=False,
-            help="turn all checkers on"
-        )
-
-        self.parser.add_option(
-            "--security",
-            action="store_true",
-            default=False,
-            help="turn security checkers on"
-        )
+        add_keep_covdata_option(self.parser)
+        add_comment_option(self.parser)
+        add_task_id_file_option(self.parser)
+        add_nowait_option(self.parser)
+        add_email_to_option(self.parser)
+        add_priority_option(self.parser)
+        add_brew_build_option(self.parser)
+        add_all_option(self.parser)
+        add_security_option(self.parser)
 
         self.parser.add_option(
             "-m",

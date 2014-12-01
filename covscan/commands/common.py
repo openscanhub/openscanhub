@@ -100,3 +100,87 @@ def add_csmock_args_option(parser):
         action="store",
         help="pass additional arguments to csmock (EXPERIMENTAL, USE WISELY)"
     )
+
+
+def add_config_option(parser):
+    parser.add_option(
+        "--config",
+        help="specify mock config name (use default one from config files \
+if not specified)"
+    )
+
+
+def add_keep_covdata_option(parser):
+    parser.add_option(
+        "-i",
+        "--keep-covdata",
+        default=False,
+        action="store_true",
+        help="keep coverity data in final archive",
+    )
+
+
+def add_comment_option(parser):
+    parser.add_option(
+        "--comment",
+        help="a task description",
+    )
+
+
+def add_task_id_file_option(parser):
+    parser.add_option(
+        "--task-id-file",
+        help="task id is written to this file",
+    )
+
+
+def add_nowait_option(parser):
+    parser.add_option(
+        "--nowait",
+        default=False,
+        action="store_true",
+        help="don't wait until tasks finish",
+    )
+
+
+def add_email_to_option(parser):
+    parser.add_option(
+        "--email-to",
+        action="append",
+        help="send notification to this address (can be used multiple times)"
+    )
+
+
+def add_priority_option(parser):
+    parser.add_option(
+        "--priority",
+        type="int",
+        help="task priority (20+ is admin only), default is 10"
+    )
+
+
+def add_brew_build_option(parser):
+    parser.add_option(
+        "--brew-build",
+        action="store_true",
+        default=False,
+        help="use a brew build (specified by NVR) instead of a local file"
+    )
+
+
+def add_all_option(parser):
+    parser.add_option(
+        "--all",
+        action="store_true",
+        default=False,
+        help="turn all checkers on"
+    )
+
+
+def add_security_option(parser):
+    parser.add_option(
+        "--security",
+        action="store_true",
+        default=False,
+        help="turn security checkers on"
+    )
