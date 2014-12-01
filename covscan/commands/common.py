@@ -7,7 +7,7 @@ def add_cppcheck_option(parser):
         "--cppcheck",
         default=False,
         action="store_true",
-        help="run cppcheck before Coverity scan",
+        help="enable Cppcheck analyzer (DEPRECATED in favour of -a cppcheck)",
     )
 
 
@@ -26,7 +26,7 @@ def add_concurrency_option(parser):
         "--concurrency",
         default=False,
         action="store_true",
-        help="turn on concurrency-related checkers"
+        help="turn on concurrency checkers of Coverity"
     )
 
 
@@ -46,7 +46,7 @@ def add_clang_option(parser):
         "--clang",
         default=False,
         action="store_true",
-        help="enable clang analyzer (doesn't work on RHEL 5)"
+        help="enable Clang analyzer (DEPRECATED in favour of -a clang)"
     )
 
 
@@ -56,7 +56,7 @@ def add_no_cov_option(parser):
         "--no-cov",
         default=False,
         action="store_true",
-        help="do not use Coverity Static Analysis (HAS NO EFFECT -- use --analyzers option)"
+        help="DEPRECATED (use --analyzer to select analyzers)"
     )
 
 
@@ -67,8 +67,7 @@ def add_comp_warnings_option(parser):
         choices=['0', '1', '2', '3'],
         metavar="LEVEL",
         help="adjust compiler warning level: 0 (default), 1 (appends -Wall \
-and -Wextra, 2 (more warnings), 3 (lot of warnings); 2 and 3 can cause build \
-failures with older mock profiles and/or non-default compilers (such as clang)"
+and -Wextra, 2 (additional useful warnings)"
     )
 
 
@@ -79,7 +78,7 @@ def add_analyzers_option(parser):
         dest="analyzers",
         action="store",
         help="list of analyzers to use (see command 'list-analyzers'); use \
-comma as a separator: e.g. \"--analyzer=clang,cov-6.6.1\""
+comma as a separator: e.g. \"--analyzer=gcc,clang,cppcheck\""
     )
 
 
@@ -116,7 +115,7 @@ def add_keep_covdata_option(parser):
         "--keep-covdata",
         default=False,
         action="store_true",
-        help="keep coverity data in final archive",
+        help="keep Coverity data in final archive",
     )
 
 
@@ -173,7 +172,7 @@ def add_all_option(parser):
         "--all",
         action="store_true",
         default=False,
-        help="turn all checkers on"
+        help="enable all checkers of Coverity (expect high FP ratio)"
     )
 
 
@@ -182,5 +181,5 @@ def add_security_option(parser):
         "--security",
         action="store_true",
         default=False,
-        help="turn security checkers on"
+        help="enable security checkers of Coverity"
     )
