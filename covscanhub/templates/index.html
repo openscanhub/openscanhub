@@ -6,10 +6,12 @@
 <p>
 Welcome to shiny new covscan HUB. There are several new improvements:
 <ul>
-    <li>new option <em>version-diff-build</em> -- it scans two builds and diff results</li>
+    <li>new option <em>version-diff-build</em> -- it scans old/new version of a package and returns the list of added/fixed defects:</li>
     <ul>
-        <li>file csdiff.(js|html) contains list of newly introduced defects</li>
-        <li>file csdiff_fixed.(js|html) contains list of defects fixed by new version</li>
+        <li>both old/new package can be given as SRPM or by NVR of a brew build</li>
+        <li>example: <code>covscan version-diff-build -p errata --base-brew-build curl-7.29.0-19.el7 --srpm ./curl-7.29.0-20.el7.src.rpm</code></li>
+        <li>file added.{err,js,html} contains a list of defects added in the new version</li>
+        <li>file fixed.{err,js,html} contains a list of defects fixed in the new version</li>
     </ul>
     <li>tarballs are automatically extracted</li>
     <li>open scans are not lost in the "All tasks" list</li>
