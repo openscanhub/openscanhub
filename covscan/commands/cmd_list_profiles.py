@@ -9,7 +9,7 @@ from kobo.client import HubProxy
 
 
 class List_Profiles(covscan.CovScanCommand):
-    """list available versions of static analyzers"""
+    """list available scanning profiles"""
     enabled = True
     admin = False # admin type account required
 
@@ -30,6 +30,6 @@ class List_Profiles(covscan.CovScanCommand):
         format = "%-20s %s"
         columns = ("NAME", "DESCRIPTION")
         print format % columns
-        available_analyzers = self.hub.scan.list_profiles()
-        for i in available_analyzers:
+        available_profiles = self.hub.scan.list_profiles()
+        for i in available_profiles:
             print format % (i["name"], i['description'])
