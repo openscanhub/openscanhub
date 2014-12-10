@@ -6,11 +6,6 @@ Devel instance
 """
 
 import sys
-
-KOBO_DIR = '/home/ttomecek/dev/kobo'
-if KOBO_DIR not in sys.path:
-    sys.path.insert(0, KOBO_DIR)
-
 import kobo
 import os
 
