@@ -9,7 +9,7 @@
 %{!?xmlrpc_url:%define xmlrpc_url http://localhost/xmlrpc}
 
 Name:           covscan
-Version:        0.6.3
+Version:        0.6.4
 Release:        1%{?dist}
 License:        Commercial
 Summary:        Coverity scan scheduler
@@ -205,6 +205,10 @@ fi
 
 
 %changelog
+* Wed Dec 10 2014 Tomas Tomecek <ttomecek@redhat.com> - 0.6.4-1
+- update CLI docs (--help) and homepage
+- workaround a race on server when running multiple tasks
+
 * Tue Nov 04 2014 Tomas Tomecek <ttomecek@redhat.com> - 0.6.3-1
 - enable passing args to csmock from client
 - fix several TBs
