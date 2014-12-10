@@ -4,44 +4,44 @@
 <h2>Home page</h2>
 
 <p>
-Welcome to shiny new covscan HUB. There are several new improvements:
-<ul>
-    <li>new option <em>version-diff-build</em> -- it scans old/new version of a package and returns the list of added/fixed defects:</li>
-    <ul>
-        <li>both old/new package can be given as SRPM or by NVR of a brew build</li>
-        <li>example: <code>covscan version-diff-build -p errata --base-brew-build curl-7.29.0-19.el7 --srpm ./curl-7.29.0-20.el7.src.rpm</code></li>
-        <li>file added.{err,js,html} contains a list of defects added in the new version</li>
-        <li>file fixed.{err,js,html} contains a list of defects fixed in the new version</li>
-    </ul>
-    <li>tarballs are automatically extracted</li>
-    <li>open scans are not lost in the "All tasks" list</li>
-    <li>you may browse more filetypes (not just .logs)</li>
-</ul>
-</p>
-
-<p>
-Feel free to fill bugs or RFEs in <a href="https://engineering.redhat.com/trac/CoverityScan/newticket">Trac</a>.
+Welcome to web-based interface of covscan service.
 </p>
 
 <h3>Required setup before usage</h3>
 <ol>
-  <li>Install latest covscan-client and it's depenencies (kobo-client, python-krbV) from <a href="http://cov01.lab.eng.brq.redhat.com/coverity/install/covscan/">here</a></li>
-  <li>Generate a kerberos ticket (kinit)</li>
+  <li>Install package covscan-client from <a href="http://cov01.lab.eng.brq.redhat.com/coverity/install/covscan/">this repo</a>.</li>
+  <li>Generate a kerberos ticket (with command <code>kinit</code>).</li>
+  <li>For more info, check our <a href="https://engineering.redhat.com/trac/CoverityScan/wiki/covscan">wiki pages</a>.</li>
 </ol>
 
 <h3>How to use it?</h3>
 
 <ul>
-  <li>Check available mock configs by <strong><tt>covscan list-mock-configs</tt></strong>, choose the best fit for your package</li>
-  <li><strong><tt>covscan mock-build --config=... [--security/--all] [--comment=...] /path/to/srpm</tt></strong></li>
-  <li>Wait for results (email notification)</li>
-  <li>Check the results on WebUI</li>
+  <li>You can browse available mock configs with command <code>covscan list-mock-configs</code>, choose the best fit for your package.</li>
+  <li>Scan your package with command: <code>covscan mock-build --config=... /path/to/srpm</code>.</li>
+  <li>You can pick various analyzers (using option <code>-a</code>): check available with command <code>covscan list-analyzers</code>.</li>
+  <li>Wait for results (email notification).</li>
+  <li>Check the results in WebUI.</li>
 </ul>
 
-<h3>Updates in latest version</h3>
+<h4>Differential scan</h4>
+
+<p>
+<ul>
+    <li>It may scan old and new version of a package and returns a list of added/fixed defects.</li>
+    <li>Both old and new packages can be provided as SRPM or by NVR (covscan downloads those from brew/koji).</li>
+    <li>Example: <code>covscan version-diff-build -p errata --base-brew-build curl-7.29.0-19.el7 --srpm ./curl-7.29.0-20.el7.src.rpm</code>.</li>
+    <li>File added.{err,js,html} contains a list of defects added in the new version.</li>
+    <li>File fixed.{err,js,html} contains a list of defects fixed in the new version.</li>
+</ul>
+</p>
 
 <p>
 For additional information please check <a href="https://engineering.redhat.com/trac/CoverityScan/wiki/covscan/advanced">advanced usage page</a>
+</p>
+
+<p>
+    Feel free to fill bugs or RFEs in <a href="https://engineering.redhat.com/trac/CoverityScan/newticket">Trac</a>.
 </p>
 
 {% endblock %}
