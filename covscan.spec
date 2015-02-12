@@ -67,7 +67,7 @@ Requires: gzip
 # inform ET about progress using qpid broker
 Requires: python-qpid
 # hub is interacting with brew
-Requires: brewkoji
+Requires: koji
 # extract tarballs created by cov-mockbuild
 Requires: xz
 # auth for qpid

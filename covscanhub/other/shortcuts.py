@@ -6,7 +6,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.utils.safestring import mark_safe
-import brew
+import koji
 
 from covscanhub.scan.models import MockConfig, Tag
 from covscanhub.other.exceptions import BrewException
@@ -71,7 +71,7 @@ def check_brew_build(name):
         srpm = name[:-8]
     else:
         srpm = name
-    brew_proxy = brew.ClientSession(settings.BREW_HUB)
+    brew_proxy = koji.ClientSession(settings.BREW_HUB)
     build = brew_proxy.getBuild(srpm)
     if build is None:
         raise BrewException('Brew build %s does not exist' % srpm)
