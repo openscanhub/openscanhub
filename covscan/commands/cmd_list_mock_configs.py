@@ -36,7 +36,7 @@ http://$hostname/covscan/xmlrpc"
                                 AUTH_METHOD='krbv',
                                 HUB_URL=hub_url)
 
-        format = "%-50s %s"
-        print >> sys.stderr, format % ("NAME", "ENABLED")
+        print >> sys.stderr, "NAME"
         for i in self.hub.mock_config.all():
-            print format % (i["name"], i["enabled"])
+            if i["enabled"]:
+                print i["name"]
