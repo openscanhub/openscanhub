@@ -54,7 +54,11 @@ class Version_Diff_Build(covscan.CovScanCommand):
 local file"
         )
 
-        add_brew_build_option(self.parser)
+        self.parser.add_option(
+            "--brew-build",
+            help="use a brew build for target (specified by NVR) instead of a \
+local file"
+        )
 
         self.parser.add_option(
             "--base-srpm",
