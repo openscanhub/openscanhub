@@ -105,7 +105,7 @@ def send_task_notification(request, task_id):
     try:
         nvr = task.args['build']
         source = "Build"
-        package = task.args['build']
+        package = task.args['build'].get("nvr", None)
     except KeyError:
         nvr = task.args['srpm_name'][:-8]
         source = "SRPM"
