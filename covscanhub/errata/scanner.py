@@ -376,6 +376,8 @@ class ClientScanScheduler(AbstractClientScanScheduler):
 
         self.client_csmock_args = self.options.get('csmock_args', None)
 
+        self.email_to = self.options.get("email_to", None)
+
     def prepare_args(self):
         """ prepare dicts -- arguments for task and scan """
         self.task_args['owner_name'] = self.username
@@ -402,6 +404,9 @@ class ClientScanScheduler(AbstractClientScanScheduler):
         csmock_args = self.prepare_csmock_args(self.profile_args, *tuple(analyzer_opts['args']))
         self.task_args['args']['csmock_args'] = csmock_args
         self.task_args['args']['su_user'] = AppSettings.setting_get_su_user()
+        if self.email_to:
+            self.task_args['args']['email_to'] = self.email_to
+
 
     def spawn(self):
         """ """
@@ -509,6 +514,8 @@ class ClientDiffScanScheduler(AbstractClientScanScheduler):
         self.client_csmock_args = self.consume_options.get('csmock_args', None)
         logger.debug("args from client: %s", self.client_csmock_args)
 
+        self.email_to = self.options.get("email_to", None)
+
     def prepare_args(self):
         """ prepare dicts -- arguments for task and scan """
         self.task_args['owner_name'] = self.username
@@ -534,6 +541,9 @@ class ClientDiffScanScheduler(AbstractClientScanScheduler):
         csmock_args = self.prepare_csmock_args(self.profile_args, *tuple(analyzer_opts['args']))
         self.task_args['args']['csmock_args'] = csmock_args
         self.task_args['args']['su_user'] = AppSettings.setting_get_su_user()
+        if self.email_to:
+            self.task_args['args']['email_to'] = self.email_to
+
         # base task args has to be last!
         self.task_args['args']['base_task_args'] = self.prepare_basetask_args()
 
