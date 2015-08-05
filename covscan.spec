@@ -9,7 +9,7 @@
 %{!?xmlrpc_url:%define xmlrpc_url http://localhost/xmlrpc}
 
 Name:           covscan
-Version:        0.6.6
+Version:        0.6.7
 Release:        1%{?dist}
 License:        Commercial
 Summary:        Coverity scan scheduler
@@ -122,8 +122,6 @@ rm -f $RPM_BUILD_ROOT/%{_sysconfdir}/covscan/devel_covscand.conf || :
 rm -f $RPM_BUILD_ROOT/%{_sysconfdir}/covscan/stage_covscand.conf || :
 rm -f $RPM_BUILD_ROOT/%{_sysconfdir}/covscan/prod_covscand.conf || :
 
-touch $RPM_BUILD_ROOT/var/log/covscanhub.log
-
 # prefix on stage & prod, not on devel & local
 %if "%{hub_instance}" == "stage" || "%{hub_instance}" == "prod"
   sed -i 's@^URL_PREFIX =.*@URL_PREFIX = "/covscanhub"@g' $RPM_BUILD_ROOT/%{py_sitedir}/covscanhub/settings.py
@@ -224,6 +222,9 @@ fi
 
 
 %changelog
+* Thu Aug 20 2015 Kamil Dudka <kdudka@redhat.com> - 0.6.7-1
+- 0.6.7 bugfix release
+
 * Wed Aug 12 2015 Kamil Dudka <kdudka@redhat.com> - 0.6.6-1
 - 0.6.6 bugfix release
 - update the list of dependencies
