@@ -26,7 +26,7 @@ DATABASES = {
         'USER': 'covscanhub',
         'PASSWORD': 'velryba',
         'HOST': 'localhost',
-        'PORT': '5433',
+        'PORT': '5432',
     },
     'migration': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
@@ -34,7 +34,7 @@ DATABASES = {
         'USER': 'covscanhub',
         'PASSWORD': 'velryba',
         'HOST': 'localhost',
-        'PORT': '5433',
+        'PORT': '5432',
     }
 
 }
