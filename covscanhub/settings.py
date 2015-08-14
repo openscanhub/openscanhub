@@ -118,7 +118,7 @@ INSTALLED_APPS = (
     'covscanhub.stats',
 
     # better ./manage.py shell
-    'django_extensions',
+    #'django_extensions',
     #'debug_toolbar',
 
     # migrations
