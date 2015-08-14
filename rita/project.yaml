@@ -1,0 +1,60 @@
+textid: covscan
+name: Static Analysis of RPM packages as a service (similar to Brew/Koji)
+description: |
+    covscan - Static Analysis of RPM packages as a service
+    ======================================================
+
+    Covscan is an infrastructure that Red Hat employees can use to run static
+    analysis tools on Fedora/RHEL packages. The set of supported static
+    analyzers includes Coverity Analysis, which is a proprietary static
+    analyzer purchased by Red Hat. Instead of installing and running static
+    analyzers on your machine, it is enough to install the covscan client and
+    submit tasks to the covscan hub (available as a web service). The covscan
+    client provides a simple command-line interface for accessing the covscan
+    hub (authenticated by Kerberos). The basic usage of the covscan client is
+    similar to brew/koji clients.
+
+    The advantage of using the covscan infrastructure is that you do not need
+    to install/update static analyzers, maintain various workarounds to keep
+    them running, etc. The covscan team takes care of that. You just provide an
+    SRPM (or NVR to download one from brew/koji) and the list of static
+    analyzers to use. Once a covscan task is submitted, you can expect an
+    e-mail notification with the results. 
+
+    1. Install appropriate repo file
+    [LINK](http://cov01.lab.eng.brq.redhat.com/coverity/install/covscan/)
+
+    2. Install covscan client
+
+        `$ sudo yum install covscan`
+
+    3. Obtain kerberos ticket!
+
+        `$ kinit your_krb_id`
+
+    4. Try analysing an RPM package:
+
+        `$ covscan mock-build --config=fedora-22-x86_64 my-pkg.src.rpm`
+
+internalurl: https://engineering.redhat.com/trac/CoverityScan/wiki/covscan
+
+#internalcopr: kdudka/covscan
+
+vcsurl: http://git.app.eng.bos.redhat.com/git/covscan.git
+
+# Without leading '#'!
+internalirc: coverity
+
+# Arbitrary string up to 300 bytes, no semantics currently (useful emails,
+# nicks, irc-channels).
+contact: "Use the #coverity channel or try ttomecek@redhat.com, kdudka@redhat.com, ovasik@redhat.com"
+
+# Arbitrary string up to 300 bytes, no semantics currently.
+bugreport: https://engineering.redhat.com/trac/CoverityScan/newticket
+
+tags:
+- services
+- coverity
+- static-analysis
+
+# set vi: ft=yaml
