@@ -289,12 +289,18 @@ class CsmockRunner(object):
     def koji_analyze(self, analyzers, nvr, profile=None, su_user=None,
                      additional_arguments=None, koji_bin="koji", use_sudo=False, **kwargs):
         download_cmd = [koji_bin, "download-build", "--quiet", "--arch=src", nvr]
-        if self.tmpdir:
-            subprocess.check_call(download_cmd, cwd=self.tmpdir)
-            srpm_path = os.path.join(self.tmpdir, '%s.src.rpm' % nvr)
-        else:
-            subprocess.check_call(download_cmd)
-            srpm_path = os.path.join(os.getcwd(), '%s.src.rpm' % nvr)
+        try:
+            if self.tmpdir:
+                subprocess.check_call(download_cmd, cwd=self.tmpdir)
+                srpm_path = os.path.join(self.tmpdir, '%s.src.rpm' % nvr)
+            else:
+                subprocess.check_call(download_cmd)
+                srpm_path = os.path.join(os.getcwd(), '%s.src.rpm' % nvr)
+
+        except (OSError, subprocess.CalledProcessError) as ex:
+            print >> sys.stderr, "command '%s' failed to execute: %s" % (download_cmd, ex)
+            return (None, 2)
+
         return self.analyze(analyzers, srpm_path, profile, su_user, additional_arguments, use_sudo, **kwargs)
 
     def no_scan(self, analyzers, profile=None, su_user=None, additional_arguments=None,

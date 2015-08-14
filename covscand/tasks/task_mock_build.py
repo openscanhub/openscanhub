@@ -56,6 +56,9 @@ class MockBuild(TaskBase):
             else:
                 print >> sys.stderr, "No srpm specified"
                 self.fail()
+            if results is None:
+                print >> sys.stderr, "No results available"
+                self.fail()
             base_results = os.path.basename(results)
             self.hub.upload_task_log(open(results, "r"),
                                      self.task_id, base_results)
