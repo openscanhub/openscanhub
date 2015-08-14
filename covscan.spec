@@ -17,8 +17,8 @@ Group:          Applications/Engineering
 Source:         %{name}-%{version}.tar.bz2
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildArch:      noarch
-BuildRequires:  python-devel >= 2.4
-BuildRequires:  kobo-client >= 0.3.4
+BuildRequires:  python-devel
+BuildRequires:  kobo-client
 
 
 %description
@@ -29,7 +29,7 @@ It consists of central hub, workers and cli client.
 %package client
 Summary: CovScan CLI client
 Group: Applications/Engineering
-Requires: kobo-client >= 0.3.4
+Requires: kobo-client
 Requires: python-krbV
 Requires: koji
 
@@ -41,10 +41,12 @@ CovScan CLI client
 Summary: CovScan worker
 Group: Applications/Engineering
 # Requires: covscan-client = %{version}-%{release}
-Requires: kobo-worker >= 0.3.4
-Requires: kobo-rpmlib
+Requires: csmock
 Requires: kobo-client
-Requires: cppcheck
+Requires: kobo-worker
+Requires: kobo-rpmlib
+Requires: koji
+
 %description worker-%{hub_instance}
 CovScan worker
 
@@ -56,6 +58,7 @@ Group: Applications/Engineering
 Requires: kobo-hub
 Requires: kobo-client
 Requires: kobo-django
+Requires: kobo-rpmlib
 Requires: Django
 Requires: Django-south
 Requires: httpd
@@ -79,6 +82,11 @@ Requires: csdiff
 Requires: python-bugzilla
 Requires: yum
 Requires: file
+
+Requires: python-django-debug-toolbar > 1.0
+
+# FIXME: should covscan-hub work even though covscan-worker is not installed?
+Requires: covscan-worker-%{hub_instance}
 
 %description hub-%{hub_instance}
 CovScan xml-rpc interface and web application
@@ -208,6 +216,7 @@ fi
 %changelog
 * Wed Aug 12 2015 Kamil Dudka <kdudka@redhat.com> - 0.6.6-1
 - 0.6.6 bugfix release
+- update the list of dependencies
 
 * Thu Feb 19 2015 Tomas Tomecek <ttomecek@redhat.com> - 0.6.5-1
 - 0.6.5 bugfix release
