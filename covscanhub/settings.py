@@ -52,7 +52,7 @@ AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
 )
 
-AUTH_USER_MODEL = 'auth.LongnameUser'
+AUTH_USER_MODEL = 'auth.User'
 
 MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
