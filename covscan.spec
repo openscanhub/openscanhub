@@ -9,7 +9,7 @@
 %{!?xmlrpc_url:%define xmlrpc_url http://localhost/xmlrpc}
 
 Name:           covscan
-Version:        0.6.5
+Version:        0.6.6
 Release:        1%{?dist}
 License:        Commercial
 Summary:        Coverity scan scheduler
@@ -206,6 +206,9 @@ fi
 
 
 %changelog
+* Wed Aug 12 2015 Kamil Dudka <kdudka@redhat.com> - 0.6.6-1
+- 0.6.6 bugfix release
+
 * Thu Feb 19 2015 Tomas Tomecek <ttomecek@redhat.com> - 0.6.5-1
 - 0.6.5 bugfix release
 
