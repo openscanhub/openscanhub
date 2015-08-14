@@ -169,6 +169,16 @@ if rpm -q kobo-0.4.0 &>/dev/null; then
     echo "======================================================================"
 fi
 
+%post hub-%{hub_instance}
+if test -e /var/log/covscanhub.log; then
+    # preserve existing log file
+    true
+else
+    # create an empty log file with correct ownership and permissions
+    touch /var/log/covscanhub.log
+    chown apache:apache /var/log/covscanhub.log
+    chmod 0640 /var/log/covscanhub.log
+fi
 
 %triggerin -n covscan-client -- kobo == 0.4.0
 kobo_client_dir=%{python_sitelib}/kobo/client
@@ -207,7 +217,7 @@ fi
 # %attr(640,root,apache) %{py_sitedir}/covscanhub/settings.py[co]
 # %attr(640,root,apache) %{py_sitedir}/covscanhub/settings_local.py[co]
 %attr(640,root,root) /etc/httpd/conf.d/covscanhub-httpd.conf
-%ghost %attr(775,apache,apache) /var/log/covscanhub.log
+%ghost %attr(640,apache,apache) /var/log/covscanhub.log
 %dir %attr(775,root,apache) /var/lib/covscanhub
 %dir %attr(775,root,apache) /var/lib/covscanhub/tasks
 %dir %attr(775,root,apache) /var/lib/covscanhub/upload
@@ -217,6 +227,7 @@ fi
 * Wed Aug 12 2015 Kamil Dudka <kdudka@redhat.com> - 0.6.6-1
 - 0.6.6 bugfix release
 - update the list of dependencies
+- create empty /var/log/covscanhub.log unless it exists already
 
 * Thu Feb 19 2015 Tomas Tomecek <ttomecek@redhat.com> - 0.6.5-1
 - 0.6.5 bugfix release
