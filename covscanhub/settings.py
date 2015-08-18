@@ -141,6 +141,9 @@ DEBUG_TOOLBAR_PANELS = [
     'debug_toolbar.panels.redirects.RedirectsPanel',
 ]
 
+# pagination by default was removed in kobo-0.4.2~9 (use this to re-enable it)
+PAGINATE_BY = 50
+
 ###############################################################################
 # COVSCAN SPECIFIC
 ###############################################################################
