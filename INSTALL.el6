@@ -1,21 +1,16 @@
-- install an el7 server with web server
-- cd /etc && git clone -b mock git://git.engineering.redhat.com/users/kdudka/coverity-scan.git mock
-- cd /etc/yum.repos.d && curl -O http://cov01.lab.eng.brq.redhat.com/coverity/install/covscan/covscan-rhel.repo
-- yum install http://download.eng.brq.redhat.com/pub/fedora/epel/7/x86_64/e/epel-release-7-5.noarch.rpm
-- yum install --enablerepo=covscan-testing covscan-hub-prod
-- setsebool -P httpd_can_network_connect_db 1
-- vim /etc/httpd/conf.d/covscanhub-httpd.conf:
-    <Directory "/usr/lib/python2.7/site-packages/covscanhub">
-        Require all granted
-    </Directory>
-
-- chkconfig httpd on
-- service httpd start
+- install an el6 server with web server
+- cd /etc && sudo git clone -b mock git://git.engineering.redhat.com/users/kdudka/coverity-scan.git mock
+- cd /etc/yum.repos.d && sudo curl -O http://cov01.lab.eng.brq.redhat.com/coverity/install/covscan/covscan-rhel.repo
+- sudo yum install http://download.eng.brq.redhat.com/pub/fedora/epel/6/x86_64/epel-release-6-8.noarch.rpm
+- sudo yum install --enablerepo=covscan-testing covscan-hub-prod
+- sudo setsebool -P httpd_can_network_connect_db 1
+- sudo chkconfig httpd on
+- sudo service httpd start
 - http://covscan-dev/covscanhub should now show up!
 
-- yum install postgresql-server
-- postgresql-setup initdb
-- vim /var/lib/pgsql/data/pg_hba.conf
+- sudo yum install postgresql-server
+- sudo service postgresql initdb
+- sudo vim /var/lib/pgsql/data/pg_hba.conf
     # TYPE  DATABASE    USER        CIDR-ADDRESS          METHOD
     local   all         postgres                          ident
     # "local" is for Unix domain socket connections only
@@ -25,18 +20,18 @@
     # IPv6 local connections:
     host    all         all         ::1/128               md5
 
-- chkconfig postgresql on
-- service postgresql start
-- su - postgres
+- sudo chkconfig postgresql on
+- sudo service postgresql start
+- sudo su - postgres
     psql
     CREATE DATABASE covscanhub;
     CREATE USER "covscanhub" WITH PASSWORD 'velryba';
     GRANT ALL PRIVILEGES ON DATABASE "covscanhub" to "covscanhub";
 
-- /usr/lib/python2.7/site-packages/covscanhub/manage.py syncdb --all
+- sudo /usr/lib/python2.6/site-packages/covscanhub/manage.py syncdb --all
 - http://covscan-dev/covscanhub/task/ should now show up!
 
-- /usr/lib/python2.7/site-packages/covscanhub/manage.py shell
+- sudo /usr/lib/python2.6/site-packages/covscanhub/manage.py shell
     from django.contrib.auth import get_user_model
     User = get_user_model()
     User.objects.create_user('kdudka', 'kdudka@redhat.com', 'xxxxxx')
@@ -44,8 +39,8 @@
 - http://covscan-dev/covscanhub/auth/login/ should now work!
 - http://covscan-dev/covscanhub/admin/ should be available when logged in as 'admin'!
 
-- yum install covscan-client
-- vim /etc/covscan/covscan.conf
+- sudo yum install covscan-client
+- sudo vim /etc/covscan/covscan.conf
     HUB_URL = "http://covscan-dev/covscanhub/xmlrpc"
     AUTH_METHOD = "password"
     USERNAME = "kdudka"
@@ -65,9 +60,9 @@
 - now we should be able to submit tasks using the covscan client:
     covscan mock-build --brew-build curl-7.29.0-25.el7
 
-- adduser coverity
-- gpasswd -a coverity mock
-- vim /etc/covscan/covscand.conf 
+- sudo adduser coverity
+- sudo gpasswd -a coverity mock
+- sudo vim /etc/covscan/covscand.conf 
     HUB_URL = "http://covscan-dev/covscanhub/xmlrpc"
 - go at http://covscan-dev/covscanhub/admin/hub/worker/add/
     - add worker key from /etc/covscan/covscand.conf
@@ -75,7 +70,7 @@
     - select arch 'noarch'
     - select channel 'default'
     - hit 'Save'
-- yum install http://download.devel.redhat.com/brewroot/packages/brewkoji/1.9/1.el7eng/noarch/brewkoji-1.9-1.el7eng.noarch.rpm
-- chkconfig covscand on
-- service covscand start
+- sudo yum install http://download.devel.redhat.com/brewroot/packages/brewkoji/1.9/1.el6eng/noarch/brewkoji-1.9-1.el6eng.noarch.rpm
+- sudo chkconfig covscand on
+- sudo service covscand start
 - the task should be picked and processed!
