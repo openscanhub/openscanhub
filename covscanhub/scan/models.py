@@ -973,6 +973,7 @@ class ReleaseMapping(models.Model):
                                     self.release_tag, self.template)
 
     def get_tag(self, rhel_version):
+        logger.debug("Getting tag for %s" % rhel_version)
         m = re.match(self.release_tag, rhel_version)
         if m:
             try:

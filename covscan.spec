@@ -114,10 +114,11 @@ rm -f $RPM_BUILD_ROOT/%{_sysconfdir}/covscan/devel_covscand.conf || :
 rm -f $RPM_BUILD_ROOT/%{_sysconfdir}/covscan/stage_covscand.conf || :
 rm -f $RPM_BUILD_ROOT/%{_sysconfdir}/covscan/prod_covscand.conf || :
 
+touch $RPM_BUILD_ROOT/var/log/covscanhub.log
+
 # prefix on stage & prod, not on devel & local
 %if "%{hub_instance}" == "stage" || "%{hub_instance}" == "prod"
   sed -i 's@^URL_PREFIX =.*@URL_PREFIX = "/covscanhub"@g' $RPM_BUILD_ROOT/%{py_sitedir}/covscanhub/settings.py
-  cat $RPM_BUILD_ROOT/%{py_sitedir}/covscanhub/settings.py
 %endif
 
 # use proper configuration, remove rest
