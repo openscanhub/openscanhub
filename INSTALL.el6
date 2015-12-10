@@ -1,12 +1,49 @@
-- install an el6 server with web server
-- cd /etc && sudo git clone -b mock git://git.engineering.redhat.com/users/kdudka/coverity-scan.git mock
-- cd /etc/yum.repos.d && sudo curl -O http://cov01.lab.eng.brq.redhat.com/coverity/install/covscan/covscan-rhel.repo
-- sudo yum install http://download.eng.brq.redhat.com/pub/fedora/epel/6/x86_64/epel-release-6-8.noarch.rpm
-- sudo yum install --enablerepo=covscan-testing covscan-hub-prod
-- sudo setsebool -P httpd_can_network_connect_db 1
-- sudo chkconfig httpd on
-- sudo service httpd start
-- http://covscan-dev/covscanhub should now show up!
+``` TODO
+finish rewrite to markdown (sorry Kamil)
+```
+
+# Development setup of covscan
+
+## Hub
+
+1. Install an el6 server with web server
+
+### Manual setup of environment
+
+2. Prepare environment (packages):
+
+```
+$ cd /etc && sudo git clone -b mock git://git.engineering.redhat.com/users/kdudka/coverity-scan.git mock
+$ cd /etc/yum.repos.d && sudo curl -O http://cov01.lab.eng.brq.redhat.com/coverity/install/covscan/covscan-rhel.repo
+$ sudo yum install http://download.eng.brq.redhat.com/pub/fedora/epel/6/x86_64/epel-release-6-8.noarch.rpm
+$ sudo yum install --enablerepo=covscan-testing covscan-hub-prod
+$ sudo setsebool -P httpd_can_network_connect_db 1
+$ sudo chkconfig httpd on
+$ sudo service httpd start
+```
+
+3. `http://covscan-dev/covscanhub` should now show up!
+
+### docker
+
+2. Alternatively you can run hub in a docker container:
+
+```
+$ docker build --tag=covscanhub .
+$ docker run --net=host -v $PWD:/source covscan
+```
+
+  * You will bind-mount curent sources inside and those will be interpreted,
+    it means that you can code and webserver will pick changes on the fly. Neat!
+
+  * --net=host is for getting rid of port mapping/private network nonsense. Trust me,
+    it's easier to use host's network for development. You don't need new network stack.
+
+3. You should be now able to access hub in browser: `http://localhost:8000/`
+
+
+### Database
+
 
 - sudo yum install postgresql-server
 - sudo service postgresql initdb
