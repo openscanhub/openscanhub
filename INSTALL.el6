@@ -30,7 +30,7 @@ $ sudo service httpd start
 
 ```
 $ docker build --tag=covscanhub .
-$ docker run --net=host -v $PWD:/source covscan
+$ docker run --net=host -v $PWD:/source covscanhub
 ```
 
   * You will bind-mount curent sources inside and those will be interpreted,
