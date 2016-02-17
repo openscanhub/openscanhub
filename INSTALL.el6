@@ -1,12 +1,15 @@
 ``` TODO
-finish rewrite to markdown (sorry Kamil)
+* provide development fixtures
+* docker compose!
 ```
 
 # Development setup of covscan
 
+
 ## Hub
 
 1. Install an el6 server with web server
+
 
 ### Manual setup of environment
 
@@ -24,30 +27,13 @@ $ sudo service httpd start
 
 3. `http://covscan-dev/covscanhub` should now show up!
 
-### docker
 
-2. Alternatively you can run hub in a docker container:
+## Database (postgresql)
 
-```
-$ docker build --tag=covscanhub .
-$ docker run --net=host -v $PWD:/source:Z covscanhub
-```
-
-  * You will bind-mount curent sources inside and those will be interpreted,
-    it means that you can code and webserver will pick changes on the fly. Neat!
-
-  * --net=host is for getting rid of port mapping/private network nonsense. Trust me,
-    it's easier to use host's network for development. You don't need new network stack.
-
-3. You should be now able to access hub in browser: `http://localhost:8000/`
-
-
-### Database
-
-
-- sudo yum install postgresql-server
-- sudo service postgresql initdb
-- sudo vim /var/lib/pgsql/data/pg_hba.conf
+```shell
+$ sudo yum install postgresql-server
+$ sudo service postgresql initdb
+$ sudo vim /var/lib/pgsql/data/pg_hba.conf
     # TYPE  DATABASE    USER        CIDR-ADDRESS          METHOD
     local   all         postgres                          ident
     # "local" is for Unix domain socket connections only
@@ -57,57 +43,165 @@ $ docker run --net=host -v $PWD:/source:Z covscanhub
     # IPv6 local connections:
     host    all         all         ::1/128               md5
 
-- sudo chkconfig postgresql on
-- sudo service postgresql start
-- sudo su - postgres
+$ sudo chkconfig postgresql on
+$ sudo service postgresql start
+$ sudo su - postgres
     psql
     CREATE DATABASE covscanhub;
     CREATE USER "covscanhub" WITH PASSWORD 'velryba';
     GRANT ALL PRIVILEGES ON DATABASE "covscanhub" to "covscanhub";
 
-- sudo /usr/lib/python2.6/site-packages/covscanhub/manage.py syncdb --all
-- http://covscan-dev/covscanhub/task/ should now show up!
+$ sudo /usr/lib/python2.6/site-packages/covscanhub/manage.py syncdb --all
+```
 
-- sudo /usr/lib/python2.6/site-packages/covscanhub/manage.py shell
+Since database is set up, empty list of tasks should be available now:
+
+```
+http://covscan-dev/covscanhub/task/
+```
+
+
+# Development setup of covscan in docker containers
+
+## hub
+
+```
+$ docker build --tag=covscanhub .
+$ docker run --net=host -v $PWD:/source:Z --name=hub covscanhub
+```
+
+  * You will bind-mount curent sources inside and those will be interpreted,
+    it means that you can code and webserver will pick changes on the fly. Neat!
+
+  * --net=host is for getting rid of port mapping/private network nonsense. Trust me,
+    it's easier to use host's network for development. You don't need new network stack.
+
+You should be now able to access hub in browser: `http://localhost:8000/`.
+
+### database
+
+We still need a database to set up.
+
+```shell
+$ docker exec -ti hub /source/covscanhub/manage.py syncdb --all
+```
+
+It's not postgres, but sqlite -- should be easier for development.
+
+If you need an interactive shell in any of the containers, just run:
+
+```shell
+$ docker exec -ti hub bash
+```
+
+
+## worker
+
+```shell
+$ docker run -ti --net=host -v $PWD:/source:Z --name=worker covscanhub /source/covscand/covscand -f
+```
+
+
+# Runtime configuration
+
+Covscan requires some runtime configuration in order to be fully functional.
+
+
+## authentication
+
+In order to access django's admin interface, we need an admin account (and a user account to perform scans).
+
+```
+$ sudo /usr/lib/python2.6/site-packages/covscanhub/manage.py shell
     from django.contrib.auth import get_user_model
     User = get_user_model()
     User.objects.create_user('kdudka', 'kdudka@redhat.com', 'xxxxxx')
     User.objects.create_superuser('admin', 'kdudka@redhat.com', 'xxxxxx')
-- http://covscan-dev/covscanhub/auth/login/ should now work!
-- http://covscan-dev/covscanhub/admin/ should be available when logged in as 'admin'!
+```
 
-- sudo yum install covscan-client
-- sudo vim /etc/covscan/covscan.conf
+You should be able to login now via
+
+```
+http://covscan-dev/covscanhub/auth/login/
+```
+
+...and also access admin interface:
+
+```
+http://covscan-dev/covscanhub/admin/
+```
+
+
+## client
+
+install and configure client:
+
+```
+$ sudo yum install covscan-client
+$ sudo vim /etc/covscan/covscan.conf
     HUB_URL = "http://covscan-dev/covscanhub/xmlrpc"
     AUTH_METHOD = "password"
     USERNAME = "kdudka"
     PASSWORD = "xxxxxx"
-- now we should be able to list mock configs:
-    covscan list-mock-configs
+```
+
+To test if client is able to connect, let's list available mock configs:
+
+```
+$ covscan list-mock-configs
+```
+
+
+## configuring analyzers
+
+FIXME: this should be available via fixture
 
 - go at http://covscan-dev/covscanhub/admin/hub/arch/add
-    type noarch/noarch and save
+  - type noarch/noarch and save
 - go at http://covscan-dev/covscanhub/admin/hub/channel/add/
-    type 'default' and save
+  - type 'default' and save
 - go at http://covscan-dev/covscanhub/admin/scan/profile/
-    - edit the 'default' profile
-    - set args to:
+  - edit the 'default' profile
+  - set args to:
         {"analyzers": "", "csmock_args": "--all-tools"}
-    - hit 'Save'
+  - hit 'Save'
 - now we should be able to submit tasks using the covscan client:
-    covscan mock-build --brew-build curl-7.29.0-25.el7
 
-- sudo adduser coverity
-- sudo gpasswd -a coverity mock
-- sudo vim /etc/covscan/covscand.conf 
+```
+$ covscan mock-build --brew-build curl-7.29.0-25.el7
+```
+
+## worker setup
+
+In order for worker to successfully pick up scans and process them, we need to create new user which will perform scans and connect worker to hub:
+
+```
+$ sudo adduser coverity
+$ sudo gpasswd -a coverity mock
+$ sudo vim /etc/covscan/covscand.conf 
     HUB_URL = "http://covscan-dev/covscanhub/xmlrpc"
+```
+
+Time to configure worker in hub's admin:
+
 - go at http://covscan-dev/covscanhub/admin/hub/worker/add/
     - add worker key from /etc/covscan/covscand.conf
     - FIXME: name needs to match worker's FQDN but needs to be at most 30 chars long
     - select arch 'noarch'
     - select channel 'default'
     - hit 'Save'
-- sudo yum install http://download.devel.redhat.com/brewroot/packages/brewkoji/1.9/1.el6eng/noarch/brewkoji-1.9-1.el6eng.noarch.rpm
-- sudo chkconfig covscand on
-- sudo service covscand start
-- the task should be picked and processed!
+
+In order for worker to pick stuff from brew, we need to install brewkoji package:
+
+```
+$ sudo yum install http://download.devel.redhat.com/brewroot/packages/brewkoji/1.9/1.el6eng/noarch/brewkoji-1.9-1.el6eng.noarch.rpm
+```
+
+Let's start worker now:
+
+```
+$ sudo chkconfig covscand on
+$ sudo service covscand start
+```
+
+The task should be picked and processed!

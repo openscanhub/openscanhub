@@ -5,13 +5,17 @@ RUN set -ex ; \
     yum install -y http://download.eng.brq.redhat.com/pub/fedora/epel/6/x86_64/epel-release-6-8.noarch.rpm && \
     yum install -y --enablerepo=covscan-testing covscan-hub-prod && yum remove -y covscan-hub-prod
 
+RUN cd /etc && sudo git clone -b mock git://git.engineering.redhat.com/users/kdudka/coverity-scan.git mock
+
 # we just want hub deps, we will launch hub from git
 
 # setsebool -P httpd_can_network_connect_db 1
 
-VOLUME /source
+COPY . /source
+
+WORKDIR /source
 
 ENV PYTHONPATH=/source/
+ENV COVSCAND_CONFIG_FILE=/source/covscand/covscand-local.conf
 
-ENTRYPOINT ["/source/covscanhub/manage.py"]
-CMD ["runserver", "0.0.0.0:8000"]
+CMD ["/source/covscanhub/manage.py", "runserver", "0.0.0.0:8000"]
