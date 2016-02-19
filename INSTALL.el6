@@ -1,10 +1,6 @@
-``` TODO
-* provide development fixtures
-* docker compose!
-```
-
 # Development setup of covscan
 
+You can also run covscan in docker, see `docs/development_setup_docker.md`.
 
 ## Hub
 
@@ -58,47 +54,6 @@ Since database is set up, empty list of tasks should be available now:
 
 ```
 http://covscan-dev/covscanhub/task/
-```
-
-
-# Development setup of covscan in docker containers
-
-## hub
-
-```
-$ docker build --tag=covscanhub .
-$ docker run --net=host -v $PWD:/source:Z --name=hub covscanhub
-```
-
-  * You will bind-mount curent sources inside and those will be interpreted,
-    it means that you can code and webserver will pick changes on the fly. Neat!
-
-  * --net=host is for getting rid of port mapping/private network nonsense. Trust me,
-    it's easier to use host's network for development. You don't need new network stack.
-
-You should be now able to access hub in browser: `http://localhost:8000/`.
-
-### database
-
-We still need a database to set up.
-
-```shell
-$ docker exec -ti hub /source/covscanhub/manage.py syncdb --all
-```
-
-It's not postgres, but sqlite -- should be easier for development.
-
-If you need an interactive shell in any of the containers, just run:
-
-```shell
-$ docker exec -ti hub bash
-```
-
-
-## worker
-
-```shell
-$ docker run -ti --net=host -v $PWD:/source:Z --name=worker covscanhub /source/covscand/covscand -f
 ```
 
 

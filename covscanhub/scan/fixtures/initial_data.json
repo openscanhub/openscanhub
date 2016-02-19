@@ -200,5 +200,20 @@
     "name": "default", 
     "description": "default profile for client scans"
   }
+},
+{
+  "pk": 1,
+  "model": "hub.arch",
+  "fields": {
+    "pretty_name": "noarch",
+    "name": "noarch"
+  }
+},
+{
+  "pk": 1,
+  "model": "hub.channel",
+  "fields": {
+    "name": "default"
+  }
 }
 ]
