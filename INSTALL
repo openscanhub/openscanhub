@@ -71,7 +71,8 @@
     HUB_URL = "http://covscan-dev/covscanhub/xmlrpc"
 - go at http://covscan-dev/covscanhub/admin/hub/worker/add/
     - add worker key from /etc/covscan/covscand.conf
-    - FIXME: name needs to match worker's FQDN but needs to be at most 30 chars long
+    - FIXME: name needs to match worker's FQDN but needs to be at most 30 chars
+      long, including the "worker/" prefix
     - select arch 'noarch'
     - select channel 'default'
     - hit 'Save'
@@ -79,3 +80,24 @@
 - chkconfig covscand on
 - service covscand start
 - the task should be picked and processed!
+
+- reset password for a user:
+    >>> from django.contrib.auth import get_user_model
+    >>> User = get_user_model()
+    >>> u = User.objects.get(username='admin')
+    >>> u.set_password('xxxxxx')
+    >>> u.save()
+
+- migrating PostgreSQL database from RHEL-6 to RHEL-7:
+    # service postgresql stop
+    # rm -v /var/lib/pgsql/data/postmaster.pid
+    # yum install postgresql-upgrade
+    # postgresql-setup upgrade
+
+- migrating old database scheme (using South):
+    # /usr/lib/python2.7/site-packages/covscanhub/manage.py migrate kobo.django.auth
+
+- migrating old database scheme (directly):
+    # su -c psql postgres
+        \connect covscanhub
+        ALTER TABLE auth_user_groups RENAME COLUMN longnameuser_id TO user_id;

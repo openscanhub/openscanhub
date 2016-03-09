@@ -141,7 +141,8 @@ Time to configure worker in hub's admin:
 
 - go at http://covscan-dev/covscanhub/admin/hub/worker/add/
     - add worker key from /etc/covscan/covscand.conf
-    - FIXME: name needs to match worker's FQDN but needs to be at most 30 chars long
+    - FIXME: name needs to match worker's FQDN but needs to be at most 30 chars
+      long, including the "worker/" prefix
     - select arch 'noarch'
     - select channel 'default'
     - hit 'Save'
