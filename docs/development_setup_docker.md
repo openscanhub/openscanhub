@@ -43,7 +43,7 @@ Important points:
 You may try to access django admin interface:
 
 ```
-http://localhost:8000/admin/
+http://localhost:8000/covscanhub/admin/
 ```
 
 If you need an interactive shell in any of the containers, just run:
@@ -65,7 +65,7 @@ $ docker run --privileged -ti --net=host -v $PWD:/source:Z --name=worker covscan
 To test if client is able to connect, let's list available mock configs:
 
 ```
-docker run --rm -ti --net=host -v $PWD:/source:Z covscanhub /source/covscan/covscan list-mock-configs
+$ docker run --rm -ti --net=host -v $PWD:/source:Z covscanhub /source/covscan/covscan list-mock-configs
 ```
 
 
