@@ -87,6 +87,9 @@ def generate_stats(task, diff_task=False, with_defects_in_patches=False):
 
 
 def send_task_notification(request, task_id):
+    if not AppSettings.setting_send_mail():
+        logger.info("e-mail notifications are turned off")
+        return
     task = Task.objects.get(id=task_id)
 
     # return if task has some parent and send e-mail only from parent task
@@ -96,9 +99,7 @@ def send_task_notification(request, task_id):
     if not task.is_finished():
         logger.warning("Not sending e-mail for task %d with state '%s'", task_id, state)
         return
-    recipient = "covscan-auto@redhat.com"
-    if AppSettings.setting_send_mail():
-        recipient = get_recipient(task.owner)
+    recipient = get_recipient(task.owner)
     hostname = socket.gethostname()
     task_url = kobo.hub.xmlrpc.client.task_url(request, task_id)
 
