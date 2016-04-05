@@ -12,7 +12,7 @@ from covscanhub.errata.scanner import create_diff_task2, ClientScanScheduler, Cl
 from covscanhub.scan.models import Package, Tag, ClientAnalyzer, Profile
 
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("covscanhub")
 
 
 __all__ = (

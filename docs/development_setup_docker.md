@@ -32,6 +32,7 @@ Time to load development data into database:
 
 ```
 $ docker exec -ti hub /source/covscanhub/manage.py loaddata covscanhub/fixtures/development_setup.json
+$ docker exec -ti hub covscanhub/scripts/db.py -crSH
 ```
 
 Important points:

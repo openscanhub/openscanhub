@@ -1,239 +1,253 @@
 #!/usr/bin/python -tt
 """
-XML-RPC call against covscan tool with kerberos authentication.
-You have to have kobo module (yum install kobo) to run this example.
 
-You have to have kobo module to successfully run this code.
+This is an XML-RPC client for covscan hub
 
-This module is present in Fedora repositories and in EPEL:
+
+## DEPENDENCIES
 
     yum install kobo*
+
+
+## USAGE
+
+
+### CREATE SCAN
+
+ ./covscanhub/scripts/xmlrpc.py --username=admin --password=admin
+    --hub http://127.0.0.1:8000/xmlrpc/kerbauth/  # has to end with '/'
+    create-scan
+    -b python-six-1.3.0-4.el7 -t python-six-1.9.0-2.el7
+    --et-scan-id=1 --release=RHEL-7.2.0 --owner=ttomecek --advisory-id=1  # these are not important
+
+
+### GET SCAN STATE
+
+bear in mind that you need to use ID which is returned by "create-scan" -- that's what errata is
+using
+
+./covscanhub/scripts/xmlrpc.py --hub http://127.0.0.1:8000/xmlrpc/kerbauth/ get-scan-state 13
+
+
+## DEBUGGING
+
+In case you are getting 500s and there is no sensible error message, it's likely that server is
+not able to execute the XML-RPC call properly, so you need to read content of the response:
+
+File: "/usr/lib/python2.7/site-packages/kobo/xmlrpc.py"
+ 481       print response.read()
+ 482       raise xmlrpclib.ProtocolError(host + handler, response.status, response.reason, response.msg)
+
+
 """
+
+import json
 import sys
-
-from kobo.tback import Traceback, set_except_hook
-#print sys.excepthook
-set_except_hook()
-#print sys.excepthook
-
-import kobo
+import logging
 import xmlrpclib
-import kobo.xmlrpc
-import pdb
 import urlparse
 import base64
-import random
 import datetime
 
-from optparse import OptionParser
+import argparse
+
+import kobo
+from kobo.tback import set_except_hook
+from kobo.xmlrpc import SafeCookieTransport, CookieTransport
+
+
+logger = logging.getLogger('covscan_api_client')
+logger.setLevel(logging.DEBUG)
+# create console handler and set level to debug
+ch = logging.StreamHandler()
+ch.setLevel(logging.DEBUG)
+# create formatter
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+# add formatter to ch
+ch.setFormatter(formatter)
+# add ch to logger
+logger.addHandler(ch)
 
 xmlrpclib.Fault.__repr__ = lambda x: "<Fault %s: %s>" % (x.faultCode, str(x.faultString))
 
 
+def create_scan_cmd(options, hub):
+    base = options.base
+    target = options.target
+    et_scan_id = options.et_scan_id
+    advisory_id = options.advisory_id
+    release = options.release
+    owner = options.owner
+    username = options.username
+    password = options.password
+    c = Client(hub, username=username, password=password, verbose=options.verbose)
+    logger.info(
+        c.create_et_scan(
+            base=base, target=target, owner=owner, release=release, et_id=et_scan_id,
+            advisory_id=advisory_id
+        )
+    )
+
+
+def get_scan_state_cmd(options, hub):
+    c = Client(hub)
+    response = c.get_scan_state(options.SCAN_ID[0])
+    logger.info(json.dumps(response, indent=2))
+
+
 def set_options():
-    parser = OptionParser()
-    parser.add_option("-l", "--localhost", help="target hub is localhost",
-                      action="store_true", dest="hub_local", default=False)
-    parser.add_option("-s", "--staging", help="target hub is staging",
-                      action="store_true", dest="hub_staging", default=False)
-    parser.add_option("-p", "--production", help="target hub is production",
-                      action="store_true", dest="hub_prod", default=False)
-    parser.add_option("--hub", help="hub URL", dest="hub", default=None)
-    parser.add_option("-i", "--init", help="create scan requests",
-                      action="store_true", dest="init", default=False)
-    parser.add_option("-b", "--base", action="store", type="string",
-                      dest="base",
-                      help="nvr of base package to scan")
-    parser.add_option("-t", "--target", action="store", type="string",
-                      dest="target",
-                      help="nvr of target package to scan",)
-    parser.add_option("-f", "--file", help="create base scans from this file",
-                      action="store", type="string", dest="file")
-    parser.add_option("-T", "--tag", help="name of tag for mass prescan",
-                      action="store", type="string", dest="tag_name")
-    parser.add_option("-m", "--send-message", help="send random message to qpid broker",
-                      action="store_true", dest="messaging")
+    parser = argparse.ArgumentParser(description="CLI client for covscan XMLRPC API")
 
-    parser.add_option("-S", "--get-state", help="get scan's state",
-                      action="store", type="int", dest="scan_state")
+    parser.add_argument("-v", "--verbose", help="enable debug logs and verbose traceback",
+                        action="store_true")
+    parser.add_argument("--username", help="username for authentication")
+    parser.add_argument("--password", help="password for authentication")
 
-    parser.add_option("--info", help="get task's info",
-                      action="store", type="int", dest="task_info")
+    subparsers = parser.add_subparsers(help='commands')
 
-    parser.add_option("--et-scan-id", action="store", type="string",
-                      dest="et_id",
-                      help="database ID of run in ET")
+    parser.add_argument(
+        "--hub",
+        help="full URL of API endpoint, e.g. http://172.21.0.2:8000/xmlrpc/kerbauth",
+        dest="hub", default=None
+    )
 
-    parser.add_option("--release", action="store", type="string",
-                      dest="release",
-                      help="release ID")
+    get_scan_state_parser = subparsers.add_parser(
+        'get-scan-state',
+        help='get state of a scan'
+    )
+    get_scan_state_parser.add_argument("SCAN_ID", help="numeric ID of a scan", nargs=1)
+    get_scan_state_parser.set_defaults(func=get_scan_state_cmd)
 
-    parser.add_option("--advisory-id", action="store", type="string",
-                      dest="advisory_id",
-                      help="ID of advisory")
+    create_scan_parser = subparsers.add_parser(
+        'create-scan',
+        help='create scan, uses same endpoint as Errata Tool'
+    )
+    create_scan_parser.set_defaults(func=create_scan_cmd)
+    create_scan_parser.add_argument("-b", "--base", help="nvr of base package to scan")
+    create_scan_parser.add_argument("-t", "--target", help="nvr of target package to scan",)
+    create_scan_parser.add_argument("--et-scan-id", help="database ID of run in ET")
+    create_scan_parser.add_argument("--release", help="release ID")
+    create_scan_parser.add_argument("--advisory-id", help="ID of advisory")
+    create_scan_parser.add_argument("--owner", help="package owner")
 
-    parser.add_option("--owner", action="store", type="string",
-                      dest="owner",
-                      help="package owner")
+    args = parser.parse_args()
 
-    parser.add_option("--notif", action="store", type="int",
-                      dest="notif_task_id",
-                      help="task to send notif e-mail")
-
-    parser.add_option("--username", action="store", type="string",
-                      dest="username",
-                      help="username for authentication")
-
-    parser.add_option("--password", action="store", type="string",
-                      dest="password",
-                      help="password for authentication")
-
-    (options, args) = parser.parse_args()
-
-    return parser, options, args
+    return parser, args
 
 
-def connect(rpc_url):
+class Client(object):
     """
-    Connects to XML-RPC server and return client object
-    Returns client objects
+    client of XML-RPC service
     """
-    #SSL transport
-    #TransportClass = kobo.xmlrpc.retry_request_decorator(
-    #    kobo.xmlrpc.SafeCookieTransport)
-    #TransportClass = kobo.xmlrpc.retry_request_decorator(
-    #    kobo.xmlrpc.CookieTransport)
-    transport = kobo.xmlrpc.SafeCookieTransport()
 
-    client = xmlrpclib.ServerProxy(rpc_url, allow_none=True,
-                                   transport=transport)
-    return client
+    def __init__(self, hub_url, username=None, password=None, verbose=False):
+        self.hub_url = hub_url
+        self.username = username
+        self.password = password
+        self.verbose = verbose
+        self._hub = None
 
+    @property
+    def hub(self):
+        if self._hub is None:
+            self._hub = self.connect()
+        return self._hub
 
-def call_task_info(client, task_id):
-    """
-    executes task_info RPC call
-    def task_info(request, task_id, flat=False):
-    """
-    result = client.client.task_info(task_id)
-    for key, value in result.iteritems():
-        print "%s = %s" % (key, value)
+    def connect(self):
+        """
+        Connects to XML-RPC server and return client object
+        Returns client objects
+        """
+        # we can also use kobo.xmlrpc.retry_request_decorator, which tries to perform
+        # the connection several times; likely, that's not what we want in testing
+        # TransportClass = kobo.xmlrpc.retry_request_decorator(kobo.xmlrpc.SafeCookieTransport)
+        if "https" in self.hub_url:
+            transport = SafeCookieTransport()
+        elif "http" in self.hub_url:
+            transport = CookieTransport()
+        else:
+            raise ValueError("URL to hub has to start with http(s): %r" % self.hub_url)
+        logger.info("connecting to %s", self.hub_url)
+        client = xmlrpclib.ServerProxy(self.hub_url, allow_none=True, transport=transport,
+                                       verbose=self.verbose)
+        return client
 
+    def get_task_info(self, task_id):
+        """
+        executes task_info RPC call
+        def task_info(request, task_id, flat=False):
+        """
+        logger.debug("get task info: %s", task_id)
+        return self.hub.client.task_info(task_id)
 
-def call_task_url(client, task_id):
-    """
-    executes task_url RPC call
-    def task_url(request, task_id):
-    """
-    return client.client.task_url(task_id)
+    def get_scan_state(self, scan_id):
+        """
+        Call xmlrpc function get_scan_state
+        """
+        logger.debug("get scan state: %s", scan_id)
+        return self.hub.errata.get_scan_state(scan_id)
 
+    def get_krb_chain(self):
+        """
+        authenticates against RPC server using kerberos with
+        locally initialized ticket
+        """
+        def get_server_principal(service=None, realm=None):
+            """Convert hub url to kerberos principal."""
+            hostname = urlparse.urlparse(self.hub_url)[1]
+            # remove port from hostname
+            hostname = hostname.split(":")[0]
 
-def call_notif_task(client, task_id):
-    """
-    executes task_url RPC call
-    def task_url(request, task_id):
-    """
-    return client.worker.email_task_notification(task_id)
+            if realm is None:
+                # guess realm: last two parts from hostname
+                realm = ".".join(hostname.split(".")[-2:]).upper()
+            if service is None:
+                service = "HTTP"
+            return (realm, '%s/%s@%s' % (service, hostname, realm))
+        import krbV
+        ctx = krbV.default_context()
+        ccache = ctx.default_ccache()
+        cprinc = ccache.principal()
+        realm, sprinc_str = get_server_principal()
+        print sprinc_str
+        sprinc = krbV.Principal(name=sprinc_str, context=ctx)
 
+        ac = krbV.AuthContext(context=ctx)
+        ac.flags = krbV.KRB5_AUTH_CONTEXT_DO_SEQUENCE | \
+                   krbV.KRB5_AUTH_CONTEXT_DO_TIME
+        ac.rcache = ctx.default_rcache()
 
-def call_resubmit_task(client, task_id):
-    """
-    executes resubmit_task RPC call
-    requires login
-    def resubmit_task(request, task_id):
-    """
-    return client.client.resubmit_task(task_id)
+        try:
+            ac, req = ctx.mk_req(server=sprinc, client=cprinc,
+                                 auth_context=ac, ccache=ccache,
+                                 options=krbV.AP_OPTS_MUTUAL_REQUIRED)
+        except krbV.Krb5Error, ex:
+            print ex
+            if getattr(ex, "err_code", None) == -1765328377:
+                ex.message += ". Make sure you correctly set \
+    KRB_REALM (current value: %s)." % realm
+                ex.args = (ex.err_code, ex.message)
+            raise ex
+        return base64.encodestring(req)
 
-def call_errata_version_task(client, kwargs):
-    """
-    Call function scan.create_version_diff_task
-    """
-    return client.errata.create_errata_diff_scan(kwargs)
+    def login(self):
+        """
+        Perform login: either via username/password, or via kerberos
+        """
+        logger.info("performing login")
+        if self.username and self.password:
+            logger.info("username/password login")
+            self.hub.auth.login_password(self.username, self.password)
+        else:
+            logger.info("kerberos login")
+            self.hub.auth.login_krbv(self.get_krb_chain())
 
-def call_version_task(client, kwargs):
-    """
-    Call function scan.create_version_diff_task
-    """
-    return client.scan.create_user_diff_task(kwargs)
+    def create_et_scan(self, base, target, advisory_id, et_id, owner, release):
+        """
+        Create scan, uses same method as Errata Tool
+        """
+        self.login()
 
-
-def call_get_scan_state(client, scan_id):
-    """
-    Call xmlrpc function get_scan_state
-    """
-    return client.errata.get_scan_state(scan_id)
-
-def call_send_message(client):
-    """
-    """
-    return client.test.send_message()
-
-def login(rpc_url):
-    """
-    authenticates against RPC server using kerberos with
-    locally initialized ticket
-    """
-    def get_server_principal(service=None, realm=None):
-        """Convert hub url to kerberos principal."""
-        hostname = urlparse.urlparse(rpc_url)[1]
-        # remove port from hostname
-        hostname = hostname.split(":")[0]
-
-        if realm is None:
-            # guess realm: last two parts from hostname
-            realm = ".".join(hostname.split(".")[-2:]).upper()
-        if service is None:
-            service = "HTTP"
-        return (realm, '%s/%s@%s' % (service, hostname, realm))
-    import krbV
-    ctx = krbV.default_context()
-    #print "%s ctx:" % ('=' * 20)
-    #for i in dir(ctx):
-    #    print "%s = %s" % (i, getattr(ctx, i))
-    ccache = ctx.default_ccache()
-    #print "%s ccache:" % ('=' * 20)
-    #for i in dir(ccache):
-    #    print "%s = %s" % (i, getattr(ccache, i))
-    cprinc = ccache.principal()
-    #print "%s cprinc:" % ('=' * 20)
-    #print cprinc
-    #pdb.set_trace()
-    realm, sprinc_str = get_server_principal()
-    print sprinc_str
-    sprinc = krbV.Principal(name=sprinc_str, context=ctx)
-
-    ac = krbV.AuthContext(context=ctx)
-    ac.flags = krbV.KRB5_AUTH_CONTEXT_DO_SEQUENCE | \
-               krbV.KRB5_AUTH_CONTEXT_DO_TIME
-    ac.rcache = ctx.default_rcache()
-
-    try:
-        ac, req = ctx.mk_req(server=sprinc, client=cprinc,
-                             auth_context=ac, ccache=ccache,
-                             options=krbV.AP_OPTS_MUTUAL_REQUIRED)
-    except krbV.Krb5Error, ex:
-        print ex
-        if getattr(ex, "err_code", None) == -1765328377:
-            ex.message += ". Make sure you correctly set \
-KRB_REALM (current value: %s)." % realm
-            ex.args = (ex.err_code, ex.message)
-        raise ex
-    return base64.encodestring(req)
-
-
-def create_et_scan(client, base, target, advisory_id, et_id, owner, release="RHEL-6.5.0", username=None, password=None):
-    """
-    Connect to RPC server, login and execute some method
-    """
-    #login_krbv is rpc call
-    #print client.auth.login_krbv(login())
-    if username and password:
-        client.auth.login_password(username, password)
-
-    #p = random.randint(1, 100000)
-    #p2 = random.randint(1, 100000)
-
-    try:
         scan_args = {
             'package_owner': owner,
             'base': base,
@@ -243,102 +257,42 @@ def create_et_scan(client, base, target, advisory_id, et_id, owner, release="RHE
             'rhel_version': release,
             'release': release,
         }
-    except Exception:
-        print "Usage:\n%prog -b <base_nvr> -t <target_nvr>"
-        sys.exit(1)
-    #'base': 'units-1.87-4.el6' 'nvr': 'units-1.87-7.el6',
-    #print call_send_message(client)
-    print call_errata_version_task(client, scan_args)
-
-def init_scans(client):
-    nvrs = [
-        ('libssh2-1.2.2-7.el6', 'libssh2-1.4.2-1.el6'),
-        ('wget-1.12-1.4.el6', 'wget-1.12-1.8.el6'),
-        ('glibc-2.12-1.80.el6', 'glibc-2.12-1.106.el6'),
-        ('btparser-0.16-3.el6', 'btparser-0.17-1.el6'),
-        ('sysfsutils-2.1.0-6.1.el6', 'sysfsutils-2.1.0-7.el6'),
-        ('iok-1.3.13-2.el6', 'iok-1.3.13-3.el6'),
-        ('cifs-utils-4.8.1-10.el6', 'cifs-utils-4.8.1-14.el6'),
-        ('systemd-191-2.fc18', 'systemd-192-1.fc18', ),
-        ('systemd-191-2.fc18', 'systemd-193-1.fc18', ),
-        ('systemd-191-2.fc18', 'systemd-194-1.fc18', ),
-        ('systemd-191-2.fc18', 'systemd-195-2.fc18', ),
-        ('systemd-191-2.fc18', 'systemd-196-1.fc19', ),
-    ]
-    for b in nvrs:
-        scan_args = {
-            'package_owner': 'ttomecek',
-            'base': b[0],
-            'target': b[1],
-            'id': 'test_id',
-            'errata_id': 'test_id2',
-            'rhel_version': "RHEL-6.4.0",
-            'release': 'RHEL-6.4.0',
-        }
-        print call_errata_version_task(client, scan_args)
+        return self.hub.errata.create_errata_diff_scan(scan_args)
 
 
-def mass_prescan(client, file_path, parser, tag_name):
+def main():
+    parser, args = set_options()
+    logger.debug('You are using kobo from %s' % kobo.__file__)
+
+    verbose = args.verbose
+
+    if verbose:
+        # verbose tracebacks
+        set_except_hook()
+
+    hub_url = args.hub
+    if not hub_url.endswith("/"):
+        raise ValueError("Hub URL has to end with slash (django weirdness).")
+
+    before = datetime.datetime.now()
     try:
-        fp = open(file_path, 'r')
-    except IOError:
-        parser.error('Cannot open specified file')
-    print client.scan.create_base_scans(fp.read().splitlines(), tag_name)
+        args.func(args, hub_url)
+    except AttributeError:
+        if hasattr(args, 'func'):
+            raise
+        else:
+            parser.print_help()
+            return 2
+    except KeyboardInterrupt:
+        print("Quitting on user request.")
+        return 1
+    # otherwise raise the exception
+
+    delta = datetime.datetime.now() - before
+    logger.debug('Execution took %d.%d s.', delta.seconds, delta.microseconds)
+    logger.info("Everything is fine.")
+    return 1
 
 
 if __name__ == '__main__':
-    print 'You are using kobo from %s' % kobo.__file__
-    parser, options, args = set_options()
-
-    rpc_url = "https://uqtm.lab.eng.brq.redhat.com/covscanhub/xmlrpc/kerbauth/"
-    if options.hub_local:
-        rpc_url = "http://127.0.0.1:8000/xmlrpc/kerbauth/"
-    elif options.hub_prod:
-        #rpc_url = "https://releng-test1.englab.brq.redhat.com/covscan\
-#/xmlrpc/client/"
-        if options.notif_task_id:
-            rpc_url = "http://cov01.lab.eng.brq.redhat.com/covscanhub/xmlrpc/worker/"
-        else:
-            rpc_url = "http://cov01.lab.eng.brq.redhat.com/covscanhub/xmlrpc/kerbauth/"
-        #rpc_url = "https://cov01.lab.eng.brq.redhat.com/covscan/xmlrpc/client/"
-    elif options.hub_staging:
-        rpc_url = "https://uqtm.lab.eng.brq.redhat.com/covscanhub/xmlrpc/client/"
-    elif options.hub:
-        rpc_url = options.hub
-
-    print "connecting to %s" % rpc_url
-
-    client = connect(rpc_url)
-
-    #sys.excepthook = sys.__excepthook__
-    before = datetime.datetime.now()
-    #try:
-    if options.init:
-        init_scans(client)
-    elif options.messaging:
-        call_send_message(client)
-    elif options.base and options.target:
-        if options.username and options.password:
-            create_et_scan(client, options.base, options.target,
-                           options.advisory_id, options.et_id, options.owner, options.release,
-                           options.username, options.password)
-        else:
-            create_et_scan(client, options.base, options.target,
-                           options.advisory_id, options.et_id, options.owner, options.release)
-    elif options.file and options.tag_name:
-        client.auth.login_krbv(login(rpc_url))
-        mass_prescan(client, options.file, parser, options.tag_name)
-    elif options.scan_state:
-        print call_get_scan_state(client, options.scan_state)
-    elif options.task_info:
-        call_task_info(client, options.task_info)
-    elif options.notif_task_id:
-        call_notif_task(client, options.notif_task_id)
-    #except Exception, ex:
-    #    print '---EXCEPTION---\n\n\n%s\n\n\n' % ex
-    #    t = Traceback()
-    #    print t.get_traceback()
-    delta = datetime.datetime.now() - before
-    print 'Execution took %d.%d s' % (delta.seconds, delta.microseconds)
-    print "Everything is fine."
-    sys.exit(0)
+    sys.exit(main())
