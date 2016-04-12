@@ -77,7 +77,7 @@ class TestCap(unittest.TestCase):
         self.assertTrue(isinstance(get_mocks_repo('rhel-6-x86_64'), (basestring, list)))
 
     def test_c_brew(self):
-        s = koji.ClientSession("http://brewhub.devel.redhat.com/brewhub")
+        s = koji.ClientSession("http://brewhub.engineering.redhat.com/brewhub")
         nvr = "rpm-4.11.1-8.el7"
         build = s.getBuild(nvr)
         rpms = s.listRPMs(buildID=build['id'])

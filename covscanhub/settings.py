@@ -178,7 +178,7 @@ XMLRPC_METHODS = {
 
 }
 
-MAIN_KOJI_BUILDSYSTEM = ('http://brewhub.devel.redhat.com/brewhub', 'brew')
+MAIN_KOJI_BUILDSYSTEM = ('http://brewhub.engineering.redhat.com/brewhub', 'brew')
 OTHER_KOJI_BUILDSYSTEMS = [('http://koji.fedoraproject.org/kojihub', 'koji')]
 ET_SCAN_PRIORITY = 20
 

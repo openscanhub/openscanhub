@@ -10,7 +10,7 @@ try:
 except IndexError:
     nvr = 'bind-9.8.2-0.17.rc1.el6.3'
 
-session = brew.ClientSession('http://brewhub.devel.redhat.com/brewhub')
+session = brew.ClientSession('http://brewhub.engineering.redhat.com/brewhub')
 build = session.getBuild(nvr)
 print 'Build:'
 pprint(build)

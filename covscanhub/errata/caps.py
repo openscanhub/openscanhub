@@ -25,7 +25,7 @@ else:
 try:
     s = koji.ClientSession(settings.MAIN_KOJI_BUILDSYSTEM[0])
 except (ImportError, NameError, ImproperlyConfigured):
-    s = koji.ClientSession("http://brewhub.devel.redhat.com/brewhub")
+    s = koji.ClientSession("http://brewhub.engineering.redhat.com/brewhub")
 
 
 class CapabilityChecker(object):
