@@ -42,7 +42,7 @@ Important points:
 You may try to access django admin interface:
 
 ```
-http://localhost:8000/covscanhub/admin/
+http://localhost:8000/admin/
 ```
 
 If you need an interactive shell in any of the containers, just run:
