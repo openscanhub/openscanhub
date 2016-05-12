@@ -37,7 +37,7 @@ LOGGING = {
     'disable_existing_loggers': False,
     'formatters': {
         'verbose': {
-            'format': '%(levelname)s %(asctime)s %(module)s %(message)s'
+            'format': '%(levelname)-7s %(asctime)s %(pathname)-50s %(message)s'
         },
         'simple': {
             'format': '%(levelname)s %(message)s'
@@ -60,6 +60,11 @@ LOGGING = {
     },
     'loggers': {
         'covscanhub': {
+            'handlers': ['file', 'console'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+        'kobo': {
             'handlers': ['file', 'console'],
             'level': 'DEBUG',
             'propagate': True,
