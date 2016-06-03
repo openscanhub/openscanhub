@@ -16,7 +16,7 @@ __all__ = (
     "get_scan_state",
 )
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("covscanhub")
 
 
 @login_required
