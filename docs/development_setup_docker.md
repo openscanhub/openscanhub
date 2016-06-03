@@ -42,7 +42,7 @@ Important points:
 You may try to access django admin interface:
 
 ```
-http://covscan-dev/covscanhub/admin/
+http://localhost:8000/admin/
 ```
 
 If you need an interactive shell in any of the containers, just run:
@@ -55,7 +55,7 @@ $ docker exec -ti hub bash
 ## worker
 
 ```shell
-$ docker run -ti --net=host -v $PWD:/source:Z --name=worker covscanhub /source/covscand/covscand -f
+$ docker run --privileged -ti --net=host -v $PWD:/source:Z --name=worker covscanhub /source/covscand/covscand -f
 ```
 
 
