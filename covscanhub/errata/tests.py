@@ -7,6 +7,7 @@ import koji
 
 from covscanhub.errata.utils import get_mocks_repo
 from covscanhub.errata.caps import UnifiedCapabilityChecker, FileCapabilityChecker, RPMDepCapabilityChecker
+from django.conf import settings
 
 
 # TODO: implement own runner and set logging level to match --verbosity
@@ -77,7 +78,7 @@ class TestCap(unittest.TestCase):
         self.assertTrue(isinstance(get_mocks_repo('rhel-6-x86_64'), (basestring, list)))
 
     def test_c_brew(self):
-        s = koji.ClientSession("http://brewhub.engineering.redhat.com/brewhub")
+        s = koji.ClientSession(settings.BREW_URL)
         nvr = "rpm-4.11.1-8.el7"
         build = s.getBuild(nvr)
         rpms = s.listRPMs(buildID=build['id'])

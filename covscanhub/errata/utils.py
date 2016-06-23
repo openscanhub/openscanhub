@@ -28,10 +28,7 @@ if __name__ == '__main__':
 else:
     logger = logging.getLogger(__name__)
 
-try:
-    s = koji.ClientSession(settings.MAIN_KOJI_BUILDSYSTEM[0])
-except AttributeError:
-    s = koji.ClientSession("http://brewhub.engineering.redhat.com/brewhub")
+s = koji.ClientSession(settings.BREW_URL)
 
 
 def get_or_fail(key, data):
