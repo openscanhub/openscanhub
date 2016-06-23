@@ -69,24 +69,18 @@ def check_obsolete_scan(package, release):
 def check_build(nvr, check_additional=False):
     url = settings.BREW_URL
     bin = settings.BREW_BIN_NAME
-    if check_additional:
-        add_bss = iter((settings.KOJI_URL, settings.KOJI_BIN_NAME))
-    else:
-        add_bss = iter([])
-    not_found = True
 
-    while not_found:
+    brew_proxy = koji.ClientSession(url)
+    build = brew_proxy.getBuild(nvr)
+
+    if not build and check_additional:
+        url = settings.KOJI_URL
+        bin = settings.KOJI_BIN_NAME
         brew_proxy = koji.ClientSession(url)
         build = brew_proxy.getBuild(nvr)
-        if build:
-            not_found = False
-        else:
-            try:
-                url, bin = add_bss.next()
-            except StopIteration:
-                break
-    if not_found:
+    if not build:
         raise RuntimeError("Brew build '%s' does not exist" % nvr)
+
     return nvr, url, bin
 
 
