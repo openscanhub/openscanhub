@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from pprint import pprint
+from django.conf import settings
 import brew
 import sys
 
@@ -10,7 +11,7 @@ try:
 except IndexError:
     nvr = 'bind-9.8.2-0.17.rc1.el6.3'
 
-session = brew.ClientSession('http://brewhub.engineering.redhat.com/brewhub')
+session = brew.ClientSession(settings.BREW_URL)
 build = session.getBuild(nvr)
 print 'Build:'
 pprint(build)

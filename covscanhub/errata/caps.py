@@ -22,11 +22,7 @@ if __name__ == '__main__':
 else:
     logger = logging.getLogger(__name__)
 
-try:
-    s = koji.ClientSession(settings.MAIN_KOJI_BUILDSYSTEM[0])
-except (ImportError, NameError, ImproperlyConfigured):
-    s = koji.ClientSession("http://brewhub.engineering.redhat.com/brewhub")
-
+s = koji.ClientSession(settings.BREW_URL)
 
 class CapabilityChecker(object):
     def check(self, **kwargs):

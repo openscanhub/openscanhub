@@ -67,9 +67,10 @@ def check_obsolete_scan(package, release):
 
 
 def check_build(nvr, check_additional=False):
-    url, bin = settings.MAIN_KOJI_BUILDSYSTEM
+    url = settings.BREW_URL
+    bin = settings.BREW_BIN_NAME
     if check_additional:
-        add_bss = iter(settings.OTHER_KOJI_BUILDSYSTEMS)
+        add_bss = iter((settings.KOJI_URL, settings.KOJI_BIN_NAME))
     else:
         add_bss = iter([])
     not_found = True

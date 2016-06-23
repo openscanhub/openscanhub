@@ -178,8 +178,10 @@ XMLRPC_METHODS = {
 
 }
 
-MAIN_KOJI_BUILDSYSTEM = ('http://brewhub.engineering.redhat.com/brewhub', 'brew')
-OTHER_KOJI_BUILDSYSTEMS = [('http://koji.fedoraproject.org/kojihub', 'koji')]
+BREW_URL = 'http://brewhub.engineering.redhat.com/brewhub'
+BREW_BIN_NAME = 'brew'
+KOJI_URL = 'http://koji.fedoraproject.org/kojihub'
+KOJI_BIN_NAME = 'koji'
 ET_SCAN_PRIORITY = 20
 
 VALID_TASK_LOG_EXTENSIONS = ['.log', '.ini', '.err', '.out', '.js', '.txt']

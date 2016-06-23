@@ -5,6 +5,7 @@ import os
 import re
 
 from xmlrpclib import Fault
+from django.conf import settings
 
 
 __all__ = (
@@ -94,7 +95,7 @@ def upload_file(hub, srpm, target_dir, parser):
 
 
 if __name__ == '__main__':
-    print verify_brew_koji_build('scipy-0.12.1-1.el7', 'http://brewhub.engineering.redhat.com/brewhub', 'http://koji.fedoraproject.org/kojihub')
-    print verify_brew_koji_build('xscipy-0.12.1-1.el7', 'http://brewhub.engineering.redhat.com/brewhub', 'http://koji.fedoraproject.org/kojihub')
-    print verify_brew_koji_build('gnome-shell-3.10.2.1-3.fc20', 'http://brewhub.engineering.redhat.com/brewhub', 'http://koji.fedoraproject.org/kojihub')
-    print verify_brew_koji_build('gnome-shell-3.10.1-2.fc21', 'http://brewhub.engineering.redhat.com/brewhub', 'http://koji.fedoraproject.org/kojihub')
+    print verify_brew_koji_build('scipy-0.12.1-1.el7', settings.BREW_URL, settings.KOJI_URL)
+    print verify_brew_koji_build('xscipy-0.12.1-1.el7', settings.BREW_URL, settings.KOJI_URL)
+    print verify_brew_koji_build('gnome-shell-3.10.2.1-3.fc20', settings.BREW_URL, settings.KOJI_URL)
+    print verify_brew_koji_build('gnome-shell-3.10.1-2.fc21', settings.BREW_URL, settings.KOJI_URL)
