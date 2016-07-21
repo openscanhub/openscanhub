@@ -207,6 +207,15 @@ class CsmockRunner(object):
                 # could be erased with sudo rm -rf self.tmpdir
                 pass
 
+    def download_csmock_model(self, model_url, model_name):
+        if self.tmpdir:
+            model_path = os.path.join(self.tmpdir, model_name)
+        else:
+            model_path = os.path.join(os.getcwd(), model_name)
+
+        urllib.urlretrieve(model_url, model_path)
+        return model_path
+
     def do(self, args, output_path=None, su_user=None, use_sudo=False, **kwargs):
         """ we are expecting that csmock will produce and output """
         if not args:

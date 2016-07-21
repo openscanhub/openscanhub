@@ -26,6 +26,8 @@ class MockBuild(TaskBase):
         csmock_args = self.args.pop("csmock_args", None)
         analyzers = self.args.pop('analyzers')
         su_user = self.args.pop('su_user', None)
+        custom_model_name = self.args.pop("custom_model_name", None)
+        task_url = self.hub.client.task_url(self.task_id)
 
         cim = self.hub.worker.get_cim_arg(self.task_id)
         if cim:
@@ -35,6 +37,11 @@ class MockBuild(TaskBase):
                 csmock_args = cim
 
         with CsmockRunner() as runner:
+            if custom_model_name:
+                model_url = urlparse.urljoin(task_url, 'log/%s?format=raw' % custom_model_name)
+                model_path = runner.download_csmock_model(model_url, custom_model_name)
+                csmock_args += " --cov-custom-model %s" % model_path
+
             if build:
                 results, retcode = runner.koji_analyze(
                     analyzers,
@@ -44,7 +51,6 @@ class MockBuild(TaskBase):
                     koji_bin=build['koji_bin'],
                     su_user=su_user)
             elif srpm_name:
-                task_url = self.hub.client.task_url(self.task_id)
                 url = urlparse.urljoin(task_url, 'log/%s?format=raw' % srpm_name)
                 results, retcode = runner.srpm_download_analyze(
                     analyzers,

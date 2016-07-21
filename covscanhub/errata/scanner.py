@@ -11,7 +11,7 @@ import logging
 import pipes
 import shutil
 from kobo.django.upload.models import FileUpload
-from covscanhub.errata.check import check_analyzers, check_srpm
+from covscanhub.errata.check import check_analyzers, check_srpm, check_upload
 from covscanhub.errata.models import ScanningSession
 from covscanhub.errata.service import return_or_raise
 from covscanhub.errata.utils import is_rebase
@@ -286,6 +286,7 @@ class AbstractClientScanScheduler(object):
         csmock_args = {
             'keep_covdata': '--cov-keep-int-dir',
             'warning_level': '-w%s',
+            # --cov-custom-model='%s' is not here because we need to upload file
         }
         # client args
         cov_opts = self.options.get('args', [])
@@ -336,6 +337,11 @@ class ClientScanScheduler(AbstractClientScanScheduler):
     def validate_options(self):
         self.username = get_or_fail('task_user', self.options)
         self.user = get_or_fail('user', self.options)
+        self.upload_model_id = self.options.get('upload_model_id', None)
+
+        self.model_name = None
+        if self.upload_model_id:
+            unused_nvr, self.model_name, self.model_path = check_upload(self.upload_model_id, self.username)
 
         # srpm
         self.build_nvr = self.options.get('brew_build', None)
@@ -403,6 +409,7 @@ class ClientScanScheduler(AbstractClientScanScheduler):
         # profile args < analyzer args < client opts
         csmock_args = self.prepare_csmock_args(self.profile_args, *tuple(analyzer_opts['args']))
         self.task_args['args']['csmock_args'] = csmock_args
+        self.task_args['args']['custom_model_name'] = self.model_name
         self.task_args['args']['su_user'] = AppSettings.setting_get_su_user()
         if self.email_to:
             self.task_args['args']['email_to'] = self.email_to
@@ -422,6 +429,11 @@ class ClientScanScheduler(AbstractClientScanScheduler):
             # available
             shutil.move(self.srpm_path, os.path.join(task_dir, self.srpm_name))
             FileUpload.objects.get(id=self.upload_id).delete()
+
+        if self.upload_model_id:
+            shutil.move(self.model_path, os.path.join(task_dir, self.model_name))
+            FileUpload.objects.get(id=self.upload_model_id).delete()
+
         task.free_task()
         return task_id
 
