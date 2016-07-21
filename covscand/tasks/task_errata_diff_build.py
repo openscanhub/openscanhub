@@ -1,13 +1,7 @@
 # -*- coding: utf-8 -*-
 
-import tempfile
 import os
-from kobo.shortcuts import run
-import pipes
 import sys
-import grp
-import shutil
-from kobo.rpmlib import get_rpm_header
 from kobo.worker import TaskBase
 import kobo.tback
 from covscanhub.service.csmock_parser import CsmockRunner

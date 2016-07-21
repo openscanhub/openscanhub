@@ -152,7 +152,6 @@ class CsmockAPI(object):
         except Exception:
             return {}
 
-
     def json(self):
         """
         return result report from csmock as json
@@ -244,7 +243,7 @@ class CsmockRunner(object):
                     try:
                         subprocess.check_call(inner_cmd)
                     except subprocess.CalledProcessError:
-                        subprocess.check_call(['su', '-',  '-c', "%s" % pipes.quote(' '.join(inner_cmd))])
+                        subprocess.check_call(['su', '-', '-c', "%s" % pipes.quote(' '.join(inner_cmd))])
                     inner_cmd2 = ['chmod', 'go+rx', self.tmpdir]
                     try:
                         subprocess.check_call(inner_cmd2)

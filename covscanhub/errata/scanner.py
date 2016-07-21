@@ -449,6 +449,7 @@ class ClientDiffPatchesScanScheduler(ClientScanScheduler):
             **kwargs
         )
 
+
 # TODO: make ClientDiff subclass of clientsched: reuse all code
 class ClientDiffScanScheduler(AbstractClientScanScheduler):
     """
