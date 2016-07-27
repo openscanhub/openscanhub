@@ -190,7 +190,7 @@ def add_custom_model_option(parser):
         "--cov-custom-model",
         dest="cov_custom_model",
         action="store",
-        help="upload custom model to csmock",
+        help="path to custom Coverity model file for C/C++ code",
     )
 
 
