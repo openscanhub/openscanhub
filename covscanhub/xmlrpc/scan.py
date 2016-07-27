@@ -6,10 +6,10 @@ import logging
 from django.core.exceptions import ObjectDoesNotExist
 
 from kobo.hub.models import Task
-from kobo.django.xmlrpc.decorators import login_required, admin_required
+from kobo.django.xmlrpc.decorators import login_required
 
 from covscanhub.errata.scanner import create_diff_task2, ClientScanScheduler, ClientDiffPatchesScanScheduler
-from covscanhub.scan.models import Package, Tag, ClientAnalyzer, Profile
+from covscanhub.scan.models import ClientAnalyzer, Profile
 
 
 logger = logging.getLogger("covscanhub")

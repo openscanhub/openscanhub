@@ -1,21 +1,10 @@
 # -*- coding: utf-8 -*-
 
-import tempfile
 import os
-import pipes
 import sys
-import grp
-import shutil
-import urllib
 import urlparse
 
-from kobo.rpmlib import get_rpm_header
 from kobo.worker import TaskBase
-from kobo.shortcuts import run
-
-import kobo.tback
-
-from common import downloadSRPM
 from covscanhub.service.csmock_parser import CsmockRunner
 
 
@@ -46,6 +35,8 @@ class VersionDiffBuild(TaskBase):
         base_task_args = self.args.pop('base_task_args', None)
         upload_id = self.args.pop('upload_id', None)  # only base may have this
         su_user = self.args.pop('su_user', None)
+        custom_model_name = self.args.pop("custom_model_name", None)
+        task_url = self.hub.client.task_url(self.task_id)
 
         # scan base
         if base_task_args:
@@ -57,6 +48,11 @@ class VersionDiffBuild(TaskBase):
             self.hub.worker.move_upload(self.task_id, upload_id)
 
         with CsmockRunner() as runner:
+            if custom_model_name:
+                model_url = urlparse.urljoin(task_url, 'log/%s?format=raw' % custom_model_name)
+                model_path = runner.download_csmock_model(model_url, custom_model_name)
+                csmock_args += " --cov-custom-model %s" % model_path
+
             if build:
                 results, retcode = runner.koji_analyze(
                     analyzers,
@@ -66,7 +62,6 @@ class VersionDiffBuild(TaskBase):
                     koji_bin=build['koji_bin'],
                     su_user=su_user)
             elif srpm_name:
-                task_url = self.hub.client.task_url(self.task_id)
                 url = urlparse.urljoin(task_url, 'log/%s?format=raw' % srpm_name)
                 results, retcode = runner.srpm_download_analyze(
                     analyzers,

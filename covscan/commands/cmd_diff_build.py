@@ -47,6 +47,7 @@ class Diff_Build(covscan.CovScanCommand):
         add_brew_build_option(self.parser)
         add_all_option(self.parser)
         add_security_option(self.parser)
+        add_custom_model_option(self.parser)
 
         self.parser.add_option(
             "-m",
@@ -111,6 +112,7 @@ exist." % self.results_store_file)
         analyzers = kwargs.pop('analyzers', '')
         profile = kwargs.pop('profile', None)
         csmock_args = kwargs.pop('csmock_args', None)
+        cov_custom_model = kwargs.pop('cov_custom_model', None)
 
         if len(args) != 1:
             self.parser.error("please specify exactly one SRPM")
@@ -195,6 +197,11 @@ is not even one in your user configuration file \
 
         if csmock_args:
             options['csmock_args'] = csmock_args
+        if cov_custom_model:
+            target_dir = random_string(32)
+            upload_model_id, err_code, err_msg = upload_file(self.hub, cov_custom_model,
+                                                       target_dir, self.parser)
+            options["upload_model_id"] = upload_model_id
 
         task_id = self.submit_task(config, comment, options)
 
