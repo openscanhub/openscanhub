@@ -62,7 +62,8 @@
     ],
     "task_count": 1,
     "max_tasks": 0,
-    "max_load": 1
+    "max_load": 1,
+    "min_priority": 1
   }
 }
 ]

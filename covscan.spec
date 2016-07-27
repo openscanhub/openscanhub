@@ -60,6 +60,10 @@ Requires: kobo-client
 Requires: kobo-django
 Requires: kobo-rpmlib
 Requires: Django
+%if 0%{?rhel} = 6
+# required by django 1.6
+Requires: python-importlib
+%endif
 Requires: Django-south
 Requires: httpd
 Requires: mod_auth_kerb
@@ -79,6 +83,7 @@ Requires: python-saslwrapper
 Requires: cyrus-sasl-gssapi
 
 Requires: csdiff
+Requires: python2-csdiff
 Requires: python-bugzilla
 Requires: yum
 Requires: file

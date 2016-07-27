@@ -6,7 +6,7 @@ RUN set -ex ; \
     yum install -y http://download.eng.brq.redhat.com/pub/fedora/epel/6/x86_64/epel-release-6-8.noarch.rpm && \
     yum install -y --enablerepo=covscan-testing covscan-hub-prod && yum remove -y covscan-hub-prod
 
-RUN yum install -y git
+RUN yum install -y git python-importlib python2-csdiff csmock-*
 
 RUN cd /etc && rm -rf ./mock && git clone -b mock git://git.engineering.redhat.com/users/kdudka/coverity-scan.git mock
 
