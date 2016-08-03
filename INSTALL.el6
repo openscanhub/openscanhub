@@ -12,8 +12,8 @@ You can also run covscan in docker, see `docs/development_setup_docker.md`.
 2. Prepare environment (packages):
 
 ```
-$ cd /etc && sudo git clone -b mock git://git.engineering.redhat.com/users/kdudka/coverity-scan.git mock
-$ cd /etc/yum.repos.d && sudo curl -O http://cov01.lab.eng.brq.redhat.com/coverity/install/covscan/covscan-rhel.repo
+$ cd /etc && sudo git clone http://gitlab.cee.redhat.com/covscan/mock-profiles.git mock
+$ cd /etc/yum.repos.d && sudo curl -O http://cov01.lab.eng.brq.redhat.com/coverity/install/covscan/covscan-rhel-6.repo
 $ sudo yum install http://download.eng.brq.redhat.com/pub/fedora/epel/6/x86_64/epel-release-6-8.noarch.rpm
 $ sudo yum install --enablerepo=covscan-testing covscan-hub-prod
 $ sudo setsebool -P httpd_can_network_connect_db 1
