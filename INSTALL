@@ -101,3 +101,5 @@
     # su -c psql postgres
         \connect covscanhub
         ALTER TABLE auth_user_groups RENAME COLUMN longnameuser_id TO user_id;
+        ALTER TABLE auth_user_user_permissions RENAME COLUMN longnameuser_id TO user_id;
+        ALTER TABLE hub_worker ADD COLUMN min_priority integer CHECK (min_priority >= 0);
