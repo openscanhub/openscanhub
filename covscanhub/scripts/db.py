@@ -100,13 +100,10 @@ provided invalid file.")
 
 
 def configure_hub():
-    c = Channel()
-    c.name = "default"
+    c, _ = Channel.objects.get_or_create(name="default")
     c.save()
 
-    a = Arch()
-    a.name = 'noarch'
-    a.pretty_name = 'noarch'
+    a, _ = Arch.objects.get_or_create(name="noarch", pretty_name="noarch")
     a.save()
 
     print "Don't forget to set up worker!\nYou have to use hostname as a name \
@@ -118,8 +115,7 @@ def download_mock_configs():
     #  product -- (rhel|RHEL)-(?P<x>\d+).(?P<y>\d+)(\.[zZ]){0,1}-build
     x_list = [5, 6, 7]
     for x in x_list:
-        m = MockConfig()
-        m.name = "rhel-%d-x86_64" % x
+        m, _ = MockConfig.objects.get_or_create(name="rhel-%d-x86_64")
         m.enabled = False
         m.save()
 
