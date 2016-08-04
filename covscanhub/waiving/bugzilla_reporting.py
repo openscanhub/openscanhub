@@ -74,7 +74,8 @@ def create_bugzilla(request, package, release):
     bz = bugzilla.Bugzilla(url=settings.BZ_URL,
                            user=settings.BZ_USER,
                            password=settings.BZ_PSWD,
-                           cookiefile="/var/tmp/.bugzillacookies")
+                           cookiefile="/var/tmp/.bugzillacookies",
+                           tokenfile="/var/tmp/.bugzillatoken")
     waivers = get_unreported_bugs(package, release)
 
     if waivers[0].result_group.result.scanbinding.scan.base:
