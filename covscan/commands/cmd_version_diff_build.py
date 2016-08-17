@@ -141,9 +141,6 @@ local file"
             self.parser.error("provided target file doesn't appear to be \
 a SRPM")
 
-        if base_srpm and not base_srpm.endswith(".src.rpm"):
-            self.parser.error("provided base file doesn't appear to be a SRPM")
-
         if brew_build:
             result = verify_brew_koji_build(brew_build, self.conf['BREW_URL'],
                                             self.conf['KOJI_URL'])

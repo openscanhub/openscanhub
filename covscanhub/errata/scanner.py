@@ -287,6 +287,8 @@ class AbstractClientScanScheduler(object):
             'keep_covdata': '--cov-keep-int-dir',
             'warning_level': '-w%s',
             # --cov-custom-model='%s' is not here because we need to upload file
+            'install_to_chroot': "--install='%s'",
+            'tarball_build_script': "--shell-cmd='%s'",
         }
         # client args
         cov_opts = self.options.get('args', [])
@@ -303,10 +305,11 @@ class AbstractClientScanScheduler(object):
                 cov_opts.append(cov_args[opt])
         for opt in self.options:
             if opt in csmock_args:
-                if opt == 'warning_level':
+                try:
                     csmock_opts.append(csmock_args[opt] % self.options[opt])
-                else:
-                    csmock_opts.append(csmock_args[opt])
+                except TypeError:
+                    # value might not need to be converted
+                    pass
         # client overrides via --csmock-args
         if self.client_csmock_args:
             csmock_opts.append(self.client_csmock_args)
@@ -346,7 +349,8 @@ class ClientScanScheduler(AbstractClientScanScheduler):
         # srpm
         self.build_nvr = self.options.get('brew_build', None)
         self.upload_id = self.options.get('upload_id', None)
-        check_srpm_response = check_srpm(self.upload_id, self.build_nvr, self.username)
+        self.is_tarball = bool(self.options.get("tarball_build_script", None))
+        check_srpm_response = check_srpm(self.upload_id, self.build_nvr, self.username, self.is_tarball)
         if check_srpm_response['type'] == 'build':
             self.build_kojibin = check_srpm_response['koji_bin']
         elif check_srpm_response['type'] == 'upload':
@@ -387,7 +391,8 @@ class ClientScanScheduler(AbstractClientScanScheduler):
     def prepare_args(self):
         """ prepare dicts -- arguments for task and scan """
         self.task_args['owner_name'] = self.username
-        self.task_args['label'] = self.build_nvr or self.srpm_name
+        input_pkg = self.build_nvr or self.srpm_name
+        self.task_args['label'] = input_pkg
         self.task_args['method'] = self.method
         self.task_args['comment'] = self.comment
         self.task_args['priority'] = self.priority or 10
@@ -401,6 +406,23 @@ class ClientScanScheduler(AbstractClientScanScheduler):
         else:
             self.task_args['args']['srpm_name'] = self.srpm_name
 
+        if input_pkg.endswith(".src.rpm"):
+            result_filename = os.path.basename(input_pkg)[:-8]
+        elif self.is_tarball:
+            f = os.path.basename(input_pkg)
+            if ".tar." in f:
+                result_filename = f.rsplit(".", 2)[0]
+            else:
+                result_filename = f.rsplit(".", 1)[0]
+        else:
+            raise RuntimeError("unknown input format of sources")
+        self.task_args['args']['result_filename'] = result_filename
+        # FIXME: ideally rewrite the code to stuff all input-related info to "source" (e.g. builds,
+        #        nvrs, srpm filenames etc.)
+        if self.is_tarball:
+            self.task_args['args']['source'] = {
+                "type": "tar",
+            }
         analyzer_opts = ClientAnalyzer.objects.get_opts(self.analyzer_models)
         analyzers_set = set(analyzer_opts['analyzers'] + self.profile_analyzers)
         analyzer_chain = ','.join(analyzers_set)

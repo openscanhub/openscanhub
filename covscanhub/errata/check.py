@@ -95,7 +95,7 @@ def check_analyzers(analyzers_chain, additional_analyzers=None):
     return ClientAnalyzer.objects.verify_in_bulk(a_list)
 
 
-def check_upload(upload_id, task_user):
+def check_upload(upload_id, task_user, is_tarball=False):
     """
     srpm was uploaded via FileUpload, lets fetch it and check it
 
@@ -111,11 +111,13 @@ def check_upload(upload_id, task_user):
 
     srpm_path = os.path.join(upload.target_dir, upload.name)
     srpm_name = upload.name
-    nvr = srpm_name.replace('.src.rpm', '')
+    nvr = ''
+    if not is_tarball:
+        nvr = srpm_name.replace('.src.rpm', '')
     return nvr, srpm_name, srpm_path
 
 
-def check_srpm(upload_id, build_nvr, task_user):
+def check_srpm(upload_id, build_nvr, task_user, is_tarball=False):
     if build_nvr:
         cb_response = check_build(build_nvr, check_additional=True)
         response = {
@@ -125,7 +127,7 @@ def check_srpm(upload_id, build_nvr, task_user):
             'koji_url': cb_response[1],
         }
     elif upload_id:
-        cu_response = check_upload(upload_id, task_user)
+        cu_response = check_upload(upload_id, task_user, is_tarball)
         response = {
             'type': 'upload',
             'nvr': cu_response[0],

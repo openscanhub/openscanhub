@@ -268,15 +268,16 @@ class CsmockRunner(object):
                 return None, retcode
 
     def analyze(self, analyzers, srpm_path, profile=None, su_user=None, additional_arguments=None,
-                use_sudo=False, **kwargs):
-        if not srpm_path.endswith('.src.rpm'):
-            raise RuntimeError("'srpm' path has to end with '.src.rpm'")
-        base_srpm = os.path.basename(srpm_path)[:-8]
+                use_sudo=False, result_filename=None, **kwargs):
         if self.tmpdir:
-            output_path = os.path.join(self.tmpdir, base_srpm + '.tar.xz')
+            output_path = os.path.join(self.tmpdir, result_filename + '.tar.xz')
         else:
-            output_path = os.path.join(os.getcwd(), base_srpm + '.tar.xz')
-        cmd = '-t %s -o %s' % (pipes.quote(analyzers), pipes.quote(output_path))
+            output_path = os.path.join(os.getcwd(), result_filename + '.tar.xz')
+        cmd = ""
+        if analyzers:
+            cmd += '-t %s' % (pipes.quote(analyzers))
+        if output_path:
+            cmd += ' -o %s' % (pipes.quote(output_path))
         if profile:
             cmd += ' -r %s' % pipes.quote(profile)
         if additional_arguments:
@@ -287,6 +288,7 @@ class CsmockRunner(object):
     def srpm_download_analyze(self, analyzers, srpm_name, srpm_url, profile=None,
                               su_user=None, additional_arguments=None, use_sudo=False, **kwargs):
         """ download srpm from remote location and analyze it"""
+        logger.debug("additional args = %s, kwargs = %s", additional_arguments, kwargs)
         if self.tmpdir:
             srpm_path = os.path.join(self.tmpdir, srpm_name)
         else:
