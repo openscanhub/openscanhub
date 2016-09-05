@@ -115,6 +115,7 @@ def get_filtered_scan_list(request, kwargs):
             - tag__name - tag name, usually release with capitals
 
     """
+    logger.info('[FILTER_SCANS] %s', kwargs)
     ret_value = __convert_names_to_numbers(kwargs)
     if ret_value:
         return ret_value
@@ -136,7 +137,6 @@ def get_filtered_scan_list(request, kwargs):
                 'tag__release__tag',
                 'tag__name',
                 )
-    logger.debug("%s", query_set.query)
     return {'status': 'OK', 'count': query_set.count(), 'scans': list(query_set) }
 
 

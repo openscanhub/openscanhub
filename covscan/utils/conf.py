@@ -4,9 +4,10 @@ User specific configuration
 """
 
 import os
-
+import sys
 from ConfigParser import SafeConfigParser
 
+import kobo.conf
 
 CONFIG_FILE_NAME = 'covscan.conf'
 CONFIG_PATH_PREFIX = '.config/covscan'
@@ -18,6 +19,7 @@ conf = None
 __all__ = (
     'get_home_dir',
     'get_conf',
+    'get_config_dict',
 )
 
 
@@ -127,3 +129,23 @@ def get_conf(system_conf=None):
         else:
             conf = Conf(system_conf)
     return conf
+
+
+def get_config_dict(config_env, config_default):
+    """
+    Retrieves dictionary from chosen configuration file.
+    @param config_env: configuration file environment, f.e. COVSCAN_CONFIG_FILE
+    @param config_default: absolute file path to configuration file, usually /etc/covscan/covscan.conf
+    @return: dictionary containing configuration data
+    """
+    config_file = os.environ.get(config_env, config_default)
+    conf_dict = kobo.conf.PyConfigParser()
+    try:
+        conf_dict.load_from_file(config_file)
+    except (IOError, TypeError):
+        sys.stderr.write("\n\nError: The config file '%s' was not found.\n"
+                         "Create the config file or specify the '%s'\n"
+                         "environment variable to override config file location.\n"
+                         % (config_default, config_env))
+        return None
+    return conf_dict
