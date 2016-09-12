@@ -101,7 +101,7 @@ def create_scan_cmd(options, hub):
 
 def get_filtered_scan_list_cmd(options, hub):
     c = Client(hub)
-    response = c.get_filtered_scan_list(options.target, options.base, options.username,
+    response = c.get_filtered_scan_list(options.id, options.target, options.base, options.username,
                                         options.state_type, options.release)
     logger.info(json.dumps(response, indent=2))
 
@@ -132,6 +132,7 @@ def set_options():
         'get-filtered-scan-list',
         help='get filtered scan list'
     )
+    get_filtered_scan_list_parser.add_argument("--id", help="id of scan")
     get_filtered_scan_list_parser.add_argument("--target", help="nvr of package")
     get_filtered_scan_list_parser.add_argument("--base", help="package base")
     get_filtered_scan_list_parser.add_argument("--username", help="name of owner")
@@ -215,11 +216,13 @@ class Client(object):
         logger.debug("get scan state: %s", scan_id)
         return self.hub.errata.get_scan_state(scan_id)
 
-    def get_filtered_scan_list(self, target=None, base=None, username=None, state=None, release=None):
+    def get_filtered_scan_list(self, id=None, target=None, base=None, username=None, state=None, release=None):
         """
         Call xmlrpc function get_filtered_scan_list
         """
-        return str(self.hub.errata.get_filtered_scan_list(target, base, state, username, release))
+        filters = dict(id=id, target=target, base=base, state=state, username=username, release=release)
+        filters = dict(filter(lambda (k, v): v is not None, filters.items()))  # removes None values from dictionary
+        return str(self.hub.errata.get_filtered_scan_list(filters))
 
     def get_krb_chain(self):
         """

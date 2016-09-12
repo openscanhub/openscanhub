@@ -2,7 +2,6 @@
 
 import logging
 
-from bkr.client.wizard import comment
 from kobo.django.auth.models import User
 
 from covscanhub.errata.scanner import handle_scan
@@ -86,6 +85,7 @@ def get_filtered_scan_list(request, kwargs):
         Returns scans which fits kwargs filters, multiple filters can be used at the same time.
         Method should be used through API. Available filters are:
     @param kwargs:
+     - id - id of the scan
      - target - target of the scan
      - base - base of the scan
      - state - state in string form according to enum SCAN_STATES

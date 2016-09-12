@@ -49,12 +49,12 @@ class CovscanAPI(object):
                                        verbose=False)
         return client
 
-    def get_filtered_scan_list(self, target=None, base=None, state=None, username=None, release=None):
+    def get_filtered_scan_list(self, id=None, target=None, base=None, state=None, username=None, release=None):
         """
         Filters scans according to input arguments. If some of them are not set, filter is not used on that parameter.
         @return: dictionary containing keys 'status', 'count' and 'scans' (if status is set to 'OK')
         @see get_filtered_scan_list in covscanhub.xmlrpc.errata
         """
-        filters = dict(target=target, base=base, state=state, username=username, release=release)
+        filters = dict(id=id, target=target, base=base, state=state, username=username, release=release)
         filters = dict(filter(lambda (k, v): v is not None, filters.items()))  # removes None values from dictionary
         return self.hub.errata.get_filtered_scan_list(filters)
