@@ -2,6 +2,7 @@
 
 import logging
 
+from bkr.client.wizard import comment
 from kobo.django.auth.models import User
 
 from covscanhub.errata.scanner import handle_scan
@@ -85,11 +86,11 @@ def get_filtered_scan_list(request, kwargs):
         Returns scans which fits kwargs filters, multiple filters can be used at the same time.
         Method should be used through API. Available filters are:
     @param kwargs:
-     - nvr - target of the scan
-     - base__nvr - base of the scan
+     - target - target of the scan
+     - base - base of the scan
      - state - state in string form according to enum SCAN_STATES
      - username - owner of the scan
-     - tag__release__tag - system release of the scan
+     - release - system release of the scan
     @type kwargs: dictionary
     @return: Dictionary containing key 'status'; if set to 'OK', keys 'count' (number of returned
             scans) and 'scans' (info about selected scans) are there too. Type of 'scans' are list of
@@ -97,24 +98,25 @@ def get_filtered_scan_list(request, kwargs):
                 for scan in returned_object['scans']: # goes through all scans
                     print scan['nvr'] # use which dictionary value you need
             Returns list of dictionaries with following values:
-            - username__username - owner name
-            - username__email - owner email
-            - package__name - package name (without version, release)
-            - package__blocked - True if package is blocked
-            - package__eligible - True if package is eligible
+            - user_name -owner name
+            - user_email - owner email
+            - package_name - package name (without version, release)
+            - package_is_blocked - True if package is blocked
+            - package_is_eligible - True if package is eligible
             - date_submitted - DateTime object, when the scan was submitted
-            - enabled - True if package is enabled
+            - is_enabled - True if package is enabled
             - id - scan id
-            - nvr - full target name
+            - target - full target name
             - base_id - id of the base, None if it does not exist
-            - base__nvr - full name of the base, None if it does not exist
-            - last_access - DateTime object, when the scan was last time accessed
+            - base_target - full name of the base, None if it does not exist
+            - date_last_accessed - DateTime object, when the scan was last time accessed
             - scan_type - number of scan (errata, user, rebase, ..) according to SCAN_TYPES
             - state - _number_ of scan according to SCAN_STATES
-            - tag__release__tag -  release of the scan
-            - tag__name - tag name, usually release with capitals
+            - release -  release of the scan
+            - tag_name - tag name, usually release with capitals
 
     """
+    kwargs = __setup_kwargs(kwargs)
     logger.info('[FILTER_SCANS] %s', kwargs)
     ret_value = __convert_names_to_numbers(kwargs)
     if ret_value:
@@ -137,7 +139,15 @@ def get_filtered_scan_list(request, kwargs):
                 'tag__release__tag',
                 'tag__name',
                 )
-    return {'status': 'OK', 'count': query_set.count(), 'scans': list(query_set) }
+    return {'status': 'OK', 'count': query_set.count(), 'scans': __rename_keys(list(query_set)) }
+
+
+def __setup_kwargs(kwargs):
+    kwargs['nvr'] = kwargs.pop('target', None)
+    kwargs['base__nvr'] = kwargs.pop('base', None)
+    kwargs['tag__release__tag'] = kwargs.pop('release', None)
+    kwargs = dict(filter(lambda (k, v): v is not None, kwargs.items()))  # removes None values from dictionary
+    return kwargs
 
 
 def __convert_names_to_numbers(kwargs):
@@ -158,6 +168,26 @@ def __convert_names_to_numbers(kwargs):
         if not state_number:
             return {'status': 'Scan state ' + kwargs['state'] + ' does not exist.'}
         kwargs['state'] = state_number
+
+
+def __rename_keys(scans_list):
+    # The best way would be to use SQL query with renamed values, but django doesn't support it very cleverly
+    translation_table = {'username__username'   : 'user_name',
+                         'username__email'      : 'user_email',
+                         'package__name'        : 'package_name',
+                         'package__blocked'     : 'package_is_blocked',
+                         'package__eligible'    : 'package_is_eligible',
+                         'last_access'          : 'date_last_accessed',
+                         'nvr'                  : 'target',
+                         'enabled'              : 'is_enabled',
+                         'base__nvr'            : 'base_target',
+                         'tag__release__tag'    : 'release',
+                         'tag__name'            : 'tag_name',
+                         }
+    for scan in scans_list:
+        for old_name, new_name in translation_table.items():
+            scan[new_name] = scan.pop(old_name, None)
+    return scans_list
 
 
 def get_scan_state(request, etm_id):

@@ -219,9 +219,7 @@ class Client(object):
         """
         Call xmlrpc function get_filtered_scan_list
         """
-        filters = dict(nvr=target, base__nvr=base, state=state, username=username, tag__release__tag=release)
-        filters = dict(filter(lambda (k, v): v is not None, filters.items()))  # removes None values from dictionary
-        return str(self.hub.errata.get_filtered_scan_list(filters))
+        return str(self.hub.errata.get_filtered_scan_list(target, base, state, username, release))
 
     def get_krb_chain(self):
         """
