@@ -60,7 +60,7 @@ Requires: kobo-client
 Requires: kobo-django
 Requires: kobo-rpmlib
 Requires: Django
-%if 0%{?rhel} = 6
+%if 0%{?rhel} <= 6
 # required by django 1.6
 Requires: python-importlib
 %endif
