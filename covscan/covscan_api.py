@@ -1,3 +1,33 @@
+#!/usr/bin/python -tt
+"""
+
+This class should provide basic methods to work with covscan easily.
+
+
+## DEPENDENCIES
+
+    yum install kobo*
+
+
+## USAGE
+
+You just need to import API class:
+
+    from covscan.covscan_api import CovscanAPI
+
+And then create constructor with optional hub url argument, which must end with '/xmlrpc'. If none url is given, url is
+used from covscan.conf file:
+
+    api = CovscanAPI('http://covscan-stage.app.eng.brq.redhat.com/covscanhub/xmlrpc')
+
+Finally, use method which you like according to its doc, f.e. get_filtered_scan_list with optional args:
+
+    scans = api.get_filtered_scan_list(id=3, target="python-six-1.9.0-2.el7", base='python-six-1.3.0-4.el7',
+                                       username="admin", state="BASE_SCANNING", release='rhel-7.2' )
+
+
+"""
+
 import xmlrpclib
 
 from kobo.xmlrpc import SafeCookieTransport, CookieTransport
@@ -6,16 +36,7 @@ from covscan.utils.conf import get_config_dict
 
 
 class CovscanAPI(object):
-    """
-    # Class should provide basic methods to work with covscan easily.
-    # You just need to import API class:
-    from covscan.covscan_api import CovscanAPI
-    # And then create constructor with optional hub url argument, which must end with '/xmlrpc',
-    # If none url is given, url is used from covscan.conf file.
-    api = CovscanAPI('http://covscan-stage.app.eng.brq.redhat.com/covscanhub/xmlrpc')
-    scans = api.get_filtered_scan_list(target="python-six-1.9.0-2.el7", base='python-six-1.3.0-4.el7', username="admin",
-                                       state="BASE_SCANNING", release='rhel-7.2' )
-    """
+
     def __init__(self, hub_url=None):
         conf = get_config_dict(config_env="COVSCAN_CONFIG_FILE", config_default="/etc/covscan/covscan.conf")
         if hub_url is None and (conf is None or not conf['HUB_URL'].endswith('/xmlrpc')):
@@ -30,10 +51,10 @@ class CovscanAPI(object):
     @property
     def hub(self):
         if self._hub is None:
-            self._hub = self.connect()
+            self._hub = self.__connect()
         return self._hub
 
-    def connect(self):
+    def __connect(self):
         """
         Connects to XML-RPC server.
         @return: client object
@@ -52,9 +73,36 @@ class CovscanAPI(object):
     def get_filtered_scan_list(self, id=None, target=None, base=None, state=None, username=None, release=None):
         """
         Filters scans according to input arguments. If some of them are not set, filter is not used on that parameter.
-        @return: dictionary containing keys 'status', 'count' and 'scans' (if status is set to 'OK')
+
+        Pretty print of output is shown below:
+
+            {'count': 1,
+             'scans': [{'base_id': 4,                        # id of the base, None if it does not exist
+                        'base_target': 'python-six-1.3.0-4.el7',
+                                                             # full name of the base, None if it does not exist
+                        'date_last_accessed': <DateTime '20160818T13:10:04' at 7f24282e73f8>,
+                                                             # DateTime object, when the scan was last time accessed
+                        'date_submitted': <DateTime '20160818T13:10:04' at 7f24282e7440>,
+                                                             # DateTime object, when the scan was submitted
+                        'id': 3,                             # scan id
+                        'is_enabled': True,                  # True if package is enabled
+                        'package_is_blocked': False,         # True if package is blocked
+                        'package_is_eligible': True,         # True if package is eligible
+                        'package_name': 'python-six',        # package name (without version, release)
+                        'release': 'rhel-7.2',               # release of the scan
+                        'scan_type': 3,                      # scan number according to SCAN_TYPES (errata, rebase, ..)
+                        'state': 7,                          # number of scan according to SCAN_STATES
+                        'tag_name': 'RHEL-7.2',              # tag name, usually release with capitals
+                        'target': 'python-six-1.9.0-2.el7',  # full target name
+                        'user_email': 'devnull@redhat.com',  # owner email
+                        'user_name': 'admin'}],              # owner name
+             'status': 'OK'}
+
+        @return: dictionary containing keys 'status', 'count' and 'scans' (if status is set to 'OK'); if status is set
+                 to 'ERROR', 'message' key containing error output is there instead
         @see get_filtered_scan_list in covscanhub.xmlrpc.errata
         """
+
         filters = dict(id=id, target=target, base=base, state=state, username=username, release=release)
         filters = dict(filter(lambda (k, v): v is not None, filters.items()))  # removes None values from dictionary
         return self.hub.errata.get_filtered_scan_list(filters)

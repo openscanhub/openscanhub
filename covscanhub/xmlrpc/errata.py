@@ -84,6 +84,7 @@ def get_filtered_scan_list(request, kwargs):
 
         Returns scans which fits kwargs filters, multiple filters can be used at the same time.
         Method should be used through API. Available filters are:
+
     @param kwargs:
      - id - id of the scan
      - target - target of the scan
@@ -92,35 +93,27 @@ def get_filtered_scan_list(request, kwargs):
      - username - owner of the scan
      - release - system release of the scan
     @type kwargs: dictionary
-    @return: Dictionary containing key 'status'; if set to 'OK', keys 'count' (number of returned
-            scans) and 'scans' (info about selected scans) are there too. Type of 'scans' are list of
-            containers. Basic usage:
-                for scan in returned_object['scans']: # goes through all scans
-                    print scan['nvr'] # use which dictionary value you need
-            Returns list of dictionaries with following values:
-            - user_name -owner name
-            - user_email - owner email
-            - package_name - package name (without version, release)
-            - package_is_blocked - True if package is blocked
-            - package_is_eligible - True if package is eligible
-            - date_submitted - DateTime object, when the scan was submitted
-            - is_enabled - True if package is enabled
-            - id - scan id
-            - target - full target name
-            - base_id - id of the base, None if it does not exist
-            - base_target - full name of the base, None if it does not exist
-            - date_last_accessed - DateTime object, when the scan was last time accessed
-            - scan_type - number of scan (errata, user, rebase, ..) according to SCAN_TYPES
-            - state - _number_ of scan according to SCAN_STATES
-            - release -  release of the scan
-            - tag_name - tag name, usually release with capitals
+    @return:
+     - status: status message: { 'OK', 'ERROR' }
+     - message: in case of error, here is detailed message
+     - count: number of returned scans
+     - scans: info about selected scans in a list of dictionaries
+
+     Basic usage:
+
+        for scan in returned_object['scans']:  # goes through all scans
+            print scan['nvr']                  # use which dictionary value you need
+
+     @see get_filtered_scan_list in covscan.covscan_api for more details
 
     """
+
     kwargs = __setup_kwargs(kwargs)
     logger.info('[FILTER_SCANS] %s', kwargs)
     ret_value = __convert_names_to_numbers(kwargs)
     if ret_value:
         return ret_value
+
     query_set = Scan.objects.filter(**kwargs).select_related() \
         .values('username__username',
                 'username__email',
@@ -143,10 +136,16 @@ def get_filtered_scan_list(request, kwargs):
 
 
 def __setup_kwargs(kwargs):
+    """
+    Renames keys and removes None values from dictionary
+    @param kwargs: dictionary to be modified
+    @return:
+    """
+
     kwargs['nvr'] = kwargs.pop('target', None)
     kwargs['base__nvr'] = kwargs.pop('base', None)
     kwargs['tag__release__tag'] = kwargs.pop('release', None)
-    kwargs = dict(filter(lambda (k, v): v is not None, kwargs.items()))  # removes None values from dictionary
+    kwargs = dict(filter(lambda (k, v): v is not None, kwargs.items()))
     return kwargs
 
 
@@ -157,16 +156,17 @@ def __convert_names_to_numbers(kwargs):
     @param kwargs: dictionary to be changed
     @return: dictionary with status message if username or scan state does not exist
     """
+
     if 'username' in kwargs:
         try:
             kwargs['username'] = User.objects.get(username=kwargs['username']).id
         except ObjectDoesNotExist as e:
-            return {'status': e.message}
+            return {'status': 'ERROR', 'message': e.message}
 
     if 'state' in kwargs:
         state_number = SCAN_STATES.get_num(kwargs['state'])
         if not state_number:
-            return {'status': 'Scan state ' + kwargs['state'] + ' does not exist.'}
+            return {'status': 'ERROR', 'message': 'Scan state ' + kwargs['state'] + ' does not exist.'}
         kwargs['state'] = state_number
 
 
@@ -186,7 +186,7 @@ def __rename_keys(scans_list):
                          }
     for scan in scans_list:
         for old_name, new_name in translation_table.items():
-            scan[new_name] = scan.pop(old_name, None)
+            scan[new_name] = scan.pop(old_name)
     return scans_list
 
 
@@ -211,6 +211,7 @@ def get_scan_state(request, etm_id):
     More info can be found here:
         http://etherpad.corp.redhat.com/Covscan-ErrataTool-Integration
     """
+
     logger.info('[SCAN_STATE] %s', etm_id)
     response = {}
     try:
