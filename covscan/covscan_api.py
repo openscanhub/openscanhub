@@ -23,7 +23,7 @@ used from covscan.conf file:
 Finally, use method which you like according to its doc, f.e. get_filtered_scan_list with optional args:
 
     scans = api.get_filtered_scan_list(id=3, target="python-six-1.9.0-2.el7", base='python-six-1.3.0-4.el7',
-                                       username="admin", state="BASE_SCANNING", release='rhel-7.2' )
+                                       owner="admin", state="BASE_SCANNING", release='rhel-7.2' )
 
 
 """
@@ -61,7 +61,7 @@ class CovscanAPI(object):
         client = xmlrpclib.ServerProxy(self.hub_url, allow_none=True, verbose=False)
         return client
 
-    def get_filtered_scan_list(self, id=None, target=None, base=None, state=None, username=None, release=None):
+    def get_filtered_scan_list(self, id=None, target=None, base=None, state=None, owner=None, release=None):
         """
         Filters scans according to input arguments. If some of them are not set, filter is not used on that parameter.
 
@@ -85,8 +85,8 @@ class CovscanAPI(object):
                         'state': 7,                          # number of scan according to SCAN_STATES
                         'tag_name': 'RHEL-7.2',              # tag name, usually release with capitals
                         'target': 'python-six-1.9.0-2.el7',  # full target name
-                        'user_email': 'devnull@redhat.com',  # owner email
-                        'user_name': 'admin'}],              # owner name
+                        'owner_email': 'devnull@redhat.com', # owner email
+                        'owner_name': 'admin'}],             # owner name
              'status': 'OK'}
 
         @return: dictionary containing keys 'status', 'count' and 'scans' (if status is set to 'OK'); if status is set
@@ -94,6 +94,6 @@ class CovscanAPI(object):
         @see get_filtered_scan_list in covscanhub.xmlrpc.scan
         """
 
-        filters = dict(id=id, target=target, base=base, state=state, username=username, release=release)
+        filters = dict(id=id, target=target, base=base, state=state, owner=owner, release=release)
         filters = dict(filter(lambda (k, v): v is not None, filters.items()))  # removes None values from dictionary
         return self.hub.scan.get_filtered_scan_list(filters)

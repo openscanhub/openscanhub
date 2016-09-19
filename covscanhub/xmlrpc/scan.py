@@ -89,7 +89,6 @@ def create_user_diff_task(request, hub_opts, task_opts):
     return create_diff_task2(hub_opts, task_opts)
 
 
-
 def get_filtered_scan_list(request, kwargs):
     """
     get_filtered_scan_list(kwargs)
@@ -102,7 +101,7 @@ def get_filtered_scan_list(request, kwargs):
      - target - target of the scan
      - base - base of the scan
      - state - state in string form according to enum SCAN_STATES
-     - username - owner of the scan
+     - owner - owner of the scan
      - release - system release of the scan
     @type kwargs: dictionary
     @return:
@@ -163,15 +162,15 @@ def __setup_kwargs(kwargs):
 
 def __convert_names_to_numbers(kwargs):
     """
-    Private method, converts username to user_id & scan state name to state_id.
+    Private method, converts owner to user_id & scan state name to state_id.
     Kwargs arguments are modified from names to numbers.
     @param kwargs: dictionary to be changed
-    @return: dictionary with status message if username or scan state does not exist
+    @return: dictionary with status message if owner or scan state does not exist
     """
 
-    if 'username' in kwargs:
+    if 'owner' in kwargs:
         try:
-            kwargs['username'] = User.objects.get(username=kwargs['username']).id
+            kwargs['username'] = User.objects.get(username=kwargs.pop('owner')).id
         except ObjectDoesNotExist as e:
             return {'status': 'ERROR', 'message': e.message}
 
@@ -184,8 +183,8 @@ def __convert_names_to_numbers(kwargs):
 
 def __rename_keys(scans_list):
     # The best way would be to use SQL query with renamed values, but django doesn't support it very cleverly
-    translation_table = {'username__username'   : 'user_name',
-                         'username__email'      : 'user_email',
+    translation_table = {'username__username'   : 'owner_name',
+                         'username__email'      : 'owner_email',
                          'package__name'        : 'package_name',
                          'package__blocked'     : 'package_is_blocked',
                          'package__eligible'    : 'package_is_eligible',
