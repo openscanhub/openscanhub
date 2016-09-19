@@ -30,8 +30,6 @@ Finally, use method which you like according to its doc, f.e. get_filtered_scan_
 
 import xmlrpclib
 
-from kobo.xmlrpc import SafeCookieTransport, CookieTransport
-
 from covscan.utils.conf import get_config_dict
 
 
@@ -45,7 +43,7 @@ class CovscanAPI(object):
             raise ValueError('Invalid hub url was given: ' + hub_url)
 
         self.hub_url = hub_url if hub_url is not None else conf['HUB_URL']
-        self.hub_url += '/kerbauth/'
+        self.hub_url += '/client/'
         self._hub = None
 
     @property
@@ -60,14 +58,7 @@ class CovscanAPI(object):
         @return: client object
         """
 
-        if "https" in self.hub_url:
-            transport = SafeCookieTransport()
-        elif "http" in self.hub_url:
-            transport = CookieTransport()
-        else:
-            raise ValueError("URL to hub has to start with http(s): %r" % self.hub_url)
-        client = xmlrpclib.ServerProxy(self.hub_url, allow_none=True, transport=transport,
-                                       verbose=False)
+        client = xmlrpclib.ServerProxy(self.hub_url, allow_none=True, verbose=False)
         return client
 
     def get_filtered_scan_list(self, id=None, target=None, base=None, state=None, username=None, release=None):
@@ -100,9 +91,9 @@ class CovscanAPI(object):
 
         @return: dictionary containing keys 'status', 'count' and 'scans' (if status is set to 'OK'); if status is set
                  to 'ERROR', 'message' key containing error output is there instead
-        @see get_filtered_scan_list in covscanhub.xmlrpc.errata
+        @see get_filtered_scan_list in covscanhub.xmlrpc.scan
         """
 
         filters = dict(id=id, target=target, base=base, state=state, username=username, release=release)
         filters = dict(filter(lambda (k, v): v is not None, filters.items()))  # removes None values from dictionary
-        return self.hub.errata.get_filtered_scan_list(filters)
+        return self.hub.scan.get_filtered_scan_list(filters)
