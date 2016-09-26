@@ -36,3 +36,12 @@
   ```
   env KRB5_TRACE=/dev/stdout kinit -k -t /etc/httpd/conf/httpd.keytab HTTP/covscan-stage.app.eng.brq.redhat.com@REDHAT.COM
   ```
+
+ * `mod_dumpio` setup to verify that kerberos is configured correctly — it will log complete HTTP traffic to `error_log`:
+
+  ```
+  LoadModule dumpio_module modules/mod_dumpio.so
+  DumpIOInput On
+  DumpIOOutput On
+  DumpIOLogLevel notice
+  ```
