@@ -133,7 +133,7 @@ def get_filtered_scan_list(request, kwargs):
                 'package__eligible',
                 'date_submitted',
                 'enabled',
-                'id',
+                'scanbinding__id',
                 'nvr',
                 'base_id',
                 'base__nvr',
@@ -150,10 +150,11 @@ def __setup_kwargs(kwargs):
     """
     Renames keys and removes None values from dictionary
     @param kwargs: dictionary to be modified
-    @return:
+    @return: kwargs
     """
 
     kwargs['nvr'] = kwargs.pop('target', None)
+    kwargs['scanbinding__id'] = kwargs.pop('id', None) # conversion to correct id
     kwargs['base__nvr'] = kwargs.pop('base', None)
     kwargs['tag__release__tag'] = kwargs.pop('release', None)
     kwargs = dict(filter(lambda (k, v): v is not None, kwargs.items()))
@@ -194,6 +195,7 @@ def __rename_keys(scans_list):
                          'base__nvr'            : 'base_target',
                          'tag__release__tag'    : 'release',
                          'tag__name'            : 'tag_name',
+                         'scanbinding__id'      : 'id',
                          }
     for scan in scans_list:
         for old_name, new_name in translation_table.items():
