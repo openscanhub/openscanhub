@@ -69,3 +69,38 @@ Can be easily resolved:
 ```
 ALTER TABLE auth_user_user_permissions RENAME COLUMN longnameuser_id TO user_id;
 ```
+
+
+Removing `NOT NULL` constraint without migrations:
+
+```
+ALTER TABLE auth_user_user_permissions ALTER COLUMN longnameuser_id DROP NOT NULL;
+```
+
+
+## Adding users with longer username than 30 characters
+
+```
+>>> p = Permission.objects.get(pk=46)
+>>> u2 = User.objects.create(username="errata/errata-web-02.host.qe.eng.pek2.redhat.com@REDHAT.COM")
+>>> u2.user_permissions.add(p)
+```
+
+
+## Adding user a permission to submit scans
+
+(prereq is that username is long than 30 chars and thus you can't do this in webui)
+
+
+```
+>>> u = User.objects.get(pk=460)  # id of user we want to edit (can be found in URL in admin interface)
+>>> u
+<User: errata/errata-web-01.host.qe.eng.pek2.redhat.com>
+
+>>> p = Permission.objects.get(pk=46)  # You can find id in admin's html in forms
+>>> p
+<Permission: scan | permissions | Can submit ET scan via XML-RPC>
+>>> u.user_permissions.add(p)
+```
+
+That's all. Now refresh admin interface and see if it's really there.
