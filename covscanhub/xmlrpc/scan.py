@@ -9,12 +9,11 @@ from kobo.hub.models import Task
 from kobo.django.xmlrpc.decorators import login_required
 
 from covscanhub.errata.scanner import create_diff_task2, ClientScanScheduler, ClientDiffPatchesScanScheduler
+from covscanhub.other.constants import DEFAULT_SCAN_LIMIT
 from covscanhub.scan.models import ClientAnalyzer, Profile, Scan, SCAN_STATES
 from kobo.django.auth.models import User
 
-
 logger = logging.getLogger("covscanhub")
-
 
 __all__ = (
     "diff_build",
@@ -89,13 +88,16 @@ def create_user_diff_task(request, hub_opts, task_opts):
     return create_diff_task2(hub_opts, task_opts)
 
 
-def get_filtered_scan_list(request, kwargs):
+def get_filtered_scan_list(request, kwargs, filter_scan_limit=DEFAULT_SCAN_LIMIT):
     """
     get_filtered_scan_list(kwargs)
 
         Returns scans which fits kwargs filters, multiple filters can be used at the same time.
         Method should be used through API. Available filters are:
 
+    @param filter_scan_limit:
+     - maximum number of scans which can be returned
+     - if the query exceeds the limit, error message is returned
     @param kwargs:
      - id - id of the scan
      - target - target of the scan
@@ -143,7 +145,11 @@ def get_filtered_scan_list(request, kwargs):
                 'tag__release__tag',
                 'tag__name',
                 )
-    return {'status': 'OK', 'count': query_set.count(), 'scans': __rename_keys(list(query_set)) }
+    results_count = query_set.count()
+    if results_count > filter_scan_limit:
+        return {'status': 'ERROR', 'message': 'Found more than ' + str(filter_scan_limit) + ' scans.'}
+
+    return {'status': 'OK', 'count': results_count, 'scans': __rename_keys(list(query_set))}
 
 
 def __setup_kwargs(kwargs):
@@ -201,6 +207,7 @@ def __rename_keys(scans_list):
         for old_name, new_name in translation_table.items():
             scan[new_name] = scan.pop(old_name)
     return scans_list
+
 
 def get_task_info(request, task_id):
     """

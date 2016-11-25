@@ -31,6 +31,7 @@ Finally, use method which you like according to its doc, f.e. get_filtered_scan_
 import xmlrpclib
 
 from covscan.utils.conf import get_config_dict
+from covscanhub.other.constants import DEFAULT_SCAN_LIMIT
 
 
 class CovscanAPI(object):
@@ -41,6 +42,11 @@ class CovscanAPI(object):
             raise ValueError('Invalid hub url in config file.')
         elif hub_url is not None and not hub_url.endswith('/xmlrpc'):
             raise ValueError('Invalid hub url was given: ' + hub_url)
+
+        if 'FILTER_SCAN_LIMIT' in conf:
+            self.filter_scan_limit = conf['FILTER_SCAN_LIMIT']
+        else :
+            self.filter_scan_limit = DEFAULT_SCAN_LIMIT
 
         self.hub_url = hub_url if hub_url is not None else conf['HUB_URL']
         self.hub_url += '/client/'
@@ -96,4 +102,4 @@ class CovscanAPI(object):
 
         filters = dict(id=id, target=target, base=base, state=state, owner=owner, release=release)
         filters = dict(filter(lambda (k, v): v is not None, filters.items()))  # removes None values from dictionary
-        return self.hub.scan.get_filtered_scan_list(filters)
+        return self.hub.scan.get_filtered_scan_list(filters, self.filter_scan_limit)
