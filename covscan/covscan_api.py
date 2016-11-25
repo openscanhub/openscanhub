@@ -15,8 +15,7 @@ You just need to import API class:
 
     from covscan.covscan_api import CovscanAPI
 
-And then create constructor with optional hub url argument, which must end with '/xmlrpc'. If none url is given, url is
-used from covscan.conf file:
+And then create constructor with optional hub url argument, which must end with '/xmlrpc':
 
     api = CovscanAPI('http://covscan-stage.app.eng.brq.redhat.com/covscanhub/xmlrpc')
 
@@ -25,6 +24,10 @@ Finally, use method which you like according to its doc, f.e. get_filtered_scan_
     scans = api.get_filtered_scan_list(id=3, target="python-six-1.9.0-2.el7", base='python-six-1.3.0-4.el7',
                                        owner="admin", state="BASE_SCANNING", release='rhel-7.2' )
 
+If none url is given, url is used from HUB_URL constant from covscan config file.
+
+To avoid sending too much data through xmlrpc, there is a default limit which prevents sending if limit is exceeded.
+This limit is also configurable in config file as FILTER_SCAN_LIMIT constant.
 
 """
 
