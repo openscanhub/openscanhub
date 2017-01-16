@@ -90,14 +90,11 @@ def create_user_diff_task(request, hub_opts, task_opts):
 
 def get_filtered_scan_list(request, kwargs, filter_scan_limit=DEFAULT_SCAN_LIMIT):
     """
-    get_filtered_scan_list(kwargs)
+    get_filtered_scan_list(kwargs, filter_scan_limit)
 
         Returns scans which fits kwargs filters, multiple filters can be used at the same time.
         Method should be used through API. Available filters are:
 
-    @param filter_scan_limit:
-     - maximum number of scans which can be returned
-     - if the query exceeds the limit, error message is returned
     @param kwargs:
      - id - id of the scan
      - target - target of the scan
@@ -106,6 +103,10 @@ def get_filtered_scan_list(request, kwargs, filter_scan_limit=DEFAULT_SCAN_LIMIT
      - owner - owner of the scan
      - release - system release of the scan
     @type kwargs: dictionary
+    @param filter_scan_limit:
+     - maximum number of scans which can be returned
+     - if the query exceeds the limit, error message is returned
+     - parameter is optional, if not set DEFAULT_SCAN_LIMIT is used
     @return:
      - status: status message: { 'OK', 'ERROR' }
      - message: in case of error, here is detailed message
