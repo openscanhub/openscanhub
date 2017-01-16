@@ -26,8 +26,9 @@ Finally, use method which you like according to its doc, f.e. get_filtered_scan_
 
 If none url is given, url is used from HUB_URL constant from covscan config file.
 
-To avoid sending too much data through xmlrpc, there is a default limit which prevents sending if limit is exceeded.
-This limit is also configurable in config file as FILTER_SCAN_LIMIT constant.
+To avoid sending too much data through xmlrpc, there is a default limit which sets maxcimum number of sent scans.
+If limit is exceeded, only limited amount of scans is sent. Scans are sorted by its submission date, from newest to
+oldest. This limit is also configurable in config file as FILTER_SCAN_LIMIT constant.
 
 """
 
@@ -73,6 +74,7 @@ class CovscanAPI(object):
     def get_filtered_scan_list(self, id=None, target=None, base=None, state=None, owner=None, release=None):
         """
         Filters scans according to input arguments. If some of them are not set, filter is not used on that parameter.
+        Scans are sorted by its submission date, from newest to oldest.
 
         Pretty print of output is shown below:
 

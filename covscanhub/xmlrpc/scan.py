@@ -111,7 +111,7 @@ def get_filtered_scan_list(request, kwargs, filter_scan_limit=DEFAULT_SCAN_LIMIT
      - status: status message: { 'OK', 'ERROR' }
      - message: in case of error, here is detailed message
      - count: number of returned scans
-     - scans: info about selected scans in a list of dictionaries
+     - scans: info about selected scans in a list of dictionaries, sorted by submission date
 
      Basic usage:
 
@@ -129,6 +129,7 @@ def get_filtered_scan_list(request, kwargs, filter_scan_limit=DEFAULT_SCAN_LIMIT
         return ret_value
 
     query_set = Scan.objects.filter(**kwargs).select_related() \
+        .order_by('-date_submitted') \
         .values('username__username',
                 'username__email',
                 'package__name',
@@ -148,7 +149,8 @@ def get_filtered_scan_list(request, kwargs, filter_scan_limit=DEFAULT_SCAN_LIMIT
                 )
     results_count = query_set.count()
     if results_count > filter_scan_limit:
-        return {'status': 'ERROR', 'message': 'Found more than ' + str(filter_scan_limit) + ' scans.'}
+        return {'status': 'ERROR', 'message': 'Limit exceeded, returning first ' + str(filter_scan_limit) + ' scans.',
+                'count': filter_scan_limit, 'scans': __rename_keys(list(query_set[:filter_scan_limit]))}
 
     return {'status': 'OK', 'count': results_count, 'scans': __rename_keys(list(query_set))}
 
