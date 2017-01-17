@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 
-import os
 import sys
 
 import kobo.exceptions
@@ -12,6 +11,7 @@ import kobo.worker.tasks
 
 # assuming all tasks are in covscand/tasks/task_*.py modules
 import covscand.tasks
+from covscan.utils.conf import get_config_dict
 
 
 def main():
@@ -21,14 +21,8 @@ def main():
     kobo.worker.main.TaskContainer.register_module(covscand.tasks, prefix="task_")
 
     # configuration
-    config_env = "COVSCAND_CONFIG_FILE"
-    config_default = "/etc/covscan/covscand.conf"
-    config_file = os.environ.get(config_env, config_default)
-    conf = kobo.conf.PyConfigParser()
-    try:
-        conf.load_from_file(config_file)
-    except (IOError, TypeError):
-        sys.stderr.write("\n\nError: The config file '%s' was not found.\nCreate the config file or specify the '%s'\nenvironment variable to override config file location.\n" % (config_default, config_env))
+    conf = get_config_dict(config_env="COVSCAND_CONFIG_FILE", config_default="/etc/covscan/covscand.conf")
+    if conf is None:
         return 2
 
     try:

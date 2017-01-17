@@ -11,7 +11,7 @@ import kobo.client.commands
 
 # assuming all commands are in covscan/commands/cmd_*.py modules
 import covscan.commands
-#import commands
+from covscan.utils.conf import get_config_dict
 
 
 # inherit container to make sure nobody will change plugins I registered
@@ -25,15 +25,8 @@ def main(args=None):
     # register project specific commands
     CovScanCommandContainer.register_module(covscan.commands, prefix="cmd_")
 
-    # configuration
-    config_env = "COVSCAN_CONFIG_FILE"
-    config_default = "/etc/covscan/covscan.conf"
-    config_file = os.environ.get(config_env, config_default)
-    conf = kobo.conf.PyConfigParser()
-    try:
-        conf.load_from_file(config_file)
-    except (IOError, TypeError):
-        sys.stderr.write("\n\nError: The config file '%s' was not found.\nCreate the config file or specify the '%s'\nenvironment variable to override config file location.\n" % (config_default, config_env))
+    conf = get_config_dict(config_env="COVSCAN_CONFIG_FILE", config_default="/etc/covscan/covscan.conf")
+    if conf is None:
         return 2
 
     # initialize command container

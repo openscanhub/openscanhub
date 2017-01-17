@@ -22,3 +22,5 @@ SCAN_RESULTS_SUMMARY = 'scan-results-summary.txt'
 CSDIFF_ARGS = '-jz'
 
 DEFECTS_IN_PATCHES_FILE = "defects-in-patches.js"
+
+DEFAULT_SCAN_LIMIT = 1000

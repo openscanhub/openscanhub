@@ -29,6 +29,16 @@ using
 ./covscanhub/scripts/xmlrpc.py --hub http://127.0.0.1:8000/xmlrpc/kerbauth/ get-scan-state 13
 
 
+### GET FILTERED SCAN
+
+filter scans according to optional filters, hub url is slightly changed!
+
+./covscanhub/scripts/xmlrpc.py --hub http://127.0.0.1:8000/xmlrpc/client/ get-filtered-scan-list \
+   --target 'python-six-1.9.0-2.el7' --base 'python-six-1.3.0-4.el7' --owner='admin' \
+   --state-type "BASE_SCANNING" --release='rhel-7.2'
+
+
+
 ## DEBUGGING
 
 In case you are getting 500s and there is no sensible error message, it's likely that server is
@@ -89,6 +99,13 @@ def create_scan_cmd(options, hub):
     )
 
 
+def get_filtered_scan_list_cmd(options, hub):
+    c = Client(hub)
+    response = c.get_filtered_scan_list(options.id, options.target, options.base, options.owner,
+                                        options.state_type, options.release)
+    logger.info(json.dumps(response, indent=2))
+
+
 def get_scan_state_cmd(options, hub):
     c = Client(hub)
     response = c.get_scan_state(options.SCAN_ID[0])
@@ -100,7 +117,7 @@ def set_options():
 
     parser.add_argument("-v", "--verbose", help="enable debug logs and verbose traceback",
                         action="store_true")
-    parser.add_argument("--username", help="username for authentication")
+    parser.add_argument("--owner", help="owner for authentication")
     parser.add_argument("--password", help="password for authentication")
 
     subparsers = parser.add_subparsers(help='commands')
@@ -110,6 +127,18 @@ def set_options():
         help="full URL of API endpoint, e.g. http://172.21.0.2:8000/xmlrpc/kerbauth",
         dest="hub", default=None
     )
+
+    get_filtered_scan_list_parser = subparsers.add_parser(
+        'get-filtered-scan-list',
+        help='get filtered scan list'
+    )
+    get_filtered_scan_list_parser.add_argument("--id", help="id of scan")
+    get_filtered_scan_list_parser.add_argument("--target", help="nvr of package")
+    get_filtered_scan_list_parser.add_argument("--base", help="package base")
+    get_filtered_scan_list_parser.add_argument("--owner", help="name of owner")
+    get_filtered_scan_list_parser.add_argument("--state-type", help="state of tasks")
+    get_filtered_scan_list_parser.add_argument("--release", help="release name")
+    get_filtered_scan_list_parser.set_defaults(func=get_filtered_scan_list_cmd)
 
     get_scan_state_parser = subparsers.add_parser(
         'get-scan-state',
@@ -186,6 +215,14 @@ class Client(object):
         """
         logger.debug("get scan state: %s", scan_id)
         return self.hub.errata.get_scan_state(scan_id)
+
+    def get_filtered_scan_list(self, id=None, target=None, base=None, owner=None, state=None, release=None):
+        """
+        Call xmlrpc function get_filtered_scan_list
+        """
+        filters = dict(id=id, target=target, base=base, state=state, owner=owner, release=release)
+        filters = dict(filter(lambda (k, v): v is not None, filters.items()))  # removes None values from dictionary
+        return str(self.hub.scan.get_filtered_scan_list(filters))
 
     def get_krb_chain(self):
         """

@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import logging
+
 from covscanhub.errata.scanner import handle_scan
 
 from covscanhub.scan.models import SCAN_STATES, ETMapping, \
@@ -74,6 +75,8 @@ function.'
     return response
 
 
+
+
 def get_scan_state(request, etm_id):
     """
     get_scan_state(scan_id)
@@ -95,6 +98,7 @@ def get_scan_state(request, etm_id):
     More info can be found here:
         http://etherpad.corp.redhat.com/Covscan-ErrataTool-Integration
     """
+
     logger.info('[SCAN_STATE] %s', etm_id)
     response = {}
     try:
