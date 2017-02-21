@@ -269,6 +269,8 @@ class CsmockRunner(object):
 
     def analyze(self, analyzers, srpm_path, profile=None, su_user=None, additional_arguments=None,
                 use_sudo=False, result_filename=None, **kwargs):
+        if result_filename is None:
+            result_filename = os.path.basename(srpm_path)[:-8]
         if self.tmpdir:
             output_path = os.path.join(self.tmpdir, result_filename + '.tar.xz')
         else:
