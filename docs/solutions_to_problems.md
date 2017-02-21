@@ -35,5 +35,5 @@
     * however, it leads to another problem:
 
 * Csmock has lock: waiting till /tmp/.csmock-rhel-7-x86_64.lock (PID 9340) disappears...
-    * check if mock if running and kill
+    * check if mock is running and kill
     * remove lock
