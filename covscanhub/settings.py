@@ -178,9 +178,9 @@ XMLRPC_METHODS = {
 
 }
 
-BREW_URL = 'http://brewhub.engineering.redhat.com/brewhub'
+BREW_URL = 'https://brewhub.engineering.redhat.com/brewhub'
 BREW_BIN_NAME = 'brew'
-KOJI_URL = 'http://koji.fedoraproject.org/kojihub'
+KOJI_URL = 'https://koji.fedoraproject.org/kojihub'
 KOJI_BIN_NAME = 'koji'
 ET_SCAN_PRIORITY = 20
 
