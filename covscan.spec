@@ -8,8 +8,8 @@
 %{!?hub_host:%define hub_host localhost}
 
 Name:           covscan
-Version:        0.6.7
-Release:        2%{?dist}
+Version:        0.6.8
+Release:        1%{?dist}
 License:        Commercial
 Summary:        Coverity scan scheduler
 Group:          Applications/Engineering
@@ -221,6 +221,9 @@ fi
 
 
 %changelog
+* Mon Jun 26 2017 Kamil Dudka <kdudka@redhat.com> - 0.6.8-1
+- new release
+
 * Tue Apr 12 2016 Kamil Dudka <kdudka@redhat.com> - 0.6.7-2
 - bump release to force update if stale covscan-testing packages are installed
 
