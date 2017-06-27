@@ -5,7 +5,6 @@ Instance-specific settings.
 Devel instance
 """
 
-import sys
 import kobo
 import os
 
@@ -13,7 +12,7 @@ DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
-    ('Tomas Tomecek', 'ttomecek@redhat.com'),
+    ('Kamil Dudka', 'kdudka@redhat.com'),
 )
 
 PROJECT_DIR = os.path.dirname(__file__)
@@ -30,6 +29,14 @@ DATABASES = {
         'PORT': '',
         'ATOMIC_REQUESTS': True
     }
+#    'migration': {
+#        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+#        'NAME': 'migration',
+#        'USER': 'covscanhub',
+#        'PASSWORD': 'velryba',
+#        'HOST': 'localhost',
+#        'PORT': '5432',
+#    }
 }
 
 LOGGING = {
@@ -37,7 +44,7 @@ LOGGING = {
     'disable_existing_loggers': False,
     'formatters': {
         'verbose': {
-            'format': '%(levelname)-7s %(asctime)s %(pathname)-50s %(message)s'
+            'format': '%(levelname)-7s %(asctime)s %(pathname)-50s:%(lineno)d %(funcName)s   %(message)s'
         },
         'simple': {
             'format': '%(levelname)s %(message)s'
@@ -64,8 +71,13 @@ LOGGING = {
             'level': 'DEBUG',
             'propagate': True,
         },
+#        'django.db.backends': {
+#            'handlers': ['file'],
+#            'propagate': False,
+#            'level': 'INFO',
+#        },
         'kobo': {
-            'handlers': ['file', 'console'],
+            'handlers': ['file'],
             'level': 'DEBUG',
             'propagate': True,
         }
@@ -80,6 +92,13 @@ LOGGING = {
 # If running in a Windows environment this must be set to the same as your
 # system time zone.
 TIME_ZONE = 'Europe/Prague'
+
+#KRB_AUTH_PRINCIPAL_SERVICE = 'covscan/uqtm.lab.eng.brq.redhat.com@REDHAT.COM'
+#KRB_AUTH_KEYTAB = '/etc/httpd/conf/httpd.keytab'
+#KRB_AUTH_PRINCIPAL = 'HTTP/uqtm.lab.eng.brq.redhat.com@REDHAT.COM'
+#KRB_AUTH_KEYTAB_SERVICE = '/etc/covscan.keytab'
+#
+#LANGUAGE_CODE = 'en-us'
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash if there is a path component (optional in other cases).
@@ -102,7 +121,7 @@ TEMPLATE_DIRS = (
 ###############################################################################
 
 # Absolute path to task logs and other files
-FILES_PATH = '/var/covscanhub'
+FILES_PATH = '/var/lib/covscanhub'
 
 # Files for kobo tasks with predefined structure
 TASK_DIR = os.path.join(FILES_PATH, 'tasks')
@@ -113,17 +132,12 @@ UPLOAD_DIR = os.path.join(FILES_PATH, 'upload')
 LOGIN_URL_NAME = 'auth/krb5login'
 LOGIN_EXEMPT_URLS = ['.*xmlrpc/.*']
 
-# BZ 4.2
 BZ_URL = 'https://partner-bugzilla.redhat.com/xmlrpc.cgi'
-# BZ 4.4 -- new RPC API
-# BZ_URL = "https://bzweb01-devel.app.eng.rdu.redhat.com/xmlrpc.cgi"
-# production
 # BZ_URL = "https://bugzilla.redhat.com/xmlrpc.cgi"
 
 BZ_USER = "ttomecek@redhat.com"
 BZ_PSWD = "roflcopter" # not my actual passwd on live bz
 
-#if not DEBUG:
 QPID_CONNECTION = {
     'broker': "qpid-stage.app.eng.bos.redhat.com",
     'address': "eso.topic",
@@ -131,12 +145,3 @@ QPID_CONNECTION = {
 }
 
 QPID_CONNECTION['routing_key'] = 'covscan.scan'
-
-#else:
-#    QPID_CONNECTION = {
-#        'broker': "localhost:5672",
-#        'address': "amq.topic",
-#        'mechanism': 'ANONYMOUS',
-#    }
-
-

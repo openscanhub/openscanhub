@@ -29,15 +29,21 @@ MANAGERS = ADMINS
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        #'ENGINE': 'django.db.backends.sqlite3',
         'NAME': 'pg_user_db',
-        #'NAME': '/var/covscanhub/db.sqlite',
         'USER': 'pg_user',
         'PASSWORD': 'ropucha',
         'HOST': 'localhost',
         'PORT': '5432',
         'ATOMIC_REQUESTS': True
     }
+#    'migration': {
+#        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+#        'NAME': 'migration',
+#        'USER': 'covscanhub',
+#        'PASSWORD': 'velryba',
+#        'HOST': 'localhost',
+#        'PORT': '5432',
+#    }
 }
 
 LOGGING = {
@@ -57,8 +63,8 @@ LOGGING = {
             'class': 'logging.handlers.RotatingFileHandler',
             'formatter': 'verbose',
             'filename': '/var/log/covscanhub.log',
-            'maxBytes': 10 * (1024 ** 2),
-            'backupCount': 7,
+            'maxBytes': 10 * (1024 ** 2),  # 10 MB
+            'backupCount': 14,
         },
     },
     'loggers': {
@@ -73,32 +79,38 @@ LOGGING = {
             'level': 'INFO',
         },
         'kobo': {
-            'handlers': ['file', 'console'],
+            'handlers': ['file'],
             'level': 'DEBUG',
             'propagate': True,
         }
     }
 }
 
+# Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
-TIME_ZONE = 'Europe/Bratislava'
+# although not all choices may be available on all operating systems.
+# On Unix systems, a value of None will cause Django to use the same
+# timezone as the operating system.
+# If running in a Windows environment this must be set to the same as your
+# system time zone.
+TIME_ZONE = 'Europe/Prague'
 
 KRB_AUTH_PRINCIPAL_SERVICE = 'covscan/uqtm.lab.eng.brq.redhat.com@REDHAT.COM'
-KRB_AUTH_KEYTAB_SERVICE = '/etc/covscan.keytab'
-KRB_AUTH_PRINCIPAL = 'HTTP/uqtm.lab.eng.brq.redhat.com@REDHAT.COM'
 KRB_AUTH_KEYTAB = '/etc/httpd/conf/httpd.keytab'
+KRB_AUTH_PRINCIPAL = 'HTTP/uqtm.lab.eng.brq.redhat.com@REDHAT.COM'
+KRB_AUTH_KEYTAB_SERVICE = '/etc/covscan.keytab'
 
 LANGUAGE_CODE = 'en-us'
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash if there is a path component (optional in other cases).
 # Examples: "http://media.lawrence.com", "http://example.com/media/"
-MEDIA_URL = '/covscan/media/'
+MEDIA_URL = '/covscanhub/media/'
 
 # URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
 # trailing slash.
 # Examples: "http://foo.com/media/", "/media/".
-ADMIN_MEDIA_PREFIX = '/covscan/admin/media/'
+ADMIN_MEDIA_PREFIX = '/covscanhub/admin/media/'
 
 TEMPLATE_DIRS = (
     # directories with templates
@@ -119,16 +131,10 @@ TASK_DIR = os.path.join(FILES_PATH, 'tasks')
 # Root directory for uploaded files
 UPLOAD_DIR = os.path.join(FILES_PATH, 'upload')
 
-ACTUAL_SCANNER = ('coverity', '6.5.0')
-
 LOGIN_URL_NAME = 'auth/krb5login'
 LOGIN_EXEMPT_URLS = ['.*xmlrpc/.*']
 
-# BZ 4.2
 BZ_URL = 'https://partner-bugzilla.redhat.com/xmlrpc.cgi'
-# BZ 4.4 -- new RPC API
-# BZ_URL = "https://bzweb01-devel.app.eng.rdu.redhat.com/xmlrpc.cgi"
-# production
 # BZ_URL = "https://bugzilla.redhat.com/xmlrpc.cgi"
 
 BZ_USER = "ttomecek@redhat.com"

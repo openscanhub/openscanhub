@@ -12,7 +12,7 @@ DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
-    ('Tomas Tomecek', 'ttomecek@redhat.com'),
+    ('Kamil Dudka', 'kdudka@redhat.com'),
 )
 
 PROJECT_DIR = os.path.dirname(__file__)
@@ -36,7 +36,6 @@ DATABASES = {
         'HOST': 'localhost',
         'PORT': '5432',
     }
-
 }
 
 LOGGING = {
@@ -56,8 +55,8 @@ LOGGING = {
             'class': 'logging.handlers.RotatingFileHandler',
             'formatter': 'verbose',
             'filename': '/var/log/covscanhub.log',
-            'maxBytes': 10 * (1024 ** 2),
-            'backupCount': 7,
+            'maxBytes': 10 * (1024 ** 2),  # 10 MB
+            'backupCount': 14,
         },
     },
     'loggers': {
@@ -74,7 +73,13 @@ LOGGING = {
     }
 }
 
+# Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
+# although not all choices may be available on all operating systems.
+# On Unix systems, a value of None will cause Django to use the same
+# timezone as the operating system.
+# If running in a Windows environment this must be set to the same as your
+# system time zone.
 TIME_ZONE = 'Europe/Prague'
 
 KRB_AUTH_PRINCIPAL = 'HTTP/cov01.lab.eng.brq.redhat.com@REDHAT.COM'
@@ -116,11 +121,7 @@ UPLOAD_DIR = os.path.join(FILES_PATH, 'upload')
 LOGIN_URL_NAME = 'auth/krb5login'
 LOGIN_EXEMPT_URLS = ['.*xmlrpc/.*']
 
-# BZ 4.2
-#BZ_URL = 'https://partner-bugzilla.redhat.com/xmlrpc.cgi'
-# BZ 4.4 -- new RPC API
-# BZ_URL = "https://bzweb01-devel.app.eng.rdu.redhat.com/xmlrpc.cgi"
-# production
+# BZ_URL = 'https://partner-bugzilla.redhat.com/xmlrpc.cgi'
 BZ_URL = "https://bugzilla.redhat.com/xmlrpc.cgi"
 
 BZ_USER = "covscan-auto@redhat.com"
