@@ -7,7 +7,7 @@ import os
 # you can use it instead of specifying the full path
 PROJECT_DIR = os.path.dirname(__file__)
 
-URL_PREFIX = ""
+URL_PREFIX = "/covscanhub"
 
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html

@@ -6,7 +6,6 @@
 
 %{!?hub_instance:%define hub_instance prod}
 %{!?hub_host:%define hub_host localhost}
-%{!?xmlrpc_url:%define xmlrpc_url http://localhost/xmlrpc}
 
 Name:           covscan
 Version:        0.6.7
@@ -126,11 +125,6 @@ mv $RPM_BUILD_ROOT/%{_sysconfdir}/covscan/%{hub_instance}_covscand.conf \
 rm -f $RPM_BUILD_ROOT/%{_sysconfdir}/covscan/devel_covscand.conf || :
 rm -f $RPM_BUILD_ROOT/%{_sysconfdir}/covscan/stage_covscand.conf || :
 rm -f $RPM_BUILD_ROOT/%{_sysconfdir}/covscan/prod_covscand.conf || :
-
-# prefix on stage & prod, not on devel & local
-%if "%{hub_instance}" == "stage" || "%{hub_instance}" == "prod"
-  sed -i 's@^URL_PREFIX =.*@URL_PREFIX = "/covscanhub"@g' $RPM_BUILD_ROOT/%{py_sitedir}/covscanhub/settings.py
-%endif
 
 # use proper configuration, remove rest
 mv $RPM_BUILD_ROOT/%{py_sitedir}/covscanhub/%{hub_instance}_settings_local.py \
