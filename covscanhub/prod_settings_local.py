@@ -43,7 +43,8 @@ LOGGING = {
     'disable_existing_loggers': False,
     'formatters': {
         'verbose': {
-            'format': '%(levelname)-7s %(asctime)s %(pathname)-50s:%(lineno)d %(funcName)s   %(message)s'
+            'format': '%(levelname)s %(asctime)s\t%(filename)s:%(lineno)s \
+%(funcName)s\t%(message)s'
         },
         'simple': {
             'format': '%(levelname)s %(message)s'
@@ -65,11 +66,11 @@ LOGGING = {
             'level': 'DEBUG',
             'propagate': True,
         },
-        'kobo': {
-            'handlers': ['file'],
-            'level': 'DEBUG',
-            'propagate': True,
-        }
+#        'kobo': {
+#            'handlers': ['file'],
+#            'level': 'DEBUG',
+#            'propagate': True,
+#        }
     }
 }
 
