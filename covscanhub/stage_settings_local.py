@@ -5,12 +5,12 @@ Instance-specific settings.
 Staging instance
 """
 
-import sys
-
-KOBO_DIR = '/home/brq/ttomecek/dev/kobo'
-
-if KOBO_DIR not in sys.path:
-    sys.path.append(KOBO_DIR)
+# import sys
+#
+# KOBO_DIR = '/home/brq/ttomecek/dev/kobo'
+#
+# if KOBO_DIR not in sys.path:
+#     sys.path.append(KOBO_DIR)
 
 import kobo
 import os
@@ -19,7 +19,7 @@ DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
-    ('Tomas Tomecek', 'ttomecek@redhat.com'),
+    ('Kamil Dudka', 'kdudka@redhat.com'),
 )
 
 PROJECT_DIR = os.path.dirname(__file__)
@@ -29,12 +29,12 @@ MANAGERS = ADMINS
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'pg_user_db',
-        'USER': 'pg_user',
-        'PASSWORD': 'ropucha',
+        'NAME': 'covscanhub',
+        'USER': 'covscanhub',
+        'PASSWORD': 'velryba',
         'HOST': 'localhost',
         'PORT': '5432',
-        'ATOMIC_REQUESTS': True
+        #'ATOMIC_REQUESTS': True
     }
 #    'migration': {
 #        'ENGINE': 'django.db.backends.postgresql_psycopg2',
@@ -73,11 +73,11 @@ LOGGING = {
             'level': 'DEBUG',
             'propagate': True,
         },
-        'django.db.backends': {
-            'handlers': ['file'],
-            'propagate': False,
-            'level': 'INFO',
-        },
+#        'django.db.backends': {
+#            'handlers': ['file'],
+#            'propagate': False,
+#            'level': 'INFO',
+#        },
         'kobo': {
             'handlers': ['file'],
             'level': 'DEBUG',
@@ -95,9 +95,9 @@ LOGGING = {
 # system time zone.
 TIME_ZONE = 'Europe/Prague'
 
-KRB_AUTH_PRINCIPAL_SERVICE = 'covscan/uqtm.lab.eng.brq.redhat.com@REDHAT.COM'
+KRB_AUTH_PRINCIPAL_SERVICE = 'covscan/covscan-stage.app.eng.brq.redhat.com@REDHAT.COM'
 KRB_AUTH_KEYTAB = '/etc/httpd/conf/httpd.keytab'
-KRB_AUTH_PRINCIPAL = 'HTTP/uqtm.lab.eng.brq.redhat.com@REDHAT.COM'
+KRB_AUTH_PRINCIPAL = 'HTTP/covscan-stage.app.eng.brq.redhat.com@REDHAT.COM'
 KRB_AUTH_KEYTAB_SERVICE = '/etc/covscan.keytab'
 
 LANGUAGE_CODE = 'en-us'
@@ -144,6 +144,7 @@ QPID_CONNECTION = {
     'broker': "amqps://qpid.stage.engineering.redhat.com",
     'address': "eso.topic",
     'mechanism': "GSSAPI",
+    'routing_key': "covscan.scan",
 }
 
-QPID_CONNECTION['routing_key'] = 'covscan.scan'
+# QPID_CONNECTION['routing_key'] = 'covscan.scan'

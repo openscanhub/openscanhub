@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 # Django global settings for covscanhub
 
+# DEBUG = True
+
 import os
 
 # Definition of PROJECT_DIR, just for convenience:
