@@ -67,7 +67,7 @@ case "${1}" in
 
     stage)
         TARGET="root@stage-covscan"
-        HOST="uqtm.lab.eng.brq.redhat.com"
+        HOST="covscan-stage.app.eng.brq.redhat.com"
         INSTANCE="stage"
         deploy_staging
         ;;

@@ -93,9 +93,9 @@ LOGGING = {
 # system time zone.
 TIME_ZONE = 'Europe/Prague'
 
-#KRB_AUTH_PRINCIPAL_SERVICE = 'covscan/uqtm.lab.eng.brq.redhat.com@REDHAT.COM'
+#KRB_AUTH_PRINCIPAL_SERVICE = 'covscan/covscan-stage.app.eng.brq.redhat.com@REDHAT.COM'
 #KRB_AUTH_KEYTAB = '/etc/httpd/conf/httpd.keytab'
-#KRB_AUTH_PRINCIPAL = 'HTTP/uqtm.lab.eng.brq.redhat.com@REDHAT.COM'
+#KRB_AUTH_PRINCIPAL = 'HTTP/covscan-stage.app.eng.brq.redhat.com@REDHAT.COM'
 #KRB_AUTH_KEYTAB_SERVICE = '/etc/covscan.keytab'
 #
 #LANGUAGE_CODE = 'en-us'
