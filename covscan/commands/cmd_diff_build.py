@@ -122,7 +122,11 @@ exist." % self.results_store_file)
 
         if len(args) != 1:
             self.parser.error("please specify exactly one SRPM")
-        self.srpm = os.path.abspath(os.path.expanduser(args[0]))
+        if brew_build:
+            # self.srpm contains NVR if --brew-build is used!
+            self.srpm = args[0]
+        else:
+            self.srpm = os.path.abspath(os.path.expanduser(args[0]))
 
         self.validate_results_store_file()
 
