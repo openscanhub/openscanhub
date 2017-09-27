@@ -50,9 +50,6 @@ class Diff_Build(covscan.CovScanCommand):
         add_security_option(self.parser)
         add_custom_model_option(self.parser)
 
-        add_tarball_option(self.parser)
-        add_install_to_chroot_option(self.parser)
-
         self.parser.add_option(
             "-m",
             dest="commit_string",
@@ -62,6 +59,8 @@ the target host/stream as an optional argument using the
 following format: "user:passwd@host:port/stream". User and password might be \
 stored in user configuration file."""
         )
+
+        add_install_to_chroot_option(self.parser)
 
     def validate_results_store_file(self):
         if self.results_store_file:
