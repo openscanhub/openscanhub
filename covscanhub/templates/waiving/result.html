@@ -20,7 +20,7 @@
         <span id="scan_state" class="info_box black_font bg_{{ sb.scan.get_state_display }} margin_right">{{ sb.scan.get_state_display }}</span>
     {% endif %}
     {% if advisory_link %}
-        <a id="advisory_link" class="btn margin_right" href="https://errata.devel.redhat.com/advisory/{{ advisory_link }}/test_run/covscan">Erratum</a>
+        <a id="advisory_link" class="btn margin_right" href="https://errata-web-01.host.stage.eng.bos.redhat.com/advisory/{{ advisory_link }}/test_run/covscan">Erratum</a>
     {% endif %}
     {% if sb.task %}
         <a id="task_link" class="btn margin_right" href="{% url 'task/detail' sb.task.id %}">Task</a>

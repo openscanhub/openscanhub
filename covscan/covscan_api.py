@@ -17,7 +17,7 @@ You just need to import API class:
 
 And then create constructor with optional hub url argument, which must end with '/xmlrpc':
 
-    api = CovscanAPI('http://covscan-stage.app.eng.brq.redhat.com/covscanhub/xmlrpc')
+    api = CovscanAPI('http://covscan-stage.lab.eng.brq2.redhat.com/covscanhub/xmlrpc')
 
 Finally, use method which you like according to its doc, f.e. get_filtered_scan_list with optional args:
 

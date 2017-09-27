@@ -5,7 +5,7 @@
 #
 
 STAGING_TARGET="root@stage-covscan"
-STAGING2_TARGET="root@covscan-stage.app.eng.brq.redhat.com"
+STAGING2_TARGET="root@covscan-stage.lab.eng.brq2.redhat.com"
 PROD_TARGET="cov01"
 PROD_TARGET2="ttomecek@cov02"
 COV02_TARGET="root@cov02"
@@ -67,14 +67,14 @@ case "${1}" in
 
     stage)
         TARGET="root@stage-covscan"
-        HOST="covscan-stage.app.eng.brq.redhat.com"
+        HOST="covscan-stage.lab.eng.brq2.redhat.com"
         INSTANCE="stage"
         deploy_staging
         ;;
 
     stage2)
-        TARGET="root@covscan-stage.app.eng.brq.redhat.com"
-        HOST="covscan-stage.app.eng.brq.redhat.com"
+        TARGET="root@covscan-stage.lab.eng.brq2.redhat.com"
+        HOST="covscan-stage.lab.eng.brq2.redhat.com"
         INSTANCE="stage"
         deploy_staging
         ;;

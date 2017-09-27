@@ -26,7 +26,7 @@
        --header "Content-Type:text/xml" \
        --data "<methodCall><methodName>auth.renew_session</methodName><params></params></methodCall>" \
        --negotiate -u : \
-       https://covscan-stage.app.eng.brq.redhat.com/covscanhub/xmlrpc/client/ >res.html
+       https://covscan-stage.lab.eng.brq2.redhat.com/covscanhub/xmlrpc/client/ >res.html
   ```
 
  * debug kerberos logs on standard output: `env KRB5_TRACE=/dev/stdout`
@@ -34,7 +34,7 @@
  * test if kerberos is set up correctly by obtaining TGT using a keytab:
 
   ```
-  env KRB5_TRACE=/dev/stdout kinit -k -t /etc/httpd/conf/httpd.keytab HTTP/covscan-stage.app.eng.brq.redhat.com@REDHAT.COM
+  env KRB5_TRACE=/dev/stdout kinit -k -t /etc/httpd/conf/httpd.keytab HTTP/covscan-stage.lab.eng.brq2.redhat.com@REDHAT.COM
   ```
 
  * `mod_dumpio` setup to verify that kerberos is configured correctly — it will log complete HTTP traffic to `error_log`:

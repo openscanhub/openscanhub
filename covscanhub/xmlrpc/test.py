@@ -52,6 +52,6 @@ def send_message(request):
         },
         'comment': 'The message provided has been sent to broker, for more \
 info see documentation on \
-http://covscan-stage.app.eng.brq.redhat.com/covscan/xmlrpc/kerbauth/'
+http://covscan-stage.lab.eng.brq2.redhat.com/covscan/xmlrpc/kerbauth/'
     }
     return result

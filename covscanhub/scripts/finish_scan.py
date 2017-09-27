@@ -63,10 +63,10 @@ def set_options():
 class FakeRequest(object):
     def __init__(self):
         self.user = get_user_model().objects.get(
-            username='worker/covscan-stage.app.eng.brq.redhat.com')
+            username='worker/covscan-stage.lab.eng.brq2.redhat.com')
         self.worker = 'asd'
         self.META = {}
-        self.META['REMOTE_ADDR'] = 'covscan-stage.app.eng.brq.redhat.com'
+        self.META['REMOTE_ADDR'] = 'covscan-stage.lab.eng.brq2.redhat.com'
 
 
 def m_finish_scan(scan_id):
