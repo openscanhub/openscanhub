@@ -68,8 +68,11 @@ class TaskResultPaths(object):
 
     def get_tarball_path(self):
         glob_paths = glob(os.path.join(self.task_dir, '*.tar.xz'))
-        if len(glob_paths) == 1:
-            return glob_paths[0]
+        # usually we have just one .tar.xz but, if we analyze an usptream
+        # tarball which itself has .tar.xz suffix, we need to pick a file
+        # ending -results.tar.xz, which appears second in the glob results
+        if len(glob_paths) in [1,2]:
+            return glob_paths[-1]
         else:
             logger.error("Can't figure out results tarball %s, for task %s", glob_paths, self.task)
             raise RuntimeError("can't find results tarball: '%s'" % glob_paths)

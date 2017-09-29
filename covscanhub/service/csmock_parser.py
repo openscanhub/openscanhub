@@ -34,6 +34,7 @@ import subprocess
 import tempfile
 import logging
 import urllib
+import re
 
 from kobo.shortcuts import run
 
@@ -256,16 +257,24 @@ class CsmockRunner(object):
         retcode, _ = run(command, stdout=True, can_fail=True, return_stdout=False, buffer_size=2, show_cmd=True)
         if output_path:
             return output_path, retcode
+
         if self.tmpdir:
-            return glob.glob(os.path.join(self.tmpdir, '*.tar.xz'))[0], retcode
+            path = self.tmpdir
         else:
-            glob_pattern = './*.tar.xz'
-            try:
-                return glob.glob(glob_pattern)[0], retcode
-            except IndexError:
-                # user could call --help, that's why this is not an error
-                logger.info("No tarballs in '%s'", glob_pattern)
-                return None, retcode
+            # search current directory for the results if not tmpdir is set
+            path ='.'
+        glob_pattern = os.path.join(path, '*.tar.xz')
+        glob_results = glob.glob(glob_pattern)
+
+        if 0 == len(glob_results):
+            # no .tar.xz found
+            logger.info("No tarballs in '%s'", glob_pattern)
+            return None, retcode
+
+        # usually we have just one .tar.xz but, if we analyze an usptream
+        # tarball which itself has .tar.xz suffix, we need to pick a file
+        # ending -results.tar.xz, which appears second in the glob results
+        return glob_results[-1], retcode
 
     def analyze(self, analyzers, srpm_path, profile=None, su_user=None, additional_arguments=None,
                 use_sudo=False, result_filename=None, **kwargs):
@@ -275,6 +284,11 @@ class CsmockRunner(object):
             output_path = os.path.join(self.tmpdir, result_filename + '.tar.xz')
         else:
             output_path = os.path.join(os.getcwd(), result_filename + '.tar.xz')
+
+        if output_path == srpm_path:
+            # use a different output path to avoid overwriting the input tarball
+            output_path = re.sub('\.tar\.xz$', '-results.tar.xz', output_path)
+
         cmd = ""
         if analyzers:
             cmd += '-t %s' % (pipes.quote(analyzers))
