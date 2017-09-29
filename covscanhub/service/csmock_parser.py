@@ -327,6 +327,15 @@ class CsmockRunner(object):
             print >> sys.stderr, "command '%s' failed to execute: %s" % (download_cmd, ex)
             return (None, 2)
 
+        # check that we downloaded an RPM because koji/brew silently download
+        # an HTML 404 page instead in case the build has been already deleted
+        check_cmd = ['file', '--mime-type', srpm_path]
+        p = subprocess.Popen(check_cmd, stdout=subprocess.PIPE)
+        mime_type, _ = p.communicate()
+        if not re.match('^.*application/x-rpm$', mime_type):
+            print >> sys.stderr, "unexpected MIME type: %s" % mime_type
+            return (None, 2)
+
         return self.analyze(analyzers, srpm_path, profile, su_user, additional_arguments, use_sudo, **kwargs)
 
     def no_scan(self, analyzers, profile=None, su_user=None, additional_arguments=None,
