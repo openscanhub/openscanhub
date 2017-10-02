@@ -1,19 +1,6 @@
 [
 {
   "pk": 1, 
-  "model": "errata.capability", 
-  "fields": {
-    "function": "covscanhub.errata.caps.rpmdep_cap_checker", 
-    "analyzers": [
-      1
-    ], 
-    "caps": [], 
-    "name": "C/C++", 
-    "options": "{\"arch\": \"x86_64\", \"conf\": {\"dependency\": \"libc.so\", \"builder\": \"brew\", \"extensions\": [\".c\", \".cpp\", \".h\", \".hpp\"], \"mimetypes\": [\"text/x-c\", \"text/c-c++\"]}}"
-  }
-},
-{
-  "pk": 1, 
   "model": "errata.scanningsession", 
   "fields": {
     "profile": 1, 

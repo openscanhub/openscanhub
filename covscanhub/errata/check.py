@@ -32,14 +32,12 @@ def check_nvr(nvr):
 
 def check_package_eligibility(package, nvr, mock_profile, release, created):
     """
-    check if package is eligible for scanning
-    * has code in appropriate programming language
-    * is not blacklisted
+    check if package is eligible for scanning (it is not blacklisted)
     """
     if created:
         logger.info('Package %s for %s was created', package, release)
-        depends_on = depend_on(nvr, 'libc.so', mock_profile)
-        atr = PackageAttribute.create_eligible(package, release, depends_on)
+        # all freshly scanned packages are now eligible by default
+        atr = PackageAttribute.create_eligible(package, release, True)
         is_eligible = atr.is_eligible()
     else:
         is_blocked = package.is_blocked(release)
