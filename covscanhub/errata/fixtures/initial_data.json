@@ -4,9 +4,7 @@
   "model": "errata.scanningsession", 
   "fields": {
     "profile": 1, 
-    "caps": [
-      1
-    ], 
+    "caps": [ ], 
     "options": "{\"comment_template\": \"errata process scan of %(target)s\", \"task_priority\": 20, \"method\": \"ErrataDiffBuild\"}", 
     "name": "ERRATA", 
     "description": "Periodic scans of packages released by Errata Tool"
