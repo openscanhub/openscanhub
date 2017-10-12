@@ -12,9 +12,7 @@ Version:        0.6.8
 Release:        1%{?dist}
 License:        Commercial
 Summary:        Coverity scan scheduler
-Group:          Applications/Engineering
 Source:         %{name}-%{version}.tar.bz2
-BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildArch:      noarch
 BuildRequires:  python-devel
 BuildRequires:  kobo-client
@@ -27,7 +25,6 @@ It consists of central hub, workers and cli client.
 
 %package client
 Summary: CovScan CLI client
-Group: Applications/Engineering
 Requires: kobo-client >= 0.6.0
 Requires: python-krbV
 Requires: koji
@@ -38,7 +35,6 @@ CovScan CLI client
 
 %package worker-%{hub_instance}
 Summary: CovScan worker
-Group: Applications/Engineering
 # Requires: covscan-client = %{version}-%{release}
 Requires: csmock
 Requires: kobo-client
@@ -52,7 +48,6 @@ CovScan worker
 
 %package hub-%{hub_instance}
 Summary: CovScan xml-rpc interface and web application
-Group: Applications/Engineering
 # Requires: covscan-client = %{version}-%{release}
 Requires: kobo-hub
 Requires: kobo-client
@@ -98,9 +93,6 @@ CovScan xml-rpc interface and web application
 
 %prep
 %setup -q
-
-%build
-echo OK
 
 
 %install
