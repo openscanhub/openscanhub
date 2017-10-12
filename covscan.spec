@@ -35,12 +35,14 @@ CovScan CLI client
 
 %package worker-%{hub_instance}
 Summary: CovScan worker
-# Requires: covscan-client = %{version}-%{release}
 Requires: csmock
 Requires: kobo-client
 Requires: kobo-worker
 Requires: kobo-rpmlib
 Requires: koji
+
+# FIXME: conf.py should be moved to covscan-common shared by both the packages
+Requires: covscan-client
 
 %description worker-%{hub_instance}
 CovScan worker
@@ -48,7 +50,6 @@ CovScan worker
 
 %package hub-%{hub_instance}
 Summary: CovScan xml-rpc interface and web application
-# Requires: covscan-client = %{version}-%{release}
 Requires: kobo-hub
 Requires: kobo-client
 Requires: kobo-django
