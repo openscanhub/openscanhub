@@ -28,7 +28,7 @@ It consists of central hub, workers and cli client.
 %package client
 Summary: CovScan CLI client
 Group: Applications/Engineering
-Requires: kobo-client
+Requires: kobo-client >= 0.6.0
 Requires: python-krbV
 Requires: koji
 
@@ -155,39 +155,6 @@ chmod 0755 $RPM_BUILD_ROOT%{py_sitedir}/covscanhub/manage.py
 
 %clean
 rm -rf $RPM_BUILD_ROOT
-
-
-%post client
-if rpm -q kobo-0.4.0 &>/dev/null; then
-    echo "======================================================================"
-    echo "======================================================================"
-    echo "Package kobo detected in version 0.4.0. This version has known issues."
-    echo "Please update to 0.4.1 or downgrade to 0.3.8."
-    echo "For more info, see https://bugzilla.redhat.com/show_bug.cgi?id=997735"
-    echo "======================================================================"
-    echo "======================================================================"
-fi
-
-%post hub-%{hub_instance}
-if test -e /var/log/covscanhub.log; then
-    # preserve existing log file
-    true
-else
-    # create an empty log file with correct ownership and permissions
-    touch /var/log/covscanhub.log
-    chown apache:apache /var/log/covscanhub.log
-    chmod 0640 /var/log/covscanhub.log
-fi
-
-%triggerin -n covscan-client -- kobo == 0.4.0
-kobo_client_dir=%{python_sitelib}/kobo/client
-kobo_client_conf=${kobo_client_dir}/default.conf
-mkdir -p ${kobo_client_dir}
-if [ ! -f ${kobo_client_conf} ] ; then
-    echo "Touching file ${kobo_client_conf}"
-    echo "This file is required for correct functionality of package kobo."
-    touch ${kobo_client_conf}
-fi
 
 
 %files client
