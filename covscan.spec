@@ -150,6 +150,8 @@ touch $RPM_BUILD_ROOT/var/log/covscanhub.log
 # copy checker_groups.txt
 cp -R covscanhub/scripts/checker_groups.txt $RPM_BUILD_ROOT/%{py_sitedir}/covscanhub/scripts/
 
+# make manage.py executable
+chmod 0755 $RPM_BUILD_ROOT%{py_sitedir}/covscanhub/manage.py
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -205,14 +207,8 @@ fi
 
 
 %files hub-%{hub_instance}
-%defattr(644,root,apache,755)
+%defattr(-,root,apache,-)
 %{py_sitedir}/covscanhub
-%attr(755, root, apache) %{py_sitedir}/covscanhub/manage.py
-# we want to override configuration
-# %attr(640,root,apache) %config(noreplace) %{py_sitedir}/covscanhub/settings.py
-# %attr(640,root,apache) %config(noreplace) %{py_sitedir}/covscanhub/settings_local.py
-# %attr(640,root,apache) %{py_sitedir}/covscanhub/settings.py[co]
-# %attr(640,root,apache) %{py_sitedir}/covscanhub/settings_local.py[co]
 %attr(640,root,root) /etc/httpd/conf.d/covscanhub-httpd.conf
 %ghost %attr(640,apache,apache) /var/log/covscanhub.log
 %dir %attr(775,root,apache) /var/lib/covscanhub
