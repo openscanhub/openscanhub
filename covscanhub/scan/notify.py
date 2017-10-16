@@ -6,6 +6,7 @@ import logging
 
 from django.core.mail import get_connection, EmailMessage
 from django.core.urlresolvers import reverse
+from django.conf import settings
 
 import kobo.hub.xmlrpc.client
 from kobo.hub.models import Task
@@ -27,6 +28,10 @@ logger = logging.getLogger(__name__)
 
 def send_mail(message, recipient, subject, recipients, headers, bcc=None):
     connection = get_connection(fail_silently=False)
+
+    if not AppSettings.setting_send_mail():
+        # mail just admins if AppSettings/SEND_MAIL is disabled
+        recipients = [a[1] for a in settings.ADMINS]
 
     from_addr = "<covscan-auto@redhat.com>"
 
@@ -87,9 +92,6 @@ def generate_stats(task, diff_task=False, with_defects_in_patches=False):
 
 
 def send_task_notification(request, task_id):
-    if not AppSettings.setting_send_mail():
-        logger.info("e-mail notifications are turned off")
-        return
     task = Task.objects.get(id=task_id)
 
     # return if task has some parent and send e-mail only from parent task
@@ -262,9 +264,7 @@ def send_scan_notification(request, scan_id):
     mg = MailGenerator(request, scan)
 
     # recipient setting
-    recipient = "covscan-auto@redhat.com"
-    if AppSettings.setting_send_mail():
-        recipient = get_recipient(scan.username)
+    recipient = get_recipient(scan.username)
 
     # message setting
     if scan.is_failed() or scan.is_canceled():
@@ -300,10 +300,7 @@ def send_scan_notification(request, scan_id):
 def send_notif_new_comment(request, scan, wl):
     mg = MailGenerator(request, scan)
 
-    if AppSettings.setting_send_mail():
-        recipient = get_recipient(scan.username)
-    else:
-        recipient = "covscan-auto@redhat.com"
+    recipient = get_recipient(scan.username)
 
     logger.info('Notifying %s about new comment in %s', recipient, scan.nvr)
 
