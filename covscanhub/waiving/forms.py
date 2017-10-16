@@ -13,7 +13,7 @@ class WaiverForm(forms.Form):
             (w, WAIVER_TYPES.get_item_help_text(w)) for w in WAIVER_TYPES
         )
     )
-    message = forms.CharField(widget=forms.widgets.Textarea(),
+    message = forms.CharField(widget=forms.widgets.Textarea(attrs={'rows':25, 'cols':80}),
                               initial="This defect is not a bug because...")
 
 
