@@ -406,7 +406,9 @@ class ClientScanScheduler(AbstractClientScanScheduler):
         else:
             self.task_args['args']['srpm_name'] = self.srpm_name
 
-        if input_pkg.endswith(".src.rpm"):
+        if self.build_nvr:
+            result_filename = self.build_nvr
+        elif input_pkg.endswith(".src.rpm"):
             result_filename = os.path.basename(input_pkg)[:-8]
         elif self.is_tarball:
             f = os.path.basename(input_pkg)
