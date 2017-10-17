@@ -106,11 +106,10 @@ def send_task_notification(request, task_id):
     task_url = kobo.hub.xmlrpc.client.task_url(request, task_id)
 
     try:
-        nvr = task.args['build']
+        build = task.args['build']
         source = "Build"
-        package = task.args['build'].get("nvr", None)
+        package = build.get("nvr", None)
     except KeyError:
-        nvr = task.args['srpm_name'][:-8]
         source = "SRPM"
         package = task.args['srpm_name']
 
@@ -138,7 +137,7 @@ def send_task_notification(request, task_id):
     ]
     message = "\n".join(message)
 
-    subject = "Task [#%s] %s finished, state: %s" % (task_id, nvr, state)
+    subject = "Task [#%s] %s finished, state: %s" % (task_id, package, state)
 
     to = task.args.get("email_to", []) or []
     bcc = task.args.get("email_bcc", []) or []
@@ -154,7 +153,7 @@ def send_task_notification(request, task_id):
         "X-Task-ID": task_id,
         "X-Task-State": state,
         "X-Task-Owner": task.owner.username,
-        "X-Scan-Build": nvr,
+        "X-Scan-Build": package,
     }
 
     return send_mail(message, recipient, subject, recipients, headers, bcc)
