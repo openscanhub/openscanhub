@@ -5,6 +5,7 @@ import os
 import logging
 import urllib
 
+from django.conf import settings
 from django.template import RequestContext
 from django.shortcuts import render_to_response, get_object_or_404
 from django.core.urlresolvers import reverse
@@ -56,7 +57,9 @@ def get_common_context(request, sb):
     # link to ET
     mappings = sb.etmapping_set.all()
     if mappings:
-        context['advisory_link'] = sb.etmapping_set.all()[0].advisory_id
+        advisory_id = sb.etmapping_set.all()[0].advisory_id
+        context['advisory_link'] = "%s/advisory/%s/test_run/covscan" % (
+            settings.ET_URL, advisory_id)
     if 'status_message' in request.session:
         context['status_message'] = request.session.pop('status_message')
 

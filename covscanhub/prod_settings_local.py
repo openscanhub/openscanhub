@@ -128,6 +128,8 @@ BZ_URL = "https://bugzilla.redhat.com/xmlrpc.cgi"
 BZ_USER = "covscan-auto@redhat.com"
 BZ_PSWD = "krokodyl"
 
+ET_URL = 'https://errata.devel.redhat.com'
+
 QPID_CONNECTION = {
     'broker': "amqps://qpid.engineering.redhat.com",
     'address': "eso.topic",

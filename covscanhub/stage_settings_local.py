@@ -140,6 +140,8 @@ BZ_URL = 'https://partner-bugzilla.redhat.com/xmlrpc.cgi'
 BZ_USER = "ttomecek@redhat.com"
 BZ_PSWD = "roflcopter" # not my actual passwd on live bz
 
+ET_URL = 'https://errata-web-01.host.stage.eng.bos.redhat.com'
+
 QPID_CONNECTION = {
     'broker': "amqps://qpid.stage.engineering.redhat.com",
     'address': "eso.topic",
