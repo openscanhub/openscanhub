@@ -581,6 +581,7 @@ class ClientDiffScanScheduler(AbstractClientScanScheduler):
         analyzer_chain = ','.join(analyzers_set)
         self.task_args['args']['analyzers'] = analyzer_chain
         self.task_args['args']['mock_config'] = self.target_mock_config
+        self.task_args['args']['profile'] = self.profile
         csmock_args = self.prepare_csmock_args(self.profile_args, *tuple(analyzer_opts['args']))
         self.task_args['args']['csmock_args'] = csmock_args
         self.task_args['args']['custom_model_name'] = self.model_name
@@ -595,6 +596,7 @@ class ClientDiffScanScheduler(AbstractClientScanScheduler):
         label = self.base_build_nvr or self.base_srpm_name
         args = {
             'mock_config': self.base_mock_config,
+            'profile': self.task_args['args']['profile'],
             'analyzers': self.task_args['args']['analyzers'],
             'csmock_args': self.task_args['args']['csmock_args'],
             'su_user': self.task_args['args']['su_user'],
