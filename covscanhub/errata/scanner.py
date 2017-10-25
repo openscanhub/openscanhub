@@ -430,6 +430,7 @@ class ClientScanScheduler(AbstractClientScanScheduler):
         analyzer_chain = ','.join(analyzers_set)
         self.task_args['args']['analyzers'] = analyzer_chain
         self.task_args['args']['mock_config'] = self.mock_config
+        self.task_args['args']['profile'] = self.profile
         # profile args < analyzer args < client opts
         csmock_args = self.prepare_csmock_args(self.profile_args, *tuple(analyzer_opts['args']))
         self.task_args['args']['csmock_args'] = csmock_args
