@@ -31,8 +31,17 @@ log:
 source: clean
 	@python setup.py sdist
 
+RPM_VER = $(shell rpmspec -q --srpm --queryformat '%{version}' covscan.spec)
+GIT_VER = $(shell git describe | sed -e 's/^covscan-//' -e "s/-.*-/.$$(git log --pretty="%cd" --date=iso -1 | tr -d ':-' | tr ' ' . | cut -d. -f 1,2)./")
+
 srpm: source
-	rpmbuild -bs "covscan.spec"                     \
+ifneq ($(RPM_VER),$(GIT_VER))
+	cp -afv dist/covscan-$(RPM_VER).tar.bz2 dist/covscan-$(GIT_VER).tar.bz2
+	sed -e 's/$(RPM_VER)$$/$(GIT_VER)/' -e 's/%{version}/$(RPM_VER)/' -e 's/^%setup -q/%setup -q -n covscan-$(RPM_VER)/' covscan.spec > dist/covscan.spec
+else
+    	cp -afv covscan.spec dist/covscan.spec
+endif
+	rpmbuild -bs "dist/covscan.spec"                    \
 		--define "_sourcedir ./dist"                \
 		--define "_specdir ."                       \
 		--define "_srcrpmdir ."
