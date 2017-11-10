@@ -5,7 +5,6 @@
 %define py_sitedir %{py_libdir}/site-packages
 
 %{!?hub_instance:%define hub_instance prod}
-%{!?hub_host:%define hub_host localhost}
 
 Name:           covscan
 Version:        0.6.9
@@ -107,8 +106,6 @@ rm -f $RPM_BUILD_ROOT/%{_sysconfdir}/httpd/conf.d/stage-covscanhub-httpd.conf ||
 rm -f $RPM_BUILD_ROOT/%{_sysconfdir}/httpd/conf.d/prod-covscanhub-httpd.conf || :
 # tweak python paths in config files
 sed -i 's@/lib/python2.[0-9]@/lib/python%{py_version}@g' ${RPM_BUILD_ROOT}/etc/httpd/conf.d/covscanhub-httpd.conf
-# update host in vhosts
-sed -i 's/__HOST__/%{hub_host}/g' ${RPM_BUILD_ROOT}/etc/httpd/conf.d/covscanhub-httpd.conf
 
 # create symlink /etc/covscan/covscanhub.conf -> .../site-packages/covscanhub/settings.py
 # ln -s %{py_sitedir}/covscanhub/settings_local.py ${RPM_BUILD_ROOT}/etc/covscan/covscanhub.conf
