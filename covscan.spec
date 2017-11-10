@@ -4,7 +4,7 @@
 %define py_incdir  %{py_prefix}/include/python%{py_version}
 %define py_sitedir %{py_libdir}/site-packages
 
-%{!?hub_instance:%define hub_instance prod}
+%{!?hub_instance:%global hub_instance prod}
 
 Name:           covscan
 Version:        0.6.9
