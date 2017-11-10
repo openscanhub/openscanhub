@@ -31,29 +31,8 @@ log:
 source: clean
 	@python setup.py sdist
 
-prep:
-	rpmbuild -bp "$(PWD)/covscan.spec"    \
-		--define "_sourcedir $(PWD)/dist" \
-		--define "_rpmdir $(PWD)"         \
-		--define "_specdir $(PWD)"        \
-		--define "_srcrpmdir $(PWD)"
-
 srpm: source
 	rpmbuild -bs "covscan.spec"                     \
-		--define "_source_filedigest_algorithm md5" \
-		--define "_binary_filedigest_algorithm md5" \
 		--define "_sourcedir ./dist"                \
 		--define "_specdir ."                       \
 		--define "_srcrpmdir ."
-
-rpm: source
-	rpmbuild -bb "covscan.spec"                     \
-		--define "_source_filedigest_algorithm md5" \
-		--define "_binary_filedigest_algorithm md5" \
-		--define "_sourcedir $(PWD)/dist"           \
-		--define "_specdir $(PWD)"                  \
-		--define "hub_instance stage"               \
-		--define "_rpmdir $(PWD)"
-
-#test:
-#	cd tests; ./run_tests.py
