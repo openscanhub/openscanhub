@@ -39,7 +39,7 @@ ifneq ($(RPM_VER),$(GIT_VER))
 	cp -afv dist/covscan-$(RPM_VER).tar.bz2 dist/covscan-$(GIT_VER).tar.bz2
 	sed -e 's/$(RPM_VER)$$/$(GIT_VER)/' -e 's/%{version}/$(RPM_VER)/' -e 's/^%setup -q/%setup -q -n covscan-$(RPM_VER)/' covscan.spec > dist/covscan.spec
 else
-    	cp -afv covscan.spec dist/covscan.spec
+	cp -afv covscan.spec dist/covscan.spec
 endif
 	rpmbuild -bs "dist/covscan.spec"                    \
 		--define "_sourcedir ./dist"                \
