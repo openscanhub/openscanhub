@@ -14,6 +14,7 @@ Summary:        Coverity scan scheduler
 Source:         %{name}-%{version}.tar.bz2
 BuildArch:      noarch
 BuildRequires:  python-devel
+BuildRequires:  python-six
 BuildRequires:  kobo-client
 
 
