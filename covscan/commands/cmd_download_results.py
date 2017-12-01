@@ -62,8 +62,11 @@ class Download_Results(covscan.CovScanCommand):
         for task_id in tasks:
             try:
                 task_url = self.hub.client.task_url(task_id)
-                nvr = self.hub.client.task_info(task_id)['args']['srpm_name'].\
-                    replace('.src.rpm', '')
+                try: 
+                    nvr = self.hub.client.task_info(task_id)['args']['srpm_name'].\
+                        replace('.src.rpm', '')
+                except:
+                    nvr = self.hub.client.task_info(task_id)['args']['build']['nvr']
                 self.fetch_results(task_url, nvr)
             except Exception, ex:
                 failed = True
