@@ -36,7 +36,7 @@ description: |
 
         `$ covscan mock-build --config=fedora-22-x86_64 my-pkg.src.rpm`
 
-internalurl: https://engineering.redhat.com/trac/CoverityScan/wiki/covscan
+internalurl: https://gitlab.cee.redhat.com/covscan/covscan/wikis/covscan
 
 #internalcopr: kdudka/covscan
 
@@ -50,7 +50,7 @@ internalirc: coverity
 contact: "Use the #coverity channel or try ttomecek@redhat.com, kdudka@redhat.com, ovasik@redhat.com"
 
 # Arbitrary string up to 300 bytes, no semantics currently.
-bugreport: https://engineering.redhat.com/trac/CoverityScan/newticket
+bugreport: https://gitlab.cee.redhat.com/covscan/covscan/issues/new
 
 tags:
 - services
