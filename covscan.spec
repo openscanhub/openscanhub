@@ -1,5 +1,5 @@
-%define py_version %(python -c "import sys; v=sys.version_info[:2]; print '%%d.%%d'%%v" 2>/dev/null || echo PYTHON-NOT-FOUND)
-%define py_prefix  %(python -c "import sys; print sys.prefix" 2>/dev/null || echo PYTHON-NOT-FOUND)
+%define py_version %(%{__python2} -c "import sys; v=sys.version_info[:2]; print '%%d.%%d'%%v" 2>/dev/null || echo PYTHON-NOT-FOUND)
+%define py_prefix  %(%{__python2} -c "import sys; print sys.prefix" 2>/dev/null || echo PYTHON-NOT-FOUND)
 %define py_libdir  %{py_prefix}/lib/python%{py_version}
 %define py_incdir  %{py_prefix}/include/python%{py_version}
 %define py_sitedir %{py_libdir}/site-packages
@@ -98,7 +98,7 @@ CovScan xml-rpc interface and web application
 
 %install
 rm -rf ${RPM_BUILD_ROOT}
-python setup.py install --root=${RPM_BUILD_ROOT}
+%{__python2} setup.py install --root=${RPM_BUILD_ROOT}
 
 mv $RPM_BUILD_ROOT/%{_sysconfdir}/httpd/conf.d/%{hub_instance}-covscanhub-httpd.conf \
    $RPM_BUILD_ROOT/%{_sysconfdir}/httpd/conf.d/covscanhub-httpd.conf
