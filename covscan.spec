@@ -7,7 +7,7 @@
 %{!?hub_instance:%global hub_instance prod}
 
 Name:           covscan
-Version:        0.6.9
+Version:        0.6.10
 Release:        1%{?dist}
 License:        Commercial
 Summary:        Coverity scan scheduler
@@ -175,6 +175,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Mon Aug 13 2018 Kamil Dudka <kdudka@redhat.com> - 0.6.10-1
+- new release
+
 * Fri Oct 20 2017 Kamil Dudka <kdudka@redhat.com> - 0.6.9-1
 - new release
 
