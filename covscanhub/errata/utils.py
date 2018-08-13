@@ -259,11 +259,11 @@ def get_build_tuple(nvr):
 
 
 def retrieve_mock_for_build(nvr):
-    # http://download.devel.redhat.com/brewroot/repos/rhel-7.0-build/574607/x86_64
-    # http://download.englab.brq.redhat.com/brewroot/
-    # http://download.eng.brq.redhat.com/brewroot/
+    # https://download.devel.redhat.com/brewroot/repos/rhel-7.0-build/574607/x86_64
+    # https://download.englab.brq.redhat.com/brewroot/
+    # https://download.eng.brq.redhat.com/brewroot/
     # download-01.eng.brq.redhat.com
-    TOP_URL = "http://download.devel.redhat.com/brewroot"
+    TOP_URL = "https://download.devel.redhat.com/brewroot"
 
     build_tuple = get_build_tuple(nvr)
     repo, target = build_tuple[1:3]

@@ -44,7 +44,7 @@ deploy_prod(){
     mock --verbose -r ${PROFILE_6} ./*.src.rpm \
         --define "hub_instance prod" \
         --define "hub_host cov01.lab.eng.brq.redhat.com" \
-        --define "xmlrpc_url http://cov01.lab.eng.brq.redhat.com/covscanhub/xmlrpc" \
+        --define "xmlrpc_url https://cov01.lab.eng.brq.redhat.com/covscanhub/xmlrpc" \
         || exit 3
     HUB_RPM_PATH="$(ls /var/lib/mock/${PROFILE_6}/result/covscan-hub-*.noarch.rpm)"
     WORKER_RPM_PATH="$(ls /var/lib/mock/${PROFILE_6}/result/covscan-worker-*.noarch.rpm)"

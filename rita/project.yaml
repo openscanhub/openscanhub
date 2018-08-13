@@ -22,7 +22,7 @@ description: |
     e-mail notification with the results. 
 
     1. Install appropriate repo file
-    [LINK](http://cov01.lab.eng.brq.redhat.com/coverity/install/covscan/)
+    [LINK](https://cov01.lab.eng.brq.redhat.com/coverity/install/covscan/)
 
     2. Install covscan client
 
@@ -40,7 +40,7 @@ internalurl: https://gitlab.cee.redhat.com/covscan/covscan/wikis/covscan
 
 #internalcopr: kdudka/covscan
 
-vcsurl: http://git.app.eng.bos.redhat.com/git/covscan.git
+vcsurl: https://gitlab.cee.redhat.com/covscan/covscan
 
 # Without leading '#'!
 internalirc: coverity

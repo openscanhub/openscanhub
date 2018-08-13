@@ -1,7 +1,7 @@
 - install an el7 server with web server
-- cd /etc && git clone http://gitlab.cee.redhat.com/covscan/mock-profiles.git mock
-- cd /etc/yum.repos.d && curl -O http://cov01.lab.eng.brq.redhat.com/coverity/install/covscan/covscan-rhel-7.repo
-- yum install http://download.eng.brq.redhat.com/pub/fedora/epel/7/x86_64/e/epel-release-7-7.noarch.rpm
+- cd /etc && git clone https://gitlab.cee.redhat.com/covscan/mock-profiles.git mock
+- cd /etc/yum.repos.d && curl -O https://cov01.lab.eng.brq.redhat.com/coverity/install/covscan/covscan-rhel-7.repo
+- yum install https://download.eng.brq.redhat.com/pub/fedora/epel/7/x86_64/e/epel-release-7-7.noarch.rpm
 - yum install --enablerepo=covscan-testing covscan-hub-prod
 - setsebool -P httpd_can_network_connect_db 1
 - vim /etc/httpd/conf.d/covscanhub-httpd.conf:
@@ -76,7 +76,7 @@
     - select arch 'noarch'
     - select channel 'default'
     - hit 'Save'
-- yum install http://download.devel.redhat.com/brewroot/packages/brewkoji/1.9/1.el7eng/noarch/brewkoji-1.9-1.el7eng.noarch.rpm
+- yum install https://download.devel.redhat.com/brewroot/packages/brewkoji/1.9/1.el7eng/noarch/brewkoji-1.9-1.el7eng.noarch.rpm
 - chkconfig covscand on
 - service covscand start
 - the task should be picked and processed!

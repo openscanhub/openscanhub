@@ -19,7 +19,7 @@ class List_Mock_Configs(covscan.CovScanCommand):
         self.parser.add_option(
             "--hub",
             help="URL of XML-RPC interface on hub; something like \
-http://$hostname/covscan/xmlrpc"
+https://$hostname/covscan/xmlrpc"
         )
 
     def run(self, *args, **kwargs):

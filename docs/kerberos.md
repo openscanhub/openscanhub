@@ -7,7 +7,7 @@
  * using `curl` to connect to kerberos-guarded endpoint
 
   ```
-  curl --negotiate -u: http://cov01.lab.eng.brq.redhat.com/covscanhub/xmlrpc/kerbauth/
+  curl --negotiate -u: https://cov01.lab.eng.brq.redhat.com/covscanhub/xmlrpc/kerbauth/
   ```
 
  * ensure that apache has permissions to read keytab

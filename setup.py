@@ -11,7 +11,7 @@ from scripts.include import *
 
 project_name         = "covscan"
 project_dirs         = ["covscan", "covscand", "covscanhub"]
-project_url          = "http://git.app.eng.bos.redhat.com/git/covscan.git"
+project_url          = "https://gitlab.cee.redhat.com/covscan/covscan"
 project_author       = "Red Hat, Inc."
 project_author_email = "ttomecek@redhat.com"
 project_description  = "Coverity scan scheduler"

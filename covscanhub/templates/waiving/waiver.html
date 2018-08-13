@@ -28,13 +28,13 @@
                 <span class="hide_text">Collapse</span>
             </span>
             <h3 class="padding_1em">{{ defect.order }}.
-                Defect type: <a href="http://cov01.lab.eng.brq.redhat.com/coverity/doc/latest/cov_checker_ref.html#static_c_checker_{{ defect.checker.name }}">{{ defect.checker.name }}</a>
+                Defect type: <a href="https://cov01.lab.eng.brq.redhat.com/coverity/doc/latest/cov_checker_ref.html#static_c_checker_{{ defect.checker.name }}">{{ defect.checker.name }}</a>
                 <a title="Permalink to this defect" href="#defect_{{ defect.id }}" class="indoc_link">¶</a>
             </h3>
         </div>
     {% comment %}
     {% if check.cwe %}
-        <a href="http://cwe.mitre.org/data/definitions/{{ checker.cwe }}.html">{{ checker.cwe }}</a>
+        <a href="https://cwe.mitre.org/data/definitions/{{ checker.cwe }}.html">{{ checker.cwe }}</a>
     {% endif %}
     {% endcomment %}
         <div id="events_list_{{ defect.id }}" class="events_list">

@@ -197,7 +197,7 @@ next build)
             """
         message += """
 You can find documentation of covscan's workflow at \
-http://cov01.lab.eng.brq.redhat.com/covscan_documentation.html .
+https://cov01.lab.eng.brq.redhat.com/covscan_documentation.html .
 
 If you have any questions, feel free to ask at Red Hat IRC channel #coverity \
 or coverity-users@redhat.com .

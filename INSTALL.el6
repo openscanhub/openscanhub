@@ -17,7 +17,7 @@ $ cd /etc/yum.repos.d && sudo curl -O https://copr.devel.redhat.com/coprs/kdudka
 $ sudo curl -O https://copr.devel.redhat.com/coprs/kdudka/covscan/repo/epel-6/kdudka-covscan-epel-6.repo
 $ sudo curl -O https://copr.devel.redhat.com/coprs/kdudka/covscan-testing/repo/epel-6/kdudka-covscan-testing-epel-6.repo
 $ sudo yum install python-django-south
-$ sudo yum install http://download.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm
+$ sudo yum install https://download.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm
 $ sudo yum install covscan-hub-prod python-importlib python2-csdiff
 $ sudo setsebool -P httpd_can_network_connect_db 1
 $ sudo chkconfig httpd on
@@ -151,9 +151,9 @@ Time to configure worker in hub's admin:
 In order for worker to pick stuff from brew, we need to install brewkoji package:
 
 ```
-$ sudo yum install http://download.devel.redhat.com/rel-eng/latest-RCMTOOLS-1-RHEL-6/compose/Server/x86_64/os/Packages/brewkoji-1.13-1.el6.noarch.rpm
+$ sudo yum install https://download.devel.redhat.com/rel-eng/latest-RCMTOOLS-1-RHEL-6/compose/Server/x86_64/os/Packages/brewkoji-1.13-1.el6.noarch.rpm
 $ sudo rpm -e python2-koji --nodeps
-$ sudo yum downgrade http://download.devel.redhat.com/rel-eng/latest-RCMTOOLS-1-RHEL-6/compose/Server/x86_64/os/Packages/koji-1.10.1-25.2.el6.noarch.rpm
+$ sudo yum downgrade https://download.devel.redhat.com/rel-eng/latest-RCMTOOLS-1-RHEL-6/compose/Server/x86_64/os/Packages/koji-1.10.1-25.2.el6.noarch.rpm
 $ curl https://password.corp.redhat.com/legacy.crt | sudo tee -a /etc/pki/tls/certs/ca-bundle.crt
 ```
 
