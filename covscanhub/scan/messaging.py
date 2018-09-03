@@ -31,10 +31,10 @@ class SenderThread(threading.Thread):
     """
     new thread that handles sending messages to broker
     """
-    def __init__(self, qpid_connection, key='', message=None):
+    def __init__(self, qpid_conf, key='', message=None):
         self.key = key
         self.message = message or {}
-        self.configuration = qpid_connection
+        self.configuration = qpid_conf
         threading.Thread.__init__(self)
 
     def krb_init(self):
@@ -109,22 +109,22 @@ class SenderThread(threading.Thread):
         self.send()
 
 
-def send_message(qpid_connection, message, key):
+def send_message(qpid_conf, message, key):
     """
     this function sends specified message to broker and append specified
         key to ROUTING_KEY
     """
-    s = SenderThread(qpid_connection, message=message, key=key)
+    s = SenderThread(qpid_conf, message=message, key=key)
     s.start()
 
 
 def post_qpid_message(state, etm, key):
     """Separated this into scan_notice because of dependency deadlock"""
     logger.info('message bus: %s %s', etm, state)
-    s = copy.deepcopy(settings.QPID_CONNECTION)
-    s['KRB_PRINCIPAL'] = settings.KRB_AUTH_PRINCIPAL_SERVICE
-    s['KRB_KEYTAB'] = settings.KRB_AUTH_KEYTAB_SERVICE
-    send_message(s,
+    qpid_conf = copy.deepcopy(settings.QPID_CONNECTION)
+    qpid_conf['KRB_PRINCIPAL'] = settings.KRB_AUTH_PRINCIPAL_SERVICE
+    qpid_conf['KRB_KEYTAB'] = settings.KRB_AUTH_KEYTAB_SERVICE
+    send_message(qpid_conf,
                  {'scan_id': etm.id,
                   'et_id': etm.et_scan_id,
                   'scan_state': state, },
