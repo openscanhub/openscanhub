@@ -15,6 +15,9 @@ import os
 import krbV
 import copy
 import logging
+import proton
+import proton.handlers
+import proton.reactor
 
 from django.conf import settings
 
@@ -27,7 +30,46 @@ __all__ = (
 logger = logging.getLogger(__name__)
 
 
+class UMBSender(proton.handlers.MessagingHandler):
+    def __init__(self, key, msg):
+        super(UMBSender, self).__init__()
+        self.urls = settings.UMB_BROKER_URLS
+        self.cert = settings.UMB_CLIENT_CERT
+        self.topic = settings.UMB_TOPIC_PREFIX + '.' + key
+        self.msg = msg
+
+    def on_start(self, event):
+        ssl = proton.SSLDomain(1)
+        cert = str(self.cert)
+        ssl.set_credentials(cert, cert, "")
+        conn = event.container.connect(urls=self.urls, ssl_domain=ssl)
+        event.container.create_sender(conn, self.topic)
+
+    def on_sendable(self, event):
+        msg = proton.Message(body=self.msg)
+        event.sender.send(msg)
+        event.sender.close()
+
+    def on_accepted(self, event):
+        event.connection.close()
+
+
 class SenderThread(threading.Thread):
+    """
+    new thread that handles sending messages to broker
+    """
+    def __init__(self, key, msg):
+        threading.Thread.__init__(self)
+        self.key = key
+        self.msg = msg
+
+    def run(self):
+        sender = UMBSender(self.key, self.msg)
+        cont = proton.reactor.Container(sender)
+        cont.run()
+
+
+class SenderThreadLegacy(threading.Thread):
     """
     new thread that handles sending messages to broker
     """
@@ -114,7 +156,10 @@ def send_message(qpid_conf, message, key):
     this function sends specified message to broker and append specified
         key to ROUTING_KEY
     """
-    s = SenderThread(qpid_conf, message=message, key=key)
+    s = SenderThread(key, message)
+    s.start()
+
+    s = SenderThreadLegacy(qpid_conf, message=message, key=key)
     s.start()
 
 
@@ -126,6 +171,6 @@ def post_qpid_message(state, etm, key):
     qpid_conf['KRB_KEYTAB'] = settings.KRB_AUTH_KEYTAB_SERVICE
     send_message(qpid_conf,
                  {'scan_id': etm.id,
-                  'et_id': etm.et_scan_id,
+                  #'et_id': etm.et_scan_id,
                   'scan_state': state, },
                  key)

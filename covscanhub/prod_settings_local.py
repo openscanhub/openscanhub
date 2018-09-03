@@ -130,6 +130,13 @@ BZ_PSWD = "krokodyl"
 
 ET_URL = 'https://errata.devel.redhat.com'
 
+UMB_BROKER_URLS = [
+    'amqps://messaging-devops-broker01.web.prod.ext.phx2.redhat.com:5671',
+    'amqps://messaging-devops-broker02.web.prod.ext.phx2.redhat.com:5671']
+
+UMB_CLIENT_CERT = '/etc/covscanhub/msg-client-covscan.pem'
+UMB_TOPIC_PREFIX = 'topic://VirtualTopic.eng.covscan.scan'
+
 QPID_CONNECTION = {
     'broker': "amqps://qpid.engineering.redhat.com",
     'address': "eso.topic",

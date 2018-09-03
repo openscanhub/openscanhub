@@ -142,6 +142,13 @@ BZ_PSWD = "roflcopter" # not my actual passwd on live bz
 
 ET_URL = 'https://errata-web-01.host.stage.eng.bos.redhat.com'
 
+UMB_BROKER_URLS = [
+    'amqps://messaging-devops-broker01.web.stage.ext.phx2.redhat.com:5671',
+    'amqps://messaging-devops-broker02.web.stage.ext.phx2.redhat.com:5671']
+
+UMB_CLIENT_CERT = '/etc/covscanhub/msg-client-covscan.pem'
+UMB_TOPIC_PREFIX = 'topic://VirtualTopic.eng.covscan.scan'
+
 QPID_CONNECTION = {
     'broker': "amqps://qpid.stage.engineering.redhat.com",
     'address': "eso.topic",
