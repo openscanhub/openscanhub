@@ -29,6 +29,11 @@ def main(args=None):
     if conf is None:
         return 2
 
+    # xmlrpclib/httplib do not follow HTTP redirect
+    if conf["HUB_URL"] == "http://cov01.lab.eng.brq.redhat.com/covscanhub/xmlrpc":
+        conf["HUB_URL"] = "https://cov01.lab.eng.brq.redhat.com/covscanhub/xmlrpc"
+        sys.stderr.write("warning: forcing %s as HUB_URL, please update covscan configuration!\n" % conf["HUB_URL"])
+
     # initialize command container
     command_container = CovScanCommandContainer(conf)
     parser = kobo.cli.CommandOptionParser(
