@@ -36,7 +36,8 @@ class UMBSender(proton.handlers.MessagingHandler):
         self.urls = settings.UMB_BROKER_URLS
         self.cert = settings.UMB_CLIENT_CERT
         self.topic = settings.UMB_TOPIC_PREFIX + '.' + key
-        self.msg = msg
+        self.scan_id = msg['scan_id']
+        self.scan_state = msg['scan_state']
 
     def on_start(self, event):
         ssl = proton.SSLDomain(1)
@@ -46,7 +47,8 @@ class UMBSender(proton.handlers.MessagingHandler):
         event.container.create_sender(conn, self.topic)
 
     def on_sendable(self, event):
-        msg = proton.Message(body=self.msg)
+        json_msg = '{ "scan_id": %d, "scan_state": "%s" }' % (self.scan_id, self.scan_state)
+        msg = proton.Message(body=json_msg)
         event.sender.send(msg)
         event.sender.close()
 
