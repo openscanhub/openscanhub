@@ -390,10 +390,11 @@ def get_defects_diff_display(response=None, checker_group=None,
                              result=None, defect_type=None, rg=None):
     if response is None:
         response = {}
-    defects_diff = get_defects_diff(checker_group=checker_group,
-                                    result=result,
-                                    defect_type=defect_type,
-                                    rg=rg)
+    defects_diff = 0
+    #defects_diff = get_defects_diff(checker_group=checker_group,
+    #                                result=result,
+    #                                defect_type=defect_type,
+    #                                rg=rg)
     if defects_diff:  # not None & != 0
         if defect_type == DEFECT_STATES['NEW']:
             if defects_diff > 0:
