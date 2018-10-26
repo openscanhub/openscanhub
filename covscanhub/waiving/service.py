@@ -31,110 +31,12 @@ logger = logging.getLogger(__name__)
 
 
 __all__ = (
-    'create_results',
     'get_unwaived_rgs',
     'compare_result_groups',
     'get_last_waiver',
-    'update_analyzer',
-    'load_defects_from_json',
     'get_defects_diff_display',
     'display_in_result',
 )
-
-
-def load_defects_from_json(json_dict, result,
-                           defect_state=DEFECT_STATES['UNKNOWN']):
-    """
-    this function loads defects from provided json dictionary and writes them
-    into provided result model object
-    """
-    if 'defects' in json_dict:
-        for defect in json_dict['defects']:
-            d = Defect()
-            json_checker_name = defect['checker']
-            try:
-                # get_or_create fails here, because there will be integrity
-                # error on group atribute
-                checker = Checker.objects.get(name=json_checker_name)
-            except ObjectDoesNotExist:
-                checker = Checker()
-                checker.group = CheckerGroup.objects.get(
-                    name=DEFAULT_CHECKER_GROUP)
-                checker.name = json_checker_name
-                checker.save()
-
-            rg, created = ResultGroup.objects.get_or_create(
-                checker_group=checker.group,
-                result=result,
-                defect_type=defect_state)
-
-            if rg.state == RESULT_GROUP_STATES['UNKNOWN']:
-                if defect_state == DEFECT_STATES['NEW']:
-                    rg.state = RESULT_GROUP_STATES['NEEDS_INSPECTION']
-                elif defect_state == DEFECT_STATES['FIXED']:
-                    rg.state = RESULT_GROUP_STATES['INFO']
-
-            rg.defects_count += 1
-            rg.save()
-
-            d.checker = checker
-            d.result_group = rg
-            d.annotation = defect.get('annotation', None)
-            d.defect_identifier = defect.get('defect_id', None)
-            d.function = defect.get('function', None)
-            d.cwe = defect.get('cwe', None)
-            d.result = result
-            d.state = defect_state
-            d.key_event = defect['key_event_idx']
-            d.events = defect['events']
-            d.save()
-
-
-def load_defects_from_file(file_path, result, defect_state):
-    try:
-        fd = open(file_path, 'r')
-    except IOError:
-        logger.critical('Unable to open file %s', file_path)
-        return
-    js = json.load(fd)
-    load_defects_from_json(js, result, defect_state)
-    fd.close()
-
-
-def update_analyzer(result, json_dict):
-    """
-    fills object result with information about which analyzer performed scan
-    """
-    if 'scan' in json_dict:
-        if 'analyzer' in json_dict['scan']:
-            result.scanner = json_dict['scan']['analyzer']
-        if 'analyzer-version' in json_dict['scan']:
-            version = json_dict['scan']['analyzer-version']
-            pattern = r'version (?P<version>\d{1,2}\.\d{1,2}\.\d{1,2})'
-            p_version = re.search(pattern, version)
-            if p_version:
-                result.scanner_version = p_version.group('version')
-            else:
-                pattern2 = r'^(?P<version>\d{1,2}\.\d{1,2}\.\d{1,2})'
-                p2_version = re.search(pattern2, version)
-                if p2_version:
-                    result.scanner_version = p2_version.group('version')
-                else:
-                    result.scanner_version = version
-        if 'lines-processed' in json_dict['scan']:
-            result.lines = int(json_dict['scan']['lines-processed'])
-        elif 'lines_processed' in json_dict['scan']:
-            result.lines = int(json_dict['scan']['lines_processed'])
-        if 'time-elapsed-analysis' in json_dict['scan']:
-            t = datetime.datetime.strptime(
-                json_dict['scan']['time-elapsed-analysis'],
-                "%H:%M:%S")
-            time_delta = datetime.timedelta(hours=t.hour,
-                                            minutes=t.minute,
-                                            seconds=t.second)
-            result.scanning_time = int(time_delta.days * 86400 +
-                                       time_delta.seconds)
-    result.save()
 
 
 def find_processed_in_past(result):
@@ -166,55 +68,6 @@ def find_processed_in_past(result):
                 for d in Defect.objects.filter(result_group=rg):
                     d.state = DEFECT_STATES['PREVIOUSLY_WAIVED']
                     d.save()
-
-
-def create_results(scan, sb):
-    """
-    Task finished, so this method should update results
-    """
-    logger.debug('Creating results for scan %s', scan)
-    task_dir = Task.get_task_dir(sb.task.id)
-
-    #json's path is <TASK_DIR>/<NVR>/run1/<NVR>.js
-    defects_path = os.path.join(task_dir, scan.nvr, 'run1', SCAN_RESULTS_FILENAME)
-    fixed_file_path = os.path.join(task_dir, FIXED_DIFF_FILE)
-    diff_file_path = os.path.join(task_dir, ERROR_DIFF_FILE)
-
-    try:
-        f = open(defects_path, 'r')
-    except IOError:
-        logger.critical('Unable to open defects file %s', defects_path)
-        return
-    json_dict = json.load(f)
-
-    r = Result()
-
-    update_analyzer(r, json_dict)
-
-    r.save()
-
-    sb.result = r
-    sb.save()
-
-    f.close()
-
-    if scan.is_errata_scan():
-        if scan.is_newpkg_scan():
-            # load all the defects -- information only
-            load_defects_from_file(defects_path, r, DEFECT_STATES['NEW'])
-        else:
-            load_defects_from_file(fixed_file_path, r, DEFECT_STATES['FIXED'])
-            load_defects_from_file(diff_file_path, r, DEFECT_STATES['NEW'])
-
-        find_processed_in_past(r)
-
-        for rg in ResultGroup.objects.filter(result=r):
-            counter = 1
-            for defect in Defect.objects.filter(result_group=rg):
-                defect.order = counter
-                defect.save()
-                counter += 1
-    return r
 
 
 def get_unwaived_rgs(result):
