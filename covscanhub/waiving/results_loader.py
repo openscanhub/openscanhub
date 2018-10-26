@@ -132,6 +132,14 @@ class ResultsLoader(object):
     def store_defects(self, defects, defect_state):
         """ put defects in database """
         for defect in defects:
+            try:
+                key_idx = int(defect['key_event_idx'])
+                key_evt = defect['events'][key_idx]
+                if key_evt['event'] == 'internal warning':
+                    # skip internal warnings
+                    continue
+            except:
+                pass
             d = Defect()
             json_checker_name = defect['checker']
             try:
