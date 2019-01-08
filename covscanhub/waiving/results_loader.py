@@ -142,6 +142,10 @@ class ResultsLoader(object):
                 pass
             d = Defect()
             json_checker_name = defect['checker']
+
+            # truncate to fit into the corresponding db field
+            json_checker_name = json_checker_name[:64]
+
             try:
                 # get_or_create fails here, because there will be integrity
                 # error on group atribute
