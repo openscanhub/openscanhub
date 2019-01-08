@@ -76,7 +76,9 @@
     - select arch 'noarch'
     - select channel 'default'
     - hit 'Save'
-- yum install https://download.devel.redhat.com/brewroot/packages/brewkoji/1.9/1.el7eng/noarch/brewkoji-1.9-1.el7eng.noarch.rpm
+- yum install \
+    http://download.eng.bos.redhat.com/brewroot/packages/brewkoji/1.22/2.el7/noarch/brewkoji-1.22-2.el7.noarch.rpm \
+    http://download.eng.bos.redhat.com/brewroot/packages/brewkoji/1.22/2.el7/noarch/python2-brewkoji-1.22-2.el7.noarch.rpm
 - chkconfig covscand on
 - service covscand start
 - the task should be picked and processed!
