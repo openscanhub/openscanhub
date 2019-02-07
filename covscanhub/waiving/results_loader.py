@@ -176,6 +176,11 @@ class ResultsLoader(object):
             d.annotation = defect.get('annotation', None)
             d.defect_identifier = defect.get('defect_id', None)
             d.function = defect.get('function', None)
+
+            if d.function:
+                # truncate to fit into the corresponding db field
+                d.function = d.function[:128]
+
             d.cwe = defect.get('cwe', None)
             d.result = self.result
             d.state = defect_state
