@@ -179,7 +179,7 @@ class ResultsLoader(object):
 
             if d.function:
                 # truncate to fit into the corresponding db field
-                d.function = d.function[:128]
+                d.function = str(d.function)[:128]
 
             d.cwe = defect.get('cwe', None)
             d.result = self.result
