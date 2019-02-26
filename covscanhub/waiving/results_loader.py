@@ -151,9 +151,13 @@ class ResultsLoader(object):
                 # error on group atribute
                 checker = Checker.objects.get(name=json_checker_name)
             except ObjectDoesNotExist:
+                if json_checker_name.startswith("FB."):
+                    # assign numerous FindBugs checkers to FindBugs automatically
+                    default_group = "FindBugs"
+                else:
+                    default_group = DEFAULT_CHECKER_GROUP
                 checker = Checker()
-                checker.group, _ = CheckerGroup.objects.get_or_create(
-                    name=DEFAULT_CHECKER_GROUP)
+                checker.group, _ = CheckerGroup.objects.get_or_create(name=default_group)
                 checker.name = json_checker_name
                 checker.save()
 
