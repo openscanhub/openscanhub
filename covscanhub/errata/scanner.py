@@ -308,8 +308,8 @@ class AbstractClientScanScheduler(object):
                 try:
                     csmock_opts.append(csmock_args[opt] % self.options[opt])
                 except TypeError:
-                    # value might not need to be converted
-                    pass
+                    # value does not need to be converted
+                    csmock_opts.append(csmock_args[opt])
         # client overrides via --csmock-args
         if self.client_csmock_args:
             csmock_opts.append(self.client_csmock_args)
