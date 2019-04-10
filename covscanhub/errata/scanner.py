@@ -546,7 +546,7 @@ class ClientDiffScanScheduler(AbstractClientScanScheduler):
         else:
             MockConfig.objects.verify_by_name(self.base_mock_config)
 
-        self.priority = self.options.get('priority', None)
+        self.priority = self.consume_options.get('priority', None)
         if self.priority:
             self.priority = int(self.priority)
             if self.priority >= 20 and not self.user.is_staff:
