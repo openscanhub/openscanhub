@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+from __future__ import print_function
+from __future__ import absolute_import
 
 import sys
 import random
@@ -29,7 +31,7 @@ class List_Profiles(covscan.CovScanCommand):
 
         format = "%-20s %s"
         columns = ("NAME", "DESCRIPTION")
-        print format % columns
+        print(format % columns)
         available_profiles = self.hub.scan.list_profiles()
         for i in available_profiles:
-            print format % (i["name"], i['description'])
+            print(format % (i["name"], i['description']))

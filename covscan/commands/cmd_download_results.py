@@ -1,7 +1,10 @@
 # -*- coding: utf-8 -*-
 
+from __future__ import print_function
+from __future__ import absolute_import
+
 import os, sys
-import urllib
+from six.moves import urllib
 import covscan
 
 
@@ -34,7 +37,7 @@ class Download_Results(covscan.CovScanCommand):
                                       tarball)
         # task_url is url to task with trailing '/'
         url = "%slog/%s?format=raw" % (task_url, tarball)
-        urllib.urlretrieve(url, local_path)
+        urllib.request.urlretrieve(url, local_path)
 
     def run(self, *args, **kwargs):
         #local_conf = get_conf(self.conf)
@@ -68,9 +71,9 @@ class Download_Results(covscan.CovScanCommand):
                 except:
                     nvr = self.hub.client.task_info(task_id)['args']['build']['nvr']
                 self.fetch_results(task_url, nvr)
-            except Exception, ex:
+            except Exception as ex:
                 failed = True
-                print ex
+                print(ex)
 
         if failed:
             sys.exit(1)

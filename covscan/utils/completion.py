@@ -1,11 +1,15 @@
 #!/usr/bin/python -tt
 # -*- coding: utf-8 -*-
 
+from __future__ import print_function
+from __future__ import absolute_import
+
 import os
-import xmlrpclib
+from six.moves import xmlrpc_client
 import datetime
-import cPickle as pickle
-from conf import get_conf
+from six.moves import cPickle as pickle
+
+from .conf import get_conf
 
 
 def get_can_path():
@@ -21,8 +25,8 @@ def get_configs_from_hub():
     """
     # FIXME: load this URL from /etc/covscan.conf instead
     rpc_url = "https://cov01.lab.eng.brq.redhat.com/covscanhub/xmlrpc/client/"
-    client = xmlrpclib.ServerProxy(rpc_url, allow_none=True)
-    return filter(lambda x: x['enabled'], client.mock_config.all())
+    client = xmlrpc_client.ServerProxy(rpc_url, allow_none=True)
+    return [x for x in client.mock_config.all() if x['enabled']]
 
 
 def write_configs():
@@ -53,7 +57,7 @@ def list_enabled_mock_configs():
         else:
             enabled_configs = write_configs()
     for emc in enabled_configs:
-        print emc['name'],
+        print(emc['name'])
 
 
 def main():

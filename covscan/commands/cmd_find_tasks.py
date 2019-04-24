@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 
+from __future__ import print_function
+from __future__ import absolute_import
+
 import sys
 import covscan
 
@@ -79,10 +82,10 @@ these options: --regex, --package, --nvr"
 
         if task_ids:
             if latest:
-                print task_ids[0]
+                print(task_ids[0])
             else:
                 for task_id in task_ids:
-                    print task_id
+                    print(task_id)
         else:
             sys.exit(1)
         sys.exit(0)

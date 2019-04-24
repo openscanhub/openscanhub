@@ -1,5 +1,10 @@
 # -*- coding: utf-8 -*-
 
+from __future__ import print_function
+from __future__ import absolute_import
+
+import six
+
 import re
 
 from covscan.utils.conf import get_conf
@@ -14,7 +19,7 @@ def set_defaults(cim_dict):
     conf = get_conf()
     conf_cim_data = conf.get_cim_data()
 
-    for key, value in cim_dict.iteritems():
+    for key, value in six.iteritems(cim_dict):
         if value is None:
             cim_dict[key] = conf_cim_data[key]
 
@@ -95,16 +100,16 @@ if __name__ == '__main__':
             to_verify = verify_cim_string(entry[0])
             assert to_verify == entry[1]
         except AssertionError:
-            print 'Assert error!', entry[0], "is not a valid string, \
-expected:", entry[1], 'got: ', to_verify
+            print('Assert error!', entry[0], "is not a valid string, \
+expected:", entry[1], 'got: ', to_verify)
 
     for entry in invalid_strings:
         try:
             result = verify_cim_string(entry)
             raise AssertionError
         except AssertionError:
-            print entry, 'is invalid string and should have been denied!', \
-                result
+            print(entry, 'is invalid string and should have been denied!', \
+                result)
         except RuntimeError:
             pass
 

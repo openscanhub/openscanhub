@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+from __future__ import print_function
+from __future__ import absolute_import
 
 import sys
 
@@ -36,7 +38,7 @@ https://$hostname/covscan/xmlrpc"
                                 AUTH_METHOD='krbv',
                                 HUB_URL=hub_url)
 
-        print >> sys.stderr, "NAME"
+        print("NAME", file=sys.stderr)
         for i in self.hub.mock_config.all():
             if i["enabled"]:
-                print i["name"]
+                print(i["name"])

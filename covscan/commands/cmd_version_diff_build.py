@@ -1,15 +1,18 @@
 # -*- coding: utf-8 -*-
 
+from __future__ import print_function
+from __future__ import absolute_import
+
 import os
 
 import covscan
 from kobo.shortcuts import random_string
-from shortcuts import verify_brew_koji_build, verify_mock, upload_file, \
+from .shortcuts import verify_brew_koji_build, verify_mock, upload_file, \
     handle_perm_denied
-from common import *
+from .common import *
 from covscan.utils.conf import get_conf
 from covscan.commands.analyzers import check_analyzers
-from xmlrpclib import Fault
+from six.moves.xmlrpc_client import Fault
 
 
 class Version_Diff_Build(covscan.CovScanCommand):
@@ -164,8 +167,8 @@ a SRPM")
 is not even one in your user configuration file \
 (~/.config/covscan/covscan.conf) nor in system configuration file \
 (/etc/covscan/covscan.conf)")
-            print "Mock config for base not specified, using default one: %s" \
-                % base_config
+            print("Mock config for base not specified, using default one: %s" \
+                % base_config)
 
         if not config:
             if base_config:
@@ -177,8 +180,8 @@ is not even one in your user configuration file \
 is not even one in your user configuration file \
 (~/.config/covscan/covscan.conf) nor in system configuration file \
 (/etc/covscan/covscan.conf)")
-            print "Mock config for target not specified, using default: %s" \
-                % config
+            print("Mock config for target not specified, using default: %s" \
+                % config)
 
         # login to the hub
         self.set_hub(username, password)
@@ -250,7 +253,7 @@ is not even one in your user configuration file \
         task_id = self.submit_task(options_consumed, options_forwarded)
 
         self.write_task_id_file(task_id, task_id_file)
-        print "Task info: %s" % self.hub.client.task_url(task_id)
+        print("Task info: %s" % self.hub.client.task_url(task_id))
 
         if not nowait:
             from kobo.client.task_watcher import TaskWatcher
@@ -263,5 +266,5 @@ is not even one in your user configuration file \
         """
         try:
             return self.hub.scan.create_user_diff_task(hub_opts, task_opts)
-        except Fault, e:
+        except Fault as e:
             handle_perm_denied(e, self.parser)

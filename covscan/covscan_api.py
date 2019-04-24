@@ -32,7 +32,11 @@ oldest. This limit is also configurable in config file as FILTER_SCAN_LIMIT cons
 
 """
 
-import xmlrpclib
+from __future__ import absolute_import
+
+import six
+
+from six.moves import xmlrpc_client
 
 from covscan.utils.conf import get_config_dict
 from covscanhub.other.constants import DEFAULT_SCAN_LIMIT
@@ -68,7 +72,7 @@ class CovscanAPI(object):
         @return: client object
         """
 
-        client = xmlrpclib.ServerProxy(self.hub_url, allow_none=True, verbose=False)
+        client = xmlrpc_client.ServerProxy(self.hub_url, allow_none=True, verbose=False)
         return client
 
     def get_filtered_scan_list(self, id=None, target=None, base=None, state=None, owner=None, release=None):
@@ -106,5 +110,5 @@ class CovscanAPI(object):
         """
 
         filters = dict(id=id, target=target, base=base, state=state, owner=owner, release=release)
-        filters = dict(filter(lambda (k, v): v is not None, filters.items()))  # removes None values from dictionary
+        filters = {k:v for k, v in six.iteritems(filters) if v is not None}  # removes None values from dictionary
         return self.hub.scan.get_filtered_scan_list(filters, self.filter_scan_limit)

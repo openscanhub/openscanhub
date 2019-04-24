@@ -3,9 +3,11 @@
 User specific configuration
 """
 
+from __future__ import absolute_import
+
 import os
 import sys
-from ConfigParser import SafeConfigParser
+from six.moves.configparser import SafeConfigParser
 
 import kobo.conf
 

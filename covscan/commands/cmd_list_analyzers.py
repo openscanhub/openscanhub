@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+from __future__ import print_function
+from __future__ import absolute_import
 
 import sys
 import random
@@ -39,14 +41,14 @@ https://$hostname/covscan/xmlrpc"
 
         format = "%-20s %-20s %-15s %-25s"
         columns = ("NAME", "VERSION", "SHORT OPTION", "LONG OPTION")
-        print format % columns
+        print(format % columns)
         available_analyzers = self.hub.scan.list_analyzers()
         for i in available_analyzers:
-            print format % (i["analyzer__name"], i['version'], i["cli_short_command"],
-                            i["cli_long_command"])
+            print(format % (i["analyzer__name"], i['version'], i["cli_short_command"],
+                            i["cli_long_command"]))
 
         shuffled_list = available_analyzers[:]
         random.shuffle(shuffled_list)
-        print >> sys.stderr, "\nExample of using long option: \
+        print("\nExample of using long option: \
 \"--analyzer=%s\"" \
-            % (','.join([x['cli_long_command'] for x in shuffled_list[:2]]))
+            % (','.join([x['cli_long_command'] for x in shuffled_list[:2]])), file=sys.stderr)

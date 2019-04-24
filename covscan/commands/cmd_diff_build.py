@@ -1,10 +1,15 @@
 # -*- coding: utf-8 -*-
 
+from __future__ import print_function
+from __future__ import absolute_import
+
+import six
+
 import os
-import urllib
+from six.moves import urllib
 import covscan
 
-from xmlrpclib import Fault
+from six.moves.xmlrpc_client import Fault
 from kobo.shortcuts import random_string
 from covscan.commands.shortcuts import verify_brew_koji_build, verify_mock, \
     upload_file, handle_perm_denied
@@ -64,7 +69,7 @@ stored in user configuration file."""
 
     def validate_results_store_file(self):
         if self.results_store_file:
-            if isinstance(self.results_store_file, basestring):
+            if isinstance(self.results_store_file, six.string_types):
                 if not os.path.isdir(self.results_store_file):
                     self.parser.error("Path (%s) for storing results doesn't \
 exist." % self.results_store_file)
@@ -86,7 +91,7 @@ exist." % self.results_store_file)
                                       tarball)
         # task_url is url to task with trailing '/'
         url = "%slog/%s?format=raw" % (task_url, tarball)
-        urllib.urlretrieve(url, local_path)
+        urllib.request.urlretrieve(url, local_path)
 
     def run(self, *args, **kwargs):
         local_conf = get_conf(self.conf)
@@ -163,7 +168,7 @@ is not even one in your user configuration file \
         if commit_string is not None:
             try:
                 options['CIM'] = extract_cim_data(commit_string)
-            except RuntimeError, ex:
+            except RuntimeError as ex:
                 self.parser.error(ex.message)
         if email_to:
             options["email_to"] = email_to
@@ -223,7 +228,7 @@ is not even one in your user configuration file \
 
         self.write_task_id_file(task_id, task_id_file)
         task_url = self.hub.client.task_url(task_id)
-        print "Task info: %s" % task_url
+        print("Task info: %s" % task_url)
 
         if not nowait:
             from kobo.client.task_watcher import TaskWatcher
@@ -236,5 +241,5 @@ is not even one in your user configuration file \
     def submit_task(self, config, comment, options):
         try:
             return self.hub.scan.diff_build(config, comment, options)
-        except Fault, e:
+        except Fault as e:
             handle_perm_denied(e, self.parser)

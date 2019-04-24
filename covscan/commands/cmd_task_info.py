@@ -1,5 +1,10 @@
 # -*- coding: utf-8 -*-
 
+from __future__ import print_function
+from __future__ import absolute_import
+
+import six
+
 import sys
 import covscan
 
@@ -34,15 +39,15 @@ found"
         task_info = self.hub.scan.get_task_info(task_id)
 
         if task_info:
-            for key, value in task_info.iteritems():
+            for key, value in six.iteritems(task_info):
                 if key == 'args':
-                    print 'args:'
-                    for a_k, a_v in value.iteritems():
-                        print "%s%s = %s" % (' ' * 4, a_k, a_v)
+                    print('args:')
+                    for a_k, a_v in six.iteritems(value):
+                        print("%s%s = %s" % (' ' * 4, a_k, a_v))
                 else:
-                    print "%s = %s" % (key, value)
+                    print("%s = %s" % (key, value))
         else:
-            print "There is no info about the task. It doesn't exist most \
-likely."
+            print("There is no info about the task. It doesn't exist most \
+likely.")
             sys.exit(1)
         sys.exit(0)
