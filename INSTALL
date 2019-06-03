@@ -1,9 +1,10 @@
 - install an el7 server with web server
-- cd /etc && git clone https://gitlab.cee.redhat.com/covscan/mock-profiles.git mock
-- cd /etc/yum.repos.d && curl -O https://cov01.lab.eng.brq.redhat.com/coverity/install/covscan/covscan-rhel-7.repo
+- cd /etc/yum.repos.d \
+    && curl -O https://copr.devel.redhat.com/coprs/kdudka/covscan/repo/epel-7/kdudka-covscan-epel-7.repo \
+    && curl -O https://copr.devel.redhat.com/coprs/kdudka/covscan-testing/repo/epel-7/kdudka-covscan-testing-epel-7.repo
 - yum install https://download.eng.brq.redhat.com/pub/fedora/epel/7/x86_64/e/epel-release-7-7.noarch.rpm
-- yum install --enablerepo=covscan-testing covscan-hub-prod
-- setsebool -P httpd_can_network_connect_db 1
+- yum install covscan-hub-prod mod_ssl
+- setsebool -P httpd_can_network_connect 1
 - vim /etc/httpd/conf.d/covscanhub-httpd.conf:
     <Directory "/usr/lib/python2.7/site-packages/covscanhub">
         Require all granted
@@ -95,6 +96,7 @@
     # rm -v /var/lib/pgsql/data/postmaster.pid
     # yum install postgresql-upgrade
     # postgresql-setup upgrade
+    # service postgresql start
 
 - migrating old database scheme (using South):
     # /usr/lib/python2.7/site-packages/covscanhub/manage.py migrate kobo.django.auth
