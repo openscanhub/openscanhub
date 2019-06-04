@@ -9,7 +9,7 @@ import sys
 # sys.path.append("/var/www/django")
 
 os.environ['DJANGO_SETTINGS_MODULE'] = 'covscanhub.settings'
-import django.core.handlers.wsgi
+from django.core.wsgi import get_wsgi_application
 
 
-application = django.core.handlers.wsgi.WSGIHandler()
+application = get_wsgi_application()
