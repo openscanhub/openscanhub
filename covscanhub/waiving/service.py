@@ -15,7 +15,7 @@ import shutil
 import pipes
 import pycsdiff
 
-import django.utils.simplejson as json
+import json
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Sum
 

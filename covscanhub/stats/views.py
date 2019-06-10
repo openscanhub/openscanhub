@@ -11,7 +11,7 @@ from django.core.urlresolvers import reverse
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.http import HttpResponse
-from django.utils import simplejson as json
+import json
 from django.utils.datastructures import SortedDict
 
 from .service import display_values

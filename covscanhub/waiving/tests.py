@@ -14,7 +14,7 @@ from covscanhub.xmlrpc.errata import create_errata_diff_scan
 from unittest import TestCase
 from django.test import Client
 from django.conf import settings
-import django.utils.simplejson as json
+import json
 from django.db.models import Q
 
 from kobo.hub.models import Task
