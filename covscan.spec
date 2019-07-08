@@ -28,6 +28,7 @@ Summary: CovScan CLI client
 Requires: kobo-client >= 0.6.0
 Requires: python-krbV
 Requires: koji
+Requires: python2-koji
 
 %description client
 CovScan CLI client
@@ -40,6 +41,7 @@ Requires: kobo-client
 Requires: kobo-worker
 Requires: kobo-rpmlib
 Requires: koji
+Requires: python2-koji
 
 # FIXME: conf.py should be moved to covscan-common shared by both the packages
 Requires: covscan-client
@@ -70,6 +72,7 @@ Requires: gzip
 Requires: python-qpid
 # hub is interacting with brew
 Requires: koji
+Requires: python2-koji
 # extract tarballs created by cov-mockbuild
 Requires: xz
 # auth for qpid
