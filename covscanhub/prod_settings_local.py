@@ -85,8 +85,6 @@ TIME_ZONE = 'Europe/Prague'
 
 KRB_AUTH_PRINCIPAL = 'HTTP/cov01.lab.eng.brq.redhat.com@REDHAT.COM'
 KRB_AUTH_KEYTAB = '/etc/httpd/conf/httpd.keytab'
-KRB_AUTH_PRINCIPAL_SERVICE = 'covscan/cov01.lab.eng.brq.redhat.com@REDHAT.COM'
-KRB_AUTH_KEYTAB_SERVICE = '/etc/covscan.keytab'
 
 LANGUAGE_CODE = 'en-us'
 

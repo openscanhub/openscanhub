@@ -68,8 +68,8 @@ Requires: mod_wsgi
 # PostgreSQL adapter for python
 Requires: python-psycopg2
 Requires: gzip
-# inform ET about progress using qpid broker
-Requires: python-qpid
+# inform ET about progress using UMB (Unified Message Bus)
+Requires: python2-qpid-proton
 # hub is interacting with brew
 Requires: koji
 Requires: python2-koji
