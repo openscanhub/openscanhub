@@ -30,7 +30,7 @@ class Capability(models.Model):
     def __unicode__(self):
         return u"%s (%s)" % (self.name, self.function)
 
-    def check(self, nvr, mock_profile, package, release):
+    def check_capability(self, nvr, mock_profile, package, release):
         """ check if provided package is capable """
         module_name, func_name = self.function.rsplit(".", 1)
         try:
@@ -113,7 +113,7 @@ class ScanningSession(models.Model):
             if cap.package_has_capability(package, release):
                 is_capable = cap.package_is_capable(package, release)
             else:
-                is_capable = cap.check(nvr, mock_profile, package, release)
+                is_capable = cap.check_capability(nvr, mock_profile, package, release)
             if not is_capable:
                 raise PackageNotEligibleException(
                     'Package %s is not eligible for scanning.' % (package.name))
