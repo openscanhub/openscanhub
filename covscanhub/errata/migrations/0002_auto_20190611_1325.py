@@ -1,0 +1,30 @@
+# -*- coding: utf-8 -*-
+from __future__ import unicode_literals
+
+from django.db import migrations, models
+
+
+class Migration(migrations.Migration):
+
+    dependencies = [
+        ('errata', '0001_initial'),
+        ('scan', '0001_initial'),
+    ]
+
+    operations = [
+        migrations.AddField(
+            model_name='scanningsession',
+            name='profile',
+            field=models.ForeignKey(blank=True, to='scan.Profile', null=True),
+        ),
+        migrations.AddField(
+            model_name='capability',
+            name='analyzers',
+            field=models.ManyToManyField(to='scan.Analyzer'),
+        ),
+        migrations.AddField(
+            model_name='capability',
+            name='caps',
+            field=models.ManyToManyField(to='scan.PackageCapability'),
+        ),
+    ]

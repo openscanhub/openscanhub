@@ -1,223 +1,124 @@
 # -*- coding: utf-8 -*-
-import datetime
-from south.db import db
-from south.v2 import SchemaMigration
-from django.db import models
+from __future__ import unicode_literals
+
+from django.db import migrations, models
+from django.conf import settings
+import kobo.django.fields
 
 
-class Migration(SchemaMigration):
+class Migration(migrations.Migration):
 
-    def forwards(self, orm):
-        # Adding model 'Result'
-        db.create_table('waiving_result', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('scanner', self.gf('django.db.models.fields.CharField')(max_length=32, null=True, blank=True)),
-            ('scanner_version', self.gf('django.db.models.fields.CharField')(max_length=32, null=True, blank=True)),
-            ('lines', self.gf('django.db.models.fields.IntegerField')(null=True, blank=True)),
-            ('scanning_time', self.gf('django.db.models.fields.IntegerField')(null=True, blank=True)),
-            ('date_submitted', self.gf('django.db.models.fields.DateTimeField')()),
-        ))
-        db.send_create_signal('waiving', ['Result'])
+    dependencies = [
+        migrations.swappable_dependency(settings.AUTH_USER_MODEL),
+        ('scan', '0001_initial'),
+    ]
 
-        # Adding model 'Defect'
-        db.create_table('waiving_defect', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('checker', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['waiving.Checker'])),
-            ('order', self.gf('django.db.models.fields.IntegerField')(null=True)),
-            ('annotation', self.gf('django.db.models.fields.CharField')(max_length=32, null=True, blank=True)),
-            ('key_event', self.gf('django.db.models.fields.IntegerField')()),
-            ('function', self.gf('django.db.models.fields.CharField')(max_length=128, null=True, blank=True)),
-            ('defect_identifier', self.gf('django.db.models.fields.CharField')(max_length=16, null=True, blank=True)),
-            ('state', self.gf('django.db.models.fields.PositiveIntegerField')(default=3)),
-            ('result_group', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['waiving.ResultGroup'])),
-            ('events', self.gf('kobo.django.fields.JSONField')(default=[])),
-        ))
-        db.send_create_signal('waiving', ['Defect'])
-
-        # Adding model 'CheckerGroup'
-        db.create_table('waiving_checkergroup', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('name', self.gf('django.db.models.fields.CharField')(max_length=32)),
-            ('enabled', self.gf('django.db.models.fields.BooleanField')(default=True)),
-        ))
-        db.send_create_signal('waiving', ['CheckerGroup'])
-
-        # Adding model 'ResultGroup'
-        db.create_table('waiving_resultgroup', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('result', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['waiving.Result'])),
-            ('state', self.gf('django.db.models.fields.PositiveIntegerField')(default=4)),
-            ('checker_group', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['waiving.CheckerGroup'])),
-            ('defect_type', self.gf('django.db.models.fields.PositiveIntegerField')(default=3)),
-            ('defects_count', self.gf('django.db.models.fields.PositiveSmallIntegerField')(default=0, null=True, blank=True)),
-        ))
-        db.send_create_signal('waiving', ['ResultGroup'])
-
-        # Adding model 'Checker'
-        db.create_table('waiving_checker', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('name', self.gf('django.db.models.fields.CharField')(max_length=32)),
-            ('group', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['waiving.CheckerGroup'], null=True, blank=True)),
-        ))
-        db.send_create_signal('waiving', ['Checker'])
-
-        # Adding model 'Bugzilla'
-        db.create_table('waiving_bugzilla', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('number', self.gf('django.db.models.fields.IntegerField')()),
-            ('package', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['scan.Package'])),
-            ('release', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['scan.SystemRelease'])),
-        ))
-        db.send_create_signal('waiving', ['Bugzilla'])
-
-        # Adding model 'Waiver'
-        db.create_table('waiving_waiver', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('date', self.gf('django.db.models.fields.DateTimeField')()),
-            ('message', self.gf('django.db.models.fields.TextField')()),
-            ('result_group', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['waiving.ResultGroup'])),
-            ('user', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['auth.User'])),
-            ('state', self.gf('django.db.models.fields.PositiveIntegerField')(default=1)),
-            ('bz', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['waiving.Bugzilla'], null=True, blank=True)),
-        ))
-        db.send_create_signal('waiving', ['Waiver'])
-
-
-    def backwards(self, orm):
-        # Deleting model 'Result'
-        db.delete_table('waiving_result')
-
-        # Deleting model 'Defect'
-        db.delete_table('waiving_defect')
-
-        # Deleting model 'CheckerGroup'
-        db.delete_table('waiving_checkergroup')
-
-        # Deleting model 'ResultGroup'
-        db.delete_table('waiving_resultgroup')
-
-        # Deleting model 'Checker'
-        db.delete_table('waiving_checker')
-
-        # Deleting model 'Bugzilla'
-        db.delete_table('waiving_bugzilla')
-
-        # Deleting model 'Waiver'
-        db.delete_table('waiving_waiver')
-
-
-    models = {
-        'auth.group': {
-            'Meta': {'object_name': 'Group'},
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '80'}),
-            'permissions': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['auth.Permission']", 'symmetrical': 'False', 'blank': 'True'})
-        },
-        'auth.permission': {
-            'Meta': {'ordering': "('content_type__app_label', 'content_type__model', 'codename')", 'unique_together': "(('content_type', 'codename'),)", 'object_name': 'Permission'},
-            'codename': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
-            'content_type': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['contenttypes.ContentType']"}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'max_length': '50'})
-        },
-        'auth.user': {
-            'Meta': {'object_name': 'User'},
-            'date_joined': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now'}),
-            'email': ('django.db.models.fields.EmailField', [], {'max_length': '75', 'blank': 'True'}),
-            'first_name': ('django.db.models.fields.CharField', [], {'max_length': '30', 'blank': 'True'}),
-            'groups': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['auth.Group']", 'symmetrical': 'False', 'blank': 'True'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'is_active': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
-            'is_staff': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'is_superuser': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'last_login': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now'}),
-            'last_name': ('django.db.models.fields.CharField', [], {'max_length': '30', 'blank': 'True'}),
-            'password': ('django.db.models.fields.CharField', [], {'max_length': '128'}),
-            'user_permissions': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['auth.Permission']", 'symmetrical': 'False', 'blank': 'True'}),
-            'username': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '255'})
-        },
-        'contenttypes.contenttype': {
-            'Meta': {'ordering': "('name',)", 'unique_together': "(('app_label', 'model'),)", 'object_name': 'ContentType', 'db_table': "'django_content_type'"},
-            'app_label': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'model': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
-            'name': ('django.db.models.fields.CharField', [], {'max_length': '100'})
-        },
-        'scan.package': {
-            'Meta': {'object_name': 'Package'},
-            'blocked': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'max_length': '64'})
-        },
-        'scan.systemrelease': {
-            'Meta': {'object_name': 'SystemRelease'},
-            'active': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'parent': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['scan.SystemRelease']", 'unique': 'True', 'null': 'True', 'blank': 'True'}),
-            'product': ('django.db.models.fields.CharField', [], {'max_length': '128'}),
-            'release': ('django.db.models.fields.IntegerField', [], {}),
-            'tag': ('django.db.models.fields.CharField', [], {'max_length': '16'})
-        },
-        'waiving.bugzilla': {
-            'Meta': {'object_name': 'Bugzilla'},
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'number': ('django.db.models.fields.IntegerField', [], {}),
-            'package': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['scan.Package']"}),
-            'release': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['scan.SystemRelease']"})
-        },
-        'waiving.checker': {
-            'Meta': {'object_name': 'Checker'},
-            'group': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['waiving.CheckerGroup']", 'null': 'True', 'blank': 'True'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'max_length': '32'})
-        },
-        'waiving.checkergroup': {
-            'Meta': {'object_name': 'CheckerGroup'},
-            'enabled': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'max_length': '32'})
-        },
-        'waiving.defect': {
-            'Meta': {'object_name': 'Defect'},
-            'annotation': ('django.db.models.fields.CharField', [], {'max_length': '32', 'null': 'True', 'blank': 'True'}),
-            'checker': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['waiving.Checker']"}),
-            'defect_identifier': ('django.db.models.fields.CharField', [], {'max_length': '16', 'null': 'True', 'blank': 'True'}),
-            'events': ('kobo.django.fields.JSONField', [], {'default': '[]'}),
-            'function': ('django.db.models.fields.CharField', [], {'max_length': '128', 'null': 'True', 'blank': 'True'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'key_event': ('django.db.models.fields.IntegerField', [], {}),
-            'order': ('django.db.models.fields.IntegerField', [], {'null': 'True'}),
-            'result_group': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['waiving.ResultGroup']"}),
-            'state': ('django.db.models.fields.PositiveIntegerField', [], {'default': '3'})
-        },
-        'waiving.result': {
-            'Meta': {'object_name': 'Result'},
-            'date_submitted': ('django.db.models.fields.DateTimeField', [], {}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'lines': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
-            'scanner': ('django.db.models.fields.CharField', [], {'max_length': '32', 'null': 'True', 'blank': 'True'}),
-            'scanner_version': ('django.db.models.fields.CharField', [], {'max_length': '32', 'null': 'True', 'blank': 'True'}),
-            'scanning_time': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'})
-        },
-        'waiving.resultgroup': {
-            'Meta': {'object_name': 'ResultGroup'},
-            'checker_group': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['waiving.CheckerGroup']"}),
-            'defect_type': ('django.db.models.fields.PositiveIntegerField', [], {'default': '3'}),
-            'defects_count': ('django.db.models.fields.PositiveSmallIntegerField', [], {'default': '0', 'null': 'True', 'blank': 'True'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'result': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['waiving.Result']"}),
-            'state': ('django.db.models.fields.PositiveIntegerField', [], {'default': '4'})
-        },
-        'waiving.waiver': {
-            'Meta': {'object_name': 'Waiver'},
-            'bz': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['waiving.Bugzilla']", 'null': 'True', 'blank': 'True'}),
-            'date': ('django.db.models.fields.DateTimeField', [], {}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'message': ('django.db.models.fields.TextField', [], {}),
-            'result_group': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['waiving.ResultGroup']"}),
-            'state': ('django.db.models.fields.PositiveIntegerField', [], {'default': '1'}),
-            'user': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['auth.User']"})
-        }
-    }
-
-    complete_apps = ['waiving']
+    operations = [
+        migrations.CreateModel(
+            name='Bugzilla',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('number', models.IntegerField()),
+                ('package', models.ForeignKey(to='scan.Package')),
+                ('release', models.ForeignKey(to='scan.SystemRelease')),
+            ],
+        ),
+        migrations.CreateModel(
+            name='Checker',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('name', models.CharField(max_length=64, verbose_name=b"Checker's name")),
+                ('severity', models.PositiveIntegerField(default=0, help_text=b'Severity of checker that the defect represents', choices=[(0, b'NO_EFFECT'), (1, b'FALSE_POSITIVE'), (2, b'UNCLASSIFIED'), (3, b'CONFUSION'), (4, b'SECURITY'), (5, b'ROBUSTNESS')])),
+            ],
+        ),
+        migrations.CreateModel(
+            name='CheckerGroup',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('name', models.CharField(max_length=64, verbose_name=b"Checker's name")),
+                ('enabled', models.BooleanField(default=True, help_text=b'User may waive only ResultGroups which belong to enabled CheckerGroups')),
+            ],
+        ),
+        migrations.CreateModel(
+            name='Defect',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('order', models.IntegerField(help_text=b'Defects in view have fixed order.', null=True)),
+                ('annotation', models.CharField(max_length=32, null=True, verbose_name=b'Annotation', blank=True)),
+                ('cwe', models.IntegerField(null=True, verbose_name=b'CWE', blank=True)),
+                ('key_event', models.IntegerField(help_text=b'Event that resulted in defect', verbose_name=b'Key event')),
+                ('function', models.CharField(help_text=b'Name of function that contains current defect', max_length=128, null=True, verbose_name=b'Function', blank=True)),
+                ('defect_identifier', models.CharField(max_length=16, null=True, verbose_name=b'Defect Identifier', blank=True)),
+                ('state', models.PositiveIntegerField(default=3, help_text=b'Defect state', choices=[(0, b'NEW'), (1, b'OLD'), (2, b'FIXED'), (3, b'UNKNOWN'), (4, b'PREVIOUSLY_WAIVED')])),
+                ('events', kobo.django.fields.JSONField(default=[], help_text=b'List of defect related events.')),
+                ('checker', models.ForeignKey(verbose_name=b'Checker', to='waiving.Checker')),
+            ],
+        ),
+        migrations.CreateModel(
+            name='Result',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('scanner', models.CharField(help_text=b'DEPRECATED, not used anymore', max_length=32, null=True, verbose_name=b'Analyser', blank=True)),
+                ('scanner_version', models.CharField(help_text=b'DEPRECATED, not used anymore', max_length=32, null=True, verbose_name=b"Analyser's Version", blank=True)),
+                ('lines', models.IntegerField(help_text=b'Lines of code scanned', null=True, blank=True)),
+                ('scanning_time', models.IntegerField(null=True, verbose_name=b'Time spent scanning', blank=True)),
+                ('date_submitted', models.DateTimeField()),
+                ('analyzers', models.ManyToManyField(to='scan.AnalyzerVersion')),
+            ],
+            options={
+                'get_latest_by': 'date_submitted',
+            },
+        ),
+        migrations.CreateModel(
+            name='ResultGroup',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('state', models.PositiveIntegerField(default=4, help_text=b'Type of waiver', choices=[(0, b'NEEDS_INSPECTION'), (1, b'WAIVED'), (2, b'INFO'), (3, b'PASSED'), (4, b'UNKNOWN'), (5, b'PREVIOUSLY_WAIVED'), (6, b'CONTAINS_BUG')])),
+                ('defect_type', models.PositiveIntegerField(default=3, help_text=b'Type of defects that are associated with this group.', choices=[(0, b'NEW'), (1, b'OLD'), (2, b'FIXED'), (3, b'UNKNOWN'), (4, b'PREVIOUSLY_WAIVED')])),
+                ('defects_count', models.PositiveSmallIntegerField(default=0, null=True, verbose_name=b'Number of defects associated with this group.', blank=True)),
+                ('checker_group', models.ForeignKey(verbose_name=b'Group of checkers', to='waiving.CheckerGroup')),
+                ('result', models.ForeignKey(verbose_name=b'Result', to='waiving.Result', help_text=b'Result of scan')),
+            ],
+        ),
+        migrations.CreateModel(
+            name='Waiver',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('date', models.DateTimeField(auto_now_add=True)),
+                ('message', models.TextField(verbose_name=b'Message')),
+                ('state', models.PositiveIntegerField(default=1, help_text=b'Type of waiver', choices=[(0, b'NOT_A_BUG'), (1, b'IS_A_BUG'), (2, b'FIX_LATER'), (3, b'COMMENT')])),
+                ('is_deleted', models.BooleanField(default=False)),
+                ('is_active', models.BooleanField(default=False)),
+                ('bz', models.ForeignKey(blank=True, to='waiving.Bugzilla', null=True)),
+                ('result_group', models.ForeignKey(help_text=b'Group of defects which is waived for specific Result', to='waiving.ResultGroup')),
+                ('user', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
+            ],
+            options={
+                'ordering': ('-date',),
+                'get_latest_by': 'date',
+            },
+        ),
+        migrations.CreateModel(
+            name='WaivingLog',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('date', models.DateTimeField(auto_now_add=True)),
+                ('state', models.PositiveIntegerField(help_text=b'Waiving action', choices=[(0, b'NEW'), (1, b'DELETE'), (2, b'REWAIVE')])),
+                ('user', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
+                ('waiver', models.ForeignKey(to='waiving.Waiver')),
+            ],
+            options={
+                'ordering': ['date'],
+            },
+        ),
+        migrations.AddField(
+            model_name='defect',
+            name='result_group',
+            field=models.ForeignKey(to='waiving.ResultGroup'),
+        ),
+        migrations.AddField(
+            model_name='checker',
+            name='group',
+            field=models.ForeignKey(blank=True, to='waiving.CheckerGroup', help_text=b'Name of group where does this checker belong', null=True, verbose_name=b'Checker group'),
+        ),
+    ]

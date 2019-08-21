@@ -121,10 +121,7 @@ INSTALLED_APPS = (
 
     # better ./manage.py shell
     #'django_extensions',
-    #'debug_toolbar',
-
-    # migrations
-    'south'
+    'debug_toolbar',
 )
 
 DEBUG_TOOLBAR_PATCH_SETTINGS = False

@@ -25,10 +25,6 @@ from kobo.django.fields import JSONField
 
 logger = logging.getLogger(__name__)
 
-#south does not know JSONField
-from south.modelsinspector import add_introspection_rules
-add_introspection_rules([], ["^kobo\.django\.fields\.JSONField"])
-
 
 SCAN_STATES = Enum(
     "QUEUED",            # scan was submitted, waiting for scheduler

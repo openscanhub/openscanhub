@@ -29,7 +29,6 @@ autoregister_admin('covscanhub.scan.models',
                        'AnalyzerVersion': {'search_fields': ['version', 'analyzer__name', 'mocks__name']},
                    })
 autoregister_admin('django.contrib.admin.models')
-autoregister_admin('south.models')
 
 
 @add_link_field('scanbinding', 'scanbinding', field_label="Binding",
