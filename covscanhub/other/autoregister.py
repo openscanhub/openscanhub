@@ -16,7 +16,7 @@ def _get_admin_change_url(field):
     @type field: ForeignKey or OneToOneField
     '''
 
-    related_model = field.related.parent_model
+    related_model = field.related.model
 
     def f(obj):
         link_args = getattr(obj, field.attname)
@@ -174,7 +174,7 @@ def autoregister_admin(module, exclude_models=None, model_fields=None,
             admin_class.raw_id_fields.append(field.name)
             m2m_field_names.append(field.name)
             change_list_url = _get_admin_changelist_url(
-                field.name, field.related.parent_model, field.related_query_name())
+                field.name, field.related.model, field.related_query_name())
             admin_class.list_display.append(change_list_url)
 
         # add reversed relations
@@ -187,7 +187,7 @@ def autoregister_admin(module, exclude_models=None, model_fields=None,
                 continue
             m2m_field_names.append(related_name)
             change_list_url = _get_admin_changelist_url(
-                related_name, related.model, related.field.name)
+                related_name, related.related_model, related.field.name)
             admin_class.list_display.append(change_list_url)
 
         # add custom model fields
