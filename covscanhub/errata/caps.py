@@ -15,7 +15,6 @@ import yum
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 import six
-from six.moves import filter
 
 
 if __name__ == '__main__':
@@ -164,7 +163,7 @@ class RPMDepCapabilityChecker(CapabilityChecker):
             # get requires from brew, second arg is dependency type
             requires = s.getRPMDeps(rpm['id'], koji.DEP_REQUIRE)
             logger.debug('brew req: %s', requires)
-            if list(filter(check_if_dep_match, requires)):
+            if any(check_if_dep_match(x) for x in requires):
                 logger.info("%s depends on %s", rpm['name'], self.dependency)
                 return True
         logger.info("no RPM depends on %s", self.dependency)

@@ -223,13 +223,15 @@ def get_tupled_data(output):
     column_count = 4
     #else:
     #    column_count = 5
+
+    output_keys = list(output.keys())
     while True:
         low_bound = column_count * i
         high_bound = column_count * (i + 1)
-        if low_bound + 1 > len(list(output.keys())):
+        if low_bound + 1 > len(output_keys):
             break
         tmp = {}
-        for k in list(output.keys())[low_bound:high_bound]:
+        for k in output_keys[low_bound:high_bound]:
             tmp[k] = output[k]
         result_tuples.append(tmp)
         i += 1
@@ -476,7 +478,8 @@ def waiver(request, sb_id, result_group_id):
         context['form_message'] = 'This is not the newest scan.'
 
     # merge already created context with result context
-    context = dict(list(context.items()) + list(get_result_context(request, sb).items()))
+    context = context.copy() #TODO: check if .copy() is really needed
+    context.update(get_result_context(request, sb))
 
     context['active_group'] = result_group_object
     context['defects'] = Defect.objects.filter(result_group=result_group_id,

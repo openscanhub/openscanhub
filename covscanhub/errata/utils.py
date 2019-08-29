@@ -15,7 +15,6 @@ from covscanhub.other.shortcuts import check_and_create_dirs
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 import six
-from six.moves import filter
 
 __all__ = (
     "depend_on",
@@ -161,7 +160,7 @@ def depend_on_brew(valid_rpms, dependency):
         # get requires from brew, second arg is dependency type
         requires = s.getRPMDeps(rpm['id'], koji.DEP_REQUIRE)
         logger.debug('brew req: %s', requires)
-        if list(filter(check_if_dep_match, requires)):
+        if any(check_if_dep_match(x) for x in requires):
             logger.info("%s depends on %s", rpm['name'], dependency)
             return True
     logger.info("no RPM depends on %s", dependency)

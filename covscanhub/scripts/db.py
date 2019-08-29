@@ -139,7 +139,7 @@ def release_tree():
     r.save()
 
     x_list = [5, 6, 7]
-    y_list = list(range(12))
+    y_list = range(12)
 
     # tags and system releases
     for x in x_list:

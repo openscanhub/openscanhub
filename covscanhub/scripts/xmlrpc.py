@@ -224,7 +224,7 @@ class Client(object):
         Api has 'owner' parameter, but to be compatible with other functions 'username' is used.
         """
         filters = dict(id=id, target=target, base=base, state=state, owner=username, release=release)
-        filters = dict([k_v for k_v in list(filters.items()) if k_v[1] is not None])  # removes None values from dictionary
+        filters = {k:v for k, v in filters.items() if v is not None} # removes None values from dictionary
         return str(self.hub.scan.get_filtered_scan_list(filters))
 
     def get_krb_chain(self):
