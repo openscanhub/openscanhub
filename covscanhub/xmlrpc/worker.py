@@ -177,13 +177,14 @@ def ensure_base_is_scanned_properly(request, scan_id, task_id):
         task = Task.objects.get(id=task_id)
         scanning_session = ScanningSession.objects.get(id=task.args['scanning_session'])
         base_nvr = task.args['base_nvr']
-        logger.debug("Looking for base scan '%s'.", base_nvr)
+        mock_config = scan.tag.mock.name
+        logger.debug("Looking for base scan '%s', mock_config: %s", base_nvr, mock_config)
         try:
-            base_scan = obtain_base2(base_nvr)
+            base_scan = obtain_base2(base_nvr, mock_config)
         except BaseNotValidException:
             logger.info("Preparing base scan")
             options = {
-                'mock_config': scan.tag.mock.name,
+                'mock_config': mock_config,
                 'target': base_nvr,
                 'package': scan.package,
                 'tag': scan.tag,

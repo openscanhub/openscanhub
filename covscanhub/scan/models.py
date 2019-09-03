@@ -946,15 +946,11 @@ class ScanBinding(models.Model):
                         break
         return True
 
-    def is_actual(self):
+    def is_actual(self, mock_config):
         """ is scan actual? ~ scanned with up to date analyzers """
-        try:
-            mock_profile = self.scan.tag.mock.name
-        except AttributeError:
-            return False
-        else:
-            analyzers = AnalyzerVersion.objects.get_analyzer_versions_for_mockprofile(mock_profile)
-            return self.analyzers_match(analyzers)
+        analyzers = AnalyzerVersion.objects.get_analyzer_versions_for_mockprofile(mock_config)
+        logger.info("Analyzer versions in mock profile %s: %s", mock_config, analyzers)
+        return self.analyzers_match(analyzers)
 
 
 class ReleaseMapping(models.Model):

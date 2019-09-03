@@ -650,9 +650,10 @@ class BaseNotValidException(Exception):
     pass
 
 
-def obtain_base2(base_nvr):
+def obtain_base2(base_nvr, mock_config):
     """
     @param base_nvr - nvr of base to fetch
+    @param mock_config - name of mock config to check analyzer versions against
 
     returns none if no suitable scan is found
     """
@@ -666,7 +667,7 @@ def obtain_base2(base_nvr):
             # safe handling: there should be result but it's not there actually -- reschedule
             logger.warning("Scan %s is not in progress and has no result.", binding)
             raise BaseNotValidException()
-        elif not binding.is_actual():
+        elif not binding.is_actual(mock_config):
             # is it scanned with up-to-date analysers?
             logger.debug("Configuration of analysers changed, rescan base")
             raise BaseNotValidException()
