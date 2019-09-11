@@ -1,3 +1,4 @@
+from __future__ import absolute_import
 from types import ModuleType
 
 from django.contrib import admin
@@ -6,6 +7,7 @@ from django.contrib.admin.views.main import ChangeList
 from django.core.urlresolvers import reverse, NoReverseMatch
 from django.db.models import ForeignKey, OneToOneField, Count
 from django.db.models.base import ModelBase
+import six
 
 
 def _get_admin_change_url(field):
@@ -127,7 +129,7 @@ def autoregister_admin(module, exclude_models=None, model_fields=None,
     exclude_fields = exclude_fields or {}
     admin_fields = admin_fields or {}
     reversed_relations = reversed_relations or {}
-    if isinstance(module, basestring):
+    if isinstance(module, six.string_types):
         module = __import__(module, fromlist=[module.split('.')[-1]])
     elif not isinstance(module, ModuleType):
         raise TypeError('invalid type of argument `module`, expected `str` or '
@@ -194,7 +196,7 @@ def autoregister_admin(module, exclude_models=None, model_fields=None,
             admin_class.list_display.append(name)
 
         # add custom admin fields
-        for (name, value) in admin_fields.get(model_name, {}).iteritems():
+        for (name, value) in six.iteritems(admin_fields.get(model_name, {})):
             setattr(admin_class, name, value)
 
         _set_admin_queryset(admin_class, m2m_field_names, exclude_field_names)

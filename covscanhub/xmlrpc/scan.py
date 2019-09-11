@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from __future__ import absolute_import
 import re
 import logging
 
@@ -166,7 +167,7 @@ def __setup_kwargs(kwargs):
     kwargs['scanbinding__id'] = kwargs.pop('id', None) # conversion to correct id
     kwargs['base__nvr'] = kwargs.pop('base', None)
     kwargs['tag__release__tag'] = kwargs.pop('release', None)
-    kwargs = dict(filter(lambda (k, v): v is not None, kwargs.items()))
+    kwargs = dict([k_v for k_v in list(kwargs.items()) if k_v[1] is not None])
     return kwargs
 
 

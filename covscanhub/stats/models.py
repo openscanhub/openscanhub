@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from __future__ import absolute_import
 import django.db.models as models
 from django.core.urlresolvers import reverse
 

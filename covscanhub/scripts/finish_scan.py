@@ -1,6 +1,8 @@
 #!/usr/bin/python -tt
 # -*- coding: utf-8 -*-
 
+from __future__ import absolute_import
+from __future__ import print_function
 import os
 import sys
 
@@ -90,7 +92,7 @@ def m_finish_scan(scan_id):
 
     extract_logs_from_tarball(sb.task.id)
 
-    print 'Finishing scan %s' % sb.scan.nvr
+    print('Finishing scan %s' % sb.scan.nvr)
     finish_scan(FakeRequest(), scan_id, sb.task.id)
 
     Task.objects.filter(id=sb.task.id).update(state=TASK_STATES['CLOSED'])

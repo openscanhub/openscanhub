@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
 import os
 from glob import glob
 
@@ -114,7 +115,7 @@ class ScanAdmin(admin.ModelAdmin):
         scan = Scan.objects.get(id=scan_id)
         try:
             new_scan = rescan(scan, request.user)
-        except Exception, e:
+        except Exception as e:
             result = "Unable to rescan: %s" % e
         else:
             result = "New scan #%s submitted." % (new_scan.scan.id)

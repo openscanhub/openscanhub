@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from __future__ import absolute_import
 import os
 
 from django.core.exceptions import ObjectDoesNotExist
@@ -10,6 +11,7 @@ import koji
 
 from covscanhub.scan.models import MockConfig, Tag
 from covscanhub.other.exceptions import BrewException
+import six
 
 
 __all__ = (
@@ -23,7 +25,7 @@ __all__ = (
 
 
 def add_link_field(target_model=None, field='', app='', field_name='link',
-                   link_text=unicode, field_label=''):
+                   link_text=six.text_type, field_label=''):
     def add_link(cls):
         reverse_name = target_model or cls.model.__name__.lower()
 
@@ -81,7 +83,7 @@ def check_brew_build(name):
 def check_and_create_dirs(directory):
     if not os.path.isdir(directory):
         try:
-            os.makedirs(directory, mode=0755)
-        except OSError, ex:
+            os.makedirs(directory, mode=0o755)
+        except OSError as ex:
             if ex.errno != 17:
                 raise

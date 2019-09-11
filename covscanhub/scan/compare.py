@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+from __future__ import absolute_import
+from __future__ import print_function
 import re
 import difflib
 
@@ -113,7 +115,7 @@ def get_compare_title_re(nvr, base_nvr):
         except IndexError:
             break
         base_numbers = re_base.group(outer_index).split('.')
-        print nvr_numbers, base_numbers
+        print(nvr_numbers, base_numbers)
         while True:
             try:
                 condition = nvr_numbers[inner_index] == \
@@ -155,8 +157,8 @@ def get_compare_title_difflib(nvr, base_nvr):
     """
     blocks = difflib.SequenceMatcher(a=nvr, b=base_nvr,
                                      autojunk=False).get_matching_blocks()
-    print nvr, base_nvr
-    print blocks
+    print(nvr, base_nvr)
+    print(blocks)
     i = 0
     offset = 0
     result_nvr = ''

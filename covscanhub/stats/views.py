@@ -2,7 +2,9 @@
 """
     TODO Once on 1.5, use filter from django.contrib.humanize
 """
-from models import StatResults, StatType
+from __future__ import absolute_import
+from __future__ import print_function
+from .models import StatResults, StatType
 from covscanhub.scan.models import SystemRelease
 
 from django.core.urlresolvers import reverse
@@ -12,7 +14,7 @@ from django.http import HttpResponse
 from django.utils import simplejson as json
 from django.utils.datastructures import SortedDict
 
-from service import display_values
+from .service import display_values
 
 
 def release_list(request, release_id):
@@ -36,7 +38,7 @@ def stats_list(request):
         'release__id', flat=True).distinct()
     context['releases'] = SystemRelease.objects.filter(id__in=int_releases)
 
-    print context['releases']
+    print(context['releases'])
     context['results'] = SortedDict()
     for stattype in StatType.objects.filter(is_release_specific=False).\
             order_by('group', 'order'):
@@ -78,7 +80,7 @@ def release_stats_detail_graph(request, stat_id, release_id):
     View for AJAX
     Provide data for graph.
     """
-    print stat_id, release_id
+    print(stat_id, release_id)
     release = SystemRelease.objects.get(id=release_id)
     st = StatType.objects.get(id=stat_id)
     sr = StatResults.objects.filter(stat=stat_id, release=release)

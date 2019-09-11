@@ -51,11 +51,13 @@ File: "/usr/lib/python2.7/site-packages/kobo/xmlrpc.py"
 
 """
 
+from __future__ import absolute_import
+from __future__ import print_function
 import json
 import sys
 import logging
-import xmlrpclib
-import urlparse
+import six.moves.xmlrpc_client
+import six.moves.urllib.parse
 import base64
 import datetime
 
@@ -78,7 +80,7 @@ ch.setFormatter(formatter)
 # add ch to logger
 logger.addHandler(ch)
 
-xmlrpclib.Fault.__repr__ = lambda x: "<Fault %s: %s>" % (x.faultCode, str(x.faultString))
+six.moves.xmlrpc_client.Fault.__repr__ = lambda x: "<Fault %s: %s>" % (x.faultCode, str(x.faultString))
 
 
 def create_scan_cmd(options, hub):
@@ -197,7 +199,7 @@ class Client(object):
         else:
             raise ValueError("URL to hub has to start with http(s): %r" % self.hub_url)
         logger.info("connecting to %s", self.hub_url)
-        client = xmlrpclib.ServerProxy(self.hub_url, allow_none=True, transport=transport,
+        client = six.moves.xmlrpc_client.ServerProxy(self.hub_url, allow_none=True, transport=transport,
                                        verbose=self.verbose)
         return client
 
@@ -222,7 +224,7 @@ class Client(object):
         Api has 'owner' parameter, but to be compatible with other functions 'username' is used.
         """
         filters = dict(id=id, target=target, base=base, state=state, owner=username, release=release)
-        filters = dict(filter(lambda (k, v): v is not None, filters.items()))  # removes None values from dictionary
+        filters = dict([k_v for k_v in list(filters.items()) if k_v[1] is not None])  # removes None values from dictionary
         return str(self.hub.scan.get_filtered_scan_list(filters))
 
     def get_krb_chain(self):
@@ -232,7 +234,7 @@ class Client(object):
         """
         def get_server_principal(service=None, realm=None):
             """Convert hub url to kerberos principal."""
-            hostname = urlparse.urlparse(self.hub_url)[1]
+            hostname = six.moves.urllib.parse.urlparse(self.hub_url)[1]
             # remove port from hostname
             hostname = hostname.split(":")[0]
 
@@ -247,7 +249,7 @@ class Client(object):
         ccache = ctx.default_ccache()
         cprinc = ccache.principal()
         realm, sprinc_str = get_server_principal()
-        print sprinc_str
+        print(sprinc_str)
         sprinc = krbV.Principal(name=sprinc_str, context=ctx)
 
         ac = krbV.AuthContext(context=ctx)
@@ -259,8 +261,8 @@ class Client(object):
             ac, req = ctx.mk_req(server=sprinc, client=cprinc,
                                  auth_context=ac, ccache=ccache,
                                  options=krbV.AP_OPTS_MUTUAL_REQUIRED)
-        except krbV.Krb5Error, ex:
-            print ex
+        except krbV.Krb5Error as ex:
+            print(ex)
             if getattr(ex, "err_code", None) == -1765328377:
                 ex.message += ". Make sure you correctly set \
     KRB_REALM (current value: %s)." % realm

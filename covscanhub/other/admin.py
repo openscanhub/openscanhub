@@ -20,6 +20,7 @@ register_admin_module('project.app.models', new_fields={
 
 """
 
+from __future__ import absolute_import
 from django.core.urlresolvers import reverse
 from django.utils.safestring import mark_safe
 from django.contrib import admin
@@ -27,6 +28,7 @@ from django.db import models as dmodels
 from django.db.models import Field, ForeignKey, OneToOneField
 from covscanhub.other.decorators import public
 from types import ModuleType
+import six
 
 
 def add_link_field(admin_class, field):
@@ -44,10 +46,10 @@ def add_link_field(admin_class, field):
             url = reverse(reverse_path, args=(related_instance.id,))
             return mark_safe("<a href='%s'>%s</a>" % (
                 url,
-                unicode(related_instance))
+                six.text_type(related_instance))
             )
         else:
-            return unicode(related_instance)
+            return six.text_type(related_instance)
     link.allow_tags = True
     link.short_description = field.name + ' link'
     setattr(admin_class, field_name, link)
@@ -78,7 +80,7 @@ def register_admin_module(module, exclude=None, new_fields=None,
     search_fields = search_fields or {}
     if isinstance(module, ModuleType):
         models = module
-    elif isinstance(module, basestring):
+    elif isinstance(module, six.string_types):
         # import module dynamically -- import leaf, not root
         models = __import__(module, fromlist=[module.split('.')[-1]])
     else:
@@ -111,7 +113,7 @@ def register_admin_module(module, exclude=None, new_fields=None,
                 admin_class.list_display.append(field_name)
 
         # add user defined custom fields
-        for new_field in new_fields.iterkeys():
+        for new_field in six.iterkeys(new_fields):
             if c.__name__ == new_field:
                 setattr(admin_class, new_fields[new_field][0],
                         new_fields[new_field][1])

@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from __future__ import absolute_import
 from django import forms
 
 from covscanhub.scan.models import MockConfig
@@ -43,6 +44,6 @@ VersionDiffBuild is selected")
         if scan_type == 'VersionDiffBuild':
             try:
                 validate_brew_build(base)
-            except forms.ValidationError, e:
+            except forms.ValidationError as e:
                 self._errors['base'] = e.messages
         return cleaned_data

@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
+from __future__ import print_function
 from kobo.shortcuts import run
 
 import os
@@ -6,12 +8,14 @@ import logging
 import tempfile
 import shutil
 
-from utils import get_mocks_repo, get_or_fail
+from .utils import get_mocks_repo, get_or_fail
 
 import koji
 import yum
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
+import six
+from six.moves import filter
 
 
 if __name__ == '__main__':
@@ -46,7 +50,7 @@ class FileCapabilityChecker(CapabilityChecker):
         """
         self.tmp_dir = tempfile.mkdtemp()
         logger.debug("tmpdir = %s", self.tmp_dir)
-        os.chmod(self.tmp_dir, 0755)
+        os.chmod(self.tmp_dir, 0o755)
         self.builder = get_or_fail('builder', conf)
         self.mimetypes = conf.get('mimetypes', [])
         self.extensions = conf.get('extensions', [])
@@ -160,7 +164,7 @@ class RPMDepCapabilityChecker(CapabilityChecker):
             # get requires from brew, second arg is dependency type
             requires = s.getRPMDeps(rpm['id'], koji.DEP_REQUIRE)
             logger.debug('brew req: %s', requires)
-            if filter(check_if_dep_match, requires):
+            if list(filter(check_if_dep_match, requires)):
                 logger.info("%s depends on %s", rpm['name'], self.dependency)
                 return True
         logger.info("no RPM depends on %s", self.dependency)
@@ -181,7 +185,7 @@ class RPMDepCapabilityChecker(CapabilityChecker):
         logger.debug(rpms)
         # if arch is specified, use only those packages
         if arch:
-            valid_rpms = filter(lambda x: x['arch'] == arch, rpms)
+            valid_rpms = [x for x in rpms if x['arch'] == arch]
             if not valid_rpms:
                 logger.info("no RPMs built from '%s' for arch '%s'", self.nvr, arch)
                 return False
@@ -208,18 +212,18 @@ class RPMDepCapabilityChecker(CapabilityChecker):
                         baseurls=[url]
                     )
                     counter += 1
-            elif isinstance(repo_url, basestring):
+            elif isinstance(repo_url, six.string_types):
                 yb.add_enable_repo(mock_profile, baseurls=[repo_url])
 
         packages = [rpm['name'] for rpm in valid_rpms]
         try:
             pkgs = yb.pkgSack.returnNewestByNameArch(patterns=packages)
-        except yum.Errors.PackageSackError, ex:
+        except yum.Errors.PackageSackError as ex:
             # package was not found in repo, try brew instead
             logger.warning("depend_on, package not found in repo (%s) %s",
                            ex, packages)
             return self.build_system(valid_rpms)
-        except Exception, ex:
+        except Exception as ex:
             # there was some problem with search of package in repo using yum
             # use brew instead
             logger.warning("depend_on, yum exception %s, packages %s",
@@ -284,7 +288,7 @@ def main():
 
     u = UnifiedCapabilityChecker(nvr, conf)
     mock = 'rhel-7-x86_64'
-    print u.check(mock_profile=mock, arch="x86_64")
+    print(u.check(mock_profile=mock, arch="x86_64"))
 
 
 if __name__ == '__main__':

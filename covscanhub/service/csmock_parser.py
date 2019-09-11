@@ -24,6 +24,8 @@ csmock python api
     "defects": ""
 }
 """
+from __future__ import absolute_import
+from __future__ import print_function
 import glob
 import os
 import sys
@@ -33,10 +35,11 @@ import shutil
 import subprocess
 import tempfile
 import logging
-import urllib
+import six.moves.urllib.request, six.moves.urllib.parse, six.moves.urllib.error
 import re
 
 from kobo.shortcuts import run
+import six
 
 __all__ = ('CsmockAPI', 'CsmockRunner', 'ResultsExtractor')
 
@@ -170,7 +173,7 @@ class CsmockAPI(object):
         """
         scan = self.get_scan_metadata()
         analyzers = []
-        for key, value in scan.iteritems():
+        for key, value in six.iteritems(scan):
             if key.startswith('analyzer-version-'):
                 analyzer = {}
                 # analyzer-version-[gcc]
@@ -213,7 +216,7 @@ class CsmockRunner(object):
         else:
             model_path = os.path.join(os.getcwd(), model_name)
 
-        urllib.urlretrieve(model_url, model_path)
+        six.moves.urllib.request.urlretrieve(model_url, model_path)
         return model_path
 
     def do(self, args, output_path=None, su_user=None, use_sudo=False, **kwargs):
@@ -309,7 +312,7 @@ class CsmockRunner(object):
             srpm_path = os.path.join(self.tmpdir, srpm_name)
         else:
             srpm_path = os.path.join(os.getcwd(), srpm_name)
-        urllib.urlretrieve(srpm_url, srpm_path)
+        six.moves.urllib.request.urlretrieve(srpm_url, srpm_path)
         return self.analyze(analyzers, srpm_path, profile, su_user, additional_arguments, use_sudo, **kwargs)
 
     def koji_analyze(self, analyzers, nvr, profile=None, su_user=None,
@@ -324,7 +327,7 @@ class CsmockRunner(object):
                 srpm_path = os.path.join(os.getcwd(), '%s.src.rpm' % nvr)
 
         except (OSError, subprocess.CalledProcessError) as ex:
-            print >> sys.stderr, "command '%s' failed to execute: %s" % (download_cmd, ex)
+            print("command '%s' failed to execute: %s" % (download_cmd, ex), file=sys.stderr)
             return (None, 2)
 
         # check that we downloaded an RPM because koji/brew silently download
@@ -333,7 +336,7 @@ class CsmockRunner(object):
         p = subprocess.Popen(check_cmd, stdout=subprocess.PIPE)
         mime_type, _ = p.communicate()
         if not re.match('^.*application/x-rpm$', mime_type):
-            print >> sys.stderr, "unexpected MIME type: %s" % mime_type
+            print("unexpected MIME type: %s" % mime_type, file=sys.stderr)
             return (None, 2)
 
         return self.analyze(analyzers, srpm_path, profile, su_user, additional_arguments, use_sudo, **kwargs)

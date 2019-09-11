@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """custom task urls"""
 
+from __future__ import absolute_import
 from django.conf.urls import *
 from kobo.client.constants import TASK_STATES
 

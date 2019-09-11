@@ -5,6 +5,7 @@
     database with defects from scan
 """
 
+from __future__ import absolute_import
 import os
 import re
 import logging
@@ -20,7 +21,7 @@ from django.db.models import Sum
 
 from covscanhub.other.constants import ERROR_DIFF_FILE, FIXED_DIFF_FILE,\
     DEFAULT_CHECKER_GROUP, SCAN_RESULTS_FILENAME
-from models import DEFECT_STATES, RESULT_GROUP_STATES, Defect, Result, \
+from .models import DEFECT_STATES, RESULT_GROUP_STATES, Defect, Result, \
     Checker, CheckerGroup, Waiver, ResultGroup, WaivingLog
 
 from kobo.hub.models import Task
@@ -114,7 +115,7 @@ def compare_result_groups_shell(rg1, rg2):
     dict2 = get_serializable_dict(rg2_defects)
 
     tmp_dir = tempfile.mkdtemp(prefix="cs_diff")
-    os.chmod(tmp_dir, 0775)
+    os.chmod(tmp_dir, 0o775)
     fd1, filename1 = tempfile.mkstemp(prefix='rg1', text=True, dir=tmp_dir)
     fd2, filename2 = tempfile.mkstemp(prefix='rg2', text=True, dir=tmp_dir)
     file1 = os.fdopen(fd1, 'w')

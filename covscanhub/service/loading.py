@@ -4,6 +4,7 @@
 module for loading defects from JSON formatted files and making operations upon these data
 """
 
+from __future__ import absolute_import
 import json
 import logging
 

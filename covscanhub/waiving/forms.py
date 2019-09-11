@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
 
+from __future__ import absolute_import
 from django import forms
 from django.db.models import Q
 
 from covscanhub.waiving.models import WAIVER_TYPES
 from covscanhub.scan.service import get_used_releases
+import six
 
 
 class WaiverForm(forms.Form):
@@ -27,7 +29,7 @@ class ScanListSearchForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
         super(ScanListSearchForm, self).__init__(*args, **kwargs)
-        choices = [(item[0], item[1] + '.' + unicode(item[2]))
+        choices = [(item[0], item[1] + '.' + six.text_type(item[2]))
                    for item in get_used_releases()]
         # first option searches in every release
         choices.insert(0, ('', 'All'))

@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from __future__ import absolute_import
 import logging
 from django.core.exceptions import ObjectDoesNotExist
 from covscanhub.other.exceptions import PackageNotEligibleException

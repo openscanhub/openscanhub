@@ -3,6 +3,7 @@
     This module contains several services provided to XML-RPC calls mostly
 """
 
+from __future__ import absolute_import
 import os
 import pipes
 import shutil
@@ -16,7 +17,7 @@ from kobo.client.constants import TASK_STATES
 from django.core.exceptions import ObjectDoesNotExist
 
 from covscanhub.service.processing import add_title_to_json
-from models import SCAN_STATES, ScanBinding, Scan, SCAN_TYPES_TARGET, \
+from .models import SCAN_STATES, ScanBinding, Scan, SCAN_TYPES_TARGET, \
     SCAN_STATES_FINISHED_WELL, Analyzer
 from covscanhub.other.exceptions import ScanException
 from covscanhub.other.shortcuts import get_mock_by_name, check_brew_build,\

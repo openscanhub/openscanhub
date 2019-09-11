@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """functions related to sending e-mail notifications"""
 
+from __future__ import absolute_import
 import socket
 import logging
 
@@ -68,7 +69,7 @@ def generate_stats(task, diff_task=False, with_defects_in_patches=False):
             if label_name:
                 result_list.append(label_name)
                 result_list.append('')
-            sorted_list = sorted(defects_dict.items(), key=lambda x: x[0])
+            sorted_list = sorted(list(defects_dict.items()), key=lambda x: x[0])
             result_list += ["%-25s %s%d" % (checker, diff_sign, count) for checker, count in sorted_list]
             result_list.append('')
         return result_list

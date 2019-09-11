@@ -4,6 +4,7 @@ Service functions for views
 not in use yet
 """
 
+from __future__ import absolute_import
 from covscanhub.waiving.models import Waiver, WaivingLog
 
 # WAIVING

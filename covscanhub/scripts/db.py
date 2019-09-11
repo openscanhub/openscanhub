@@ -1,11 +1,15 @@
 #!/usr/bin/python -tt
 # -*- coding: utf-8 -*-
 
+from __future__ import absolute_import
+from __future__ import print_function
 import sys
 import os
 import re
-import cPickle as pickle
+import six.moves.cPickle as pickle
 import datetime
+import six
+from six.moves import range
 
 
 PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.dirname
@@ -91,7 +95,7 @@ def set_checker_groups():
 provided invalid file.")
     chgrp_file.close()
     CheckerGroup.objects.get_or_create(name=DEFAULT_CHECKER_GROUP)
-    for group, checkers in data.iteritems():
+    for group, checkers in six.iteritems(data):
         ch, created = CheckerGroup.objects.get_or_create(name=group,
                                                          enabled=True)
         for checker in checkers:
@@ -106,8 +110,8 @@ def configure_hub():
     a, _ = Arch.objects.get_or_create(name="noarch", pretty_name="noarch")
     a.save()
 
-    print "Don't forget to set up worker!\nYou have to use hostname as a name \
-for the worker.\n"
+    print("Don't forget to set up worker!\nYou have to use hostname as a name \
+for the worker.\n")
 
 
 def download_mock_configs():
@@ -135,7 +139,7 @@ def release_tree():
     r.save()
 
     x_list = [5, 6, 7]
-    y_list = range(12)
+    y_list = list(range(12))
 
     # tags and system releases
     for x in x_list:
@@ -206,7 +210,7 @@ def set_default_settings():
 
 def set_statistics():
     # function = (key, description)
-    for desc in get_mapping().itervalues():
+    for desc in six.itervalues(get_mapping()):
         try:
             s = StatType.objects.get(key=desc[0])
         except ObjectDoesNotExist:
@@ -224,8 +228,8 @@ def set_statistics():
 
 def main():
     parser, options, args = set_options()
-    print 'You are running covscanhub configuration script.\nThis may take a \
-couple of seconds, please be patient.'
+    print('You are running covscanhub configuration script.\nThis may take a \
+couple of seconds, please be patient.')
     if options.hub:
         configure_hub()
     if options.cgroups:

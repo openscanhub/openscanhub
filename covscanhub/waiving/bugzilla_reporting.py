@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
 
+from __future__ import absolute_import
 import bugzilla
-import xmlrpclib
+import six.moves.xmlrpc_client
 
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from covscanhub.other import get_or_none
 
-from models import Waiver, WAIVER_TYPES, Bugzilla, ResultGroup
+from .models import Waiver, WAIVER_TYPES, Bugzilla, ResultGroup
 
 
 def has_bugzilla(package, release):
@@ -130,7 +131,7 @@ If you have any questions, feel free to ask at Red Hat IRC channel \
 
     try:
         b = bz.createbug(**data)
-    except xmlrpclib.Fault:
+    except six.moves.xmlrpc_client.Fault:
         try:
             # most likely the email in CC does not exist in BZ as user
             del data['cc']

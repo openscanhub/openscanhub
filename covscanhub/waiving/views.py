@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 
+from __future__ import absolute_import
 import datetime
 import os
 import logging
-import urllib
+import six.moves.urllib.request, six.moves.urllib.parse, six.moves.urllib.error
 
 from django.conf import settings
 from django.template import RequestContext
@@ -31,6 +32,7 @@ from covscanhub.waiving.models import *
 from covscanhub.waiving.forms import WaiverForm, ScanListSearchForm
 from covscanhub.waiving.service import get_unwaived_rgs, get_last_waiver, \
     display_in_result, get_defects_diff_display, waiver_condition, get_waivers_for_rg, apply_waiver
+import six
 
 
 logger = logging.getLogger(__name__)
@@ -224,10 +226,10 @@ def get_tupled_data(output):
     while True:
         low_bound = column_count * i
         high_bound = column_count * (i + 1)
-        if low_bound + 1 > len(output.keys()):
+        if low_bound + 1 > len(list(output.keys())):
             break
         tmp = {}
-        for k in output.keys()[low_bound:high_bound]:
+        for k in list(output.keys())[low_bound:high_bound]:
             tmp[k] = output[k]
         result_tuples.append(tmp)
         i += 1
@@ -273,7 +275,7 @@ class ResultsListView(ListView):
         def generate_url(args, order_key):
             """args = request.GET, order_key = "name" | "-user" """
             args[u'order_by'] = order_key
-            url = urllib.urlencode(args)
+            url = six.moves.urllib.parse.urlencode(args)
             if url:
                 return u'?' + url
             else:
@@ -281,7 +283,7 @@ class ResultsListView(ListView):
 
         # link sort URLs to template
         self.table_sort = {}
-        for o in order_by_mapping.iterkeys():
+        for o in six.iterkeys(order_by_mapping):
             t = self.request.GET.copy()
 
             # generate URL + CSS style for clicked sorter
@@ -317,7 +319,7 @@ class ResultsListView(ListView):
         except KeyError:
             pass
         if args:
-            context['get_vars'] = '&' + urllib.urlencode(args)
+            context['get_vars'] = '&' + six.moves.urllib.parse.urlencode(args)
 
         return context
 
@@ -468,13 +470,13 @@ def waiver(request, sb_id, result_group_id):
         context['display_form'] = True
         context['waiver_type_helpers'] = \
             [(WAIVER_TYPES.get_item_help_text(k), v) for k, v in
-                WAIVER_TYPES_HELP_TEXTS.iteritems()]
+                six.iteritems(WAIVER_TYPES_HELP_TEXTS)]
     else:
         context['display_form'] = False
         context['form_message'] = 'This is not the newest scan.'
 
     # merge already created context with result context
-    context = dict(context.items() + get_result_context(request, sb).items())
+    context = dict(list(context.items()) + list(get_result_context(request, sb).items()))
 
     context['active_group'] = result_group_object
     context['defects'] = Defect.objects.filter(result_group=result_group_id,

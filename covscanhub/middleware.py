@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from __future__ import absolute_import
 from django.http import HttpResponseRedirect
 from django.conf import settings
 from re import compile

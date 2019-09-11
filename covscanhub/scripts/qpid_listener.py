@@ -6,6 +6,7 @@ Created on Mon Aug 20 10:36:56 2012
 @author: Tomas Tomecek <ttomecek@redhat.com>
 """
 
+from __future__ import absolute_import
 import sys
 import datetime
 import kobo.process
@@ -44,9 +45,9 @@ def daemon_main():
                     datetime.datetime.now(), message.subject, message.content))
             session.acknowledge()
 
-    except MessagingError, m:
+    except MessagingError as m:
         output.write("\n%s\n" % repr(m))
-    except Exception, e:
+    except Exception as e:
         output.write("\n%s\n" % repr(e))
     finally:
         connection.close()

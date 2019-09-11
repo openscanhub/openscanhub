@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 
+from __future__ import absolute_import
 from django import template
 from django.utils.safestring import mark_safe
 from django.utils.datastructures import SortedDict
+import six
 
 register = template.Library()
 
@@ -11,9 +13,9 @@ register = template.Library()
 def listsort(value):
     if isinstance(value, dict):
         new_dict = SortedDict()
-        key_list = value.keys()
+        key_list = list(value.keys())
         key_list.sort(reverse=True)
         for key in key_list:
             new_dict[key] = value[key]
-        return new_dict.iteritems()
+        return six.iteritems(new_dict)
 listsort.is_safe = True

@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 
+from __future__ import absolute_import
 from django.views.generic.detail import DetailView
 from django.views.generic.list import ListView
-from models import MockConfig, Package
+from .models import MockConfig, Package
 
 
 class MockConfigListView(ListView):

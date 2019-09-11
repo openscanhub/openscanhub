@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from __future__ import absolute_import
 from covscanhub.scan.messaging import post_qpid_message
 from covscanhub.scan.models import SCAN_STATES
 

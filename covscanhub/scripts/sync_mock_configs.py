@@ -1,6 +1,8 @@
 #!/usr/bin/python -tt
 # -*- coding: utf-8 -*-
 
+from __future__ import absolute_import
+from __future__ import print_function
 import os
 import re
 import sys
@@ -10,7 +12,7 @@ PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.dirname
                               (os.path.abspath(__file__))))
 
 if PROJECT_DIR not in sys.path:
-    print '%s is not on sys.path' % PROJECT_DIR
+    print('%s is not on sys.path' % PROJECT_DIR)
     sys.path.append(PROJECT_DIR)
 
 os.environ['DJANGO_SETTINGS_MODULE'] = 'covscanhub.settings'

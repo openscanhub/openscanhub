@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
 from glob import glob
 import json
 import re
 import os
 import datetime
 import logging
-import cPickle as pickle
+import six.moves.cPickle as pickle
 from covscanhub.other import get_or_none
 
 from covscanhub.scan.messaging import post_qpid_message
@@ -695,7 +696,7 @@ counted in statistics.")
                     self.tag.release.tag)
             except KeyError:
                 d = AppSettings.setting_waiver_is_overdue()
-            except Exception, e:
+            except Exception as e:
                 logger.error('Failed to get release specific waiver overdue \
 setting: %s', e)
             return self.state in SCAN_STATES_PROCESSED or \

@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from __future__ import absolute_import
 import re
 import yum
 import koji
@@ -13,6 +14,8 @@ from covscanhub.other.shortcuts import check_and_create_dirs
 
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
+import six
+from six.moves import filter
 
 __all__ = (
     "depend_on",
@@ -158,7 +161,7 @@ def depend_on_brew(valid_rpms, dependency):
         # get requires from brew, second arg is dependency type
         requires = s.getRPMDeps(rpm['id'], koji.DEP_REQUIRE)
         logger.debug('brew req: %s', requires)
-        if filter(check_if_dep_match, requires):
+        if list(filter(check_if_dep_match, requires)):
             logger.info("%s depends on %s", rpm['name'], dependency)
             return True
     logger.info("no RPM depends on %s", dependency)
@@ -179,7 +182,7 @@ def depend_on(nvr, dependency, mock_profile):
     rpms = s.listRPMs(buildID=build['id'])
     logger.debug(rpms)
     # we do care only about x86_64
-    valid_rpms = filter(lambda x: x['arch'] == 'x86_64', rpms)
+    valid_rpms = [x for x in rpms if x['arch'] == 'x86_64']
     if not valid_rpms:
         logger.error("no valid RPMs for %s", nvr)
         return False
@@ -204,7 +207,7 @@ def depend_on(nvr, dependency, mock_profile):
                     baseurls=[url]
                 )
                 counter += 1
-        elif isinstance(repo_url, basestring):
+        elif isinstance(repo_url, six.string_types):
             yb.add_enable_repo(mock_profile, baseurls=[repo_url])
         ## check if repo is okay; if not, use default repositories
         #try:
@@ -217,12 +220,12 @@ def depend_on(nvr, dependency, mock_profile):
     packages = [rpm['name'] for rpm in valid_rpms]
     try:
         pkgs = yb.pkgSack.returnNewestByNameArch(patterns=packages)
-    except yum.Errors.PackageSackError, ex:
+    except yum.Errors.PackageSackError as ex:
         # package was not found in repo, try brew instead
         logger.warning("depend_on, package not found in repo (%s) %s",
                        ex, packages)
         return depend_on_brew(valid_rpms, dependency)
-    except Exception, ex:
+    except Exception as ex:
         # there was some problem with search of package in repo using yum
         # use brew instead
         logger.warning("depend_on, yum exception %s, packages %s",

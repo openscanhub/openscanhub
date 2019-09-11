@@ -3,6 +3,7 @@
 
 # DEBUG = True
 
+from __future__ import absolute_import
 import os
 
 # Definition of PROJECT_DIR, just for convenience:
@@ -190,6 +191,6 @@ VALID_TASK_LOG_EXTENSIONS = ['.log', '.ini', '.err', '.out', '.js', '.txt']
 
 # override default values with custom ones from local settings
 try:
-    from settings_local import *
+    from .settings_local import *
 except ImportError:
     pass

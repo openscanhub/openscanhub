@@ -10,6 +10,7 @@
     }
 """
 
+from __future__ import absolute_import
 import datetime
 
 from kobo.hub.models import Task

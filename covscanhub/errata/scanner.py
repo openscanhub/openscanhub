@@ -6,6 +6,7 @@ logic for spawning tasks
 * common options are encapsulated in classes
 
 """
+from __future__ import absolute_import
 import os
 import logging
 import pipes
@@ -19,12 +20,13 @@ from covscanhub.other.exceptions import PackageBlacklistedException, PackageNotE
 from covscanhub.scan.service import get_latest_binding
 from covscanhub.service.processing import task_has_results
 
-from utils import get_or_fail
-from check import check_nvr, check_obsolete_scan, check_build, check_package_is_blocked
+from .utils import get_or_fail
+from .check import check_nvr, check_obsolete_scan, check_build, check_package_is_blocked
 from covscanhub.scan.models import Package, Tag, Scan, SCAN_TYPES, ScanBinding, ETMapping, REQUEST_STATES, MockConfig, \
     ClientAnalyzer, TaskExtension, AppSettings, Profile
 
 from kobo.hub.models import Task, TASK_STATES
+import six
 
 
 logger = logging.getLogger(__name__)
@@ -709,15 +711,15 @@ def handle_scan(kwargs):
         etm.save()
 
         create_errata_scan2(kwargs, etm)
-    except (PackageBlacklistedException, PackageNotEligibleException), ex:
+    except (PackageBlacklistedException, PackageNotEligibleException) as ex:
         status = 'INELIGIBLE'
-        message = unicode(ex)
-    except RuntimeError, ex:
+        message = six.text_type(ex)
+    except RuntimeError as ex:
         status = 'ERROR'
         message = u'Unable to submit the scan, error: %s' % ex
-    except Exception, ex:
+    except Exception as ex:
         status = 'ERROR'
-        message = unicode(ex)
+        message = six.text_type(ex)
     else:
         status = 'OK'
 

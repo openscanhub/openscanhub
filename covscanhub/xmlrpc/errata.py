@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from __future__ import absolute_import
 import logging
 
 from covscanhub.errata.scanner import handle_scan
@@ -106,7 +107,7 @@ def get_scan_state(request, etm_id):
     except ObjectDoesNotExist:
         response['status'] = 'ERROR'
         response['message'] = "Scan %s does not exist." % etm_id
-    except Exception, ex:
+    except Exception as ex:
         response['status'] = 'ERROR'
         response['message'] = "Unable to retrieve scan's state, error: %s" % ex
     else:

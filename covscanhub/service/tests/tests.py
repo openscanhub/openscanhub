@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+from __future__ import absolute_import
+from __future__ import print_function
 import os
 import json
 import tempfile
@@ -127,7 +129,7 @@ class TestCsmockAPI(object):
                                                profile='fedora-rawhide-x86_64')
             api = CsmockAPI(ResultsExtractor(tb_path, output_dir=runner.tmpdir, unpack_in_temp=False).json_path)
             analyzers = api.get_analyzers()
-            print analyzers
+            print(analyzers)
         assert isinstance(analyzers, list)
 
     def test_do_with_su(self):

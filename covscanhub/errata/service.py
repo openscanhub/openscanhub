@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from __future__ import absolute_import
 import logging
 
 import re
@@ -128,7 +129,7 @@ def assign_mock_config(dist_tag):
     try:
         release = re.match(".+\.el(\d)", dist_tag).group(1)
         mock = MockConfig.objects.get(name="rhel-%s-x86_64" % release)
-    except Exception, ex:
+    except Exception as ex:
         logger.error("Unable to find proper mock profile for dist_tag %s: %s"
                      % (dist_tag, ex))
         return MockConfig.objects.get(get="rhel-6-x86_64").name
