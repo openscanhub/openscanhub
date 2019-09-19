@@ -8,13 +8,13 @@
 
 Name:           covscan
 Version:        0.6.12
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Commercial
 Summary:        Coverity scan scheduler
 Source:         %{name}-%{version}.tar.bz2
 BuildArch:      noarch
-BuildRequires:  python-devel
-BuildRequires:  python-six
+BuildRequires:  python2-devel
+BuildRequires:  python2-six
 BuildRequires:  kobo-client
 
 
@@ -178,6 +178,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Thu Sep 19 2019 Kamil Dudka <kdudka@redhat.com> - 0.6.12-2
+- explicitly require python2-* build dependencies
+
 * Tue Sep 03 2019 Kamil Dudka <kdudka@redhat.com> - 0.6.12-1
 - new release
 
