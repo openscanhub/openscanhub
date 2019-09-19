@@ -4,8 +4,8 @@
 
 - wait for an e-mail with subject "Your Certificate Request"
 - open the e-mail and click the "URL" link inside
-- download the base64-encodede server certificate as $HOST.crt
-- download the base64-encodede CA certificate in PKCS7 format as $HOST-ca.pk7
+- download the base64-encoded server certificate as $HOST.crt
+- download the base64-encoded CA certificate in PKCS7 format as $HOST-ca.pk7
 - transform it to the X509 format:
 
     openssl pkcs7 -print_certs -in $HOST-ca.pk7 -out $HOST-ca.crt

@@ -1,70 +1,113 @@
-- install an el7 server with web server
-- cd /etc/yum.repos.d \
-    && curl -O https://copr.devel.redhat.com/coprs/kdudka/covscan/repo/epel-7/kdudka-covscan-epel-7.repo \
-    && curl -O https://copr.devel.redhat.com/coprs/kdudka/covscan-testing/repo/epel-7/kdudka-covscan-testing-epel-7.repo
-- yum install https://download.eng.brq.redhat.com/pub/fedora/epel/7/x86_64/e/epel-release-7-7.noarch.rpm
-- yum install covscan-hub-prod mod_ssl
-- setsebool -P httpd_can_network_connect 1
-- chkconfig httpd on
-- service httpd start
+- install an el7 server
+- enable EPEL-7 and Covscan repos:
+	# yum install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+	# cd /etc/yum.repos.d \
+		&& curl -O https://copr.devel.redhat.com/coprs/kdudka/covscan/repo/epel-7/kdudka-covscan-epel-7.repo \
+		&& curl -O https://copr.devel.redhat.com/coprs/kdudka/covscan-testing/repo/epel-7/kdudka-covscan-testing-epel-7.repo
+
+- install needed packages:
+	# yum install covscan-hub-prod mod_ssl python2-django16 boost-python
+
+- temporarily disable TLS:
+	# patch -p1 /etc/httpd/conf.d/covscanhub-httpd.conf
+--- prod-covscanhub-httpd.conf  2019-06-05 11:47:41.278000445 +0200
++++ covscanhub-httpd.conf       2019-09-19 18:56:45.424947499 +0200
+@@ -2,22 +2,11 @@ ServerName localhost
+ WSGISocketPrefix /var/run/wsgi
+ 
+ <VirtualHost *:80>
+-    RewriteEngine On
+-    RewriteCond %{HTTPS} off
+-    RewriteRule (.*) https://%{HTTP_HOST}%{REQUEST_URI}
+-</VirtualHost>
+-
+-<VirtualHost *:443>
+	 # WSGI handler
+	 WSGIDaemonProcess covscan display-name=%{GROUP}
+	 WSGIProcessGroup covscan
+	 WSGIScriptAlias /covscanhub /usr/lib/python2.7/site-packages/covscanhub/covscanhub.wsgi process-group=covscan
+ 
+-    SSLEngine on
+-    SSLCertificateFile      /etc/httpd/conf/cov01.lab.eng.brq.redhat.com-ssl/cov01.lab.eng.brq.redhat.com.crt
+-    SSLCertificateKeyFile   /etc/httpd/conf/cov01.lab.eng.brq.redhat.com-ssl/cov01.lab.eng.brq.redhat.com.key
+-    SSLCertificateChainFile /etc/httpd/conf/cov01.lab.eng.brq.redhat.com-ssl/cov01.lab.eng.brq.redhat.com-ca.crt
+-
+	 # needed for Apache 2.4
+	 <Directory "/usr/lib/python2.7/site-packages/covscanhub">
+		 Require all granted
+
+- tweak django setttings:
+    # echo "ALLOWED_HOSTS = ['covscan-dev']" >> /usr/lib/python2.7/site-packages/covscanhub/settings.py
+
+- start httpd:
+	# setsebool -P httpd_can_network_connect 1
+	# systemctl enable httpd
+	# systemctl start httpd
+	# firewall-cmd --zone=public --add-port=80/tcp --permanent
+	# firewall-cmd --reload
+
 - http://covscan-dev/covscanhub should now show up!
 
-- yum install postgresql-server
-- postgresql-setup initdb
-- vim /var/lib/pgsql/data/pg_hba.conf
-    # TYPE  DATABASE    USER        CIDR-ADDRESS          METHOD
-    local   all         postgres                          ident
-    # "local" is for Unix domain socket connections only
-    local   all         all                               md5
-    # IPv4 local connections:
-    host    all         all         127.0.0.1/32          md5
-    # IPv6 local connections:
-    host    all         all         ::1/128               md5
+- install postgresql:
+    # yum install postgresql-server
+    # postgresql-setup initdb
+    # vim /var/lib/pgsql/data/pg_hba.conf
+        # TYPE  DATABASE    USER        CIDR-ADDRESS          METHOD
+        local   all         postgres                          ident
+        # "local" is for Unix domain socket connections only
+        local   all         all                               md5
+        # IPv4 local connections:
+        host    all         all         127.0.0.1/32          md5
+        # IPv6 local connections:
+        host    all         all         ::1/128               md5
 
-- chkconfig postgresql on
-- service postgresql start
-- su - postgres
-    psql
-    CREATE DATABASE covscanhub;
-    CREATE USER "covscanhub" WITH PASSWORD 'velryba';
-    GRANT ALL PRIVILEGES ON DATABASE "covscanhub" to "covscanhub";
+    # systemctl enable postgresql
+    # systemctl start postgresql
+    # su - postgres -c psql
+        CREATE DATABASE covscanhub;
+        CREATE USER "covscanhub" WITH PASSWORD 'velryba';
+        GRANT ALL PRIVILEGES ON DATABASE "covscanhub" to "covscanhub";
 
-- /usr/lib/python2.7/site-packages/covscanhub/manage.py syncdb --all
+- initialize django:
+    # /usr/lib/python2.7/site-packages/covscanhub/manage.py syncdb --all
+
 - http://covscan-dev/covscanhub/task/ should now show up!
 
-- /usr/lib/python2.7/site-packages/covscanhub/manage.py shell
-    from django.contrib.auth import get_user_model
-    User = get_user_model()
-    User.objects.create_user('kdudka', 'kdudka@redhat.com', 'xxxxxx')
-    User.objects.create_superuser('admin', 'kdudka@redhat.com', 'xxxxxx')
+- create users:
+    # /usr/lib/python2.7/site-packages/covscanhub/manage.py shell
+        from django.contrib.auth import get_user_model
+        User = get_user_model()
+        User.objects.create_user('kdudka', 'kdudka@redhat.com', 'xxxxxx')
+        User.objects.create_superuser('admin', 'kdudka@redhat.com', 'xxxxxx')
 - http://covscan-dev/covscanhub/auth/login/ should now work!
 - http://covscan-dev/covscanhub/admin/ should be available when logged in as 'admin'!
 
-- yum install covscan-client
-- vim /etc/covscan/covscan.conf
-    HUB_URL = "http://covscan-dev/covscanhub/xmlrpc"
-    AUTH_METHOD = "password"
-    USERNAME = "kdudka"
-    PASSWORD = "xxxxxx"
+- install covscan client:
+    # yum install covscan-client
+    # vim /etc/covscan/covscan.conf
+        HUB_URL = "http://covscan-dev/covscanhub/xmlrpc"
+        AUTH_METHOD = "password"
+        USERNAME = "kdudka"
+        PASSWORD = "xxxxxx"
+
 - now we should be able to list mock configs:
     covscan list-mock-configs
 
-- go at http://covscan-dev/covscanhub/admin/hub/arch/add
-    type noarch/noarch and save
-- go at http://covscan-dev/covscanhub/admin/hub/channel/add/
-    type 'default' and save
 - go at http://covscan-dev/covscanhub/admin/scan/profile/
     - edit the 'default' profile
     - set args to:
         {"analyzers": "", "csmock_args": "--all-tools"}
     - hit 'Save'
-- now we should be able to submit tasks using the covscan client:
-    covscan mock-build --brew-build curl-7.29.0-25.el7
 
-- adduser coverity
-- gpasswd -a coverity mock
-- vim /etc/covscan/covscand.conf 
-    HUB_URL = "http://covscan-dev/covscanhub/xmlrpc"
+- now we should be able to submit tasks using the covscan client:
+    # covscan mock-build --brew-build curl-7.29.0-25.el7
+
+- prepare worker:
+    # adduser coverity
+    # gpasswd -a coverity mock
+    # vim /etc/covscan/covscand.conf 
+        HUB_URL = "http://covscan-dev/covscanhub/xmlrpc"
+
 - go at http://covscan-dev/covscanhub/admin/hub/worker/add/
     - add worker key from /etc/covscan/covscand.conf
     - FIXME: name needs to match worker's FQDN but needs to be at most 30 chars
@@ -72,11 +115,15 @@
     - select arch 'noarch'
     - select channel 'default'
     - hit 'Save'
-- yum install \
-    http://download.eng.bos.redhat.com/brewroot/packages/brewkoji/1.22/2.el7/noarch/brewkoji-1.22-2.el7.noarch.rpm \
-    http://download.eng.bos.redhat.com/brewroot/packages/brewkoji/1.22/2.el7/noarch/python2-brewkoji-1.22-2.el7.noarch.rpm
-- chkconfig covscand on
-- service covscand start
+
+- install brew:
+    # yum-config-manager --add-repo http://download.devel.redhat.com/rel-eng/latest-RCMTOOLS-1-RHEL-7/compose/Server/x86_64/os/
+    # yum install brew
+
+- start covscan worker:
+    # systemctl enable covscand
+    # systemctl start covscand
+
 - the task should be picked and processed!
 
 - reset password for a user:
