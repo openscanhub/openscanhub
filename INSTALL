@@ -2,6 +2,7 @@
 - enable EPEL-7 and Covscan repos:
     # yum install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
     # cd /etc/yum.repos.d \
+        && curl -O https://copr.devel.redhat.com/coprs/kdudka/mock/repo/epel-7/kdudka-mock-epel-7.repo \
         && curl -O https://copr.devel.redhat.com/coprs/kdudka/covscan/repo/epel-7/kdudka-covscan-epel-7.repo \
         && curl -O https://copr.devel.redhat.com/coprs/kdudka/covscan-testing/repo/epel-7/kdudka-covscan-testing-epel-7.repo
 
@@ -91,7 +92,7 @@
         PASSWORD = "xxxxxx"
 
 - now we should be able to list mock configs:
-    covscan list-mock-configs
+    # covscan list-mock-configs
 
 - go at http://covscan-dev/covscanhub/admin/scan/profile/
     - edit the 'default' profile
@@ -100,11 +101,10 @@
     - hit 'Save'
 
 - now we should be able to submit tasks using the covscan client:
-    # covscan mock-build --brew-build curl-7.29.0-25.el7
+    # covscan mock-build --config=rhel-7-x86_64 --brew-build curl-7.29.0-25.el7
 
 - prepare worker:
-    # adduser coverity
-    # gpasswd -a coverity mock
+    # adduser coverity -G mock
     # vim /etc/covscan/covscand.conf 
         HUB_URL = "http://covscan-dev/covscanhub/xmlrpc"
 
@@ -116,9 +116,9 @@
     - select channel 'default'
     - hit 'Save'
 
-- install brew:
+- install brew client and dnf:
     # yum-config-manager --add-repo http://download.devel.redhat.com/rel-eng/latest-RCMTOOLS-1-RHEL-7/compose/Server/x86_64/os/
-    # yum install brew
+    # yum install brewkoji dnf
 
 - start covscan worker:
     # systemctl enable covscand
