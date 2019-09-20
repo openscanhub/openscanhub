@@ -1,15 +1,15 @@
 - install an el7 server
 - enable EPEL-7 and Covscan repos:
-	# yum install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
-	# cd /etc/yum.repos.d \
-		&& curl -O https://copr.devel.redhat.com/coprs/kdudka/covscan/repo/epel-7/kdudka-covscan-epel-7.repo \
-		&& curl -O https://copr.devel.redhat.com/coprs/kdudka/covscan-testing/repo/epel-7/kdudka-covscan-testing-epel-7.repo
+    # yum install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+    # cd /etc/yum.repos.d \
+        && curl -O https://copr.devel.redhat.com/coprs/kdudka/covscan/repo/epel-7/kdudka-covscan-epel-7.repo \
+        && curl -O https://copr.devel.redhat.com/coprs/kdudka/covscan-testing/repo/epel-7/kdudka-covscan-testing-epel-7.repo
 
 - install needed packages:
-	# yum install covscan-hub-prod mod_ssl python2-django16 boost-python
+    # yum install covscan-hub-prod mod_ssl python2-django16 boost-python
 
 - temporarily disable TLS:
-	# patch -p1 /etc/httpd/conf.d/covscanhub-httpd.conf
+    # patch -p1 /etc/httpd/conf.d/covscanhub-httpd.conf
 --- prod-covscanhub-httpd.conf  2019-06-05 11:47:41.278000445 +0200
 +++ covscanhub-httpd.conf       2019-09-19 18:56:45.424947499 +0200
 @@ -2,22 +2,11 @@ ServerName localhost
@@ -22,29 +22,29 @@
 -</VirtualHost>
 -
 -<VirtualHost *:443>
-	 # WSGI handler
-	 WSGIDaemonProcess covscan display-name=%{GROUP}
-	 WSGIProcessGroup covscan
-	 WSGIScriptAlias /covscanhub /usr/lib/python2.7/site-packages/covscanhub/covscanhub.wsgi process-group=covscan
+     # WSGI handler
+     WSGIDaemonProcess covscan display-name=%{GROUP}
+     WSGIProcessGroup covscan
+     WSGIScriptAlias /covscanhub /usr/lib/python2.7/site-packages/covscanhub/covscanhub.wsgi process-group=covscan
  
 -    SSLEngine on
 -    SSLCertificateFile      /etc/httpd/conf/cov01.lab.eng.brq.redhat.com-ssl/cov01.lab.eng.brq.redhat.com.crt
 -    SSLCertificateKeyFile   /etc/httpd/conf/cov01.lab.eng.brq.redhat.com-ssl/cov01.lab.eng.brq.redhat.com.key
 -    SSLCertificateChainFile /etc/httpd/conf/cov01.lab.eng.brq.redhat.com-ssl/cov01.lab.eng.brq.redhat.com-ca.crt
 -
-	 # needed for Apache 2.4
-	 <Directory "/usr/lib/python2.7/site-packages/covscanhub">
-		 Require all granted
+     # needed for Apache 2.4
+     <Directory "/usr/lib/python2.7/site-packages/covscanhub">
+         Require all granted
 
 - tweak django setttings:
     # echo "ALLOWED_HOSTS = ['covscan-dev']" >> /usr/lib/python2.7/site-packages/covscanhub/settings.py
 
 - start httpd:
-	# setsebool -P httpd_can_network_connect 1
-	# systemctl enable httpd
-	# systemctl start httpd
-	# firewall-cmd --zone=public --add-port=80/tcp --permanent
-	# firewall-cmd --reload
+    # setsebool -P httpd_can_network_connect 1
+    # systemctl enable httpd
+    # systemctl start httpd
+    # firewall-cmd --zone=public --add-port=80/tcp --permanent
+    # firewall-cmd --reload
 
 - http://covscan-dev/covscanhub should now show up!
 
