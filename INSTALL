@@ -196,7 +196,7 @@
     # rm -v /var/lib/pgsql/data/postmaster.pid
     # yum install postgresql-upgrade
     # postgresql-setup upgrade
-    # service postgresql start
+    # systemctl start postgresql
 
 - migrating old database scheme (using South):
     # /usr/lib/python2.7/site-packages/covscanhub/manage.py migrate kobo.django.auth
@@ -207,3 +207,7 @@
         ALTER TABLE auth_user_groups RENAME COLUMN longnameuser_id TO user_id;
         ALTER TABLE auth_user_user_permissions RENAME COLUMN longnameuser_id TO user_id;
         ALTER TABLE hub_worker ADD COLUMN min_priority integer CHECK (min_priority >= 0);
+
+- problem with user auth model:
+    - set `AUTH_USER_MODEL = 'kobo_auth.User'` in the project settings
+    - https://github.com/release-engineering/kobo/issues/34#issuecomment-537086756
