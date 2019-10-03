@@ -42,8 +42,7 @@
 
 - start httpd:
     # setsebool -P httpd_can_network_connect 1
-    # systemctl enable httpd
-    # systemctl start httpd
+    # systemctl enable --now httpd
     # firewall-cmd --zone=public --add-port=80/tcp --permanent
     # firewall-cmd --reload
 
@@ -62,8 +61,7 @@
         # IPv6 local connections:
         host    all         all         ::1/128               md5
 
-    # systemctl enable postgresql
-    # systemctl start postgresql
+    # systemctl enable --now postgresql
     # su - postgres -c psql
         CREATE DATABASE covscanhub;
         CREATE USER "covscanhub" WITH PASSWORD 'velryba';
@@ -110,8 +108,6 @@
 
 - go at http://covscan-dev/covscanhub/admin/hub/worker/add/
     - add worker key from /etc/covscan/covscand.conf
-    - FIXME: name needs to match worker's FQDN but needs to be at most 30 chars
-      long, including the "worker/" prefix
     - select arch 'noarch'
     - select channel 'default'
     - hit 'Save'
@@ -121,8 +117,7 @@
     # yum install brewkoji dnf
 
 - start covscan worker:
-    # systemctl enable covscand
-    # systemctl start covscand
+    # systemctl enable --now covscand
 
 - the task should be picked and processed!
 
