@@ -95,8 +95,8 @@ class ResultsExtractor(object):
         exclude_patterns.append("*debug")  # do not unpack debug dir
         # python 2 does not support lzma
         command = [
-            'tar', '-xf', pipes.quote(self.path),
-            '-C', pipes.quote(self.output_dir),
+            'tar', '-xf', self.path,
+            '-C', self.output_dir,
             '--wildcards',
             '--wildcards-match-slash',
         ]
