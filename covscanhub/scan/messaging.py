@@ -9,7 +9,6 @@ module for sending messages using UMB (Unified Message Bus)
 
 import threading
 import os
-import krbV
 import copy
 import logging
 import proton
