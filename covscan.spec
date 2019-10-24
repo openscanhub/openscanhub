@@ -1,22 +1,39 @@
-%define py_version %(%{__python2} -c "import sys; v=sys.version_info[:2]; print '%%d.%%d'%%v" 2>/dev/null || echo PYTHON-NOT-FOUND)
-%define py_prefix  %(%{__python2} -c "import sys; print sys.prefix" 2>/dev/null || echo PYTHON-NOT-FOUND)
-%define py_libdir  %{py_prefix}/lib/python%{py_version}
-%define py_incdir  %{py_prefix}/include/python%{py_version}
-%define py_sitedir %{py_libdir}/site-packages
-
 %{!?hub_instance:%global hub_instance prod}
+
+%if 0%{?fedora} || 0%{?rhel} > 7
+%bcond_without python3
+%else
+%bcond_with python3
+%endif
+
+%if 0%{?rhel} > 7 || 0%{?fedora} > 30
+# Disable python2 build by default
+%bcond_with python2
+%else
+%bcond_without python2
+%endif
 
 Name:           covscan
 Version:        0.6.12
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        Commercial
 Summary:        Coverity scan scheduler
 Source:         %{name}-%{version}.tar.bz2
 BuildArch:      noarch
+
+%if %{with python2}
 BuildRequires:  python2-devel
 BuildRequires:  python2-six
 BuildRequires:  kobo-client
+%endif
 
+%if %{with python3}
+BuildRequires:  python3-devel
+BuildRequires:  python3-six
+BuildRequires:  python3-kobo-client
+%endif
+
+%{?!git_version: %global git_version %{version}}
 
 %description
 CovScan is a Coverity scan scheduler.
@@ -25,18 +42,54 @@ It consists of central hub, workers and cli client.
 
 %package client
 Summary: CovScan CLI client
+%if %{with python3}
+Requires: python3-%{name}-client = %{git_version}-%{release}
+%else
+Requires: python2-%{name}-client = %{git_version}-%{release}
+%endif
+
+%description client
+CovScan CLI client
+
+%package worker-%{hub_instance}
+Summary: CovScan worker
+%if %{with python3}
+Requires: python3-%{name}-worker-%{hub_instance} = %{git_version}-%{release}
+%else
+Requires: python2-%{name}-worker-%{hub_instance} = %{git_version}-%{release}
+%endif
+
+%description worker-%{hub_instance}
+CovScan worker
+
+%package hub-%{hub_instance}
+Summary: CovScan xml-rpc interface and web application
+%if %{with python3}
+Requires: python3-%{name}-hub-%{hub_instance} = %{git_version}-%{release}
+%else
+Requires: python2-%{name}-hub-%{hub_instance} = %{git_version}-%{release}
+%endif
+
+%description hub-%{hub_instance}
+CovScan xml-rpc interface and web application
+
+
+
+%if %{with python2}
+%package -n python2-%{name}-client
+Summary: CovScan CLI client python2 library
 Requires: kobo-client >= 0.6.0
 Requires: koji
 Requires: python-krbV
 Requires: python2-koji
 Requires: python2-requests
 
-%description client
-CovScan CLI client
+%description -n python2-%{name}-client
+CovScan CLI client python2 library
 
 
-%package worker-%{hub_instance}
-Summary: CovScan worker
+%package -n python2-%{name}-worker-%{hub_instance}
+Summary: CovScan worker python2 library
 Requires: csmock
 Requires: kobo-client
 Requires: kobo-worker
@@ -45,14 +98,14 @@ Requires: koji
 Requires: python2-koji
 
 # FIXME: conf.py should be moved to covscan-common shared by both the packages
-Requires: covscan-client
+Requires: python2-%{name}-covscan-client
 
-%description worker-%{hub_instance}
-CovScan worker
+%description -n python2-%{name}-worker-%{hub_instance}
+CovScan worker python2 library
 
 
-%package hub-%{hub_instance}
-Summary: CovScan xml-rpc interface and web application
+%package -n python2-%{name}-hub-%{hub_instance}
+Summary: CovScan xml-rpc interface and web application python2 library
 Requires: kobo-hub
 Requires: kobo-client
 Requires: kobo-django
@@ -62,9 +115,12 @@ Requires: Django
 # required by django 1.6
 Requires: python-importlib
 %endif
-Requires: Django-south
 Requires: httpd
+%if 0%{?rhel} <= 7
 Requires: mod_auth_kerb
+%else
+Requires: mod_auth_gssapi
+%endif
 Requires: mod_wsgi
 # PostgreSQL adapter for python
 Requires: python-psycopg2
@@ -76,10 +132,6 @@ Requires: koji
 Requires: python2-koji
 # extract tarballs created by cov-mockbuild
 Requires: xz
-# auth for qpid
-Requires: python-krbV
-Requires: python-saslwrapper
-Requires: cyrus-sasl-gssapi
 
 Requires: csdiff
 Requires: python2-csdiff
@@ -92,17 +144,112 @@ Requires: python-django-debug-toolbar > 1.0
 # FIXME: should covscan-hub work even though covscan-worker is not installed?
 Requires: covscan-worker-%{hub_instance}
 
-%description hub-%{hub_instance}
-CovScan xml-rpc interface and web application
+%description -n python2-%{name}-hub-%{hub_instance}
+CovScan xml-rpc interface and web application python2 library
+
+%endif
+
+%if %{with python3}
+%package -n python3-%{name}-client
+Summary: CovScan CLI client python3 library
+Requires: python3-kobo-client >= 0.6.0
+Requires: koji
+Requires: python3-koji
+
+%description -n python3-%{name}-client
+CovScan CLI client python3 library
+
+
+%package -n python3-%{name}-worker-%{hub_instance}
+Summary: CovScan worker python3 library
+Requires: csmock
+Requires: python3-kobo-client
+Requires: python3-kobo-worker
+Requires: python3-kobo-rpmlib
+Requires: koji
+Requires: python3-koji
+
+# FIXME: conf.py should be moved to covscan-common shared by both the packages
+Requires: python3-%{name}-client
+
+%description -n python3-%{name}-worker-%{hub_instance}
+CovScan worker python3 library
+
+
+%package -n python3-%{name}-hub-%{hub_instance}
+Summary: CovScan xml-rpc interface and web application python3 library
+Requires: python3-kobo-hub
+Requires: python3-kobo-client
+Requires: python3-kobo-django
+Requires: python3-kobo-rpmlib
+Requires: python3-django
+%if 0%{?rhel} <= 6
+# required by django 1.6
+Requires: python-importlib
+%endif
+Requires: httpd
+%if 0%{?rhel} <= 7
+Requires: mod_auth_kerb
+%else
+Requires: mod_auth_gssapi
+%endif
+Requires: mod_wsgi
+# PostgreSQL adapter for python
+Requires: python3-psycopg2
+Requires: gzip
+# inform ET about progress using UMB (Unified Message Bus)
+Requires: python3-qpid-proton
+# hub is interacting with brew
+Requires: koji
+Requires: python3-koji
+# extract tarballs created by cov-mockbuild
+Requires: xz
+# auth for qpid
+#Requires: python3-saslwrapper
+#Requires: cyrus-sasl-gssapi
+
+Requires: csdiff
+Requires: python3-csdiff
+Requires: python3-bugzilla
+Requires: yum
+Requires: file
+
+Requires: python3-django-debug-toolbar > 1.0
+
+# FIXME: should covscan-hub work even though covscan-worker is not installed?
+Requires: python3-%{name}-worker-%{hub_instance}
+
+%description -n python3-%{name}-hub-%{hub_instance}
+CovScan xml-rpc interface and web application python3 library
+
+%endif
 
 
 %prep
 %setup -q
 
+%build
+%if %{with python2}
+%py2_build
+%endif
+
+%if %{with python3}
+%py3_build
+%endif
+
 
 %install
 rm -rf ${RPM_BUILD_ROOT}
-%{__python2} setup.py install --root=${RPM_BUILD_ROOT}
+#%{__python2} setup.py install --root=${RPM_BUILD_ROOT}
+
+%if %{with python2}
+%py2_install
+%endif
+
+%if %{with python3}
+%py3_install
+%endif
+
 
 mv $RPM_BUILD_ROOT/%{_sysconfdir}/httpd/conf.d/%{hub_instance}-covscanhub-httpd.conf \
    $RPM_BUILD_ROOT/%{_sysconfdir}/httpd/conf.d/covscanhub-httpd.conf
@@ -110,10 +257,16 @@ rm -f $RPM_BUILD_ROOT/%{_sysconfdir}/httpd/conf.d/devel-covscanhub-httpd.conf ||
 rm -f $RPM_BUILD_ROOT/%{_sysconfdir}/httpd/conf.d/stage-covscanhub-httpd.conf || :
 rm -f $RPM_BUILD_ROOT/%{_sysconfdir}/httpd/conf.d/prod-covscanhub-httpd.conf || :
 # tweak python paths in config files
-sed -i 's@/lib/python2.[0-9]@/lib/python%{py_version}@g' ${RPM_BUILD_ROOT}/etc/httpd/conf.d/covscanhub-httpd.conf
+
+# TODO
+%if %{with python3}
+sed -i 's@/lib/python2.[0-9]@/lib/python%{python3_version}@g' ${RPM_BUILD_ROOT}/etc/httpd/conf.d/covscanhub-httpd.conf
+%else
+sed -i 's@/lib/python2.[0-9]@/lib/python%{python2_version}@g' ${RPM_BUILD_ROOT}/etc/httpd/conf.d/covscanhub-httpd.conf
+%endif
 
 # create symlink /etc/covscan/covscanhub.conf -> .../site-packages/covscanhub/settings.py
-# ln -s %{py_sitedir}/covscanhub/settings_local.py ${RPM_BUILD_ROOT}/etc/covscan/covscanhub.conf
+# ln -s %{python2_sitelib}/covscanhub/settings_local.py ${RPM_BUILD_ROOT}/etc/covscan/covscanhub.conf
 
 mv $RPM_BUILD_ROOT/%{_sysconfdir}/covscan/%{hub_instance}_covscand.conf \
    $RPM_BUILD_ROOT/%{_sysconfdir}/covscan/covscand.conf
@@ -122,17 +275,23 @@ rm -f $RPM_BUILD_ROOT/%{_sysconfdir}/covscan/stage_covscand.conf || :
 rm -f $RPM_BUILD_ROOT/%{_sysconfdir}/covscan/prod_covscand.conf || :
 
 # use proper configuration, remove rest
-mv $RPM_BUILD_ROOT/%{py_sitedir}/covscanhub/%{hub_instance}_settings_local.py \
-   $RPM_BUILD_ROOT/%{py_sitedir}/covscanhub/settings_local.py
-rm $RPM_BUILD_ROOT/%{py_sitedir}/covscanhub/prod_settings_local.py* || :
-rm $RPM_BUILD_ROOT/%{py_sitedir}/covscanhub/stage_settings_local.py* || :
-rm $RPM_BUILD_ROOT/%{py_sitedir}/covscanhub/devel_settings_local.py* || :
 
-# delete covscan-<version>-py2.5.egg-info file
-egg_info=$RPM_BUILD_ROOT/%{py_sitedir}/%{name}-%{version}-py%{py_version}.egg-info
-if [ -f $egg_info ]; then
-  rm $egg_info
-fi
+%if %{with python2}
+mv $RPM_BUILD_ROOT/%{python2_sitelib}/covscanhub/%{hub_instance}_settings_local.py \
+   $RPM_BUILD_ROOT/%{python2_sitelib}/covscanhub/settings_local.py
+rm $RPM_BUILD_ROOT/%{python2_sitelib}/covscanhub/prod_settings_local.py* || :
+rm $RPM_BUILD_ROOT/%{python2_sitelib}/covscanhub/stage_settings_local.py* || :
+rm $RPM_BUILD_ROOT/%{python2_sitelib}/covscanhub/devel_settings_local.py* || :
+%endif
+
+%if %{with python3}
+mv $RPM_BUILD_ROOT/%{python3_sitelib}/covscanhub/%{hub_instance}_settings_local.py \
+   $RPM_BUILD_ROOT/%{python3_sitelib}/covscanhub/settings_local.py
+rm $RPM_BUILD_ROOT/%{python3_sitelib}/covscanhub/prod_settings_local.py* || :
+rm $RPM_BUILD_ROOT/%{python3_sitelib}/covscanhub/stage_settings_local.py* || :
+rm $RPM_BUILD_ROOT/%{python3_sitelib}/covscanhub/devel_settings_local.py* || :
+sed -r -i 's|(#!/usr/bin/python)2|\13|' $RPM_BUILD_ROOT/%{_bindir}/covscan
+%endif
 
 # create /var/lib dirs
 mkdir -p $RPM_BUILD_ROOT/var/lib/covscanhub/tasks
@@ -143,42 +302,87 @@ mkdir -p $RPM_BUILD_ROOT/var/log
 touch $RPM_BUILD_ROOT/var/log/covscanhub.log
 
 # copy checker_groups.txt
-cp -R covscanhub/scripts/checker_groups.txt $RPM_BUILD_ROOT/%{py_sitedir}/covscanhub/scripts/
+%if %{with python2}
+cp -R covscanhub/scripts/checker_groups.txt $RPM_BUILD_ROOT/%{python2_sitelib}/covscanhub/scripts/
+%endif
+
+%if %{with python3}
+cp -R covscanhub/scripts/checker_groups.txt $RPM_BUILD_ROOT/%{python3_sitelib}/covscanhub/scripts/
+%endif
 
 # make manage.py executable
-chmod 0755 $RPM_BUILD_ROOT%{py_sitedir}/covscanhub/manage.py
+%if %{with python2}
+chmod 0755 $RPM_BUILD_ROOT%{python2_sitelib}/covscanhub/manage.py
+%endif
+
+%if %{with python3}
+chmod 0755 $RPM_BUILD_ROOT%{python3_sitelib}/covscanhub/manage.py
+%endif
 
 %clean
 rm -rf $RPM_BUILD_ROOT
 
-
 %files client
 %defattr(644,root,root,755)
-%{py_sitedir}/covscan
 %attr(755,root,root) /usr/bin/covscan
 %attr(644,root,root) %config(noreplace) /etc/covscan/covscan.conf
 %{_sysconfdir}/bash_completion.d/
 
-
 %files worker-%{hub_instance}
 %defattr(644,root,root,755)
-%{py_sitedir}/covscand
 %attr(640,root,root) %config(noreplace) /etc/covscan/covscand.conf
 %attr(755,root,root) /etc/init.d/covscand
 %attr(754,root,root) /usr/sbin/covscand
 
-
 %files hub-%{hub_instance}
 %defattr(-,root,apache,-)
-%{py_sitedir}/covscanhub
 %attr(640,root,root) /etc/httpd/conf.d/covscanhub-httpd.conf
 %ghost %attr(640,apache,apache) /var/log/covscanhub.log
 %dir %attr(775,root,apache) /var/lib/covscanhub
 %dir %attr(775,root,apache) /var/lib/covscanhub/tasks
 %dir %attr(775,root,apache) /var/lib/covscanhub/upload
 
+%if %{with python2}
+%files -n python2-%{name}-client
+%defattr(644,root,root,755)
+%{python2_sitelib}/covscan
+%{python2_sitelib}/covscan-%{version}-py%{python2_version}.egg-info
+
+
+%files -n python2-%{name}-worker-%{hub_instance}
+%defattr(644,root,root,755)
+%{python2_sitelib}/covscand
+
+
+%files -n python2-%{name}-hub-%{hub_instance}
+%defattr(-,root,apache,-)
+%{python2_sitelib}/covscanhub
+
+%endif
+
+%if %{with python3}
+%files -n python3-%{name}-client
+%defattr(644,root,root,755)
+%{python3_sitelib}/covscan
+%{python3_sitelib}/covscan-%{version}-py%{python3_version}.egg-info
+
+
+%files -n python3-%{name}-worker-%{hub_instance}
+%defattr(644,root,root,755)
+%{python3_sitelib}/covscand
+
+
+%files -n python3-%{name}-hub-%{hub_instance}
+%defattr(-,root,apache,-)
+%{python3_sitelib}/covscanhub
+
+%endif
+
 
 %changelog
+* Thu Oct 24 2019 Matej Mužila <mmuzila@redhat.com> - 0.6.12-3
+- spec changes to build python3 covscan
+
 * Thu Sep 19 2019 Kamil Dudka <kdudka@redhat.com> - 0.6.12-2
 - explicitly require python2-* build dependencies
 
