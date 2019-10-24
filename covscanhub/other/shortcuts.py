@@ -4,7 +4,11 @@ import os
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.conf import settings
-from django.core.urlresolvers import reverse
+from covscanhub.other.django_version import django_version_ge
+if django_version_ge('1.10.0'):
+    from django.urls import reverse
+else:
+    from django.core.urlresolvers import reverse
 from django.utils.safestring import mark_safe
 import koji
 

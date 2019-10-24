@@ -7,7 +7,11 @@ from __future__ import print_function
 from .models import StatResults, StatType
 from covscanhub.scan.models import SystemRelease
 
-from django.core.urlresolvers import reverse
+from covscanhub.other.django_version import django_version_ge
+if django_version_ge('1.10.0'):
+    from django.urls import reverse
+else:
+    from django.core.urlresolvers import reverse
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.http import HttpResponse

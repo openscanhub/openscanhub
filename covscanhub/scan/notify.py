@@ -5,7 +5,11 @@ import socket
 import logging
 
 from django.core.mail import get_connection, EmailMessage
-from django.core.urlresolvers import reverse
+from covscanhub.other.django_version import django_version_ge
+if django_version_ge('1.10.0'):
+    from django.urls import reverse
+else:
+    from django.core.urlresolvers import reverse
 from django.conf import settings
 
 import kobo.hub.xmlrpc.client

@@ -5,7 +5,11 @@ import bugzilla
 import six.moves.xmlrpc_client
 
 from django.conf import settings
-from django.core.urlresolvers import reverse
+from covscanhub.other.django_version import django_version_ge
+if django_version_ge('1.10.0'):
+    from django.urls import reverse
+else:
+    from django.core.urlresolvers import reverse
 from covscanhub.other import get_or_none
 
 from .models import Waiver, WAIVER_TYPES, Bugzilla, ResultGroup

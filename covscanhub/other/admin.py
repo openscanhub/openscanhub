@@ -20,7 +20,12 @@ register_admin_module('project.app.models', new_fields={
 
 """
 
-from django.core.urlresolvers import reverse
+from __future__ import absolute_import
+from covscanhub.other.django_version import django_version_ge
+if django_version_ge('1.10.0'):
+    from django.urls import reverse
+else:
+    from django.core.urlresolvers import reverse
 from django.utils.safestring import mark_safe
 from django.contrib import admin
 from django.db import models as dmodels

@@ -3,7 +3,15 @@ from types import ModuleType
 from django.contrib import admin
 from django.contrib.admin.util import quote
 from django.contrib.admin.views.main import ChangeList
-from django.core.urlresolvers import reverse, NoReverseMatch
+from covscanhub.other.django_version import django_version_ge
+if django_version_ge('1.10.0'):
+    from django.urls import reverse
+else:
+    from django.core.urlresolvers import reverse
+if django_version_ge('1.10.0'):
+    from django.urls import reverse, NoReverseMatch
+else:
+    from django.core.urlresolvers import reverse, NoReverseMatch
 from django.db.models import ForeignKey, OneToOneField, Count
 from django.db.models.base import ModelBase
 import six
