@@ -30,10 +30,10 @@ def main():
     except KeyboardInterrupt:
         sys.stderr.write("\n\nExiting on user cancel.\n")
         return 1
-    except kobo.exceptions.ImproperlyConfigured, ex:
+    except kobo.exceptions.ImproperlyConfigured as ex:
         sys.stderr.write("\n\nImproperly configured: %s\n" % ex)
         return 3
-    except IOError, ex:
+    except IOError as ex:
         sys.stderr.write("\n\nIO Error: %s\n" % ex)
         return 4
 
