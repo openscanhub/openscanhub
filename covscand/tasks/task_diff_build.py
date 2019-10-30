@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 
 
-from task_mock_build import MockBuild
+from __future__ import absolute_import
+from .task_mock_build import MockBuild
 
 
 class DiffBuild(MockBuild):
