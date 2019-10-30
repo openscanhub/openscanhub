@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from __future__ import print_function
 import os
 import sys
 from kobo.worker import TaskBase
@@ -80,13 +81,13 @@ class ErrataDiffBuild(TaskBase):
                                                    additional_arguments=add_args,
                                                    koji_bin=koji_bin,
                                                    su_user=su_user)
-            print 'Retcode: %d' % retcode
+            print('Retcode: %d' % retcode)
             if results is not None:
                 base_results = os.path.basename(results)
                 self.hub.upload_task_log(open(results, "r"),
                                          self.task_id, base_results)
             if retcode > 0:
-                print >> sys.stderr, "Scanning have not completed successfully (%d)" % retcode
+                print("Scanning have not completed successfully (%d)" % retcode, file=sys.stderr)
                 self.hub.worker.fail_scan(scan_id, 'csmock return code: %d' % retcode)
 
         if retcode > 0:

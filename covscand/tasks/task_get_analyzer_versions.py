@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from __future__ import print_function
 import os
 import sys
 from kobo.worker import TaskBase
@@ -41,7 +42,7 @@ class AnalyzerVersionRetriever(TaskBase):
 
             # upload results back to hub
             if not os.path.exists(path):
-                    print >> sys.stderr, "Tarball with results does not exist: %s" % path
+                    print("Tarball with results does not exist: %s" % path, file=sys.stderr)
             base_path = os.path.basename(path)
             self.hub.upload_task_log(open(path, "r"),
                                      self.task_id, base_path)

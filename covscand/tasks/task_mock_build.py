@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from __future__ import print_function
 import os
 import sys
 import urlparse
@@ -62,10 +63,10 @@ class MockBuild(TaskBase):
                     result_filename=result_filename,
                     su_user=su_user)
             else:
-                print >> sys.stderr, "No srpm specified"
+                print("No srpm specified", file=sys.stderr)
                 self.fail()
             if results is None:
-                print >> sys.stderr, "No results available"
+                print("No results available", file=sys.stderr)
                 self.fail()
             base_results = os.path.basename(results)
             self.hub.upload_task_log(open(results, "r"),
@@ -73,7 +74,7 @@ class MockBuild(TaskBase):
         # first finish task, then fail if needed, so tarball gets unpacked
         self.hub.worker.finish_task(self.task_id)
         if retcode > 0:
-            print >> sys.stderr, "Scanning have not completed successfully (%d)" % retcode
+            print("Scanning have not completed successfully (%d)" % retcode, file=sys.stderr)
             self.fail()
 
     @classmethod
