@@ -229,7 +229,7 @@ class Defect(models.Model):
     """
     #ARRAY_VS_SINGLETON | BUFFER_SIZE_WARNING
     checker = models.ForeignKey("Checker", verbose_name="Checker",
-                                blank=False, null=False)
+                                blank=False, null=False, on_delete=models.CASCADE)
 
     order = models.IntegerField(null=True,
                                 help_text="Defects in view have fixed order.")
@@ -255,7 +255,7 @@ current defect",
     state = models.PositiveIntegerField(default=DEFECT_STATES["UNKNOWN"],
                                         choices=DEFECT_STATES.get_mapping(),
                                         help_text="Defect state")
-    result_group = models.ForeignKey('ResultGroup', blank=False, null=False)
+    result_group = models.ForeignKey('ResultGroup', blank=False, null=False, on_delete=models.CASCADE)
 
     events = JSONField(default=[],
                        help_text="List of defect related events.")
@@ -325,13 +325,13 @@ class ResultGroup(models.Model):
     represented by this model
     """
     result = models.ForeignKey(Result, verbose_name="Result",
-                               help_text="Result of scan")
+                               help_text="Result of scan", on_delete=models.CASCADE)
     state = models.PositiveIntegerField(
         default=RESULT_GROUP_STATES["UNKNOWN"],
         choices=RESULT_GROUP_STATES.get_mapping(),
         help_text="Type of waiver")
     checker_group = models.ForeignKey(CheckerGroup,
-                                      verbose_name="Group of checkers")
+                                      verbose_name="Group of checkers", on_delete=models.CASCADE)
     defect_type = models.PositiveIntegerField(
         default=DEFECT_STATES["UNKNOWN"],
         choices=DEFECT_STATES.get_mapping(),
@@ -470,7 +470,7 @@ class Checker(models.Model):
     group = models.ForeignKey(CheckerGroup, verbose_name="Checker group",
                               blank=True, null=True,
                               help_text="Name of group where does this \
-checker belong")
+checker belong", on_delete=models.CASCADE)
 
     def __unicode__(self):
         return "#%d %s, CheckerGroup: (%s)" % (self.id, self.name, self.group)
@@ -478,8 +478,8 @@ checker belong")
 
 class Bugzilla(models.Model):
     number = models.IntegerField()
-    package = models.ForeignKey(Package)
-    release = models.ForeignKey(SystemRelease)
+    package = models.ForeignKey(Package, on_delete=models.CASCADE)
+    release = models.ForeignKey(SystemRelease, on_delete=models.CASCADE)
 
     def __unicode__(self):
         return u"#%d BZ#%d (%s, %s.%d)" % (
@@ -549,12 +549,12 @@ class Waiver(models.Model):
     message = models.TextField("Message")
     result_group = models.ForeignKey(ResultGroup, blank=False, null=False,
                                      help_text="Group of defects which is \
-waived for specific Result")
-    user = models.ForeignKey(settings.AUTH_USER_MODEL)
+waived for specific Result", on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     state = models.PositiveIntegerField(default=WAIVER_TYPES["IS_A_BUG"],
                                         choices=WAIVER_TYPES.get_mapping(),
                                         help_text="Type of waiver")
-    bz = models.ForeignKey(Bugzilla, blank=True, null=True)
+    bz = models.ForeignKey(Bugzilla, blank=True, null=True, on_delete=models.CASCADE)
     is_deleted = models.BooleanField(default=False)
 
     is_active = models.BooleanField(default=False)
@@ -640,7 +640,7 @@ class WaivingLog(models.Model):
     Log of waiving related actions
     """
     date = models.DateTimeField(auto_now_add=True)  # date submitted
-    user = models.ForeignKey(settings.AUTH_USER_MODEL)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     # possible actions:
     #  new -- submit waiver to group that wasn't waived yet
     #  delete -- delete waiver
@@ -649,7 +649,7 @@ class WaivingLog(models.Model):
         choices=WAIVER_LOG_ACTIONS.get_mapping(),
         help_text="Waiving action"
     )
-    waiver = models.ForeignKey(Waiver)
+    waiver = models.ForeignKey(Waiver, on_delete=models.CASCADE)
 
     objects = WaivingLogManager()
 

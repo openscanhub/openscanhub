@@ -162,7 +162,7 @@ class Migration(migrations.Migration):
                 ('product', models.CharField(max_length=128, verbose_name=b'Product name')),
                 ('release', models.IntegerField()),
                 ('active', models.BooleanField(default=True, help_text=b'If set to True,statistical data will be harvested for this system release.')),
-                ('parent', models.OneToOneField(null=True, blank=True, to='scan.SystemRelease')),
+                ('parent', models.OneToOneField(on_delete=models.CASCADE, null=True, blank=True, to='scan.SystemRelease')),
             ],
         ),
         migrations.CreateModel(
@@ -170,8 +170,8 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('name', models.CharField(max_length=64, verbose_name=b'Brew Tag')),
-                ('mock', models.ForeignKey(related_name='mock_profile', verbose_name=b'Mock Config', to='scan.MockConfig')),
-                ('release', models.ForeignKey(related_name='system_release', to='scan.SystemRelease')),
+                ('mock', models.ForeignKey(related_name='mock_profile', verbose_name=b'Mock Config', to='scan.MockConfig', on_delete=models.CASCADE)),
+                ('release', models.ForeignKey(related_name='system_release', to='scan.SystemRelease', on_delete=models.CASCADE)),
             ],
         ),
         migrations.CreateModel(
@@ -179,7 +179,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('secret_args', kobo.django.fields.JSONField(default={})),
-                ('task', models.OneToOneField(to='hub.Task')),
+                ('task', models.OneToOneField(on_delete=models.CASCADE, to='hub.Task')),
             ],
         ),
     ]

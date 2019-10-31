@@ -20,8 +20,8 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('number', models.IntegerField()),
-                ('package', models.ForeignKey(to='scan.Package')),
-                ('release', models.ForeignKey(to='scan.SystemRelease')),
+                ('package', models.ForeignKey(to='scan.Package', on_delete=models.CASCADE)),
+                ('release', models.ForeignKey(to='scan.SystemRelease', on_delete=models.CASCADE)),
             ],
         ),
         migrations.CreateModel(
@@ -52,7 +52,7 @@ class Migration(migrations.Migration):
                 ('defect_identifier', models.CharField(max_length=16, null=True, verbose_name=b'Defect Identifier', blank=True)),
                 ('state', models.PositiveIntegerField(default=3, help_text=b'Defect state', choices=[(0, b'NEW'), (1, b'OLD'), (2, b'FIXED'), (3, b'UNKNOWN'), (4, b'PREVIOUSLY_WAIVED')])),
                 ('events', kobo.django.fields.JSONField(default=[], help_text=b'List of defect related events.')),
-                ('checker', models.ForeignKey(verbose_name=b'Checker', to='waiving.Checker')),
+                ('checker', models.ForeignKey(verbose_name=b'Checker', to='waiving.Checker', on_delete=models.CASCADE)),
             ],
         ),
         migrations.CreateModel(
@@ -77,8 +77,8 @@ class Migration(migrations.Migration):
                 ('state', models.PositiveIntegerField(default=4, help_text=b'Type of waiver', choices=[(0, b'NEEDS_INSPECTION'), (1, b'WAIVED'), (2, b'INFO'), (3, b'PASSED'), (4, b'UNKNOWN'), (5, b'PREVIOUSLY_WAIVED'), (6, b'CONTAINS_BUG')])),
                 ('defect_type', models.PositiveIntegerField(default=3, help_text=b'Type of defects that are associated with this group.', choices=[(0, b'NEW'), (1, b'OLD'), (2, b'FIXED'), (3, b'UNKNOWN'), (4, b'PREVIOUSLY_WAIVED')])),
                 ('defects_count', models.PositiveSmallIntegerField(default=0, null=True, verbose_name=b'Number of defects associated with this group.', blank=True)),
-                ('checker_group', models.ForeignKey(verbose_name=b'Group of checkers', to='waiving.CheckerGroup')),
-                ('result', models.ForeignKey(verbose_name=b'Result', to='waiving.Result', help_text=b'Result of scan')),
+                ('checker_group', models.ForeignKey(verbose_name=b'Group of checkers', to='waiving.CheckerGroup', on_delete=models.CASCADE)),
+                ('result', models.ForeignKey(verbose_name=b'Result', to='waiving.Result', help_text=b'Result of scan', on_delete=models.CASCADE)),
             ],
         ),
         migrations.CreateModel(
@@ -90,9 +90,9 @@ class Migration(migrations.Migration):
                 ('state', models.PositiveIntegerField(default=1, help_text=b'Type of waiver', choices=[(0, b'NOT_A_BUG'), (1, b'IS_A_BUG'), (2, b'FIX_LATER'), (3, b'COMMENT')])),
                 ('is_deleted', models.BooleanField(default=False)),
                 ('is_active', models.BooleanField(default=False)),
-                ('bz', models.ForeignKey(blank=True, to='waiving.Bugzilla', null=True)),
-                ('result_group', models.ForeignKey(help_text=b'Group of defects which is waived for specific Result', to='waiving.ResultGroup')),
-                ('user', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
+                ('bz', models.ForeignKey(blank=True, to='waiving.Bugzilla', null=True, on_delete=models.CASCADE)),
+                ('result_group', models.ForeignKey(help_text=b'Group of defects which is waived for specific Result', to='waiving.ResultGroup', on_delete=models.CASCADE)),
+                ('user', models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE)),
             ],
             options={
                 'ordering': ('-date',),
@@ -105,8 +105,8 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('date', models.DateTimeField(auto_now_add=True)),
                 ('state', models.PositiveIntegerField(help_text=b'Waiving action', choices=[(0, b'NEW'), (1, b'DELETE'), (2, b'REWAIVE')])),
-                ('user', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
-                ('waiver', models.ForeignKey(to='waiving.Waiver')),
+                ('user', models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE)),
+                ('waiver', models.ForeignKey(to='waiving.Waiver', on_delete=models.CASCADE)),
             ],
             options={
                 'ordering': ['date'],
@@ -115,11 +115,11 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='defect',
             name='result_group',
-            field=models.ForeignKey(to='waiving.ResultGroup'),
+            field=models.ForeignKey(to='waiving.ResultGroup', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='checker',
             name='group',
-            field=models.ForeignKey(blank=True, to='waiving.CheckerGroup', help_text=b'Name of group where does this checker belong', null=True, verbose_name=b'Checker group'),
+            field=models.ForeignKey(blank=True, to='waiving.CheckerGroup', help_text=b'Name of group where does this checker belong', null=True, verbose_name=b'Checker group', on_delete=models.CASCADE),
         ),
     ]

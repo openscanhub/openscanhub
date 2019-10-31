@@ -93,7 +93,7 @@ class ScanningSession(models.Model):
 
     caps = models.ManyToManyField(Capability)
 
-    profile = models.ForeignKey(Profile, blank=True, null=True)
+    profile = models.ForeignKey(Profile, blank=True, null=True, on_delete=models.CASCADE)
 
     objects = ScanningSessionBindingManager()
 

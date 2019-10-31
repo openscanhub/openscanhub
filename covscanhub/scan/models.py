@@ -195,7 +195,7 @@ class SystemRelease(models.Model):
     active = models.BooleanField(default=True, help_text="If set to True,\
 statistical data will be harvested for this system release.")
 
-    parent = models.OneToOneField("self", blank=True, null=True)
+    parent = models.OneToOneField("self", on_delete=models.CASCADE, blank=True, null=True)
 
     objects = SystemReleaseManager()
 
@@ -245,8 +245,8 @@ class Tag(models.Model):
     name = models.CharField("Brew Tag", max_length=64, blank=False)
     mock = models.ForeignKey(MockConfig, verbose_name="Mock Config",
                              blank=False, null=False,
-                             related_name='mock_profile')
-    release = models.ForeignKey(SystemRelease, related_name='system_release')
+                             related_name='mock_profile', on_delete=models.CASCADE)
+    release = models.ForeignKey(SystemRelease, related_name='system_release', on_delete=models.CASCADE)
 
     objects = TagManager()
 
@@ -425,8 +425,8 @@ class PackageAttribute(models.Model):
 
     key = models.CharField(max_length=64, null=True, blank=True)
     value = models.CharField(max_length=128, null=True, blank=True)
-    package = models.ForeignKey(Package)
-    release = models.ForeignKey(SystemRelease)
+    package = models.ForeignKey(Package, on_delete=models.CASCADE)
+    release = models.ForeignKey(SystemRelease, on_delete=models.CASCADE)
 
     objects = PackageAttributeManager()
 
@@ -518,8 +518,8 @@ class PackageCapabilityManager(models.Manager, PackageCapabilityMixin):
 
 
 class PackageCapability(models.Model):
-    release = models.ForeignKey(SystemRelease, blank=True, null=True)
-    package = models.ForeignKey(Package)
+    release = models.ForeignKey(SystemRelease, blank=True, null=True, on_delete=models.CASCADE)
+    package = models.ForeignKey(Package, on_delete=models.CASCADE)
     is_capable = models.BooleanField()
 
     objects = PackageCapabilityManager()
@@ -591,13 +591,13 @@ class Scan(models.Model):
     base = models.ForeignKey('self', verbose_name="Base Scan",
                              blank=True, null=True,
                              help_text="NVR of package to diff against",
-                             related_name="base_scan")
+                             related_name="base_scan", on_delete=models.CASCADE)
     #user scans dont have to specify this option -- allow None
     tag = models.ForeignKey(Tag, verbose_name="Tag",
                             blank=True, null=True,
-                            help_text="Tag from brew")
+                            help_text="Tag from brew", on_delete=models.CASCADE)
 
-    username = models.ForeignKey(settings.AUTH_USER_MODEL)
+    username = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 
     #date when there was last access to scan
     #should change when:
@@ -611,10 +611,10 @@ class Scan(models.Model):
     enabled = models.BooleanField(default=True, help_text="This scan is \
 counted in statistics.")
 
-    package = models.ForeignKey(Package)
+    package = models.ForeignKey(Package, on_delete=models.CASCADE)
 
     parent = models.ForeignKey('self', verbose_name="Parent Scan", blank=True,
-                               null=True, related_name="parent_scan")
+                               null=True, related_name="parent_scan", on_delete=models.CASCADE)
 
     objects = ScanManager()
     targets = ScanTargetManager()
@@ -895,10 +895,10 @@ class ScanBinding(models.Model):
     """
     task = models.OneToOneField(Task, verbose_name="Asociated Task",
                                 help_text="Asociated task on worker",
-                                blank=True, null=True,)
-    scan = models.OneToOneField(Scan,
+                                on_delete=models.CASCADE, blank=True, null=True,)
+    scan = models.OneToOneField(Scan, on_delete=models.CASCADE,
                                 verbose_name="Scan")
-    result = models.OneToOneField("waiving.Result",
+    result = models.OneToOneField("waiving.Result", on_delete=models.CASCADE,
                                   blank=True, null=True,)
 
     objects = ScanBindingManager()
@@ -991,7 +991,7 @@ class ETMapping(models.Model):
     advisory_id = models.CharField(max_length=16, blank=False, null=False)
     et_scan_id = models.CharField(max_length=16, blank=False, null=False)
     # self.id is covscan_internal_target_run_id (formerly scanbinding.id)
-    latest_run = models.ForeignKey(ScanBinding, null=True, blank=True)
+    latest_run = models.ForeignKey(ScanBinding, null=True, blank=True, on_delete=models.CASCADE)
     comment = models.CharField(max_length=256, default="", blank=True)
     state = models.PositiveIntegerField(
         default=REQUEST_STATES['OK'],
@@ -1139,7 +1139,7 @@ class AppSettings(models.Model):
 
 
 class TaskExtension(models.Model):
-    task = models.OneToOneField(Task)
+    task = models.OneToOneField(Task, on_delete=models.CASCADE)
     secret_args = JSONField(default={})
 
     def __unicode__(self):
@@ -1201,7 +1201,7 @@ class ClientAnalyzerManager(models.Manager, ClientAnalyzerMixin):
 
 
 class ClientAnalyzer(models.Model):
-    analyzer = models.ForeignKey("Analyzer", blank=True, null=True)
+    analyzer = models.ForeignKey("Analyzer", blank=True, null=True, on_delete=models.CASCADE)
     #name = models.CharField(max_length=64)
     version = models.CharField(max_length=32, blank=True, null=True)
     enabled = models.BooleanField(default=True)
@@ -1278,7 +1278,7 @@ class AnalyzerVersionManager(models.Manager):
 
 class AnalyzerVersion(models.Model):
     version = models.CharField(max_length=64)
-    analyzer = models.ForeignKey(Analyzer)
+    analyzer = models.ForeignKey(Analyzer, on_delete=models.CASCADE)
     mocks = models.ManyToManyField(MockConfig, blank=True, null=True, related_name="analyzers")
     date_created = models.DateTimeField(auto_now_add=True)
 

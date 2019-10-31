@@ -53,12 +53,12 @@ describes value of this stat.")
 
 
 class StatResults(models.Model):
-    stat = models.ForeignKey(StatType)
+    stat = models.ForeignKey(StatType, on_delete=models.CASCADE)
     value = models.IntegerField(
         help_text="Statistical data for specified stat type."
     )
     date = models.DateTimeField(auto_now_add=True, verbose_name="Date created")
-    release = models.ForeignKey(SystemRelease, blank=True, null=True)
+    release = models.ForeignKey(SystemRelease, blank=True, null=True, on_delete=models.CASCADE)
 
     class Meta:
         get_latest_by = "date"
