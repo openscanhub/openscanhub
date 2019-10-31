@@ -1,13 +1,12 @@
 from types import ModuleType
 
 from django.contrib import admin
-from django.contrib.admin.util import quote
-from django.contrib.admin.views.main import ChangeList
 from covscanhub.other.django_version import django_version_ge
-if django_version_ge('1.10.0'):
-    from django.urls import reverse
+if django_version_ge('1.7.0'):
+    from django.contrib.admin.utils import quote
 else:
-    from django.core.urlresolvers import reverse
+    from django.contrib.admin.util import quote
+from django.contrib.admin.views.main import ChangeList
 if django_version_ge('1.10.0'):
     from django.urls import reverse, NoReverseMatch
 else:
