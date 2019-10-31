@@ -336,7 +336,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %files hub-%{hub_instance}
 %defattr(-,root,apache,-)
-%attr(640,root,root) /etc/httpd/conf.d/covscanhub-httpd.conf
+%attr(640,root,root) %config(noreplace) /etc/httpd/conf.d/covscanhub-httpd.conf
 %ghost %attr(640,apache,apache) /var/log/covscanhub.log
 %dir %attr(775,root,apache) /var/lib/covscanhub
 %dir %attr(775,root,apache) /var/lib/covscanhub/tasks
