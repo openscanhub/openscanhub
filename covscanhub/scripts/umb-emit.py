@@ -1,6 +1,5 @@
 #!/usr/bin/python2
 
-from __future__ import absolute_import
 from __future__ import print_function
 import threading
 import proton

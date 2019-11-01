@@ -5,7 +5,6 @@
 Script for cron that submits actual statistical data
 """
 
-from __future__ import absolute_import
 import sys
 import os
 

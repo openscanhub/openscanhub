@@ -5,7 +5,6 @@ Instance-specific settings.
 Devel instance
 """
 
-from __future__ import absolute_import
 import kobo
 import os
 

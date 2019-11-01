@@ -12,7 +12,6 @@ Staging instance
 # if KOBO_DIR not in sys.path:
 #     sys.path.append(KOBO_DIR)
 
-from __future__ import absolute_import
 import kobo
 import os
 

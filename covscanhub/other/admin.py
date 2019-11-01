@@ -20,7 +20,6 @@ register_admin_module('project.app.models', new_fields={
 
 """
 
-from __future__ import absolute_import
 from django.core.urlresolvers import reverse
 from django.utils.safestring import mark_safe
 from django.contrib import admin

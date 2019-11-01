@@ -2,7 +2,6 @@
 
 """these functions are exported via XML-RPC"""
 
-from __future__ import absolute_import
 import logging
 from kobo.tback import get_traceback
 

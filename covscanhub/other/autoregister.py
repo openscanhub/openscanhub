@@ -1,4 +1,3 @@
-from __future__ import absolute_import
 from types import ModuleType
 
 from django.contrib import admin

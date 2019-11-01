@@ -6,7 +6,6 @@ Created on Mon Aug 20 10:36:56 2012
 @author: Tomas Tomecek <ttomecek@redhat.com>
 """
 
-from __future__ import absolute_import
 import sys
 import datetime
 import kobo.process

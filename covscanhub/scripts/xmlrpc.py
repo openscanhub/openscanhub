@@ -51,7 +51,6 @@ File: "/usr/lib/python2.7/site-packages/kobo/xmlrpc.py"
 
 """
 
-from __future__ import absolute_import
 from __future__ import print_function
 import json
 import sys

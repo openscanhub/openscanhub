@@ -7,7 +7,6 @@ Created on Mon Aug 20 10:36:56 2012
 module for sending messages using UMB (Unified Message Bus)
 """
 
-from __future__ import absolute_import
 import threading
 import os
 import krbV

@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 
-from __future__ import absolute_import
 from covscanhub.scan.models import MockConfig
 from django.core.exceptions import ObjectDoesNotExist
 

@@ -3,7 +3,6 @@
 Util functions related to processing data -- results of analysis
 """
 
-from __future__ import absolute_import
 import os
 import pipes
 import logging

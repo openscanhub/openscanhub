@@ -3,7 +3,6 @@
 Functions related to checking provided data
 """
 
-from __future__ import absolute_import
 import os
 import re
 import logging

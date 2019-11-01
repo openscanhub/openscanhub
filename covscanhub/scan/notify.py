@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """functions related to sending e-mail notifications"""
 
-from __future__ import absolute_import
 import socket
 import logging
 

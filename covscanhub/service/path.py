@@ -2,7 +2,6 @@
 Functions related to retrieving paths of tasks results
 """
 
-from __future__ import absolute_import
 import os
 import logging
 from glob import glob
