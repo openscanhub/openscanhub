@@ -34,7 +34,7 @@ import shutil
 import subprocess
 import tempfile
 import logging
-import six.moves.urllib.request, six.moves.urllib.parse, six.moves.urllib.error
+import six.moves.urllib.request
 import re
 
 from kobo.shortcuts import run
