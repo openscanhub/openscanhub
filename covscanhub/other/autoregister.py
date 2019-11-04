@@ -192,8 +192,21 @@ def autoregister_admin(module, exclude_models=None, model_fields=None,
             admin_class.list_display.append(change_list_url)
 
         # add reversed relations
-        reversed_related_objs = (model._meta.get_all_related_objects() +
-                                 model._meta.get_all_related_many_to_many_objects())
+        if django_version_ge('1.9.0'):
+            all_related_objects = [
+                f for f in model._meta.get_fields()
+                if (f.one_to_many or f.one_to_one)
+                and f.auto_created and not f.concrete
+                ]
+            all_related_many_to_many_objects = [
+                f for f in model._meta.get_fields(include_hidden=True)
+                if f.many_to_many and f.auto_created
+            ]
+            reversed_related_objs = (all_related_objects +
+                                     all_related_many_to_many_objects)
+        else:
+            reversed_related_objs = (model._meta.get_all_related_objects() +
+                                     model._meta.get_all_related_many_to_many_objects())
         allowed_reversed_relations = reversed_relations.get(model_name, [])
         for related in reversed_related_objs:
             related_name = related.field.related_query_name()
