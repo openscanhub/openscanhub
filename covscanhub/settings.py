@@ -111,6 +111,7 @@ INSTALLED_APPS = (
 
     # kobo apps:
     'kobo.django.upload',
+    'kobo.django.xmlrpc',
     'kobo.hub',
 
     # covscan
