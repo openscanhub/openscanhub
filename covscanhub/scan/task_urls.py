@@ -4,7 +4,7 @@
 from django.conf.urls import *
 from kobo.client.constants import TASK_STATES
 
-from kobo.hub.views import TaskListView, TaskDetail
+from kobo.hub.views import TaskListView, TaskDetail, task_log, task_log_json
 
 
 urlpatterns = [
@@ -33,10 +33,10 @@ urlpatterns = [
         name="task/finished"),
 
     url(r"^(?P<id>\d+)/log/(?P<log_name>.+)$",
-        "kobo.hub.views.task_log",
+        task_log,
         name="task/log"),
 
     url(r"^(?P<id>\d+)/log-json/(?P<log_name>.+)$",
-        "kobo.hub.views.task_log_json",
+        task_log_json,
         name="task/log-json"),
     ]
