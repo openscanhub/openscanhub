@@ -39,11 +39,18 @@ def add_link_field(admin_class, field):
     field_name = field.name + '_link'
 
     def link(self, instance):
-        app_name = field.related.parent_model._meta.app_label
-        reverse_path = "admin:%s_%s_change" % (
-            app_name,
-            field.related.parent_model._meta.module_name
-        )
+        if django_version_ge('1.9.0'):
+            app_name = field.remote_field.parent_model._meta.app_label
+            reverse_path = "admin:%s_%s_change" % (
+                app_name,
+                field.remote_field.parent_model._meta.module_name
+            )
+        else:
+            app_name = field.related.parent_model._meta.app_label
+            reverse_path = "admin:%s_%s_change" % (
+                app_name,
+                field.related.parent_model._meta.module_name
+            )
         related_instance = getattr(instance, field.name)
         # it might point to None (foreignKey(null=True))
         if related_instance:
