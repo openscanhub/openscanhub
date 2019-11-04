@@ -16,7 +16,7 @@ from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.http import HttpResponse
 import json
-from django.utils.datastructures import SortedDict
+from collections import OrderedDict
 
 from .service import display_values
 
@@ -25,7 +25,7 @@ def release_list(request, release_id):
     context = {}
     context['release'] = SystemRelease.objects.get(id=release_id)
 
-    context['results'] = SortedDict()
+    context['results'] = OrderedDict()
     for stattype in StatType.objects.filter(is_release_specific=True).\
             order_by('group', 'order'):
         context['results'][stattype] = stattype.display_value(
@@ -43,7 +43,7 @@ def stats_list(request):
     context['releases'] = SystemRelease.objects.filter(id__in=int_releases)
 
     print(context['releases'])
-    context['results'] = SortedDict()
+    context['results'] = OrderedDict()
     for stattype in StatType.objects.filter(is_release_specific=False).\
             order_by('group', 'order'):
         context['results'][stattype] = stattype.display_value(), \
@@ -147,7 +147,7 @@ for s in SystemRelease.objects.all():
 for rel in tmp:
     # data['data'] = [{x: date, a: 1, b: 2,...}]
     # data['labels'] = ['rhel-7.0','rhel-6.4',...]
-    date_record = SortedDict({'x': rel.strftime(time_format)})
+    date_record = OrderedDict({'x': rel.strftime(time_format)})
     for rel_tag in tmp[rel]:
         date_record[tmp_labels[rel_tag]] = tmp[rel][rel_tag]
     data['data'].append(date_record)

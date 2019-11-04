@@ -2,7 +2,7 @@
 
 from django import template
 from django.utils.safestring import mark_safe
-from django.utils.datastructures import SortedDict
+from collections import OrderedDict
 import six
 
 register = template.Library()
@@ -11,7 +11,7 @@ register = template.Library()
 @register.filter(name='sort')
 def listsort(value):
     if isinstance(value, dict):
-        new_dict = SortedDict()
+        new_dict = OrderedDict()
         key_list = list(value.keys())
         key_list.sort(reverse=True)
         for key in key_list:
