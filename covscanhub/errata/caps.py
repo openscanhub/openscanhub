@@ -11,7 +11,6 @@ import shutil
 from .utils import get_mocks_repo, get_or_fail
 
 import koji
-import yum
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 import six
@@ -191,6 +190,7 @@ class RPMDepCapabilityChecker(CapabilityChecker):
         else:
             valid_rpms = rpms[:]
 
+        import yum
         # find out dependency using yum
         yb = yum.YumBase()
         yb.preconf.debuglevel = 0

@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 import re
-import yum
 import koji
 import logging
 
@@ -186,6 +185,7 @@ def depend_on(nvr, dependency, mock_profile):
         return False
 
     # find out dependency using yum
+    import yum
     yb = yum.YumBase()
     yb.preconf.debuglevel = 0
     yb.setCacheDir()
