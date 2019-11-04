@@ -7,7 +7,7 @@ from kobo.client.constants import TASK_STATES
 from kobo.hub.views import TaskListView, TaskDetail
 
 
-urlpatterns = patterns("",
+urlpatterns = [
     url(r"^et/$",
         TaskListView.as_view(title="Errata Tool Tasks", ),
         kwargs={'method': "ErrataDiffBuild"},
@@ -39,4 +39,4 @@ urlpatterns = patterns("",
     url(r"^(?P<id>\d+)/log-json/(?P<log_name>.+)$",
         "kobo.hub.views.task_log_json",
         name="task/log-json"),
-)
+    ]

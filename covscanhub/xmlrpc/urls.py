@@ -3,7 +3,7 @@
 from django.conf.urls import *
 
 
-urlpatterns = patterns("",
+urlpatterns = [
     # customize the index XML-RPC page if needed:
     # url(r"^$", "django.views.generic.simple.direct_to_template", kwargs={"template": "xmlrpc_help.html"}, name="help/xmlrpc"),
     url(r"^upload/", "kobo.django.upload.views.file_upload"),
@@ -13,4 +13,4 @@ urlpatterns = patterns("",
         name="help/xmlrpc/worker"),
     url(r"^kerbauth/", "kobo.django.xmlrpc.views.kerbauth_handler",
         name="help/xmlrpc/kerbauth"),
-)
+    ]

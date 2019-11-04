@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 
 
-from django.conf.urls import patterns, url
+from __future__ import absolute_import
+from django.conf.urls import url
 
 from covscanhub.waiving.views import *
 
 
-urlpatterns = patterns("",
+urlpatterns = [
     url(r"^$", ResultsListView.as_view(), name="waiving/list"),
 
     url(r"^(?P<sb_id>\d+)/(?P<result_group_id>\d+)/$",
@@ -41,4 +42,4 @@ urlpatterns = patterns("",
     url(r"^(?P<package_id>\d+)/(?P<release_id>\d+)/updatebz/$",
         "covscanhub.waiving.views.update_bz",
         name="waiving/update_bz"),
-)
+    ]

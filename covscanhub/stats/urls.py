@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 
 
-from django.conf.urls import patterns, url
+from __future__ import absolute_import
+from django.conf.urls import url
 
-
-urlpatterns = patterns("",
+urlpatterns = [
     url(r"^$",
         "covscanhub.stats.views.stats_list",
         name="stats/list"),
@@ -25,4 +25,4 @@ urlpatterns = patterns("",
     url(r"^(?P<stat_id>\d+)/(?P<release_id>\d+)/graph/$",
         "covscanhub.stats.views.release_stats_detail_graph",
         name="stats/release/detail/graph"),        
-)
+    ]

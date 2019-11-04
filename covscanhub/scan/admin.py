@@ -13,7 +13,7 @@ from covscanhub.scan.xmlrpc_helper import finish_scan as h_finish_scan, \
     fail_scan as h_fail_scan, cancel_scan as h_cancel_scan, cancel_scan_tasks
 
 from django.template import RequestContext
-from django.conf.urls import patterns
+from django.conf.urls import url
 from django.shortcuts import render_to_response
 from django.utils.safestring import mark_safe
 from django.contrib import admin
@@ -49,19 +49,18 @@ class ScanAdmin(admin.ModelAdmin):
 
     def get_urls(self):
         urls = super(ScanAdmin, self).get_urls()
-        my_urls = patterns(
-            '',
-            (r'(?P<scan_id>\d+)/notify/$',
+        my_urls = [
+            url(r'(?P<scan_id>\d+)/notify/$',
              self.admin_site.admin_view(self.notify)),
-            (r'(?P<scan_id>\d+)/fail/$',
+            url(r'(?P<scan_id>\d+)/fail/$',
              self.admin_site.admin_view(self.fail_scan)),
-            (r'(?P<scan_id>\d+)/cancel/$',
+            url(r'(?P<scan_id>\d+)/cancel/$',
              self.admin_site.admin_view(self.cancel_scan)),
-            (r'(?P<scan_id>\d+)/finish/$',
+            url(r'(?P<scan_id>\d+)/finish/$',
              self.admin_site.admin_view(self.finish_scan)),
-            (r'(?P<scan_id>\d+)/rescan/$',
+            url(r'(?P<scan_id>\d+)/rescan/$',
              self.admin_site.admin_view(self.rescan)),
-        )
+            ]
         return my_urls + urls
 
     def notify(self, request, scan_id):

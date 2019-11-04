@@ -11,7 +11,7 @@ from django.views.generic.base import TemplateView
 admin.autodiscover()
 
 
-urlpatterns = patterns('',
+urlpatterns = [
     # Example:
     # (r'^covscanhub/', include('covscanhub.foo.urls')),
     url(r"^$", TemplateView.as_view(template_name="index.html"), name="index"),
@@ -37,14 +37,14 @@ urlpatterns = patterns('',
 
     # Include kobo hub xmlrpc module urls:
     url(r"^xmlrpc/", include("covscanhub.xmlrpc.urls")),
-)
+    ]
 
 
 if settings.DEBUG:
     import debug_toolbar
-    urlpatterns += patterns('',
+    urlpatterns += [
         url(r'^__debug__/', include(debug_toolbar.urls)),
-    )
+        ]
 
 
 # this is a hack to enable media (with correct prefix) while debugging
@@ -60,7 +60,7 @@ if settings.DEBUG:
 #        print path
 #        print path[1:-1]
 #        print os.path.join(os.path.dirname(kobo.__file__), "hub", "static", "kobo")
-#        urlpatterns.extend(patterns("",
+#        urlpatterns.extend([
 #            url(r"^kobo/(?P<path>.*)$", "django.views.static.serve", kwargs={"document_root": os.path.join(os.path.dirname(kobo.__file__), "hub", "static", "kobo")}),
 #            url(r"^%s/(?P<path>.*)$" % path[1:-1], "django.views.static.serve", kwargs={"document_root": settings.MEDIA_ROOT}),
-#        ))
+#        ])

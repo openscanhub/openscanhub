@@ -6,7 +6,7 @@ from django.conf.urls import *
 from covscanhub.scan.views import *
 
 
-urlpatterns = patterns("",
+urlpatterns = [
     url(r"^mock", MockConfigListView.as_view(),
         name="mock_config/index"),
 
@@ -20,4 +20,4 @@ urlpatterns = patterns("",
     url(r"^packages/(?P<id>\d+)/detail/$",
         PackageDetailView.as_view(),
         name="package/detail"),
-)
+    ]
