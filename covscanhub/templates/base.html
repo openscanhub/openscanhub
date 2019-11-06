@@ -1,9 +1,10 @@
 {% extends "layout.html" %}
 {% load i18n %}
+{% load staticfiles %}
 
 {% block css %}
-  <script type="text/javascript" src="{{ STATIC_URL }}js/jquery-1.8.3.min.js"></script>
-  <link rel="stylesheet" href="{{ STATIC_URL }}css/redhat.css" type="text/css" media="screen" />
+  <script type="text/javascript" src="{% static "js/jquery-1.8.3.min.js" %}"></script>
+  <link rel="stylesheet" href="{% static "css/redhat.css" %}" type="text/css" media="screen" />
 {% endblock %}
 
 {% block header_site_name %}
