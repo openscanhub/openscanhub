@@ -33,7 +33,7 @@ urlpatterns = [
 
     url(r"^stats/", include("covscanhub.stats.urls")),
 
-    url(r'^admin/', include(admin.site.urls)),
+    url(r'^admin/', admin.site.urls),
 
     # Include kobo hub xmlrpc module urls:
     url(r"^xmlrpc/", include("covscanhub.xmlrpc.urls")),
