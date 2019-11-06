@@ -114,6 +114,17 @@ TEMPLATE_DIRS = (
     os.path.join(os.path.dirname(kobo.__file__), "hub", "templates"),
 )
 
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': TEMPLATE_DIRS,
+        'APP_DIRS': True,
+        'OPTIONS': {
+            # ... some options here ...
+        },
+    },
+]
+
 ###############################################################################
 # COVSCAN SPECIFIC
 ###############################################################################
