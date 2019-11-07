@@ -71,9 +71,14 @@ MIDDLEWARE_CLASSES = (
     # kobo related middleware:
     'kobo.hub.middleware.WorkerMiddleware',
     'kobo.django.menu.middleware.MenuMiddleware',
-
-    #'debug_toolbar.middleware.DebugToolbarMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
 )
+
+MIDDLEWARE = (
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
+    )
 
 INTERNAL_IPS = ('127.0.0.1',)
 
