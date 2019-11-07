@@ -5,7 +5,7 @@ from covscanhub.other.test_enviroment import *
 from covscanhub.scan.models import *
 from covscanhub.waiving.models import *
 from .compare import *
-from covscanhub.xmlrpc.errata import create_errata_diff_scan
+from covscanhub.cs_xmlrpc.errata import create_errata_diff_scan
 
 from django.utils import unittest
 from django.test import Client

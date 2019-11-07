@@ -159,8 +159,8 @@ XMLRPC_METHODS = {
         ('kobo.hub.xmlrpc.client',        'client'),
         ('kobo.hub.xmlrpc.system',        'system'),
         ('kobo.django.upload.xmlrpc',     'upload'),
-        ('covscanhub.xmlrpc.mock_config', 'mock_config'),
-        ('covscanhub.xmlrpc.scan',        'scan'),
+        ('covscanhub.cs_xmlrpc.mock_config', 'mock_config'),
+        ('covscanhub.cs_xmlrpc.scan',        'scan'),
     ),
     'worker': (
         ('kobo.hub.xmlrpc.auth',      'auth'),
@@ -168,11 +168,11 @@ XMLRPC_METHODS = {
         ('kobo.hub.xmlrpc.worker',    'worker'),
         ('kobo.django.upload.xmlrpc', 'upload'),
         ('kobo.hub.xmlrpc.client',    'client'),
-        ('covscanhub.xmlrpc.worker',  'worker'),
+        ('covscanhub.cs_xmlrpc.worker',  'worker'),
     ),
     'kerbauth': (
-        ('covscanhub.xmlrpc.errata', 'errata'),
-        ('covscanhub.xmlrpc.test',   'test'),
+        ('covscanhub.cs_xmlrpc.errata', 'errata'),
+        ('covscanhub.cs_xmlrpc.test',   'test'),
         ('kobo.hub.xmlrpc.auth',     'auth'),
     ),
 

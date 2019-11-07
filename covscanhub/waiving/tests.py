@@ -9,7 +9,7 @@ from covscanhub.scripts.db import set_checker_groups
 from covscanhub.scan.models import *
 from covscanhub.waiving.models import *
 from covscanhub.waiving.service import *
-from covscanhub.xmlrpc.errata import create_errata_diff_scan
+from covscanhub.cs_xmlrpc.errata import create_errata_diff_scan
 
 from unittest import TestCase
 from django.test import Client

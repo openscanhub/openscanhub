@@ -106,7 +106,7 @@ class CovscanAPI(object):
 
         @return: dictionary containing keys 'status', 'count' and 'scans' (if status is set to 'OK'); if status is set
                  to 'ERROR', 'message' key containing error output is there instead
-        @see get_filtered_scan_list in covscanhub.xmlrpc.scan
+        @see get_filtered_scan_list in covscanhub.cs_xmlrpc.scan
         """
 
         filters = dict(id=id, target=target, base=base, state=state, owner=owner, release=release)

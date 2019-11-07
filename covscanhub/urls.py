@@ -36,7 +36,7 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
 
     # Include kobo hub xmlrpc module urls:
-    url(r"^xmlrpc/", include("covscanhub.xmlrpc.urls")),
+    url(r"^xmlrpc/", include("covscanhub.cs_xmlrpc.urls")),
     ]
 
 

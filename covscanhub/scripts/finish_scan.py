@@ -25,7 +25,7 @@ os.environ['DJANGO_SETTINGS_MODULE'] = 'covscanhub.settings'
 
 from django.contrib.auth import get_user_model
 
-from covscanhub.xmlrpc.worker import finish_scan, fail_scan, \
+from covscanhub.cs_xmlrpc.worker import finish_scan, fail_scan, \
     email_scan_notification
 from covscanhub.scan.models import Scan, ScanBinding, SCAN_TYPES, SCAN_STATES,\
     SCAN_TYPES_TARGET
