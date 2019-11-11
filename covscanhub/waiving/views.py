@@ -6,13 +6,15 @@ import logging
 import six.moves.urllib.parse
 
 from django.conf import settings
-from django.template import RequestContext
-from django.shortcuts import render_to_response, get_object_or_404
+from django.shortcuts import get_object_or_404
 from covscanhub.other.django_version import django_version_ge
 if django_version_ge('1.10.0'):
     from django.urls import reverse
+    from django.shortcuts import render
 else:
     from django.core.urlresolvers import reverse
+    from django.shortcuts import render_to_response
+    from django.template import RequestContext
 from django.http import HttpResponseRedirect
 from django.core.exceptions import ObjectDoesNotExist
 from django.views.generic.list import ListView
@@ -497,7 +499,10 @@ def waiver(request, sb_id, result_group_id):
 
     context['defects_list_class'] = 'new'
     context['new_selected'] = "selected"
-    return render_to_response("waiving/waiver.html",
+    if django_version_ge('1.10.0'):
+        return render(request, "waiving/waiver.html", context)
+    else:
+        return render_to_response("waiving/waiver.html",
                               context,
                               context_instance=RequestContext(request))
 
@@ -551,7 +556,10 @@ def fixed_defects(request, sb_id, result_group_id):
 defects are already fixed."
     context['fixed_selected'] = "selected"
     context['defects_list_class'] = "fixed"
-    return render_to_response("waiving/waiver.html",
+    if django_version_ge('1.10.0'):
+        return render(request, "waiving/waiver.html", context)
+    else:
+        return render_to_response("waiving/waiver.html",
                               context,
                               context_instance=RequestContext(request))
 
@@ -602,7 +610,10 @@ def previously_waived(request, sb_id, result_group_id):
     context['display_waivers'] = True
     context['old_selected'] = "selected"
     context['defects_list_class'] = "old"
-    return render_to_response("waiving/waiver.html",
+    if django_version_ge('1.10.0'):
+        return render(request, "waiving/waiver.html", context)
+    else:
+        return render_to_response("waiving/waiver.html",
                               context,
                               context_instance=RequestContext(request))
 
@@ -615,11 +626,14 @@ def result(request, sb_id):
     context = get_result_context(request, get_object_or_404(ScanBinding,
                                                             id=sb_id))
     context[active_tab] = "selected"
-    return render_to_response(
-        "waiving/result.html",
-        context,
-        context_instance=RequestContext(request)
-    )
+    if django_version_ge('1.10.0'):
+        return render(request, "waiving/result.html", context)
+    else:
+        return render_to_response(
+            "waiving/result.html",
+            context,
+            context_instance=RequestContext(request)
+        )
 
 
 def newest_result(request, package_name, release_tag):
@@ -633,11 +647,14 @@ def newest_result(request, package_name, release_tag):
         scan__enabled=True).latest()
     )
     context['new_selected'] = "selected"
-    return render_to_response(
-        "waiving/result.html",
-        context,
-        context_instance=RequestContext(request)
-    )
+    if django_version_ge('1.10.0'):
+        return render(request, "waiving/result.html", context)
+    else:
+        return render_to_response(
+            "waiving/result.html",
+            context,
+            context_instance=RequestContext(request)
+        )
 
 
 def etmapping_latest(request, etmapping_id):
@@ -657,11 +674,14 @@ def etmapping_latest(request, etmapping_id):
         context['new_selected'] = "selected"
     else:
         context = {'not_finished': etm.comment}
-    return render_to_response(
-        "waiving/result.html",
-        context,
-        context_instance=RequestContext(request)
-    )
+    if django_version_ge('1.10.0'):
+        return render(request, "waiving/result.html", context)
+    else:
+        return render_to_response(
+            "waiving/result.html",
+            context,
+            context_instance=RequestContext(request)
+        )
 
 
 def et_latest(request, et_id):
@@ -682,11 +702,14 @@ def et_latest(request, et_id):
     else:
         context = {'not_finished': etm.comment}
 
-    return render_to_response(
-        "waiving/result.html",
-        context,
-        context_instance=RequestContext(request)
-    )
+    if django_version_ge('1.10.0'):
+        return render(request, "waiving/result.html", context)
+    else:
+        return render_to_response(
+            "waiving/result.html",
+            context,
+            context_instance=RequestContext(request)
+        )
 
 
 def new_bz(request, package_id, release_id):

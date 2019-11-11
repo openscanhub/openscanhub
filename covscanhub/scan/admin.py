@@ -12,9 +12,13 @@ from covscanhub.other.autoregister import autoregister_admin
 from covscanhub.scan.xmlrpc_helper import finish_scan as h_finish_scan, \
     fail_scan as h_fail_scan, cancel_scan as h_cancel_scan, cancel_scan_tasks
 
-from django.template import RequestContext
+from covscanhub.other.django_version import django_version_ge
+if django_version_ge('1.10.0'):
+    from django.shortcuts import render
+else:
+    from django.template import RequestContext
+    from django.shortcuts import render_to_response
 from django.conf.urls import url
-from django.shortcuts import render_to_response
 from django.utils.safestring import mark_safe
 from django.contrib import admin
 
@@ -67,13 +71,17 @@ class ScanAdmin(admin.ModelAdmin):
         result = send_scan_notification(request, scan_id)
         scan = Scan.objects.get(id=scan_id)
 
-        return render_to_response('admin/scan/scan/state_change.html', {
+        context = {
             'title': 'Notify: %s' % scan.nvr,
             'object': scan,
             'opts': self.model._meta,
             'result': mark_safe("Number of e-mails sent: <b>%s</b>" % result),
             'app_label': self.model._meta.app_label,
-        }, context_instance=RequestContext(request))
+        }
+        if django_version_ge('1.10.0'):
+            return render(request, 'admin/scan/scan/state_change.html', context)
+        else:
+            return render_to_response('admin/scan/scan/state_change.html', context, context_instance=RequestContext(request))
 
     def fail_scan(self, request, scan_id):
         sb = ScanBinding.objects.get(scan__id=scan_id)
@@ -81,13 +89,17 @@ class ScanAdmin(admin.ModelAdmin):
         h_fail_scan(scan_id, "set as failed from admin interface.")
         scan = Scan.objects.get(id=scan_id)
 
-        return render_to_response('admin/scan/scan/state_change.html', {
+        context = {
             'title': 'Fail scan: %s' % scan.nvr,
             'object': scan,
             'opts': self.model._meta,
             'result': "Scan #%s set to failed" % scan_id,
             'app_label': self.model._meta.app_label,
-        }, context_instance=RequestContext(request))
+        }
+        if django_version_ge('1.10.0'):
+            return render(request, 'admin/scan/scan/state_change.html', context)
+        else:
+            return render_to_response('admin/scan/scan/state_change.html', context, context_instance=RequestContext(request))
 
     def finish_scan(self, request, scan_id):
         task = Task.objects.get(scanbinding__scan__id=scan_id)
@@ -97,7 +109,7 @@ class ScanAdmin(admin.ModelAdmin):
         h_finish_scan(request, scan_id, os.path.basename(tb_path))
         scan = Scan.objects.get(id=scan_id)
 
-        return render_to_response('admin/scan/scan/state_change.html', {
+        context = {
             'title': 'Finish scan: %s' % scan.nvr,
             'object': scan,
             'opts': self.model._meta,
@@ -106,7 +118,11 @@ class ScanAdmin(admin.ModelAdmin):
                 SCAN_STATES.get_value(scan.state)
             ),
             'app_label': self.model._meta.app_label,
-        }, context_instance=RequestContext(request))
+        }
+        if django_version_ge('1.10.0'):
+            return render(request, 'admin/scan/scan/state_change.html', context)
+        else:
+            return render_to_response('admin/scan/scan/state_change.html', context, context_instance=RequestContext(request))
 
     def rescan(self, request, scan_id):
         scan = Scan.objects.get(id=scan_id)
@@ -116,23 +132,31 @@ class ScanAdmin(admin.ModelAdmin):
             result = "Unable to rescan: %s" % e
         else:
             result = "New scan #%s submitted." % (new_scan.scan.id)
-        return render_to_response('admin/scan/scan/state_change.html', {
+        context = {
             'title': 'Rescan of package: %s' % scan.nvr,
             'object': scan,
             'opts': self.model._meta,
             'result': result,
             'app_label': self.model._meta.app_label,
-        }, context_instance=RequestContext(request))
+        }
+        if django_version_ge('1.10.0'):
+            return render(request, 'admin/scan/scan/state_change.html', context)
+        else:
+            return render_to_response('admin/scan/scan/state_change.html', context, context_instance=RequestContext(request))
 
     def cancel_scan(self, request, scan_id):
         scan_binding = ScanBinding.objects.by_scan_id(scan_id)
         scan = h_cancel_scan(scan_binding)
-        return render_to_response('admin/scan/scan/state_change.html', {
+        context = {
             'title': 'Cancelation of scan: %s' % scan,
             'object': scan,
             'opts': self.model._meta,
             'result': "Scan %s cancelled." % (scan),
             'app_label': self.model._meta.app_label,
-        }, context_instance=RequestContext(request))
+        }
+        if django_version_ge('1.10.0'):
+            return render(request, 'admin/scan/scan/state_change.html', context)
+        else:
+            return render_to_response('admin/scan/scan/state_change.html', context, context_instance=RequestContext(request))
 
 admin.site.register(Scan, ScanAdmin)
