@@ -290,13 +290,17 @@ class CsmockRunner(object):
             # use a different output path to avoid overwriting the input tarball
             output_path = re.sub('\.tar\.xz$', '-results.tar.xz', output_path)
 
-        cmd = "csmock"
-        if analyzers:
-            cmd += ' -t %s' % (pipes.quote(analyzers))
+        if profile == "cspodman":
+            cmd = "cspodman"
+        else:
+            cmd = "csmock"
+            if analyzers:
+                cmd += ' -t %s' % (pipes.quote(analyzers))
+            if profile:
+                cmd += ' -r %s' % pipes.quote(profile)
+
         if output_path:
             cmd += ' -o %s' % (pipes.quote(output_path))
-        if profile:
-            cmd += ' -r %s' % pipes.quote(profile)
         if additional_arguments:
             cmd += ' ' + additional_arguments
         cmd += ' ' + srpm_path
@@ -315,6 +319,9 @@ class CsmockRunner(object):
 
     def koji_analyze(self, analyzers, nvr, profile=None, su_user=None,
                      additional_arguments=None, koji_bin="koji", use_sudo=False, **kwargs):
+        if profile == "cspodman":
+            return self.analyze(analyzers, nvr, profile, su_user, additional_arguments, use_sudo, result_filename=nvr, **kwargs)
+
         download_cmd = [koji_bin, "download-build", "--quiet", "--arch=src", nvr]
         try:
             if self.tmpdir:
@@ -358,10 +365,14 @@ class CsmockRunner(object):
         else:
             output_path = os.path.join(os.getcwd(), 'csmock-output')
 
-        cmd = "csmock"
+        if profile == "cspodman":
+            cmd = "cspodman"
+        else:
+            cmd = "csmock"
+            if profile:
+                cmd += ' -r %s' % pipes.quote(profile)
+
         cmd += ' -t ' + pipes.quote(analyzers)
-        if profile:
-            cmd += ' -r %s' % pipes.quote(profile)
         cmd += ' --no-scan'
         if additional_arguments:
             cmd += ' ' + additional_arguments
