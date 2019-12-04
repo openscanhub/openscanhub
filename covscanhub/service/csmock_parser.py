@@ -218,13 +218,12 @@ class CsmockRunner(object):
         six.moves.urllib.request.urlretrieve(model_url, model_path)
         return model_path
 
-    def do(self, args, output_path=None, su_user=None, use_sudo=False, **kwargs):
+    def do(self, command, output_path=None, su_user=None, use_sudo=False, **kwargs):
         """ we are expecting that csmock will produce and output """
-        if not args:
-            logger.error("no args for csmock specified!")
-            raise RuntimeError("no args for csmock specified!")
+        if not command:
+            logger.error("no cs* command specified!")
+            raise RuntimeError("no cs* command specified!")
 
-        command = "csmock " + args
         if output_path:
             command += ' -o ' + output_path
 
@@ -291,9 +290,9 @@ class CsmockRunner(object):
             # use a different output path to avoid overwriting the input tarball
             output_path = re.sub('\.tar\.xz$', '-results.tar.xz', output_path)
 
-        cmd = ""
+        cmd = "csmock"
         if analyzers:
-            cmd += '-t %s' % (pipes.quote(analyzers))
+            cmd += ' -t %s' % (pipes.quote(analyzers))
         if output_path:
             cmd += ' -o %s' % (pipes.quote(output_path))
         if profile:
@@ -358,7 +357,9 @@ class CsmockRunner(object):
             output_path = os.path.join(self.tmpdir, 'output.tar.xz')
         else:
             output_path = os.path.join(os.getcwd(), 'csmock-output')
-        cmd = '-t ' + pipes.quote(analyzers)
+
+        cmd = "csmock"
+        cmd += ' -t ' + pipes.quote(analyzers)
         if profile:
             cmd += ' -r %s' % pipes.quote(profile)
         cmd += ' --no-scan'
