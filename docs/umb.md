@@ -35,7 +35,7 @@ PN_TRACE_DRV=true ./covscanhub/scripts/umb-emit.py
 
 ## Make it work with SELinux
 ```
-# setsebool httpd_can_network_connect 1
+# setsebool -P httpd_can_network_connect 1
 ```
 
 - otherwise /var/log/audit/audit.log will contain errors like this on UMB send:
