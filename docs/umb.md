@@ -31,3 +31,14 @@ PN_TRACE_DRV=true ./covscanhub/scripts/umb-emit.py
 ## Watch messages on staging UMB
 - using web browser:
     - https://datagrepper.stage.engineering.redhat.com/raw/?category=covscan
+
+
+## Make it work with SELinux
+```
+# setsebool httpd_can_network_connect 1
+```
+
+- otherwise /var/log/audit/audit.log will contain errors like this on UMB send:
+```
+type=AVC msg=audit(1575904903.583:1229): avc:  denied  { name_connect } for  pid=27672 comm="httpd" dest=5671 scontext=system_u:system_r:httpd_t:s0 tcontext=system_u:object_r:amqp_port_t:s0 tclass=tcp_socket permissive=0
+```
