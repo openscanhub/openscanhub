@@ -128,17 +128,17 @@
     # systemctl restart httpd
 
 - initialize release mapping:
-	- go at http://covscan-dev/covscanhub/admin/scan/systemrelease/add/
-  		rhel-7.7 					-> Short tag
-		Red Hat Enterprise Linux 7 	-> Product name
-		7							-> Release
-		-> Save
+    - go at http://covscan-dev/covscanhub/admin/scan/systemrelease/add/
+        rhel-7.7                    -> Short tag
+        Red Hat Enterprise Linux 7  -> Product name
+        7                           -> Release
+        -> Save
 
-	- go at http://covscan-dev/covscanhub/admin/scan/tag/add/
-		RHEL-7.7					-> Brew Tag
-		3 							-> Mock Config
-		1							-> Release
-		-> Save
+    - go at http://covscan-dev/covscanhub/admin/scan/tag/add/
+        RHEL-7.7                    -> Brew Tag
+        3                           -> Mock Config
+        1                           -> Release
+        -> Save
 
 - allow Errata Tool scans without Kerberos:
     # patch /etc/httpd/conf.d/covscanhub-httpd.conf
@@ -164,20 +164,20 @@
          AuthType Kerberos
          AuthName "Covscan WEB-UI Login"
 
-	# systemctl reload httpd
+    # systemctl reload httpd
 
-	- go at http://covscan-dev/covscanhub/admin/scan/appsettings/
-	- set CHECK_USER_CAN_SUBMIT_SCAN to "N"
+    - go at http://covscan-dev/covscanhub/admin/scan/appsettings/
+    - set CHECK_USER_CAN_SUBMIT_SCAN to "N"
 
 - create Errata Scan (without Kerberos) - new pkg:
-	# git clone https://gitlab.cee.redhat.com/covscan/covscan.git
-	# covsan/covscanhub/scripts/xmlrpc.py --hub http://covscan-dev/covscanhub/xmlrpc/kerbauth/ --username=kdudka --password=xxxxxx create-scan -t curl-7.29.0-25.el7 --et-scan-id 1234 --advisory-id 4567 --owner kdudka --release RHEL-7.7.0 --base NEW_PACKAGE
+    # git clone https://gitlab.cee.redhat.com/covscan/covscan.git
+    # covsan/covscanhub/scripts/xmlrpc.py --hub http://covscan-dev/covscanhub/xmlrpc/kerbauth/ --username=kdudka --password=xxxxxx create-scan -t curl-7.29.0-25.el7 --et-scan-id 1234 --advisory-id 4567 --owner kdudka --release RHEL-7.7.0 --base NEW_PACKAGE
 
 - create Errata Scan (without Kerberos) - update:
-	# covscan/covscanhub/scripts/xmlrpc.py --hub http://covscan-dev/covscanhub/xmlrpc/kerbauth/ --username=kdudka --password=xxxxxx create-scan -t curl-7.29.0-55.el7 --et-scan-id 1234 --advisory-id 4567 --owner kdudka --release RHEL-7.7.0 --base curl-7.29.0-25.el7
+    # covscan/covscanhub/scripts/xmlrpc.py --hub http://covscan-dev/covscanhub/xmlrpc/kerbauth/ --username=kdudka --password=xxxxxx create-scan -t curl-7.29.0-55.el7 --et-scan-id 1234 --advisory-id 4567 --owner kdudka --release RHEL-7.7.0 --base curl-7.29.0-25.el7
 
 - create Errata Scan with Kerberos:
-	# covscan/covscanhub/scripts/xmlrpc.py --hub https://covscan-stage.lab.eng.brq2.redhat.com/covscanhub/xmlrpc/kerbauth/ create-scan -t curl-7.29.0-55.el7 --et-scan-id 1234 --advisory-id 4567 --owner kdudka --release RHEL-7.7.0 --base curl-7.29.0-25.el7
+    # covscan/covscanhub/scripts/xmlrpc.py --hub https://covscan-stage.lab.eng.brq2.redhat.com/covscanhub/xmlrpc/kerbauth/ create-scan -t curl-7.29.0-55.el7 --et-scan-id 1234 --advisory-id 4567 --owner kdudka --release RHEL-7.7.0 --base curl-7.29.0-25.el7
 
 - reset password for a user:
     >>> from django.contrib.auth import get_user_model
