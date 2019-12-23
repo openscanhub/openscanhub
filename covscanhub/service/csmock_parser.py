@@ -338,7 +338,10 @@ class CsmockRunner(object):
         if not os.path.exists(srpm_path):
             print("downloaded SRPM not found: %s" % srpm_path, file=sys.stderr)
             # `brew win-build` creates build ID without .el8 but SRPM with .el8
-            srpm_path = re.sub('\.src\.rpm$', '.el8.src.rpm', srpm_path)
+            srpm_files = glob.glob(os.path.join(self.tmpdir, '*.src.rpm'))
+            if len(srpm_files) == 1:
+                srpm_path = srpm_files[0]
+
         if not os.path.exists(srpm_path):
             print("downloaded SRPM not found: %s" % srpm_path, file=sys.stderr)
             return (None, 2)
