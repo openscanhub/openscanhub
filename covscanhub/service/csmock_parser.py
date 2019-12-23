@@ -346,7 +346,7 @@ class CsmockRunner(object):
             print("unexpected MIME type: %s" % mime_type, file=sys.stderr)
             return (None, 2)
 
-        return self.analyze(analyzers, srpm_path, profile, su_user, additional_arguments, use_sudo, **kwargs)
+        return self.analyze(analyzers, srpm_path, profile, su_user, additional_arguments, use_sudo, result_filename=nvr, **kwargs)
 
     def no_scan(self, analyzers, profile=None, su_user=None, additional_arguments=None,
                 use_sudo=False, **kwargs):
