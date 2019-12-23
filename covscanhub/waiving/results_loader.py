@@ -97,15 +97,12 @@ class ResultsLoader(object):
         self.sb = sb
         self.scan = sb.scan
         self.result = None
-        task_dir = Task.get_task_dir(sb.task.id)
-        all_path = os.path.join(task_dir, self.scan.nvr, SCAN_RESULTS_FILENAME)
-        self.all = CsmockAPI(all_path)
+        task = Task.objects.get(id=sb.task.id)
+        paths = TaskResultPaths(task)
+        self.all = CsmockAPI(paths.get_json_results())
         if self.scan.is_errata_scan():
-            added_path = os.path.join(task_dir, ERROR_DIFF_FILE)
-            fixed_path = os.path.join(task_dir, FIXED_DIFF_FILE)
-
-            self.added = CsmockAPI(added_path)
-            self.fixed = CsmockAPI(fixed_path)
+            self.added = CsmockAPI(paths.get_json_added())
+            self.fixed = CsmockAPI(paths.get_json_fixed())
 
     def create_result(self):
         """ create result model """
