@@ -329,6 +329,14 @@ class CsmockRunner(object):
             print("command '%s' failed to execute: %s" % (download_cmd, ex), file=sys.stderr)
             return (None, 2)
 
+        if not os.path.exists(srpm_path):
+            print("downloaded SRPM not found: %s" % srpm_path, file=sys.stderr)
+            # `brew win-build` creates build ID without .el8 but SRPM with .el8
+            srpm_path = re.sub('\.src\.rpm$', '.el8.src.rpm', srpm_path)
+        if not os.path.exists(srpm_path):
+            print("downloaded SRPM not found: %s" % srpm_path, file=sys.stderr)
+            return (None, 2)
+
         # check that we downloaded an RPM because koji/brew silently download
         # an HTML 404 page instead in case the build has been already deleted
         check_cmd = ['file', '--mime-type', srpm_path]

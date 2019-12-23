@@ -187,7 +187,7 @@
     >>> u.save()
 
 - migrating PostgreSQL database from RHEL-6 to RHEL-7:
-    # service postgresql stop
+    # systemctl stop postgresql
     # rm -v /var/lib/pgsql/data/postmaster.pid
     # yum install postgresql-upgrade
     # postgresql-setup upgrade
