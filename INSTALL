@@ -180,11 +180,12 @@
     # covscan/covscanhub/scripts/xmlrpc.py --hub https://covscan-stage.lab.eng.brq2.redhat.com/covscanhub/xmlrpc/kerbauth/ create-scan -t curl-7.29.0-55.el7 --et-scan-id 1234 --advisory-id 4567 --owner kdudka --release RHEL-7.7.0 --base curl-7.29.0-25.el7
 
 - reset password for a user:
-    >>> from django.contrib.auth import get_user_model
-    >>> User = get_user_model()
-    >>> u = User.objects.get(username='admin')
-    >>> u.set_password('xxxxxx')
-    >>> u.save()
+    # /usr/lib/python2.7/site-packages/covscanhub/manage.py shell
+        >>> from django.contrib.auth import get_user_model
+        >>> User = get_user_model()
+        >>> u = User.objects.get(username='admin')
+        >>> u.set_password('xxxxxx')
+        >>> u.save()
 
 - migrating PostgreSQL database from RHEL-6 to RHEL-7:
     # systemctl stop postgresql
