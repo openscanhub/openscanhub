@@ -26,9 +26,10 @@ It consists of central hub, workers and cli client.
 %package client
 Summary: CovScan CLI client
 Requires: kobo-client >= 0.6.0
-Requires: python-krbV
 Requires: koji
+Requires: python-krbV
 Requires: python2-koji
+Requires: python2-requests
 
 %description client
 CovScan CLI client

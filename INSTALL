@@ -1,4 +1,9 @@
 - install an el7 server
+- install internal CA:
+    # cd /etc/pki/ca-trust/source/anchors/
+    # curl -O https://password.corp.redhat.com/RH-IT-Root-CA.crt
+    # update-ca-trust
+
 - enable EPEL-7 and Covscan repos:
     # yum install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
     # cd /etc/yum.repos.d \
