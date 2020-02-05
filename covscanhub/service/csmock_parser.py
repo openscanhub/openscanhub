@@ -374,10 +374,10 @@ class CsmockRunner(object):
             cmd = "cspodman"
         else:
             cmd = "csmock"
+            cmd += ' -t ' + pipes.quote(analyzers)
             if profile:
                 cmd += ' -r %s' % pipes.quote(profile)
 
-        cmd += ' -t ' + pipes.quote(analyzers)
         cmd += ' --no-scan'
         if additional_arguments:
             cmd += ' ' + additional_arguments
