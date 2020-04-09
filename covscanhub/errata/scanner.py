@@ -221,6 +221,10 @@ class AbstractTargetScheduler(AbstractScheduler):
         self.scan_args['tag'] = self.tag
         self.scan_args['package'] = self.package
 
+        if mock_config != "cspodman" and self.package.name.endswith("-container"):
+            raise PackageNotEligibleException(
+                'Container %s is not eligible for scanning.' % (self.package.name))
+
         check_package_is_blocked(self.package, self.tag.release)
         check_obsolete_scan(self.package, self.tag.release)
 
