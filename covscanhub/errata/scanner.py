@@ -214,6 +214,8 @@ class AbstractTargetScheduler(AbstractScheduler):
                 mock_config = 'rhel-8.0.0.z-mod-x86_64'
             elif re.match('^.*\.module\+el8\.1\.[01](\.z)?\+.*$', self.task_args['label']):
                 mock_config = 'rhel-8.1.0.z-mod-x86_64'
+            elif re.match('^.*\.module\+el8\.2\.[01](\.z)?\+.*$', self.task_args['label']):
+                mock_config = 'rhel-8.2.0.z-mod-x86_64'
             elif re.match('^.*\.module\+el8(\.[0-9])?(\.[0-9])?(\.[0-9])?\+.*$', self.task_args['label']):
                 mock_config = 'rhel-8-mod-x86_64'
 
