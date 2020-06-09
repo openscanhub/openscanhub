@@ -23,6 +23,11 @@
 	- open msg-client-covscan.crt and manually delete all CA certificates
 	- run: { openssl x509 -in msg-client-covscan.crt && openssl rsa -in msg-client-covscan.crt;} > msg-client-covscan.pem
 
+- renewal of the client certificate:
+    - go to: https://ca01.pki.prod.int.phx2.redhat.com:8443/ca/ee/ca/profileSelect?profileId=caManualRenewal
+    - enter serial ID of the current client certificate and click Submit
+    - follow the steps above to obtain the client certificate in file
+
 ## Debug UMB
 ```
 PN_TRACE_DRV=true ./covscanhub/scripts/umb-emit.py
