@@ -930,12 +930,17 @@ class ScanBinding(models.Model):
         if not self.result:
             return False
         sb_analyzers = self.result.analyzers.all()
+        # FIXME: this will not detect equally sized sets of non-matching items
         if len(analyzers) != len(sb_analyzers):
             logger.info("Analyzer sets don't match: %s != %s", analyzers, sb_analyzers)
             return False
         for a in analyzers:
             for sb_a in sb_analyzers:
                 if a.analyzer.name == sb_a.analyzer.name:
+                    # FIXME: move this list to the database to ease updates
+                    if a.analyzer.name in ["gcc", "clang"]:
+                        # version of gcc/clang is not under our control anyway
+                        break
                     if not a.version == sb_a.version:
                         logger.info("%s-%s != %s-%s", a.analyzer.name, a.version,
                                     sb_a.analyzer.name, sb_a.version)
