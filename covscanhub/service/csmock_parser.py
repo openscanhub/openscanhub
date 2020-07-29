@@ -251,7 +251,7 @@ class CsmockRunner(object):
                         subprocess.check_call(inner_cmd2)
                     except subprocess.CalledProcessError:
                         subprocess.check_call(['su', '-', su_user, '-c', "%s" % pipes.quote(' '.join(inner_cmd2))])
-            command = 'su - %s -c "%s"' % (pipes.quote(su_user), command)
+            command = 'su - %s --session-command "%s"' % (pipes.quote(su_user), command)
         if use_sudo:
             command = 'sudo ' + command
         #retcode = subprocess.call(command, shell=True, stdout=subprocess.PIPE)
