@@ -217,7 +217,10 @@ class AbstractTargetScheduler(AbstractScheduler):
         self.scan_args['tag'] = self.tag
         self.scan_args['package'] = self.package
 
-        if mock_config != "cspodman" and self.package.name.endswith("-container"):
+        if mock_config == "cspodman":
+            # TODO: make this configurable
+            self.task_args['priority'] = 8
+        elif self.package.name.endswith("-container"):
             raise PackageNotEligibleException(
                 'Container %s is not eligible for scanning.' % (self.package.name))
 
