@@ -38,6 +38,9 @@ STATICFILES_DIRS = (
     os.path.join(PROJECT_DIR, "media"),
 )
 
+ROOT_URLCONF = 'covscanhub.urls'
+ROOT_MENUCONF = 'covscanhub.menu'
+
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = '$e9r6h6n@@zw)g@_6vkiug_ys0pv)tn(2x4e@zgkaany8qau8@'
 
@@ -58,47 +61,34 @@ AUTHENTICATION_BACKENDS = (
 AUTH_USER_MODEL = 'kobo_auth.User'
 
 MIDDLEWARE_CLASSES = (
-    'django.middleware.common.CommonMiddleware',
     #'django.middleware.transaction.TransactionMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
 
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
     'kobo.django.auth.middleware.LimitedRemoteUserMiddleware',
 
-    'django.contrib.messages.middleware.MessageMiddleware',
 
     # kobo related middleware:
-    'kobo.hub.middleware.WorkerMiddleware',
-    'kobo.django.menu.middleware.MenuMiddleware',
-    'debug_toolbar.middleware.DebugToolbarMiddleware',
+   
 )
 
 MIDDLEWARE = (
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.common.CommonMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
+
+    'kobo.django.auth.middleware.LimitedRemoteUserMiddleware',
+    'kobo.hub.middleware.WorkerMiddleware',
+    'kobo.django.menu.middleware.MenuMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
     )
 
 INTERNAL_IPS = ('127.0.0.1',)
 
-ROOT_URLCONF = 'covscanhub.urls'
-ROOT_MENUCONF = 'covscanhub.menu'
 
 LOGIN_URL_NAME = 'auth/krb5login'
 LOGIN_EXEMPT_URLS = ('.*xmlrpc/.*')
-
-TEMPLATE_CONTEXT_PROCESSORS = (
-    #   django.core.context_processors
-    # was moved to
-    #   django.contrib.auth.context_processors
-    # in Django 1.2 and the old location removed in Django 1.4
-    'django.contrib.auth.context_processors.auth',
-    'django.core.context_processors.media',
-    'django.core.context_processors.request',
-    'kobo.django.menu.context_processors.menu_context_processor',
-    "django.core.context_processors.static",
-)
 
 INSTALLED_APPS = (
     'django.contrib.auth',
@@ -196,3 +186,5 @@ try:
     from .settings_local import *
 except ImportError:
     pass
+
+ALLOWED_HOSTS = ['covscan-dev']

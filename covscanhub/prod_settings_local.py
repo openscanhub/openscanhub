@@ -113,6 +113,10 @@ TEMPLATES = [
             'context_processors': [
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "django.template.context_processors.media",
+                "django.template.context_processors.request",
+                "kobo.django.menu.context_processors.menu_context_processor",
+                "django.template.context_processors.static",
             ],
         },
     },
