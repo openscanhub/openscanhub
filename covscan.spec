@@ -319,9 +319,6 @@ chmod 0755 $RPM_BUILD_ROOT%{python2_sitelib}/covscanhub/manage.py
 chmod 0755 $RPM_BUILD_ROOT%{python3_sitelib}/covscanhub/manage.py
 %endif
 
-%clean
-rm -rf $RPM_BUILD_ROOT
-
 %files client
 %defattr(644,root,root,755)
 %attr(755,root,root) /usr/bin/covscan
