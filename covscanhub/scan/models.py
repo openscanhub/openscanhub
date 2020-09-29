@@ -698,6 +698,7 @@ counted in statistics.")
             except Exception as e:
                 logger.error('Failed to get release specific waiver overdue \
 setting: %s', e)
+                return None
             return self.state in SCAN_STATES_PROCESSED or \
                 self.last_access > datetime.datetime.now() + d
         else:
