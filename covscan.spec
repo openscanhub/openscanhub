@@ -300,8 +300,8 @@ mkdir -p $RPM_BUILD_ROOT/var/lib/covscanhub/tasks
 mkdir -p $RPM_BUILD_ROOT/var/lib/covscanhub/upload
 
 # create log file
-mkdir -p $RPM_BUILD_ROOT/var/log
-touch $RPM_BUILD_ROOT/var/log/covscanhub.log
+mkdir -p $RPM_BUILD_ROOT/var/log/covscanhub
+touch $RPM_BUILD_ROOT/var/log/covscanhub/covscanhub.log
 
 # copy checker_groups.txt
 %if %{with python2}
@@ -336,7 +336,8 @@ chmod 0755 $RPM_BUILD_ROOT%{python3_sitelib}/covscanhub/manage.py
 %files hub-%{hub_instance}
 %defattr(-,root,apache,-)
 %attr(640,root,root) %config(noreplace) /etc/httpd/conf.d/covscanhub-httpd.conf
-%ghost %attr(640,apache,apache) /var/log/covscanhub.log
+%dir %attr(775,root,apache) /var/log/covscanhub
+%ghost %attr(640,apache,apache) /var/log/covscanhub/covscanhub.log
 %dir %attr(775,root,apache) /var/lib/covscanhub
 %dir %attr(775,root,apache) /var/lib/covscanhub/tasks
 %dir %attr(775,root,apache) /var/lib/covscanhub/upload
