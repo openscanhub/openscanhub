@@ -111,6 +111,7 @@ Requires: kobo-hub
 Requires: kobo-client
 Requires: kobo-django
 Requires: kobo-rpmlib
+Requires: boost-python2
 Requires: Django
 %if 0%{?rhel} <= 6
 # required by django 1.6
@@ -185,6 +186,7 @@ Requires: python3-kobo-client
 Requires: python3-kobo-django
 Requires: python3-kobo-rpmlib
 Requires: python3-django
+Requires: boost-python3
 %if 0%{?rhel} <= 6
 # required by django 1.6
 Requires: python-importlib
