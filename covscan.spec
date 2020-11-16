@@ -106,6 +106,7 @@ CovScan worker python2 library
 
 %package -n python2-%{name}-hub-%{hub_instance}
 Summary: CovScan xml-rpc interface and web application python2 library
+Requires: %{name}-hub-%{hub_instance}
 Requires: kobo-hub
 Requires: kobo-client
 Requires: kobo-django
@@ -178,6 +179,7 @@ CovScan worker python3 library
 
 %package -n python3-%{name}-hub-%{hub_instance}
 Summary: CovScan xml-rpc interface and web application python3 library
+Requires: %{name}-hub-%{hub_instance}
 Requires: python3-kobo-hub
 Requires: python3-kobo-client
 Requires: python3-kobo-django
@@ -193,7 +195,7 @@ Requires: mod_auth_kerb
 %else
 Requires: mod_auth_gssapi
 %endif
-Requires: mod_wsgi
+Requires: python3-mod_wsgi
 # PostgreSQL adapter for python
 Requires: python3-psycopg2
 Requires: gzip
