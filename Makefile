@@ -29,7 +29,7 @@ log:
 
 
 source: clean
-	@python setup.py sdist
+	@python setup.py sdist --formats=bztar
 
 RPM_VER = $(shell rpmspec -q --srpm --queryformat '%{version}' covscan.spec)
 GIT_VER = $(shell git describe | sed -e 's/^covscan-//' -e "s/-.*-/.$$(git log --pretty="%cd" --date=iso -1 | tr -d ':-' | tr ' ' . | cut -d. -f 1,2)./")
