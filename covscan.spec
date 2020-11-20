@@ -98,7 +98,7 @@ Requires: koji
 Requires: python2-koji
 
 # FIXME: conf.py should be moved to covscan-common shared by both the packages
-Requires: python2-%{name}-covscan-client
+Requires: python2-%{name}-client
 
 %description -n python2-%{name}-worker-%{hub_instance}
 CovScan worker python2 library
