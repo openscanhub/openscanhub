@@ -11,7 +11,7 @@ Install covscanhub
     # yum install python3-covscan-hub-prod
 
 
-Edit /etc/httpd/covscanhub-httpd.conf
+Edit /etc/httpd/conf.d/covscanhub-httpd.conf
 
 Edit ALLOWED_HOSTS at /usr/lib/python3.6/site-packages/covscanhub/settings.py
 
