@@ -1,0 +1,69 @@
+Install required repos
+    # yum install https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
+    # pushd /etc/yum.repos.d/
+    # curl -O https://copr.devel.redhat.com/coprs/mmuzila/covscan-testing-8/repo/epel-8/mmuzila-covscan-testing-8-epel-8.repo
+    # popd
+
+
+Enable CRB repo
+
+Install covscanhub
+    # yum install python3-covscan-hub-prod
+
+
+Edit /etc/httpd/covscanhub-httpd.conf
+
+Edit ALLOWED_HOSTS at /usr/lib/python3.6/site-packages/covscanhub/settings.py
+
+Start httpd
+    # setsebool -P httpd_can_network_connect 1
+    # systemctl enable --now httpd
+    # firewall-cmd --zone=public --add-port=80/tcp --permanent
+    # firewall-cmd --zone=public --add-port=443/tcp --permanent
+    # firewall-cmd --reload
+
+http://<hostname>/covscanhub should show up now
+
+Install and run postgresql
+    # yum install postgresql-server
+    # postgresql-setup initdb
+    # vim /var/lib/pgsql/data/pg_hba.conf
+        # TYPE  DATABASE    USER        CIDR-ADDRESS          METHOD
+        local   all         postgres                          ident
+        # "local" is for Unix domain socket connections only
+        local   all         all                               md5
+        # IPv4 local connections:
+        host    all         all         127.0.0.1/32          md5
+        # IPv6 local connections:
+        host    all         all         ::1/128               md5
+
+    # systemctl enable --now postgresql
+    # su - postgres -c psql
+         CREATE DATABASE covscanhub;
+         CREATE USER "covscanhub" WITH PASSWORD 'velryba';
+         GRANT ALL PRIVILEGES ON DATABASE "covscanhub" to "covscanhub";
+
+If creating new database
+    # python3 /usr/lib/python3.6/site-packages/covscanhub/manage.py migrate
+
+If restoring from db dump
+    # sudo -u postgres psql covscanhub < <db_dump>
+    # python3 /usr/lib/python3.6/site-packages/covscanhub/manage.py migrate --fake-init
+
+    If upgrading from old (pre 2021) covscan database, previous command will
+    end up with an error. Table "django_migrations" (I don't know why) does not
+    contain records about previous migrations. They must be entered manually one
+    by one always followed bu running previous command, depending on the error
+    the previous command ends with.
+        # psql -U covscanhub covscanhub
+
+    list of possible commands:
+
+        > insert into django_migrations (app, name, applied) values('hub', '0002_auto_20150722_0612', now());
+        > insert into django_migrations (app, name, applied) values('hub', '0003_auto_20160202_0647', now());
+        > insert into django_migrations (app, name, applied) values('errata', '0002_auto_20190611_1325', now());
+        > insert into django_migrations (app, name, applied) values('scan', '0002_auto_20190611_1325', now());
+
+
+Set KRB_AUTH_PRINCIPAL at /usr/lib/python3.6/site-packages/covscanhub/settings_local.py
+Edit kerberos settings at /etc/httpd/covscanhub-httpd.conf
