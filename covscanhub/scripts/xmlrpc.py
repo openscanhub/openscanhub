@@ -226,60 +226,13 @@ class Client(object):
         filters = {k:v for k, v in filters.items() if v is not None} # removes None values from dictionary
         return str(self.hub.scan.get_filtered_scan_list(filters))
 
-    def get_krb_chain(self):
-        """
-        authenticates against RPC server using kerberos with
-        locally initialized ticket
-        """
-        def get_server_principal(service=None, realm=None):
-            """Convert hub url to kerberos principal."""
-            hostname = six.moves.urllib.parse.urlparse(self.hub_url)[1]
-            # remove port from hostname
-            hostname = hostname.split(":")[0]
-
-            if realm is None:
-                # guess realm: last two parts from hostname
-                realm = ".".join(hostname.split(".")[-2:]).upper()
-            if service is None:
-                service = "HTTP"
-            return (realm, '%s/%s@%s' % (service, hostname, realm))
-        import krbV
-        ctx = krbV.default_context()
-        ccache = ctx.default_ccache()
-        cprinc = ccache.principal()
-        realm, sprinc_str = get_server_principal()
-        print(sprinc_str)
-        sprinc = krbV.Principal(name=sprinc_str, context=ctx)
-
-        ac = krbV.AuthContext(context=ctx)
-        ac.flags = krbV.KRB5_AUTH_CONTEXT_DO_SEQUENCE | \
-                   krbV.KRB5_AUTH_CONTEXT_DO_TIME
-        ac.rcache = ctx.default_rcache()
-
-        try:
-            ac, req = ctx.mk_req(server=sprinc, client=cprinc,
-                                 auth_context=ac, ccache=ccache,
-                                 options=krbV.AP_OPTS_MUTUAL_REQUIRED)
-        except krbV.Krb5Error as ex:
-            print(ex)
-            if getattr(ex, "err_code", None) == -1765328377:
-                ex.message += ". Make sure you correctly set \
-    KRB_REALM (current value: %s)." % realm
-                ex.args = (ex.err_code, ex.message)
-            raise ex
-        return base64.encodestring(req)
-
     def login(self):
         """
-        Perform login: either via username/password, or via kerberos
+        Perform login via username/password if the credentials were provided
         """
-        logger.info("performing login")
         if self.username and self.password:
-            logger.info("username/password login")
+            logger.info("performing username/password login")
             self.hub.auth.login_password(self.username, self.password)
-        else:
-            logger.info("kerberos login")
-            self.hub.auth.login_krbv(self.get_krb_chain())
 
     def create_et_scan(self, base, target, advisory_id, et_id, owner, release):
         """

@@ -43,5 +43,5 @@
   LoadModule dumpio_module modules/mod_dumpio.so
   DumpIOInput On
   DumpIOOutput On
-  DumpIOLogLevel notice
+  LogLevel dumpio:trace7
   ```
