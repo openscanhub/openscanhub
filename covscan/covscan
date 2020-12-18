@@ -35,6 +35,10 @@ def main(args=None):
         conf["HUB_URL"] = "https://cov01.lab.eng.brq.redhat.com/covscanhub/xmlrpc"
         sys.stderr.write("warning: forcing %s as HUB_URL, please update covscan configuration!\n" % conf["HUB_URL"])
 
+    if sys.version_info[0] >= 3 and conf['AUTH_METHOD'] == 'krbv':
+        # there is no 'krbv' for py3 --> use 'gssapi' instead
+        conf['AUTH_METHOD'] = 'gssapi'
+
     # initialize command container
     command_container = CovScanCommandContainer(conf)
     parser = kobo.cli.CommandOptionParser(
