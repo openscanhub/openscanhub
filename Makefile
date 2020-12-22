@@ -14,14 +14,14 @@ help:
 
 
 clean:
-	@python2 setup.py clean
+	@python setup.py clean
 	rm -f MANIFEST
 	rm -f ./*.src.rpm
 	find . -\( -name "*.pyc" -o -name '*.pyo' -o -name "*~" -\) -delete
 
 
 install:
-	@python2 setup.py install
+	@python setup.py install
 
 
 log:
@@ -29,7 +29,7 @@ log:
 
 
 source: clean
-	@python2 setup.py sdist
+	@python setup.py sdist
 
 RPM_VER = $(shell rpmspec -q --srpm --queryformat '%{version}' covscan.spec)
 GIT_VER = $(shell git describe | sed -e 's/^covscan-//' -e "s/-.*-/.$$(git log --pretty="%cd" --date=iso -1 | tr -d ':-' | tr ' ' . | cut -d. -f 1,2)./")
