@@ -2,7 +2,7 @@ FROM rhel6
 RUN set -ex ; \
     cd /etc/yum.repos.d && curl -Ls -O https://cov01.lab.eng.brq.redhat.com/coverity/install/covscan/covscan-rhel-6.repo && \
     curl -sL -O https://download.devel.redhat.com/rel-eng/RCMTOOLS/rcm-tools-rhel-6-server.repo && \
-    printf "[latest-rhel6]\nname=latest-rhel6\nbaseurl=https://pulp.dist.prod.ext.phx2.redhat.com/content/dist/rhel/server/6/6Server/x86_64/os/\nenabled=1\ngpgcheck=0\n" >/etc/yum.repos.d/rhel6.repo && \
+    printf "[latest-rhel6]\nname=latest-rhel6\nbaseurl=https://rhsm-pulp.corp.redhat.com/content/dist/rhel/server/6/6Server/x86_64/os/\nenabled=1\ngpgcheck=0\n" >/etc/yum.repos.d/rhel6.repo && \
     yum install -y https://download.eng.brq.redhat.com/pub/fedora/epel/6/x86_64/epel-release-6-8.noarch.rpm && \
     yum install --enablerepo=covscan-testing -y \
         https://kojipkgs.fedoraproject.org//packages/mock/1.1.41/1.el6/noarch/mock-1.1.41-1.el6.noarch.rpm \
