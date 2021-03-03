@@ -1,4 +1,4 @@
-#!/usr/bin/python -tt
+#!/usr/bin/python3 -tt
 """
 
 This is an XML-RPC client for covscan hub
@@ -14,7 +14,7 @@ This is an XML-RPC client for covscan hub
 
 ### CREATE SCAN
 
- ./covscanhub/scripts/xmlrpc.py --username=admin --password=admin
+ ./covscanhub/scripts/covscan-xmlrpc-client.py --username=admin --password=admin
     --hub http://127.0.0.1:8000/xmlrpc/kerbauth/  # has to end with '/'
     create-scan
     -b python-six-1.3.0-4.el7 -t python-six-1.9.0-2.el7
@@ -26,14 +26,14 @@ This is an XML-RPC client for covscan hub
 bear in mind that you need to use ID which is returned by "create-scan" -- that's what errata is
 using
 
-./covscanhub/scripts/xmlrpc.py --hub http://127.0.0.1:8000/xmlrpc/kerbauth/ get-scan-state 13
+./covscanhub/scripts/covscan-xmlrpc-client.py --hub http://127.0.0.1:8000/xmlrpc/kerbauth/ get-scan-state 13
 
 
 ### GET FILTERED SCAN
 
 filter scans according to optional filters, hub url is slightly changed!
 
-./covscanhub/scripts/xmlrpc.py --hub http://127.0.0.1:8000/xmlrpc/client/ get-filtered-scan-list \
+./covscanhub/scripts/covscan-xmlrpc-client.py --hub http://127.0.0.1:8000/xmlrpc/client/ get-filtered-scan-list \
    --target 'python-six-1.9.0-2.el7' --base 'python-six-1.3.0-4.el7' --username='admin' \
    --state-type "BASE_SCANNING" --release='rhel-7.2'
 
@@ -51,13 +51,10 @@ File: "/usr/lib/python2.7/site-packages/kobo/xmlrpc.py"
 
 """
 
-from __future__ import print_function
 import json
 import sys
 import logging
-import six.moves.xmlrpc_client
-import six.moves.urllib.parse
-import base64
+import xmlrpc.client
 import datetime
 
 import argparse
@@ -79,7 +76,7 @@ ch.setFormatter(formatter)
 # add ch to logger
 logger.addHandler(ch)
 
-six.moves.xmlrpc_client.Fault.__repr__ = lambda x: "<Fault %s: %s>" % (x.faultCode, str(x.faultString))
+xmlrpc.client.Fault.__repr__ = lambda x: "<Fault %s: %s>" % (x.faultCode, str(x.faultString))
 
 
 def create_scan_cmd(options, hub):
@@ -198,7 +195,7 @@ class Client(object):
         else:
             raise ValueError("URL to hub has to start with http(s): %r" % self.hub_url)
         logger.info("connecting to %s", self.hub_url)
-        client = six.moves.xmlrpc_client.ServerProxy(self.hub_url, allow_none=True, transport=transport,
+        client = xmlrpc.client.ServerProxy(self.hub_url, allow_none=True, transport=transport,
                                        verbose=self.verbose)
         return client
 
