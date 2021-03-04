@@ -176,13 +176,13 @@
 
 - create Errata Scan (without Kerberos) - new pkg:
     # git clone https://gitlab.cee.redhat.com/covscan/covscan.git
-    # covsan/covscanhub/scripts/xmlrpc.py --hub http://covscan-dev/covscanhub/xmlrpc/kerbauth/ --username=kdudka --password=xxxxxx create-scan -t curl-7.29.0-25.el7 --et-scan-id 1234 --advisory-id 4567 --owner kdudka --release RHEL-7.7.0 --base NEW_PACKAGE
+    # covsan/covscanhub/scripts/covscan-xmlrpc-client.py --hub http://covscan-dev/covscanhub/xmlrpc/kerbauth/ --username=kdudka --password=xxxxxx create-scan -t curl-7.29.0-25.el7 --et-scan-id 1234 --advisory-id 4567 --owner kdudka --release RHEL-7.7.0 --base NEW_PACKAGE
 
 - create Errata Scan (without Kerberos) - update:
-    # covscan/covscanhub/scripts/xmlrpc.py --hub http://covscan-dev/covscanhub/xmlrpc/kerbauth/ --username=kdudka --password=xxxxxx create-scan -t curl-7.29.0-55.el7 --et-scan-id 1234 --advisory-id 4567 --owner kdudka --release RHEL-7.7.0 --base curl-7.29.0-25.el7
+    # covscan/covscanhub/scripts/covscan-xmlrpc-client.py --hub http://covscan-dev/covscanhub/xmlrpc/kerbauth/ --username=kdudka --password=xxxxxx create-scan -t curl-7.29.0-55.el7 --et-scan-id 1234 --advisory-id 4567 --owner kdudka --release RHEL-7.7.0 --base curl-7.29.0-25.el7
 
 - create Errata Scan with Kerberos:
-    # covscan/covscanhub/scripts/xmlrpc.py --hub https://covscan-stage.lab.eng.brq2.redhat.com/covscanhub/xmlrpc/kerbauth/ create-scan -t curl-7.29.0-55.el7 --et-scan-id 1234 --advisory-id 4567 --owner kdudka --release RHEL-7.7.0 --base curl-7.29.0-25.el7
+    # covscan/covscanhub/scripts/covscan-xmlrpc-client.py --hub https://covscan-stage.lab.eng.brq2.redhat.com/covscanhub/xmlrpc/kerbauth/ create-scan -t curl-7.29.0-55.el7 --et-scan-id 1234 --advisory-id 4567 --owner kdudka --release RHEL-7.7.0 --base curl-7.29.0-25.el7
 
 - reset password for a user:
     # /usr/lib/python2.7/site-packages/covscanhub/manage.py shell
