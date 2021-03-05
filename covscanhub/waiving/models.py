@@ -217,7 +217,7 @@ class DefectQuerySet(models.query.QuerySet, DefectMixin):
 
 
 class DefectManager(models.Manager, DefectMixin):
-    def get_query_set(self):
+    def get_queryset(self):
         """ return all active waivers """
         return DefectQuerySet(self.model, using=self._db)
 
@@ -314,7 +314,7 @@ class ResultGroupQuerySet(models.query.QuerySet, ResultGroupMixin):
 
 
 class ResultGroupManager(models.Manager, ResultGroupMixin):
-    def get_query_set(self):
+    def get_queryset(self):
         """ return all active waivers """
         return ResultGroupQuerySet(self.model, using=self._db)
 
@@ -532,7 +532,7 @@ class WaiverOnlyQuerySet(models.query.QuerySet, WaiverOnlyMixin):
 
 
 class WaiverOnlyManager(models.Manager, WaiverOnlyMixin):
-    def get_query_set(self):
+    def get_queryset(self):
         """ return all active waivers """
         return WaiverOnlyQuerySet(self.model, using=self._db).filter(is_deleted=False).filter(is_active=True)
 
@@ -630,7 +630,7 @@ class WaivingLogQuerySet(models.query.QuerySet, WaivingLogMixin):
 
 
 class WaivingLogManager(models.Manager, WaivingLogMixin):
-    def get_query_set(self):
+    def get_queryset(self):
         """ return all active waivers """
         return WaivingLogQuerySet(self.model, using=self._db)
 

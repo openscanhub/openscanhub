@@ -141,7 +141,7 @@ class MockConfigQuerySet(models.query.QuerySet, MockConfigMixin):
 
 
 class MockConfigManager(models.Manager, MockConfigMixin):
-    def get_query_set(self):
+    def get_queryset(self):
         return MockConfigQuerySet(self.model, using=self._db)
 
 
@@ -175,7 +175,7 @@ class SystemReleaseQuerySet(models.query.QuerySet, SystemReleaseMixin):
 
 
 class SystemReleaseManager(models.Manager, SystemReleaseMixin):
-    def get_query_set(self):
+    def get_queryset(self):
         return SystemReleaseQuerySet(self.model, using=self._db)
 
 
@@ -233,7 +233,7 @@ class TagQuerySet(models.query.QuerySet, TagMixin):
 
 
 class TagManager(models.Manager, TagMixin):
-    def get_query_set(self):
+    def get_queryset(self):
         return TagQuerySet(self.model, using=self._db)
 
 
@@ -266,7 +266,7 @@ class PackageQuerySet(models.query.QuerySet, PackageMixin):
 
 
 class PackageManager(models.Manager, PackageMixin):
-    def get_query_set(self):
+    def get_queryset(self):
         return PackageQuerySet(self.model, using=self._db)
 
 
@@ -401,7 +401,7 @@ class PackageAttributeQuerySet(models.query.QuerySet, PackageAttributeMixin):
 
 
 class PackageAttributeManager(models.Manager, PackageAttributeMixin):
-    def get_query_set(self):
+    def get_queryset(self):
         return PackageAttributeQuerySet(self.model, using=self._db)
 
 
@@ -513,7 +513,7 @@ class PackageCapabilityQuerySet(models.query.QuerySet, PackageCapabilityMixin):
 
 
 class PackageCapabilityManager(models.Manager, PackageCapabilityMixin):
-    def get_query_set(self):
+    def get_queryset(self):
         return PackageCapabilityQuerySet(self.model, using=self._db)
 
 
@@ -553,7 +553,7 @@ class ScanQuerySet(models.query.QuerySet, ScanMixin):
 
 
 class ScanManager(models.Manager, ScanMixin):
-    def get_query_set(self):
+    def get_queryset(self):
         return ScanQuerySet(self.model, using=self._db)
 
 
@@ -566,7 +566,7 @@ class ScanTargetQuerySet(models.query.QuerySet, ScanTargetMixin):
 
 
 class ScanTargetManager(models.Manager, ScanTargetMixin):
-    def get_query_set(self):
+    def get_queryset(self):
         return ScanTargetQuerySet(self.model, using=self._db).filter(scan_type__in=SCAN_TYPES_TARGET)
 
 
@@ -879,12 +879,12 @@ class ScanBindingQuerySet(models.query.QuerySet, ScanBindingMixin):
 
 
 class ScanBindingManager(models.Manager, ScanBindingMixin):
-    def get_query_set(self):
+    def get_queryset(self):
         return ScanBindingQuerySet(self.model, using=self._db)
 
 
 class TargetScanBindingManager(models.Manager, ScanBindingMixin):
-    def get_query_set(self):
+    def get_queryset(self):
         return ScanBindingQuerySet(self.model, using=self._db).filter(scan__scan_type__in=SCAN_TYPES_TARGET)
 
 
@@ -1196,7 +1196,7 @@ class ClientAnalyzerQuerySet(models.query.QuerySet, ClientAnalyzerMixin):
 
 
 class ClientAnalyzerManager(models.Manager, ClientAnalyzerMixin):
-    def get_query_set(self):
+    def get_queryset(self):
         return ClientAnalyzerQuerySet(self.model, using=self._db)
 
 

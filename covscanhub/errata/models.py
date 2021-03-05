@@ -76,7 +76,7 @@ class ScanningSessionBindingQuerySet(models.query.QuerySet, ScanningSessionBindi
 
 
 class ScanningSessionBindingManager(models.Manager, ScanningSessionBindingMixin):
-    def get_query_set(self):
+    def get_queryset(self):
         return ScanningSessionBindingQuerySet(self.model, using=self._db)
 
 
