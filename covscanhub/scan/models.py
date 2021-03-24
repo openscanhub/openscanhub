@@ -1216,6 +1216,9 @@ class ClientAnalyzer(models.Model):
 
     objects = ClientAnalyzerManager()
 
+    class Meta:
+        ordering = ['analyzer', 'version']
+
     def __unicode__(self):
         return u"%s %s" % (self.analyzer, self.version)
 
@@ -1319,6 +1322,9 @@ class Profile(models.Model):
                   "optionally add key csmock_args, which is a string")
 
     objects = ProfileManager()
+
+    class Meta:
+        ordering = ['name']
 
     def __unicode__(self):
         return u"%s: %s" % (self.name, self.command_arguments)
