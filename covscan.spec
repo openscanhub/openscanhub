@@ -78,7 +78,7 @@ CovScan xml-rpc interface and web application
 %if %{with python2}
 %package -n python2-%{name}-client
 Summary: CovScan CLI client python2 library
-Requires: kobo-client >= 0.6.0
+Requires: kobo-client >= 0.8.0
 Requires: koji
 Requires: python-krbV
 Requires: python2-koji
@@ -154,7 +154,7 @@ CovScan xml-rpc interface and web application python2 library
 %if %{with python3}
 %package -n python3-%{name}-client
 Summary: CovScan CLI client python3 library
-Requires: python3-kobo-client >= 0.6.0
+Requires: python3-kobo-client >= 0.15.1-100
 Requires: koji
 Requires: python3-koji
 
