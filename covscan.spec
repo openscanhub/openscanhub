@@ -14,7 +14,7 @@
 %endif
 
 Name:           covscan
-Version:        0.7.0
+Version:        0.7.1
 Release:        1%{?dist}
 License:        Commercial
 Summary:        Coverity scan scheduler
@@ -382,6 +382,9 @@ chmod 0755 $RPM_BUILD_ROOT%{python3_sitelib}/covscanhub/manage.py
 
 
 %changelog
+* Thu Mar 25 2021 Kamil Dudka <kdudka@redhat.com> - 0.7.1-1
+- new release
+
 * Tue Dec 22 2020 Kamil Dudka <kdudka@redhat.com> - 0.7.0-1
 - new release
 
