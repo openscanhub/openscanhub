@@ -155,6 +155,9 @@ def ensure_cache(request, mock_config, scanning_session_id):
     """
     make sure that cache with version of analyzers is not stale
     """
+    if mock_config == 'rhel-9-beta-x86_64':
+        # FIXME: hard-coded at two places for now
+        mock_config = 'rhel-9-alpha-x86_64'
     if not AnalyzerVersion.objects.is_cache_uptodate(mock_config):
         session = ScanningSession.objects.get(id=scanning_session_id)
         analyzers = session.profile.analyzers
@@ -178,6 +181,9 @@ def ensure_base_is_scanned_properly(request, scan_id, task_id):
         scanning_session = ScanningSession.objects.get(id=task.args['scanning_session'])
         base_nvr = task.args['base_nvr']
         mock_config = scan.tag.mock.name
+        if mock_config == 'rhel-9-beta-x86_64':
+            # FIXME: hard-coded at two places for now
+            mock_config = 'rhel-9-alpha-x86_64'
         logger.debug("Looking for base scan '%s', mock_config: %s", base_nvr, mock_config)
         try:
             base_scan = obtain_base2(base_nvr, mock_config)
