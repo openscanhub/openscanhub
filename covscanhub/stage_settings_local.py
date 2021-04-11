@@ -116,6 +116,24 @@ TEMPLATE_DIRS = (
     os.path.join(os.path.dirname(kobo.__file__), "hub", "templates"),
 )
 
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': TEMPLATE_DIRS,
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                "django.contrib.auth.context_processors.auth",
+                "django.contrib.messages.context_processors.messages",
+                "django.template.context_processors.media",
+                "django.template.context_processors.request",
+                "kobo.django.menu.context_processors.menu_context_processor",
+                "django.template.context_processors.static",
+            ],
+        },
+    },
+]
+
 ###############################################################################
 # COVSCAN SPECIFIC
 ###############################################################################
@@ -153,3 +171,5 @@ QPID_CONNECTION = {
     'mechanism': "GSSAPI",
     'routing_key': "covscan.scan",
 }
+
+ALLOWED_HOSTS = ['covscan-stage.lab.eng.brq2.redhat.com']

@@ -159,3 +159,5 @@ QPID_CONNECTION = {
     'mechanism': "GSSAPI",
     'routing_key': "covscan.scan",
 }
+
+ALLOWED_HOSTS = ['cov01.lab.eng.brq.redhat.com']

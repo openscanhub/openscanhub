@@ -162,3 +162,5 @@ QPID_CONNECTION = {
     'mechanism': "GSSAPI",
     'routing_key': 'covscan.scan',
 }
+
+ALLOWED_HOSTS = ['covscan-dev']
