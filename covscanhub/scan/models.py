@@ -938,7 +938,7 @@ class ScanBinding(models.Model):
             for sb_a in sb_analyzers:
                 if a.analyzer.name == sb_a.analyzer.name:
                     # FIXME: move this list to the database to ease updates
-                    if a.analyzer.name in ["gcc", "clang"]:
+                    if a.analyzer.name in ["gcc", "gcc-analyzer", "clang"]:
                         # version of gcc/clang is not under our control anyway
                         break
                     if not a.version == sb_a.version:

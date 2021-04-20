@@ -7,7 +7,7 @@
 
 - client certificates
     - stage: https://ca02.pki.prod.int.phx2.redhat.com:8443/ca/ee/ca/displayBySerial?serialNumber=268372850
-    - prod:  https://ca02.pki.prod.int.phx2.redhat.com:8443/ca/ee/ca/displayBySerial?serialNumber=268373827
+    - prod:  https://ca01.pki.prod.int.phx2.redhat.com:8443/ca/ee/ca/displayBySerial?serialNumber=12871
 
 - tickets requesting access to UMB:
     - stage: RITM0331163
