@@ -10,7 +10,6 @@ from __future__ import absolute_import
 import os
 import logging
 import pipes
-import re
 import shutil
 from kobo.django.upload.models import FileUpload
 from covscanhub.errata.check import check_analyzers, check_srpm, check_upload
@@ -207,11 +206,6 @@ class AbstractTargetScheduler(AbstractScheduler):
 
         self.tag = Tag.objects.for_release_str(self.options['release'])
         mock_config = self.tag.mock.name
-
-        # FIXME: do not hard-code these rules
-        if re.match('^rhel-8.*-x86_64$', mock_config):
-            if re.match('^.*\.module\+el8(\.[0-9])?(\.[0-9])?(\.[0-9])?\+.*$', self.task_args['label']):
-                mock_config = re.sub('-x86_64$', '-mod-x86_64', mock_config)
 
         self.task_args['args']['mock_config'] = mock_config
         self.scan_args['tag'] = self.tag
