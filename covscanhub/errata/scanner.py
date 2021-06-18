@@ -214,9 +214,14 @@ class AbstractTargetScheduler(AbstractScheduler):
         if mock_config == "cspodman":
             # TODO: make this configurable
             self.task_args['priority'] = 8
-        elif self.package.name.endswith("-container"):
-            raise PackageNotEligibleException(
-                'Container %s is not eligible for scanning.' % (self.package.name))
+        else:
+            pkg_name = self.package.name
+            # TODO: make this configurable
+            if pkg_name.startswith("kpatch-patch"):
+                raise PackageNotEligibleException('kpatch-patch is not eligible for scanning.')
+            elif pkg_name.endswith("-container"):
+                raise PackageNotEligibleException(
+                    'Container %s is not eligible for scanning.' % (self.package.name))
 
         check_package_is_blocked(self.package, self.tag.release)
         check_obsolete_scan(self.package, self.tag.release)
