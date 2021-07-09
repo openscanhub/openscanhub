@@ -1,4 +1,4 @@
-#!/usr/bin/python2 -tt
+#!/usr/bin/env -S PYTHONNOUSERSITE=1 /usr/bin/python3 -tt
 # -*- coding: utf-8 -*-
 
 from __future__ import absolute_import

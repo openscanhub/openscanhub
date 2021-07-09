@@ -254,6 +254,8 @@ rm -rf ${RPM_BUILD_ROOT}
 %py3_install
 %endif
 
+# avoid transforming /usr/bin/env -S ... to /usr/bin/-S
+%global __brp_mangle_shebangs_exclude_from %{_bindir}/covscan
 
 mv $RPM_BUILD_ROOT/%{_sysconfdir}/httpd/conf.d/%{hub_instance}-covscanhub-httpd.conf \
    $RPM_BUILD_ROOT/%{_sysconfdir}/httpd/conf.d/covscanhub-httpd.conf
@@ -286,6 +288,7 @@ mv $RPM_BUILD_ROOT/%{python2_sitelib}/covscanhub/%{hub_instance}_settings_local.
 rm $RPM_BUILD_ROOT/%{python2_sitelib}/covscanhub/prod_settings_local.py* || :
 rm $RPM_BUILD_ROOT/%{python2_sitelib}/covscanhub/stage_settings_local.py* || :
 rm $RPM_BUILD_ROOT/%{python2_sitelib}/covscanhub/devel_settings_local.py* || :
+sed -r -i '1s|^#!.*$|#!/usr/bin/python2|' $RPM_BUILD_ROOT/%{_bindir}/covscan
 %endif
 
 %if %{with python3}
@@ -294,7 +297,6 @@ mv $RPM_BUILD_ROOT/%{python3_sitelib}/covscanhub/%{hub_instance}_settings_local.
 rm $RPM_BUILD_ROOT/%{python3_sitelib}/covscanhub/prod_settings_local.py* || :
 rm $RPM_BUILD_ROOT/%{python3_sitelib}/covscanhub/stage_settings_local.py* || :
 rm $RPM_BUILD_ROOT/%{python3_sitelib}/covscanhub/devel_settings_local.py* || :
-sed -r -i 's|(#!/usr/bin/python)2|\13|' $RPM_BUILD_ROOT/%{_bindir}/covscan
 %endif
 
 # create /var/lib dirs
