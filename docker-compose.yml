@@ -1,0 +1,43 @@
+version: '3'
+
+services:
+  db:
+    image: docker.io/library/postgres:12
+    container_name: db
+    environment:
+      POSTGRES_PASSWORD: velryba
+      POSTGRES_USER: covscanhub
+    ports:
+      - "5432:5432"
+    networks:
+      - internal-network
+
+  covscanhub:
+    image: localhost/covscanhub
+    container_name: covscanhub
+    depends_on:
+      - db
+    ports:
+      - "8000:8000"
+    networks:
+      - internal-network
+    volumes:
+      - ./:/src:z
+    stdin_open: true
+    tty: true
+
+  covscanworker:
+    image: localhost/covscanworker
+    container_name: covscanworker
+    depends_on:
+      - covscanhub
+    networks:
+      - internal-network
+    volumes:
+      - ./:/src:z
+    privileged: true
+    stdin_open: true
+    tty: true
+
+networks:
+  internal-network:

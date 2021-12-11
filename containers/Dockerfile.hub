@@ -1,0 +1,43 @@
+FROM registry.access.redhat.com/ubi8/ubi
+
+EXPOSE 8000
+
+# Internal repository with all RHEL packages
+COPY containers/rhel-8-pulp.repo /etc/yum.repos.d/
+
+# Internal CA
+RUN cd /etc/pki/ca-trust/source/anchors/ && \
+    curl -O https://password.corp.redhat.com/RH-IT-Root-CA.crt && \
+    update-ca-trust
+
+# epel-release
+RUN dnf install -y https://kojipkgs.fedoraproject.org//packages/epel-release/8/13.el8/noarch/epel-release-8-13.el8.noarch.rpm
+
+# Some packages are not available from epel repository
+# so we have to take them directly from brew (RHEL builds)
+# - boots-* are dependencies of python3-csdiff
+# - python3-gssapi is a transitive dependency of python3-koji
+
+RUN dnf -y --setopt=tsflags=nodocs install \
+    /usr/bin/krb5-config \
+    boost-program-options \
+    boost-python3 \
+    boost-regex \
+    gcc \
+    gzip \
+    python3-bugzilla \
+    python3-csdiff \
+    python3-devel \
+    python3-django{,-debug-toolbar} \
+    python3-gssapi \
+    python3-koji \
+    python3-psycopg2 \
+    python3-qpid-proton \
+    python36 \
+    xz
+
+WORKDIR /src
+
+ENV PYTHONPATH=.:kobo
+
+CMD "./containers/run_hub.sh"

@@ -1,0 +1,40 @@
+FROM registry.access.redhat.com/ubi8/ubi
+
+# Internal repository with all RHEL packages
+COPY containers/rhel-8-pulp.repo /etc/yum.repos.d/
+
+# Internal CA
+RUN cd /etc/pki/ca-trust/source/anchors/ && \
+    curl -O https://password.corp.redhat.com/RH-IT-Root-CA.crt && \
+    update-ca-trust
+
+# epel-release
+RUN dnf install -y https://kojipkgs.fedoraproject.org//packages/epel-release/8/13.el8/noarch/epel-release-8-13.el8.noarch.rpm
+
+# Some packages are not available from epel repository
+# so we have to take them directly from brew (RHEL builds)
+# - python3-gssapi is a transitive dependency of python3-koji
+# - systemd-container and createrepo_c are needed for mock
+
+RUN dnf -y --setopt=tsflags=nodocs install \
+    boost-python3 \
+    boost-regex \
+    cppcheck \
+    csmock \
+    file \
+    gzip \
+    koji \
+    python3-gssapi \
+    python3-six \
+    python36 \
+    xz
+
+
+RUN adduser coverity -G mock
+
+WORKDIR /src
+
+ENV PYTHONPATH=.:kobo
+ENV COVSCAND_CONFIG_FILE=covscand/covscand-local.conf
+
+CMD ["python3.6", "covscand/covscand", "-f"]

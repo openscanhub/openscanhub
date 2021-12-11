@@ -1,3 +1,100 @@
+# Development environment
+
+As simple as possible development setup for all three major parts of Covscan pipeline. We want to make it compatible with Python 3.6 (the main Python in RHEL 8, supported for its whole lifetime) so we use that specific version inside and outside of the container.
+
+## Kobo
+
+Because we need to fix issues in Kobo as well as in Covscan, we should use it directly as cloned repository - this allows us to make changes in its code, test them and create a PR from them as quicky as possible.
+
+* Switch to the main covscan folder (where covscan, covscand, and covscanhub are).
+* Clone Kobo project: `git clone git@github.com:release-engineering/kobo.git`
+
+Note: Recently, we had to make some changes in kobo to improve its compatibility with Python 3 and newer Django. Until the fixes are merged upstream, use this fork instead of the official source: https://github.com/frenzymadness/kobo
+
+## Covscan worker
+
+Worker depends on some system packages not available from PyPI, needs to run under root user and has kinda complex setup which are all the reasons to run it in a container.
+
+Build the container via: `podman build -f containers/Dockerfile.worker -t covscanworker .`.
+
+Update `HUB_URL` and possibly other values in `covscand/covscand-local.conf`.
+
+## Covscan hub
+
+Because some of the dependencies of covscan hub are also not available on PyPI, we have to use containerized environment with all the important packages.
+
+### Prepare container images
+
+Just run `podman build -f containers/Dockerfile.hub -t covscanhub .` and after a while, you'll have container image ready.
+Also, pull container image for the database layer: `podman pull docker.io/library/postgres:12`.
+
+### Prepare the cluster
+
+Note: podman-compose 1.0.0 and newer does not support DNS resolution between containers out of the box so make sure that you have also its dnsname plugin installed (provided by podman-plugins RPM package in Fedora).
+
+Run `podman-compose up --no-start` - this commands prepares all the services and a network for them but doesn't start them.
+
+### Start the db and the hub
+
+Run the following commands each in the separated terminal windows so you can follow their outputs later:
+
+* `podman start -a db` and wait until it's ready for connections.
+* `podman start -a covscanhub`
+
+You can start the worker container in the same way, but not now as the hub is not yet ready for it.
+
+### First-time setup
+
+We need to:
+
+* import database dump, and
+* create users.
+
+#### Database
+
+* Download database backup from https://covscan-stage.lab.eng.brq2.redhat.com/covscanhub.db.gz
+* Import the database into the running container: `gzip -cd covscanhub.db.gz | podman exec -i db psql -h localhost -U covscanhub`
+
+#### Covscan hub users
+
+* Enter the interactive shell inside the running container: `podman exec -it covscanhub python3 covscanhub/manage.py shell`
+* Create user and admin:
+```py
+from django.contrib.auth import get_user_model
+User = get_user_model()
+User.objects.create_user('lbalhar', 'lbalhar@redhat.com', 'velryba')
+User.objects.create_superuser('admin', 'lbalhar@redhat.com', 'velryba')
+```
+or, if admin already exists, you can change admin pass like this:
+```py
+u = User.objects.get(username='admin')
+u.set_password('velryba')
+u.save()
+```
+
+After the first-time setup, all you need is `podman-compose stop` and `podman-compose start`. If, for any reason, you need to start from scratch, `podman-compose down` stops and destroys all the containers and `podman-compose up` starts their fresh copies. The last two commands work also for specific services so you can destroy also only the covscanhub instance and keep the db.
+
+This step also saves their configuration so you can start them individualy then via `podman start -a db`. It's good idea to start them in separated terminal windows so their outputs are not combined.
+
+#### Configuration of hub ← worker connection
+
+Go to admin interface and add a new worker with noarch, default channel and worker key from its config file.
+
+## Covscan client
+
+Update important settings in `covscan/covscan-local.conf` - namely HUB_URL, USERNAME, PASSWORD.
+
+Covscan client depends on six and koji Python modules. You should install them system-wide `dnf install python3-six python3-koji`.  You can also install them into a virtual environment `pip install six koji` but in that case, the packages like requests and urllib3 will ignore system-wide certificate authorities. In that case, setting `REQUESTS_CA_BUNDLE` env variable to something like `/etc/ssl/certs/ca-bundle.crt` might help.
+
+Covscan client should now be able to connect to the hub and send it tasks. You can test it by these commands:
+
+```
+COVSCAN_CONFIG_FILE=covscan/covscan-local.conf PYTHONPATH=.:kobo python3 covscan/covscan list-mock-configs
+COVSCAN_CONFIG_FILE=covscan/covscan-local.conf PYTHONPATH=.:kobo python3 covscan/covscan mock-build --config=fedora-35-x86_64 --brew-build curl-7.79.1-1.fc35
+```
+
+Note: You can also set these variables permanently to your bashrc.
+
 # Developing covscan
 
 
@@ -22,7 +119,7 @@
 
 There is a client for connecting to hub's XML-RPC API located in
 
-covscanhub/scripts/xmlrpc.py
+covscanhub/scripts/covscan-xmlrpc-client.py
 
 For more info, please check docstring of the script.
 

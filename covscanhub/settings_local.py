@@ -21,22 +21,13 @@ MANAGERS = ADMINS
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(PROJECT_DIR, 'db.sqlite'),
-        'USER': '',
-        'PASSWORD': '',
-        'HOST': '',
-        'PORT': '',
-        'ATOMIC_REQUESTS': True
-    }
-#    'migration': {
-#        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-#        'NAME': 'migration',
-#        'USER': 'covscanhub',
-#        'PASSWORD': 'velryba',
-#        'HOST': 'localhost',
-#        'PORT': '5432',
-#    }
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'covscanhub',
+        'USER': 'covscanhub',
+        'PASSWORD': 'velryba',
+        'HOST': 'db',
+        'PORT': '5432',
+    },
 }
 
 LOGGING = {
@@ -120,7 +111,14 @@ TEMPLATES = [
         'DIRS': TEMPLATE_DIRS,
         'APP_DIRS': True,
         'OPTIONS': {
-            # ... some options here ...
+            'context_processors': [
+                "django.contrib.auth.context_processors.auth",
+                "django.contrib.messages.context_processors.messages",
+                "django.template.context_processors.media",
+                "django.template.context_processors.request",
+                "kobo.django.menu.context_processors.menu_context_processor",
+                "django.template.context_processors.static",
+            ],
         },
     },
 ]
@@ -129,8 +127,8 @@ TEMPLATES = [
 # COVSCAN SPECIFIC
 ###############################################################################
 
-# Absolute path to task logs and other files
-FILES_PATH = '/var/lib/covscanhub'
+# Path to task logs and other files
+FILES_PATH = './covscanhub'
 
 # Files for kobo tasks with predefined structure
 TASK_DIR = os.path.join(FILES_PATH, 'tasks')
@@ -163,4 +161,4 @@ QPID_CONNECTION = {
     'routing_key': 'covscan.scan',
 }
 
-ALLOWED_HOSTS = ['covscan-dev']
+ALLOWED_HOSTS = ['localhost', 'covscanhub']
