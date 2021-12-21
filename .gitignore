@@ -9,3 +9,7 @@ MANIFEST
 .spyderproject
 *.src.rpm
 *~
+kobo/
+*.log
+*.pid
+*.db.gz
