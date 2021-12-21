@@ -69,7 +69,7 @@ class MockBuild(TaskBase):
                 print("No results available", file=sys.stderr)
                 self.fail()
             base_results = os.path.basename(results)
-            self.hub.upload_task_log(open(results, "r"),
+            self.hub.upload_task_log(open(results, "rb"),
                                      self.task_id, base_results)
         # first finish task, then fail if needed, so tarball gets unpacked
         self.hub.worker.finish_task(self.task_id)

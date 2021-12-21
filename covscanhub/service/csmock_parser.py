@@ -353,7 +353,7 @@ class CsmockRunner(object):
         check_cmd = ['file', '--mime-type', srpm_path]
         p = subprocess.Popen(check_cmd, stdout=subprocess.PIPE)
         mime_type, _ = p.communicate()
-        if not re.match('^.*application/x-rpm$', mime_type):
+        if not re.match(b'^.*application/x-rpm$', mime_type):
             print("unexpected MIME type: %s" % mime_type, file=sys.stderr)
             return (None, 2)
 
