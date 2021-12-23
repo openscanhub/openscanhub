@@ -1,16 +1,9 @@
 from types import ModuleType
 
 from django.contrib import admin
-from covscanhub.other.django_version import django_version_ge
-if django_version_ge('1.7.0'):
-    from django.contrib.admin.utils import quote
-else:
-    from django.contrib.admin.util import quote
+from django.contrib.admin.utils import quote
 from django.contrib.admin.views.main import ChangeList
-if django_version_ge('1.10.0'):
-    from django.urls import reverse, NoReverseMatch
-else:
-    from django.core.urlresolvers import reverse, NoReverseMatch
+from django.urls import reverse, NoReverseMatch
 from django.db.models import ForeignKey, OneToOneField, Count
 from django.db.models.base import ModelBase
 import six
@@ -23,10 +16,7 @@ def _get_admin_change_url(field):
     @type field: ForeignKey or OneToOneField
     '''
 
-    if django_version_ge('1.9.0'):
-        related_model = field.remote_field.model
-    else:
-        related_model = field.related.model
+    related_model = field.remote_field.model
 
     def f(obj):
         link_args = getattr(obj, field.attname)
@@ -183,30 +173,23 @@ def autoregister_admin(module, exclude_models=None, model_fields=None,
         for field in model._meta.many_to_many:
             admin_class.raw_id_fields.append(field.name)
             m2m_field_names.append(field.name)
-            if django_version_ge('1.9.0'):
-                change_list_url = _get_admin_changelist_url(
-                    field.name, field.remote_field.model, field.related_query_name())
-            else:
-                change_list_url = _get_admin_changelist_url(
-                    field.name, field.related.model, field.related_query_name())
+            change_list_url = _get_admin_changelist_url(
+                field.name, field.remote_field.model, field.related_query_name())
             admin_class.list_display.append(change_list_url)
 
         # add reversed relations
-        if django_version_ge('1.9.0'):
-            all_related_objects = [
-                f for f in model._meta.get_fields()
-                if (f.one_to_many or f.one_to_one)
-                and f.auto_created and not f.concrete
-                ]
-            all_related_many_to_many_objects = [
-                f for f in model._meta.get_fields(include_hidden=True)
-                if f.many_to_many and f.auto_created
+        all_related_objects = [
+            f for f in model._meta.get_fields()
+            if (f.one_to_many or f.one_to_one)
+            and f.auto_created and not f.concrete
             ]
-            reversed_related_objs = (all_related_objects +
-                                     all_related_many_to_many_objects)
-        else:
-            reversed_related_objs = (model._meta.get_all_related_objects() +
-                                     model._meta.get_all_related_many_to_many_objects())
+        all_related_many_to_many_objects = [
+            f for f in model._meta.get_fields(include_hidden=True)
+            if f.many_to_many and f.auto_created
+        ]
+        reversed_related_objs = (all_related_objects +
+                                    all_related_many_to_many_objects)
+
         allowed_reversed_relations = reversed_relations.get(model_name, [])
         for related in reversed_related_objs:
             related_name = related.field.related_query_name()

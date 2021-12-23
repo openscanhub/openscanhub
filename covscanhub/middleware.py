@@ -4,11 +4,8 @@ from django.http import HttpResponseRedirect
 from django.conf import settings
 from re import compile
 
-from covscanhub.other.django_version import django_version_ge
-if django_version_ge('1.10.0'):
-    from django.urls import reverse
-else:
-    from django.core.urlresolvers import reverse
+from django.urls import reverse
+
 
 def get_login_url():
     return reverse(settings.LOGIN_URL_NAME)

@@ -1,11 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import django.db.models as models
-from covscanhub.other.django_version import django_version_ge
-if django_version_ge('1.10.0'):
-    from django.urls import reverse
-else:
-    from django.core.urlresolvers import reverse
+from django.urls import reverse
 
 from covscanhub.scan.models import SystemRelease
 

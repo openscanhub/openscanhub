@@ -21,11 +21,7 @@ register_admin_module('project.app.models', new_fields={
 """
 
 from __future__ import absolute_import
-from covscanhub.other.django_version import django_version_ge
-if django_version_ge('1.10.0'):
-    from django.urls import reverse
-else:
-    from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.utils.safestring import mark_safe
 from django.contrib import admin
 from django.db import models as dmodels
@@ -39,18 +35,12 @@ def add_link_field(admin_class, field):
     field_name = field.name + '_link'
 
     def link(self, instance):
-        if django_version_ge('1.9.0'):
-            app_name = field.remote_field.parent_model._meta.app_label
-            reverse_path = "admin:%s_%s_change" % (
-                app_name,
-                field.remote_field.parent_model._meta.module_name
-            )
-        else:
-            app_name = field.related.parent_model._meta.app_label
-            reverse_path = "admin:%s_%s_change" % (
-                app_name,
-                field.related.parent_model._meta.module_name
-            )
+        app_name = field.remote_field.parent_model._meta.app_label
+        reverse_path = "admin:%s_%s_change" % (
+            app_name,
+            field.remote_field.parent_model._meta.module_name
+        )
+
         related_instance = getattr(instance, field.name)
         # it might point to None (foreignKey(null=True))
         if related_instance:

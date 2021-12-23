@@ -7,14 +7,8 @@ from __future__ import print_function
 from .models import StatResults, StatType
 from covscanhub.scan.models import SystemRelease
 
-from covscanhub.other.django_version import django_version_ge
-if django_version_ge('1.10.0'):
-    from django.urls import reverse
-    from django.shortcuts import render
-else:
-    from django.core.urlresolvers import reverse
-    from django.shortcuts import render_to_response
-    from django.template import RequestContext
+from django.urls import reverse
+from django.shortcuts import render
 from django.http import HttpResponse
 import json
 from collections import OrderedDict
@@ -33,12 +27,7 @@ def release_list(request, release_id):
             context['release']), stattype.detail_url(context['release'])
 
 
-    if django_version_ge('1.10.0'):
-        return render(request, "stats/list.html", context)
-    else:
-        return render_to_response("stats/list.html",
-                                  context,
-                                  context_instance=RequestContext(request))
+    return render(request, "stats/list.html", context)
 
 
 def stats_list(request):
@@ -54,12 +43,7 @@ def stats_list(request):
         context['results'][stattype] = stattype.display_value(), \
             stattype.detail_url()
 
-    if django_version_ge('1.10.0'):
-        return render(request, "stats/list.html", context)
-    else:
-        return render_to_response("stats/list.html",
-                                  context,
-                                  context_instance=RequestContext(request))
+    return render(request, "stats/list.html", context)
 
 
 def release_stats_detail(request, release_id, stat_id):
@@ -71,12 +55,7 @@ def release_stats_detail(request, release_id, stat_id):
                                   kwargs={'stat_id': stat_id,
                                           'release_id': release_id, })
 
-    if django_version_ge('1.10.0'):
-        return render(request, "stats/detail.html", context)
-    else:
-        return render_to_response("stats/detail.html",
-                                  context,
-                                  context_instance=RequestContext(request))
+    return render(request, "stats/detail.html", context)
 
 
 def stats_detail(request, stat_id):
@@ -85,12 +64,7 @@ def stats_detail(request, stat_id):
     context['results'] = display_values(context['type'])
     context['json_url'] = reverse('stats/detail/graph',
                                   kwargs={'stat_id': stat_id})
-    if django_version_ge('1.10.0'):
-        return render(request, "stats/detail.html", context)
-    else:
-        return render_to_response("stats/detail.html",
-                                  context,
-                                  context_instance=RequestContext(request))
+    return render(request, "stats/detail.html", context)
 
 
 def release_stats_detail_graph(request, stat_id, release_id):
