@@ -84,7 +84,7 @@ class ErrataDiffBuild(TaskBase):
             print('Retcode: %d' % retcode)
             if results is not None:
                 base_results = os.path.basename(results)
-                self.hub.upload_task_log(open(results, "r"),
+                self.hub.upload_task_log(open(results, "rb"),
                                          self.task_id, base_results)
             if retcode > 0:
                 print("Scanning have not completed successfully (%d)" % retcode, file=sys.stderr)

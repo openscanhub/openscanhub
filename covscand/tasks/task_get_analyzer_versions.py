@@ -44,7 +44,7 @@ class AnalyzerVersionRetriever(TaskBase):
             if not os.path.exists(path):
                     print("Tarball with results does not exist: %s" % path, file=sys.stderr)
             base_path = os.path.basename(path)
-            self.hub.upload_task_log(open(path, "r"),
+            self.hub.upload_task_log(open(path, "rb"),
                                      self.task_id, base_path)
 
         self.hub.worker.finish_analyzers_version_retrieval(self.task_id, base_path)
