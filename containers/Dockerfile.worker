@@ -37,6 +37,9 @@ RUN dnf install -y --enablerepo=rcm --repofrompath=rcm,http://download.eng.brq.r
 
 RUN adduser coverity -G mock
 
+# override config_opts['use_bootstrap'] from mock config to make it work in a container
+RUN sed -e 's|print_main_output=True"|&, "--no-bootstrap-chroot"|' -i /usr/bin/csmock
+
 WORKDIR /src
 
 ENV PYTHONPATH=.:kobo
