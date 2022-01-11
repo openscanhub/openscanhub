@@ -62,8 +62,8 @@ We need to:
 ```py
 from django.contrib.auth import get_user_model
 User = get_user_model()
-User.objects.create_user('lbalhar', 'lbalhar@redhat.com', 'velryba')
-User.objects.create_superuser('admin', 'lbalhar@redhat.com', 'velryba')
+User.objects.create_user('username', 'user@redhat.com', 'xxxxxx')
+User.objects.create_superuser('admin', 'user@redhat.com', 'xxxxxx')
 ```
 or, if admin already exists, you can change admin pass like this:
 ```py
