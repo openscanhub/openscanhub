@@ -23,6 +23,7 @@ RUN dnf -y --setopt=tsflags=nodocs install \
     boost-program-options \
     boost-python3 \
     boost-regex \
+    csdiff \
     gcc \
     gzip \
     python3-bugzilla \
