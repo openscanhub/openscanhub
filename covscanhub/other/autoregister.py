@@ -6,6 +6,7 @@ from django.contrib.admin.views.main import ChangeList
 from django.urls import reverse, NoReverseMatch
 from django.db.models import ForeignKey, OneToOneField, Count
 from django.db.models.base import ModelBase
+from django.utils.safestring import mark_safe
 import six
 
 
@@ -22,18 +23,18 @@ def _get_admin_change_url(field):
         link_args = getattr(obj, field.attname)
         if link_args is None:
             return u'(None)'
-        # we could use field.name to output __unicode__() of the related object,
+        # we could use field.name to output __str__() of the related object,
         # but that would require to prefetch related objects, which can be slow
         #link_text = u'%s %s' % (related_model.__name__, getattr(obj, field.attname))
         link_text = u'%s' % (getattr(obj, field.name))
 
         try:
             url = reverse('admin:%s_%s_change' %
-                          (related_model._meta.app_label, related_model._meta.module_name),
+                          (related_model._meta.app_label, related_model._meta.model_name),
                           args=[quote(link_args)])
         except NoReverseMatch:
             return link_text
-        return u'<a href="%s">%s</a>' % (url, link_text)
+        return mark_safe('<a href="%s">%s</a>' % (url, link_text))
     f.allow_tags = True
     f.short_description = field.name
     return f
@@ -50,10 +51,10 @@ def _get_admin_changelist_url(source_field_name, target_model, target_field_name
 
         try:
             url = reverse('admin:%s_%s_changelist' %
-                            (target_model._meta.app_label, target_model._meta.module_name))
+                            (target_model._meta.app_label, target_model._meta.model_name))
         except NoReverseMatch:
             return link_text
-        return u'<a href="%s?%s">%s</a>' % (url, link_cond, link_text)
+        return mark_safe('<a href="%s?%s">%s</a>' % (url, link_cond, link_text))
     f.allow_tags = True
     f.short_description = target_model.__name__
     return f
