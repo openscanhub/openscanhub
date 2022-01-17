@@ -15,7 +15,7 @@ describes value of this stat.")
     order = models.IntegerField()
     is_release_specific = models.BooleanField()
 
-    def __unicode__(self):
+    def __str__(self):
         return u"%s (%s)" % (self.key, self.comment)
 
     def display_value(self, release=None):
@@ -59,5 +59,5 @@ class StatResults(models.Model):
     class Meta:
         get_latest_by = "date"
 
-    def __unicode__(self):
+    def __str__(self):
         return u"%s = %s" % (self.stat.key, self.value)

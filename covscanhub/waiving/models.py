@@ -180,7 +180,7 @@ class Result(models.Model):
                 self.analyzers.add(av)
         logger.debug("used analyzers = %s", self.analyzers.all())
 
-    def __unicode__(self):
+    def __str__(self):
         return u"#%d" % self.id
 
 
@@ -262,7 +262,7 @@ current defect",
 
     objects = DefectManager()
 
-    def __unicode__(self):
+    def __str__(self):
         return "#%d Checker: (%s)" % (self.id, self.checker)
 
 
@@ -276,7 +276,7 @@ class CheckerGroup(models.Model):
     enabled = models.BooleanField(default=True, help_text="User may waive \
 only ResultGroups which belong to enabled CheckerGroups")
 
-    def __unicode__(self):
+    def __str__(self):
         return "#%d %s" % (self.id, self.name)
 
 
@@ -342,7 +342,7 @@ associated with this group.")
 
     objects = ResultGroupManager()
 
-    def __unicode__(self):
+    def __str__(self):
         return "#%d [%s - %s], Result: (%s)" % (
             self.id, self.checker_group.name, self.get_state_display(),
             self.result
@@ -472,7 +472,7 @@ class Checker(models.Model):
                               help_text="Name of group where does this \
 checker belong", on_delete=models.CASCADE)
 
-    def __unicode__(self):
+    def __str__(self):
         return "#%d %s, CheckerGroup: (%s)" % (self.id, self.name, self.group)
 
 
@@ -481,7 +481,7 @@ class Bugzilla(models.Model):
     package = models.ForeignKey(Package, on_delete=models.CASCADE)
     release = models.ForeignKey(SystemRelease, on_delete=models.CASCADE)
 
-    def __unicode__(self):
+    def __str__(self):
         return u"#%d BZ#%d (%s, %s.%d)" % (
             self.id,
             self.number,
@@ -566,7 +566,7 @@ waived for specific Result", on_delete=models.CASCADE)
         get_latest_by = "date"
         ordering = ("-date", )
 
-    def __unicode__(self):
+    def __str__(self):
         return u"#%d %s - %s, ResultGroup: (%s) BZ: %s" % (
             self.id,
             self.message,
@@ -656,7 +656,7 @@ class WaivingLog(models.Model):
     class Meta:
         ordering = ['date']
 
-    def __unicode__(self):
+    def __str__(self):
         return u"#%d %s (%s)" % (
             self.id,
             WAIVER_LOG_ACTIONS.get_value(self.state),

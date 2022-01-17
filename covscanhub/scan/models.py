@@ -150,7 +150,7 @@ class MockConfig(models.Model):
     class Meta:
         ordering = ("name", )
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     def export(self):
@@ -195,7 +195,7 @@ statistical data will be harvested for this system release.")
 
     objects = SystemReleaseManager()
 
-    def __unicode__(self):
+    def __str__(self):
         return u"%s -- %s.%d" % (self.tag, self.product, self.release)
 
     def get_child(self):
@@ -246,7 +246,7 @@ class Tag(models.Model):
 
     objects = TagManager()
 
-    def __unicode__(self):
+    def __str__(self):
         return "Tag: %s --> Mock: %s (%s)" % \
             (self.name, self.mock, self.release)
 
@@ -280,7 +280,7 @@ True, the package is blacklisted -- not accepted for scanning.", blank=True, nul
 
     objects = PackageManager()
 
-    def __unicode__(self):
+    def __str__(self):
         return "#%s %s" % (self.id, self.name)
 
     def calculateScanNumbers(self):
@@ -426,7 +426,7 @@ class PackageAttribute(models.Model):
 
     objects = PackageAttributeManager()
 
-    def __unicode__(self):
+    def __str__(self):
         return u"%s = %s (%s %s)" % (self.key, self.value, self.package, self.release)
 
     @classmethod
@@ -520,7 +520,7 @@ class PackageCapability(models.Model):
 
     objects = PackageCapabilityManager()
 
-    def __unicode__(self):
+    def __str__(self):
         return u"%s: %s" % (self.package, self.capability_set.all())
 
 
@@ -618,7 +618,7 @@ counted in statistics.")
     class Meta:
         get_latest_by = "date_submitted"
 
-    def __unicode__(self):
+    def __str__(self):
         prefix = u"#%s %s %s" % (self.id,
                                  self.nvr,
                                  self.get_state_display())
@@ -905,7 +905,7 @@ class ScanBinding(models.Model):
     class Meta:
         get_latest_by = "result__date_submitted"
 
-    def __unicode__(self):
+    def __str__(self):
         return u"#%d: Scan: %s | %s" % (self.id, self.scan, self.task)
 
     @classmethod
@@ -966,7 +966,7 @@ class ReleaseMapping(models.Model):
     class Meta:
         ordering = ['priority']
 
-    def __unicode__(self):
+    def __str__(self):
         return u"#%d (%d) %s %s" % (self.id, self.priority,
                                     self.release_tag, self.template)
 
@@ -996,7 +996,7 @@ class ETMapping(models.Model):
         help_text="Status of request"
     )
 
-    def __unicode__(self):
+    def __str__(self):
         return u"#%d Advisory: %s %s" % (self.id, self.advisory_id,
                                          self.latest_run)
 
@@ -1033,7 +1033,7 @@ class AppSettings(models.Model):
     class Meta:
         verbose_name_plural = "AppSettings"
 
-    def __unicode__(self):
+    def __str__(self):
         return u"%s = %s" % (self.key, self.value)
 
     @classmethod
@@ -1139,7 +1139,7 @@ class TaskExtension(models.Model):
     task = models.OneToOneField(Task, on_delete=models.CASCADE)
     secret_args = JSONField(default={})
 
-    def __unicode__(self):
+    def __str__(self):
         return u"%s %s" % (self.task, self.secret_args)
 
 
@@ -1216,7 +1216,7 @@ class ClientAnalyzer(models.Model):
     class Meta:
         ordering = ['analyzer', 'version']
 
-    def __unicode__(self):
+    def __str__(self):
         return u"%s %s" % (self.analyzer, self.version)
 
     @classmethod
@@ -1227,7 +1227,7 @@ class ClientAnalyzer(models.Model):
 class Analyzer(models.Model):
     name = models.CharField(max_length=64)
 
-    def __unicode__(self):
+    def __str__(self):
         return u"%s" % (self.name)
 
 
@@ -1284,7 +1284,7 @@ class AnalyzerVersion(models.Model):
     class Meta:
         get_latest_by = 'date_created'
 
-    def __unicode__(self):
+    def __str__(self):
         return u"%s-%s" % (self.analyzer, self.version)
 
 
@@ -1323,7 +1323,7 @@ class Profile(models.Model):
     class Meta:
         ordering = ['name']
 
-    def __unicode__(self):
+    def __str__(self):
         return u"%s: %s" % (self.name, self.command_arguments)
 
     @property

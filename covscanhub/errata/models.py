@@ -27,7 +27,7 @@ class Capability(models.Model):
     caps = models.ManyToManyField(PackageCapability)
     analyzers = models.ManyToManyField(Analyzer)
 
-    def __unicode__(self):
+    def __str__(self):
         return u"%s (%s)" % (self.name, self.function)
 
     def check_capability(self, nvr, mock_profile, package, release):
@@ -97,7 +97,7 @@ class ScanningSession(models.Model):
 
     objects = ScanningSessionBindingManager()
 
-    def __unicode__(self):
+    def __str__(self):
         return u"[%s %s]" % (self.name, self.options)
 
     def get_option(self, name):
