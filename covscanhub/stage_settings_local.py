@@ -5,13 +5,6 @@ Instance-specific settings.
 Staging instance
 """
 
-# import sys
-#
-# KOBO_DIR = '/home/brq/ttomecek/dev/kobo'
-#
-# if KOBO_DIR not in sys.path:
-#     sys.path.append(KOBO_DIR)
-
 import kobo
 import os
 
@@ -95,7 +88,7 @@ LOGGING = {
 # system time zone.
 TIME_ZONE = 'Europe/Prague'
 
-KRB_AUTH_PRINCIPAL = 'HTTP/covscan-stage.lab.eng.brq2.redhat.com@REDHAT.COM'
+KRB_AUTH_PRINCIPAL = 'HTTP/covscan.lab.eng.brq.redhat.com@REDHAT.COM'
 KRB_AUTH_KEYTAB = '/etc/httpd/conf/httpd.keytab'
 
 LANGUAGE_CODE = 'en-us'
@@ -151,10 +144,9 @@ LOGIN_URL_NAME = 'auth/krb5login'
 LOGIN_EXEMPT_URLS = ['.*xmlrpc/.*']
 
 BZ_URL = 'https://partner-bugzilla.redhat.com/xmlrpc.cgi'
-# BZ_URL = "https://bugzilla.redhat.com/xmlrpc.cgi"
 
-BZ_USER = "ttomecek@redhat.com"
-BZ_PSWD = "roflcopter" # not my actual passwd on live bz
+BZ_USER = "covscan-auto@redhat.com"
+BZ_PSWD = "xxxxxx"
 
 ET_URL = 'https://errata-web-01.host.stage.eng.bos.redhat.com'
 
@@ -172,4 +164,4 @@ QPID_CONNECTION = {
     'routing_key': "covscan.scan",
 }
 
-ALLOWED_HOSTS = ['covscan-stage.lab.eng.brq2.redhat.com']
+ALLOWED_HOSTS = ['covscan.lab.eng.brq.redhat.com']
