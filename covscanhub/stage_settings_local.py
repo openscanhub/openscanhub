@@ -143,8 +143,7 @@ UPLOAD_DIR = os.path.join(FILES_PATH, 'upload')
 LOGIN_URL_NAME = 'auth/krb5login'
 LOGIN_EXEMPT_URLS = ['.*xmlrpc/.*']
 
-BZ_URL = 'https://partner-bugzilla.redhat.com/xmlrpc.cgi'
-
+BZ_URL = "https://bugzilla.stage.redhat.com/xmlrpc.cgi"
 BZ_USER = "covscan-auto@redhat.com"
 BZ_PSWD = "xxxxxx"
 
