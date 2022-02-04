@@ -34,26 +34,23 @@ Note: podman-compose 1.0.0 and newer does not support DNS resolution between con
 
 Run `podman-compose up --no-start` - this commands prepares all the services and a network for them but doesn't start them.
 
-### Start the db and the hub
+### Start the db first
 
-Run the following commands each in the separated terminal windows so you can follow their outputs later:
+Run the following command in the separated terminal window so you can follow its outputs later: `podman start -a db` and wait until it's ready for connections.
 
-* `podman start -a db` and wait until it's ready for connections.
-* `podman start -a covscanhub`
+#### Restore the database from backup, if you want
 
-You can start the worker container in the same way, but not now as the hub is not yet ready for it.
-
-### First-time setup
-
-We need to:
-
-* import database dump, and
-* create users.
-
-#### Database
+If you want to, you can restore a database backup from the production server. If not, you can skip these steps and covscanhub will create an empty database for you.
 
 * Download database backup from https://covscan-stage.lab.eng.brq2.redhat.com/covscanhub.db.gz
 * Import the database into the running container: `gzip -cd covscanhub.db.gz | podman exec -i db psql -h localhost -U covscanhub`
+* Run the migration SQL script: `cat production_to_dev_database.sql | podman exec -i db psql -h localhost -U covscanhub`
+
+### Start the hub
+
+Now, you can start the hub with: `podman start -a covscanhub`. The hub will try to apply known migrations to your database. If it fails, all the migrations will be faked. Make sure your database is either empty or in a consistent state.
+
+You can start the worker container in the same way, but not now as the hub is not yet ready for it.
 
 #### Covscan hub users
 
@@ -65,8 +62,10 @@ User = get_user_model()
 User.objects.create_user('username', 'user@redhat.com', 'xxxxxx')
 User.objects.create_superuser('admin', 'user@redhat.com', 'xxxxxx')
 ```
-or, if admin already exists, you can change admin pass like this:
+or, if the users already exist, you can change admin pass like this:
 ```py
+from django.contrib.auth import get_user_model
+User = get_user_model()
 u = User.objects.get(username='admin')
 u.set_password('velryba')
 u.save()
