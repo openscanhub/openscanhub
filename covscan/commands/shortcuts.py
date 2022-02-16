@@ -94,11 +94,3 @@ def upload_file(hub, srpm, target_dir, parser):
         return hub.upload_file(os.path.expanduser(srpm), target_dir)
     except Fault as e:
         handle_perm_denied(e, parser)
-
-
-if __name__ == '__main__':
-    from django.conf import settings
-    print(verify_brew_koji_build('scipy-0.12.1-1.el7', settings.BREW_URL, settings.KOJI_URL))
-    print(verify_brew_koji_build('xscipy-0.12.1-1.el7', settings.BREW_URL, settings.KOJI_URL))
-    print(verify_brew_koji_build('gnome-shell-3.10.2.1-3.fc20', settings.BREW_URL, settings.KOJI_URL))
-    print(verify_brew_koji_build('gnome-shell-3.10.1-2.fc21', settings.BREW_URL, settings.KOJI_URL))
