@@ -26,7 +26,7 @@ Because some of the dependencies of covscan hub are also not available on PyPI, 
 ### Prepare container images
 
 Just run `podman build -f containers/Dockerfile.hub -t covscanhub .` and after a while, you'll have container image ready.
-Also, pull container image for the database layer: `podman pull docker.io/library/postgres:12`.
+Also, pull container image for the database layer: `podman pull registry-proxy.engineering.redhat.com/rh-osbs/rhel8-postgresql-12`.
 
 ### Prepare the cluster
 

@@ -2,11 +2,12 @@ version: '3'
 
 services:
   db:
-    image: docker.io/library/postgres:12
+    image: registry-proxy.engineering.redhat.com/rh-osbs/rhel8-postgresql-12
     container_name: db
     environment:
-      POSTGRES_PASSWORD: velryba
-      POSTGRES_USER: covscanhub
+      POSTGRESQL_PASSWORD: velryba
+      POSTGRESQL_USER: covscanhub
+      POSTGRESQL_DATABASE: covscanhub
     ports:
       - "5432:5432"
     networks:

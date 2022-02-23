@@ -15,7 +15,7 @@ main() {
     set -x
     podman build -f containers/Dockerfile.worker -t covscanworker .
     podman build -f containers/Dockerfile.hub -t covscanhub .
-    podman pull docker.io/library/postgres:12
+    podman pull registry-proxy.engineering.redhat.com/rh-osbs/rhel8-postgresql-12
   )
 
   # HACK: just for safety, use the down command before proceeding
