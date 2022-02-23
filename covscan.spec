@@ -1,5 +1,3 @@
-%{!?hub_instance:%global hub_instance prod}
-
 Name:           covscan
 Version:        0.8.0
 Release:        1%{?dist}
@@ -26,20 +24,35 @@ Requires: python3-%{name}-client = %{git_version}-%{release}
 %description client
 CovScan CLI client
 
-%package worker-%{hub_instance}
+%package worker
 Summary: CovScan worker
-Requires: python3-%{name}-worker-%{hub_instance} = %{git_version}-%{release}
+Requires: python3-%{name}-worker = %{git_version}-%{release}
+Requires: %{name}-worker-conf = %{git_version}-%{release}
 
-%description worker-%{hub_instance}
+%description worker
 CovScan worker
 
-%package hub-%{hub_instance}
+%package hub
 Summary: CovScan xml-rpc interface and web application
-Requires: python3-%{name}-hub-%{hub_instance} = %{git_version}-%{release}
+Requires: python3-%{name}-hub = %{git_version}-%{release}
+Requires: %{name}-hub-conf = %{git_version}-%{release}
 
-%description hub-%{hub_instance}
+%description hub
 CovScan xml-rpc interface and web application
 
+# define covscan-{worker,hub}-conf-{devel,stage,prod} subpackages
+%(for sub in worker hub; do
+for alt in devel stage prod; do
+cat << EOF
+%package ${sub}-conf-${alt}
+Summary: Covscan ${sub} ${alt} configuration
+Provides: covscan-${sub}-conf = %{git_version}-%{release}
+Conflicts: covscan-${sub}-conf
+RemovePathPostfixes: .${alt}
+%description ${sub}-conf-${alt}
+Covscan ${sub} ${alt} configuration
+EOF
+done;done)
 
 %package -n python3-%{name}-client
 Summary: CovScan CLI client python3 library
@@ -51,7 +64,7 @@ Requires: python3-koji
 CovScan CLI client python3 library
 
 
-%package -n python3-%{name}-worker-%{hub_instance}
+%package -n python3-%{name}-worker
 Summary: CovScan worker python3 library
 Requires: csmock
 Requires: python3-kobo-client
@@ -63,13 +76,13 @@ Requires: python3-koji
 # FIXME: conf.py should be moved to covscan-common shared by both the packages
 Requires: python3-%{name}-client
 
-%description -n python3-%{name}-worker-%{hub_instance}
+%description -n python3-%{name}-worker
 CovScan worker python3 library
 
 
-%package -n python3-%{name}-hub-%{hub_instance}
+%package -n python3-%{name}-hub
 Summary: CovScan xml-rpc interface and web application python3 library
-Requires: %{name}-hub-%{hub_instance}
+Requires: %{name}-hub
 Requires: python3-kobo-hub
 Requires: python3-kobo-client
 Requires: python3-kobo-django
@@ -102,9 +115,9 @@ Requires: file
 Requires: python3-django-debug-toolbar > 1.0
 
 # FIXME: should covscan-hub work even though covscan-worker is not installed?
-Requires: python3-%{name}-worker-%{hub_instance}
+Requires: python3-%{name}-worker
 
-%description -n python3-%{name}-hub-%{hub_instance}
+%description -n python3-%{name}-hub
 CovScan xml-rpc interface and web application python3 library
 
 
@@ -122,32 +135,10 @@ rm -rf ${RPM_BUILD_ROOT}
 # avoid transforming /usr/bin/env -S ... to /usr/bin/-S
 %global __brp_mangle_shebangs_exclude_from %{_bindir}/covscan
 
-mv $RPM_BUILD_ROOT/%{_sysconfdir}/httpd/conf.d/%{hub_instance}-covscanhub-httpd.conf \
-   $RPM_BUILD_ROOT/%{_sysconfdir}/httpd/conf.d/covscanhub-httpd.conf
-rm -f $RPM_BUILD_ROOT/%{_sysconfdir}/httpd/conf.d/devel-covscanhub-httpd.conf || :
-rm -f $RPM_BUILD_ROOT/%{_sysconfdir}/httpd/conf.d/stage-covscanhub-httpd.conf || :
-rm -f $RPM_BUILD_ROOT/%{_sysconfdir}/httpd/conf.d/prod-covscanhub-httpd.conf || :
 # tweak python paths in config files
 
 # FIXME
-sed -i 's@/lib/python2.[0-9]@/lib/python%{python3_version}@g' ${RPM_BUILD_ROOT}/etc/httpd/conf.d/covscanhub-httpd.conf
-
-# create symlink /etc/covscan/covscanhub.conf -> .../site-packages/covscanhub/settings.py
-# ln -s %{python2_sitelib}/covscanhub/settings_local.py ${RPM_BUILD_ROOT}/etc/covscan/covscanhub.conf
-
-mv $RPM_BUILD_ROOT/%{_sysconfdir}/covscan/%{hub_instance}_covscand.conf \
-   $RPM_BUILD_ROOT/%{_sysconfdir}/covscan/covscand.conf
-rm -f $RPM_BUILD_ROOT/%{_sysconfdir}/covscan/devel_covscand.conf || :
-rm -f $RPM_BUILD_ROOT/%{_sysconfdir}/covscan/stage_covscand.conf || :
-rm -f $RPM_BUILD_ROOT/%{_sysconfdir}/covscan/prod_covscand.conf || :
-
-# use proper configuration, remove rest
-
-mv $RPM_BUILD_ROOT/%{python3_sitelib}/covscanhub/%{hub_instance}_settings_local.py \
-   $RPM_BUILD_ROOT/%{python3_sitelib}/covscanhub/settings_local.py
-rm $RPM_BUILD_ROOT/%{python3_sitelib}/covscanhub/prod_settings_local.py* || :
-rm $RPM_BUILD_ROOT/%{python3_sitelib}/covscanhub/stage_settings_local.py* || :
-rm $RPM_BUILD_ROOT/%{python3_sitelib}/covscanhub/devel_settings_local.py* || :
+sed -i 's@/lib/python2.[0-9]@/lib/python%{python3_version}@g' ${RPM_BUILD_ROOT}/etc/httpd/conf.d/covscanhub-httpd.conf.*
 
 # create /var/lib dirs
 mkdir -p $RPM_BUILD_ROOT/var/lib/covscanhub/tasks
@@ -169,33 +160,52 @@ chmod 0755 $RPM_BUILD_ROOT%{python3_sitelib}/covscanhub/manage.py
 %attr(644,root,root) %config(noreplace) /etc/covscan/covscan.conf
 %{_sysconfdir}/bash_completion.d/
 
-%files worker-%{hub_instance}
+%files worker
 %defattr(644,root,root,755)
-%attr(640,root,root) %config(noreplace) /etc/covscan/covscand.conf
 %attr(755,root,root) /etc/init.d/covscand
 %attr(754,root,root) /usr/sbin/covscand
 
-%files hub-%{hub_instance}
+%files worker-conf-devel
+%attr(640,root,root) %config(noreplace) /etc/covscan/covscand.conf
+
+%files worker-conf-stage
+%attr(640,root,root) %config(noreplace) /etc/covscan/covscand.conf.stage
+
+%files worker-conf-prod
+%attr(640,root,root) %config(noreplace) /etc/covscan/covscand.conf.prod
+
+%files hub
 %defattr(-,root,apache,-)
-%attr(640,root,root) %config(noreplace) /etc/httpd/conf.d/covscanhub-httpd.conf
 %dir %attr(775,root,apache) /var/log/covscanhub
 %ghost %attr(640,apache,apache) /var/log/covscanhub/covscanhub.log
 %dir %attr(775,root,apache) /var/lib/covscanhub
 %dir %attr(775,root,apache) /var/lib/covscanhub/tasks
 %dir %attr(775,root,apache) /var/lib/covscanhub/upload
 
+%files hub-conf-devel
+%{python3_sitelib}/covscanhub/settings_local.py
+
+%files hub-conf-stage
+%{python3_sitelib}/covscanhub/settings_local.py.stage
+%attr(640,root,root) %config(noreplace) /etc/httpd/conf.d/covscanhub-httpd.conf.stage
+
+%files hub-conf-prod
+%{python3_sitelib}/covscanhub/settings_local.py.prod
+%attr(640,root,root) %config(noreplace) /etc/httpd/conf.d/covscanhub-httpd.conf.prod
+
 %files -n python3-%{name}-client
 %defattr(644,root,root,755)
 %{python3_sitelib}/covscan
 %{python3_sitelib}/covscan-%{version}-py%{python3_version}.egg-info
 
-%files -n python3-%{name}-worker-%{hub_instance}
+%files -n python3-%{name}-worker
 %defattr(644,root,root,755)
 %{python3_sitelib}/covscand
 
-%files -n python3-%{name}-hub-%{hub_instance}
+%files -n python3-%{name}-hub
 %defattr(-,root,apache,-)
 %{python3_sitelib}/covscanhub
+%exclude %{python3_sitelib}/covscanhub/settings_local.py*
 
 
 %changelog

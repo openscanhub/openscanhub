@@ -27,13 +27,12 @@ data_files = {
     "/etc/covscan": [
         "covscan/covscan.conf",
         "covscand/covscand.conf",
-        "covscand/prod_covscand.conf",
-        "covscand/stage_covscand.conf",
-        #"covscand/devel_covscand.conf",
+        "covscand/covscand.conf.prod",
+        "covscand/covscand.conf.stage",
     ],
     "/etc/httpd/conf.d": [
-        "covscanhub/prod-covscanhub-httpd.conf",
-        "covscanhub/stage-covscanhub-httpd.conf",
+        "covscanhub/covscanhub-httpd.conf.prod",
+        "covscanhub/covscanhub-httpd.conf.stage",
     ],
     "/etc/init.d": [
         "files/etc/init.d/covscand",
@@ -58,6 +57,8 @@ package_data = {
             get_files("covscanhub", "errata/fixtures") + \
             get_files("covscanhub", "fixtures") + \
             ["covscanhub.wsgi",
+             "settings_local.py.prod",
+             "settings_local.py.stage",
              'scripts/checker_groups.txt']
 }
 
