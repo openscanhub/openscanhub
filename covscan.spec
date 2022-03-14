@@ -1,6 +1,6 @@
 Name:           covscan
 Version:        0.8.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Commercial
 Summary:        Coverity scan scheduler
 Source:         %{name}-%{version}.tar.bz2
@@ -28,6 +28,8 @@ CovScan CLI client
 Summary: CovScan worker
 Requires: python3-%{name}-worker = %{git_version}-%{release}
 Requires: %{name}-worker-conf = %{git_version}-%{release}
+Obsoletes: covscan-worker-prod < %{git_version}-%{release}
+Obsoletes: covscan-worker-stage < %{git_version}-%{release}
 
 %description worker
 CovScan worker
@@ -36,6 +38,8 @@ CovScan worker
 Summary: CovScan xml-rpc interface and web application
 Requires: python3-%{name}-hub = %{git_version}-%{release}
 Requires: %{name}-hub-conf = %{git_version}-%{release}
+Obsoletes: covscan-hub-prod < %{git_version}-%{release}
+Obsoletes: covscan-hub-stage < %{git_version}-%{release}
 
 %description hub
 CovScan xml-rpc interface and web application
@@ -72,6 +76,8 @@ Requires: python3-kobo-worker
 Requires: python3-kobo-rpmlib
 Requires: koji
 Requires: python3-koji
+Obsoletes: python3-covscan-worker-prod < %{git_version}-%{release}
+Obsoletes: python3-covscan-worker-stage < %{git_version}-%{release}
 
 # FIXME: conf.py should be moved to covscan-common shared by both the packages
 Requires: python3-%{name}-client
@@ -116,6 +122,9 @@ Requires: python3-django-debug-toolbar > 1.0
 
 # FIXME: should covscan-hub work even though covscan-worker is not installed?
 Requires: python3-%{name}-worker
+
+Obsoletes: python3-covscan-hub-prod < %{git_version}-%{release}
+Obsoletes: python3-covscan-hub-stage < %{git_version}-%{release}
 
 %description -n python3-%{name}-hub
 CovScan xml-rpc interface and web application python3 library
@@ -209,6 +218,9 @@ chmod 0755 $RPM_BUILD_ROOT%{python3_sitelib}/covscanhub/manage.py
 
 
 %changelog
+* Mon Mar 14 2022 Kamil Dudka <kdudka@redhat.com> - 0.8.0-2
+- add obsoletes to ease upgrade
+
 * Thu Jan 20 2022 Kamil Dudka <kdudka@redhat.com> - 0.8.0-1
 - drop support for python 2.x and django 1.x
 - new major release
