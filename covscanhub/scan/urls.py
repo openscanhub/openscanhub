@@ -17,7 +17,7 @@ urlpatterns = [
 
     url(r"^packages/$", PackageListView.as_view(),
         name="package/list"),
-    url(r"^packages/(?P<id>\d+)/detail/$",
+    url(r"^packages/(?P<pk>\d+)/detail/$",
         PackageDetailView.as_view(),
         name="package/detail"),
     ]

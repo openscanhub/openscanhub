@@ -5,9 +5,9 @@
     <th>{% trans "Name" %}</th>
     <th>{% trans "Enabled" %}</th>
   </tr>
-{% for mock_config in mock_config_list %}
+{% for mock_config in page_obj %}
   <tr>
-    <td>{{ mock_config.id }}</a></td>
+    <td>{{ mock_config.id }}</td>
     <td>{{ mock_config.name }}</td>
     <td>{{ mock_config.enabled }}</td>
   </tr>
