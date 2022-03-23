@@ -72,11 +72,7 @@ def create_bugzilla(request, package, release):
     create bugzilla for package/release and fill it with all IS_A_BUG waivers
     this function should be called by view -- button "Create Bugzilla"
     """
-    bz = bugzilla.Bugzilla(url=settings.BZ_URL,
-                           user=settings.BZ_USER,
-                           password=settings.BZ_PSWD,
-                           cookiefile="/var/tmp/.bugzillacookies",
-                           tokenfile="/var/tmp/.bugzillatoken")
+    bz = bugzilla.Bugzilla(url=settings.BZ_URL, api_key=settings.BZ_API_KEY)
     waivers = get_unreported_bugs(package, release)
 
     if waivers[0].result_group.result.scanbinding.scan.base:
@@ -154,10 +150,7 @@ def update_bugzilla(request, package, release):
     add defects to specified bugzilla that aren't there yet
     this function should be called by view -- button "update bugzilla"
     """
-    bz = bugzilla.Bugzilla(url=settings.BZ_URL,
-                           user=settings.BZ_USER,
-                           password=settings.BZ_PSWD,
-                           cookiefile="/var/tmp/.bugzillacookies")
+    bz = bugzilla.Bugzilla(url=settings.BZ_URL, api_key=settings.BZ_API_KEY)
     db_bz = has_bugzilla(package, release)
     if db_bz:
         waivers = get_unreported_bugs(package, release)

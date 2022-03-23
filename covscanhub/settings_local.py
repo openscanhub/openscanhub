@@ -140,8 +140,7 @@ LOGIN_URL_NAME = 'auth/krb5login'
 LOGIN_EXEMPT_URLS = ['.*xmlrpc/.*']
 
 BZ_URL = "https://bugzilla.stage.redhat.com/xmlrpc.cgi"
-BZ_USER = "covscan-auto@redhat.com"
-BZ_PSWD = "xxxxxx"
+BZ_API_KEY = "xxxxxx"
 
 ET_URL = 'https://errata-web-01.host.stage.eng.bos.redhat.com'
 
