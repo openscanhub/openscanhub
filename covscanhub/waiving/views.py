@@ -23,7 +23,7 @@ from covscanhub.scan.notify import send_notif_new_comment
 
 from covscanhub.service.processing import task_has_results, task_is_diffed
 
-from covscanhub.other.constants import *
+from covscancommon.constants import *
 
 from covscanhub.waiving.bugzilla_reporting import create_bugzilla, \
     get_unreported_bugs, update_bugzilla

@@ -105,7 +105,7 @@ import pwd
 import glob
 import pytest
 
-from covscanhub.service.csmock_parser import CsmockRunner, CsmockAPI, ResultsExtractor
+from covscancommon.csmock_parser import CsmockRunner, CsmockAPI, ResultsExtractor
 
 # SRPM = os.path.join(os.getcwd(), 'isync-1.1.1-3.fc22.src.rpm')
 #

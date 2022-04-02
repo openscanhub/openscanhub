@@ -5,7 +5,7 @@ import os
 import sys
 import six.moves.urllib.parse
 
-from covscanhub.service.csmock_parser import CsmockRunner
+from covscancommon.csmock_parser import CsmockRunner
 
 from kobo.worker import TaskBase
 

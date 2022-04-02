@@ -19,7 +19,7 @@ import json
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Sum
 
-from covscanhub.other.constants import ERROR_DIFF_FILE, FIXED_DIFF_FILE,\
+from covscancommon.constants import ERROR_DIFF_FILE, FIXED_DIFF_FILE,\
     DEFAULT_CHECKER_GROUP, SCAN_RESULTS_FILENAME
 from .models import DEFECT_STATES, RESULT_GROUP_STATES, Defect, Result, \
     Checker, CheckerGroup, Waiver, ResultGroup, WaivingLog

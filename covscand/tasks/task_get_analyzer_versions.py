@@ -5,7 +5,7 @@ import os
 import sys
 from kobo.worker import TaskBase
 import kobo.tback
-from covscanhub.service.csmock_parser import CsmockRunner
+from covscancommon.csmock_parser import CsmockRunner
 
 kobo.tback.set_except_hook()
 

@@ -6,7 +6,7 @@ import sys
 import six.moves.urllib.parse
 
 from kobo.worker import TaskBase
-from covscanhub.service.csmock_parser import CsmockRunner
+from covscancommon.csmock_parser import CsmockRunner
 
 
 class VersionDiffBuild(TaskBase):

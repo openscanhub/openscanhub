@@ -21,12 +21,12 @@ os.environ['DJANGO_SETTINGS_MODULE'] = 'covscanhub.settings'
 
 from kobo.hub.models import Arch, Channel
 
+from covscancommon.constants import DEFAULT_CHECKER_GROUP
 from covscanhub.waiving.models import Checker, CheckerGroup
 from covscanhub.stats.models import StatType
 from covscanhub.scan.models import Tag, SystemRelease, MockConfig, \
     ReleaseMapping, AppSettings
 from covscanhub.stats.service import get_mapping
-from covscanhub.other.constants import DEFAULT_CHECKER_GROUP
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.conf import settings

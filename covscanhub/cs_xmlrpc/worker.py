@@ -8,13 +8,13 @@ import shutil
 from kobo.hub.decorators import validate_worker
 from kobo.hub.models import Task
 from kobo.django.upload.models import FileUpload
-from covscand.tasks.common import construct_cim_string
+from covscancommon.csmock_parser import CsmockAPI, unpack_and_return_api
+from covscancommon.tasks import construct_cim_string
 from covscanhub.errata.models import ScanningSession
 from covscanhub.errata.scanner import prepare_base_scan, obtain_base2, BaseNotValidException
 from covscanhub.other.decorators import public
 
 from covscanhub.scan.models import ScanBinding, AnalyzerVersion
-from covscanhub.service.csmock_parser import CsmockAPI, unpack_and_return_api
 from covscanhub.scan.notify import send_task_notification
 from covscanhub.scan.xmlrpc_helper import finish_scan as h_finish_scan,\
     fail_scan as h_fail_scan, scan_notification_email, prepare_version_retriever

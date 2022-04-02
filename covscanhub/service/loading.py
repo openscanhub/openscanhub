@@ -8,7 +8,7 @@ import json
 import logging
 
 from kobo.hub.models import Task
-from covscanhub.service.csmock_parser import CsmockAPI
+from covscancommon.csmock_parser import CsmockAPI
 from covscanhub.service.path import TaskResultPaths
 
 

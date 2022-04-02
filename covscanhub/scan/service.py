@@ -16,6 +16,7 @@ from kobo.django.upload.models import FileUpload
 from kobo.client.constants import TASK_STATES
 from django.core.exceptions import ObjectDoesNotExist
 
+from covscancommon.constants import *
 from covscanhub.service.processing import add_title_to_json
 from .models import SCAN_STATES, ScanBinding, Scan, SCAN_TYPES_TARGET, \
     SCAN_STATES_FINISHED_WELL, Analyzer
@@ -23,7 +24,6 @@ from covscanhub.other.exceptions import ScanException
 from covscanhub.other.shortcuts import get_mock_by_name, check_brew_build,\
     check_and_create_dirs
 from covscanhub.other.decorators import public
-from covscanhub.other.constants import *
 
 
 logger = logging.getLogger(__name__)

@@ -9,7 +9,7 @@ import logging
 import json
 
 from covscanhub.other.decorators import public
-from covscanhub.other.constants import *
+from covscancommon.constants import *
 
 from kobo.shortcuts import run
 from covscanhub.service.path import TaskResultPaths
