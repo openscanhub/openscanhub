@@ -1,6 +1,6 @@
 Name:           covscan
 Version:        0.8.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        Commercial
 Summary:        Coverity scan scheduler
 Source:         %{name}-%{version}.tar.bz2
@@ -19,27 +19,76 @@ It consists of central hub, workers and cli client.
 
 %package client
 Summary: CovScan CLI client
-Requires: python3-%{name}-client = %{git_version}-%{release}
+Requires: koji
+Requires: python3-kobo-client >= 0.15.1-100
+Requires: %{name}-common = %{git_version}-%{release}
+Obsoletes: python3-%{name}-client < %{git_version}-%{release}
 
 %description client
 CovScan CLI client
 
+
+%package common
+Summary: CovScan shared files for client, hub and worker
+
+%description common
+CovScan shared files for client, hub and worker.
+
+
 %package worker
 Summary: CovScan worker
-Requires: python3-%{name}-worker = %{git_version}-%{release}
+Requires: csmock
+Requires: koji
+Requires: python3-kobo-client
+Requires: python3-kobo-rpmlib
+Requires: python3-kobo-worker
+Requires: %{name}-common = %{git_version}-%{release}
 Requires: %{name}-worker-conf = %{git_version}-%{release}
 Obsoletes: covscan-worker-prod < %{git_version}-%{release}
 Obsoletes: covscan-worker-stage < %{git_version}-%{release}
+Obsoletes: python3-%{name}-worker < %{git_version}-%{release}
+Obsoletes: python3-covscan-worker-prod < %{git_version}-%{release}
+Obsoletes: python3-covscan-worker-stage < %{git_version}-%{release}
 
 %description worker
 CovScan worker
 
 %package hub
 Summary: CovScan xml-rpc interface and web application
-Requires: python3-%{name}-hub = %{git_version}-%{release}
+Requires: boost-python3
+Requires: httpd
+Requires: mod_auth_gssapi
+Requires: python3-django
+Requires: python3-kobo-client
+Requires: python3-kobo-django
+Requires: python3-kobo-hub
+Requires: python3-kobo-rpmlib
+Requires: python3-mod_wsgi
+# PostgreSQL adapter for python
+Requires: python3-psycopg2
+Requires: gzip
+# inform ET about progress using UMB (Unified Message Bus)
+Requires: python3-qpid-proton
+# hub is interacting with brew
+Requires: koji
+# extract tarballs created by cov-mockbuild
+Requires: xz
+
+Requires: csdiff
+Requires: python3-csdiff
+Requires: python3-bugzilla
+Requires: yum
+Requires: file
+
+Requires: python3-django-debug-toolbar > 1.0
+
+Requires: %{name}-common = %{git_version}-%{release}
 Requires: %{name}-hub-conf = %{git_version}-%{release}
 Obsoletes: covscan-hub-prod < %{git_version}-%{release}
 Obsoletes: covscan-hub-stage < %{git_version}-%{release}
+Obsoletes: python3-covscan-hub-prod < %{git_version}-%{release}
+Obsoletes: python3-covscan-hub-stage < %{git_version}-%{release}
+Obsoletes: python3-%{name}-hub < %{git_version}-%{release}
 
 %description hub
 CovScan xml-rpc interface and web application
@@ -57,78 +106,6 @@ RemovePathPostfixes: .${alt}
 Covscan ${sub} ${alt} configuration
 EOF
 done;done)
-
-%package -n python3-%{name}-client
-Summary: CovScan CLI client python3 library
-Requires: python3-kobo-client >= 0.15.1-100
-Requires: koji
-Requires: python3-koji
-
-%description -n python3-%{name}-client
-CovScan CLI client python3 library
-
-
-%package -n python3-%{name}-worker
-Summary: CovScan worker python3 library
-Requires: csmock
-Requires: python3-kobo-client
-Requires: python3-kobo-worker
-Requires: python3-kobo-rpmlib
-Requires: koji
-Requires: python3-koji
-Obsoletes: python3-covscan-worker-prod < %{git_version}-%{release}
-Obsoletes: python3-covscan-worker-stage < %{git_version}-%{release}
-
-# FIXME: conf.py should be moved to covscan-common shared by both the packages
-Requires: python3-%{name}-client
-
-%description -n python3-%{name}-worker
-CovScan worker python3 library
-
-
-%package -n python3-%{name}-hub
-Summary: CovScan xml-rpc interface and web application python3 library
-Requires: %{name}-hub
-Requires: python3-kobo-hub
-Requires: python3-kobo-client
-Requires: python3-kobo-django
-Requires: python3-kobo-rpmlib
-Requires: python3-django
-Requires: boost-python3
-Requires: httpd
-Requires: mod_auth_gssapi
-Requires: python3-mod_wsgi
-# PostgreSQL adapter for python
-Requires: python3-psycopg2
-Requires: gzip
-# inform ET about progress using UMB (Unified Message Bus)
-Requires: python3-qpid-proton
-# hub is interacting with brew
-Requires: koji
-Requires: python3-koji
-# extract tarballs created by cov-mockbuild
-Requires: xz
-# auth for qpid
-#Requires: python3-saslwrapper
-#Requires: cyrus-sasl-gssapi
-
-Requires: csdiff
-Requires: python3-csdiff
-Requires: python3-bugzilla
-Requires: yum
-Requires: file
-
-Requires: python3-django-debug-toolbar > 1.0
-
-# FIXME: should covscan-hub work even though covscan-worker is not installed?
-Requires: python3-%{name}-worker
-
-Obsoletes: python3-covscan-hub-prod < %{git_version}-%{release}
-Obsoletes: python3-covscan-hub-stage < %{git_version}-%{release}
-
-%description -n python3-%{name}-hub
-CovScan xml-rpc interface and web application python3 library
-
 
 %prep
 %setup -q
@@ -168,9 +145,16 @@ chmod 0755 $RPM_BUILD_ROOT%{python3_sitelib}/covscanhub/manage.py
 %attr(755,root,root) /usr/bin/covscan
 %attr(644,root,root) %config(noreplace) /etc/covscan/covscan.conf
 %{_sysconfdir}/bash_completion.d/
+%{python3_sitelib}/covscan
+%{python3_sitelib}/covscan-%{version}-py%{python3_version}.egg-info
+
+%files common
+%defattr(644,root,root,755)
+%{python3_sitelib}/covscancommon
 
 %files worker
 %defattr(644,root,root,755)
+%{python3_sitelib}/covscand
 %attr(755,root,root) /etc/init.d/covscand
 %attr(754,root,root) /usr/sbin/covscand
 
@@ -185,6 +169,8 @@ chmod 0755 $RPM_BUILD_ROOT%{python3_sitelib}/covscanhub/manage.py
 
 %files hub
 %defattr(-,root,apache,-)
+%{python3_sitelib}/covscanhub
+%exclude %{python3_sitelib}/covscanhub/settings_local.py*
 %dir %attr(775,root,apache) /var/log/covscanhub
 %ghost %attr(640,apache,apache) /var/log/covscanhub/covscanhub.log
 %dir %attr(775,root,apache) /var/lib/covscanhub
@@ -202,22 +188,11 @@ chmod 0755 $RPM_BUILD_ROOT%{python3_sitelib}/covscanhub/manage.py
 %{python3_sitelib}/covscanhub/settings_local.py.prod
 %attr(640,root,root) %config(noreplace) /etc/httpd/conf.d/covscanhub-httpd.conf.prod
 
-%files -n python3-%{name}-client
-%defattr(644,root,root,755)
-%{python3_sitelib}/covscan
-%{python3_sitelib}/covscan-%{version}-py%{python3_version}.egg-info
-
-%files -n python3-%{name}-worker
-%defattr(644,root,root,755)
-%{python3_sitelib}/covscand
-
-%files -n python3-%{name}-hub
-%defattr(-,root,apache,-)
-%{python3_sitelib}/covscanhub
-%exclude %{python3_sitelib}/covscanhub/settings_local.py*
-
 
 %changelog
+* Thu Apr 07 2022 Lumír Balhar <lbalhar@redhat.com> - 0.8.0-3
+- Reorganize specfile and add covscan-common
+
 * Mon Mar 14 2022 Kamil Dudka <kdudka@redhat.com> - 0.8.0-2
 - add obsoletes to ease upgrade
 
