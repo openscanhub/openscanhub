@@ -1,6 +1,6 @@
-#!/bin/bash
-# import wait_for_port
+#!/usr/bin/env bash
 
+# import wait_for_port
 . "./scripts/utils.sh" --source-only
 
 RUN=false

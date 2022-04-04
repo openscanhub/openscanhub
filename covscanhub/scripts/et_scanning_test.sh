@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 ./covscan-xmlrpc-client.py -b wget-1.11.4-4.el6 -t wget-1.12-1.8.el6
 ./covscan-xmlrpc-client.py -b coreutils-8.4-5.el6 -t coreutils-8.4-19.el6
