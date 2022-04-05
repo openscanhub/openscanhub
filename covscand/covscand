@@ -9,7 +9,7 @@ import kobo.worker.tasks
 
 # assuming all tasks are in covscand/tasks/task_*.py modules
 import covscand.tasks
-from covscan.utils.conf import get_config_dict
+from covscancommon.utils.conf import get_config_dict
 
 
 def main():

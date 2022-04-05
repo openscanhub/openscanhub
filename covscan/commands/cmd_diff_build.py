@@ -14,8 +14,8 @@ from kobo.shortcuts import random_string
 from covscan.commands.shortcuts import verify_brew_koji_build, verify_mock, \
     upload_file, handle_perm_denied
 from covscan.commands.common import *
-from covscan.utils.conf import get_conf
-from covscan.utils.cim import extract_cim_data
+from covscancommon.utils.conf import get_conf
+from covscancommon.utils.cim import extract_cim_data
 from covscan.commands.analyzers import check_analyzers
 
 

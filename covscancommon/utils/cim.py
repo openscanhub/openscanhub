@@ -7,7 +7,7 @@ import six
 
 import re
 
-from covscan.utils.conf import get_conf
+from covscancommon.utils.conf import get_conf
 
 __all__ = (
     'extract_cim_data',

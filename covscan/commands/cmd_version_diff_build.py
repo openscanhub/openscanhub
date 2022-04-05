@@ -10,8 +10,8 @@ from kobo.shortcuts import random_string
 from .shortcuts import verify_brew_koji_build, verify_mock, upload_file, \
     handle_perm_denied
 from .common import *
-from covscan.utils.conf import get_conf
 from covscan.commands.analyzers import check_analyzers
+from covscancommon.utils.conf import get_conf
 from six.moves.xmlrpc_client import Fault
 
 

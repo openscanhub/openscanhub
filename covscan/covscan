@@ -12,7 +12,7 @@ import kobo.client.commands
 
 # assuming all commands are in covscan/commands/cmd_*.py modules
 import covscan.commands
-from covscan.utils.conf import get_config_dict
+from covscancommon.utils.conf import get_config_dict
 
 
 # inherit container to make sure nobody will change plugins I registered

@@ -9,7 +9,7 @@ from six.moves import xmlrpc_client
 import datetime
 from six.moves import cPickle as pickle
 
-from .conf import get_conf
+from covscancommon.utils.conf import get_conf
 
 
 def get_can_path():
