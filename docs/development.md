@@ -122,3 +122,24 @@ covscanhub/scripts/covscan-xmlrpc-client.py
 
 For more info, please check docstring of the script.
 
+# Testing covscan
+
+## Running unit tests
+
+Unit tests in Django are executed by `manage.py test` command. Since unit tests
+in covscan contain also tests for models, a running service with database is
+needed.
+
+To run unit tests
+1. ensure container image for hub is prepared as described in
+   [Development environment](#development-environment) section
+   * there is no need for creating users or populating database with data,
+     Django creates its own isolated database instance and things such
+     credentials and user accounts are mocked by Django unit test framework
+     (see [Writing and running tests](https://docs.djangoproject.com/en/2.2/topics/testing/overview/#module-django.test) for more info)
+2. ensure containers are running or create and run them by `podman-compose up -d db covscanhub`
+   command
+3. run unit tests by `podman-compose exec covscanhub python3 covscanhub/manage.py test`
+   command
+4. after you are done with unit testing, you can tear down the whole container
+   stack by `podman-compose down`
