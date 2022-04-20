@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 # import wait_for_port
+# shellcheck disable=1091
 . "./scripts/utils.sh" --source-only
 
 RUN=false

@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+# shellcheck disable=1091
 . "./scripts/utils.sh" --source-only
 
 DEBUG=false
