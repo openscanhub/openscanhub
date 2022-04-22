@@ -1,0 +1,20 @@
+lint:
+  tags:
+    - shared
+  image: "quay.io/fedora/fedora:35"
+  before_script:
+    - dnf install -y pre-commit make git-core
+  script:
+    - make lint-ci
+
+test:
+  tags:
+    - covscan-ci-runner
+  before_script:
+    - make prepare-env
+    - make prepare-containers
+    - make start-containers
+  script:
+    - make test-hub
+  after_script:
+    - make teardown-containers
