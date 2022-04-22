@@ -8,6 +8,7 @@ help:
 	@echo " help                    show this text"
 	@echo " clean                   remove python bytecode and temp files"
 	@echo " install                 install program on current system"
+	@echo " lint                    run pre-commit linters on all files"
 	@echo " log                     prepare changelog for spec file"
 	@echo " source                  create source tarball"
 	@echo " test                    run tests/run_tests.py"
@@ -47,3 +48,6 @@ endif
 		--define "_specdir ."                       \
 		--define "_srcrpmdir ."						\
 		--define "git_version $(GIT_VER)"
+
+lint:
+	pre-commit run --all-files
