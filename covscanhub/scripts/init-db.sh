@@ -12,6 +12,8 @@ PASSWD=xxxxxx
 # start db and covscanhub to apply migrations
 ./scripts/build.sh --run
 
+(set +e; wait_for_container 'HUB')
+
 # load fixtures
 podman exec -i covscanhub python3 covscanhub/manage.py \
     loaddata ./covscanhub/{errata,scan}/fixtures/initial_data.json

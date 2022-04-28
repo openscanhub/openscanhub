@@ -38,4 +38,4 @@ WORKDIR /src
 ENV PYTHONPATH=.:kobo
 ENV COVSCAND_CONFIG_FILE=covscand/covscand-local.conf
 
-CMD ["python3.6", "covscand/covscand", "-f"]
+CMD python3.6 covscand/covscand -f

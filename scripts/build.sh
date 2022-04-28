@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 
-# import wait_for_port
 # shellcheck disable=1091
 . "./scripts/utils.sh" --source-only
 
@@ -32,12 +31,8 @@ main() {
 }
 
 run() {
-  # start the database and wait until it starts to listen
-  (set -x; podman start db)
-  wait_for_port 5432
-
-  (set -x; podman start covscanhub)
-  wait_for_port 8000
+  set -x
+  podman start db covscanhub
 }
 
 #Used for testing the build environment

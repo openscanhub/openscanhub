@@ -1,5 +1,10 @@
 #!/bin/sh
 
+for _ in $(seq 100); do
+  pg_isready -h db && break
+  sleep 0.5
+done
+
 # Migrations
 # If the database is empty or if it has records about already
 # applied migrations, this command should work without any troubles.
@@ -15,6 +20,8 @@ fi
 
 # Run a dummy SMTP server in background
 python3.6 -m smtpd -n -c DebuggingServer localhost:25 >> covscanhub/emails.log &
+
+touch /HUB_IS_READY
 
 # Run main web app
 python3.6 covscanhub/manage.py runserver 0.0.0.0:8000

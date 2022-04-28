@@ -1,32 +1,26 @@
 check_host_os() {
   echo "$OSTYPE" | grep -q 'darwin'
   if test $? = 0; then
+    shopt -s expand_aliases
     alias podman=docker
     alias podman-compose=docker-compose
   fi
 }
 
-# wait until something listens on the specified port
-wait_for_port() (
-  set +x
-  set +e
-  port=$1
-  cnt=256
-  while ((--cnt)); do
-    curl -fo/dev/null --no-progress-meter "http://localhost:${port}"
-    case $? in
-      # we get `curl: (52) Empty reply from server`
-      # when we speak HTTP to psql db port
-      0|52)
-        break
-        ;;
-      *)
-        # wait for the container to become ready
-        sleep 1
-        ;;
-    esac
+check_host_os
+
+wait_for_container() {
+  filename="/$1_IS_READY"
+  for _ in $(seq 60); do
+    podman exec -i covscanhub bash -c "[[ -f $filename ]]"
+    retval=$?
+    if [[ $retval = 0 ]]; then
+      podman exec -i covscanhub bash -c "rm $filename"
+      break
+    fi
+    sleep 1
   done
-)
+}
 
 #This function checks against a program version
 #
@@ -41,5 +35,3 @@ version_compare() {
 
   test "$(printf '%s\n' "$requiredver" "$currentver" | sort -V | head -n1)" = "$requiredver"
 }
-
-check_host_os

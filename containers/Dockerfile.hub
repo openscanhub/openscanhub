@@ -36,10 +36,14 @@ RUN dnf -y --setopt=tsflags=nodocs install \
     python3-psycopg2 \
     python3-qpid-proton \
     python36 \
+    postgresql{,-libs} \
     xz
+
+COPY containers/run_hub.sh /run_hub.sh
+RUN chmod +x /run_hub.sh
 
 WORKDIR /src
 
 ENV PYTHONPATH=.:kobo
 
-CMD "./containers/run_hub.sh"
+CMD /run_hub.sh
