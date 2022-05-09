@@ -598,7 +598,7 @@ div.waiving_log span.change {
     background-color: #FFF;
     border: 1px solid #AAA;
     font-family: "Courier New",monospace;
-    white-space: pre;
+    white-space: pre-wrap;
     margin: 0 0 0.5em 0.5em;
     padding: 10px 8px;
     color: #000;
