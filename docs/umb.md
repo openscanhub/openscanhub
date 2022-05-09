@@ -3,10 +3,11 @@
 
 ## Requesting access to UMB
 - instructions:
-    - https://mojo.redhat.com/docs/DOC-1072253
+    - https://source.redhat.com/groups/public/enterprise-services-platform/it_platform_wiki/umb_client_guide
+    - https://source.redhat.com/groups/public/identity-access-management/identity__access_management_wiki/ldap_service_accounts__certificates_for_accessing_shared_services
 
 - client certificates
-    - stage: https://ca.corp.redhat.com:8443/ca/ee/ca/displayBySerial?serialNumber=268372850
+    - stage: https://ca.corp.redhat.com:8443/ca/ee/ca/displayBySerial?serialNumber=268372850 [expired]
     - prod:  https://ca.corp.redhat.com:8443/ca/ee/ca/displayBySerial?serialNumber=12871
 
 - tickets requesting access to UMB:
@@ -24,7 +25,7 @@
 	- run: { openssl x509 -in msg-client-covscan.crt && openssl rsa -in msg-client-covscan.crt;} > msg-client-covscan.pem
 
 - renewal of the client certificate:
-    - go to: https://ca.corp.redhat.com/ca/ee/ca/profileSelect?profileId=caManualRenewal
+    - go to: https://ca.corp.redhat.com/ca/ee/ca/profileSelect?profileId=caManualRenewal [does not work]
     - enter serial ID of the current client certificate and click Submit
     - follow the steps above to obtain the client certificate in file
 
