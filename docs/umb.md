@@ -6,8 +6,8 @@
     - https://mojo.redhat.com/docs/DOC-1072253
 
 - client certificates
-    - stage: https://ca02.pki.prod.int.phx2.redhat.com:8443/ca/ee/ca/displayBySerial?serialNumber=268372850
-    - prod:  https://ca01.pki.prod.int.phx2.redhat.com:8443/ca/ee/ca/displayBySerial?serialNumber=12871
+    - stage: https://ca.corp.redhat.com:8443/ca/ee/ca/displayBySerial?serialNumber=268372850
+    - prod:  https://ca.corp.redhat.com:8443/ca/ee/ca/displayBySerial?serialNumber=12871
 
 - tickets requesting access to UMB:
     - stage: RITM0331163
@@ -24,7 +24,7 @@
 	- run: { openssl x509 -in msg-client-covscan.crt && openssl rsa -in msg-client-covscan.crt;} > msg-client-covscan.pem
 
 - renewal of the client certificate:
-    - go to: https://ca01.pki.prod.int.phx2.redhat.com:8443/ca/ee/ca/profileSelect?profileId=caManualRenewal
+    - go to: https://ca.corp.redhat.com/ca/ee/ca/profileSelect?profileId=caManualRenewal
     - enter serial ID of the current client certificate and click Submit
     - follow the steps above to obtain the client certificate in file
 
