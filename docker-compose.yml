@@ -4,6 +4,7 @@ services:
   db:
     image: registry-proxy.engineering.redhat.com/rh-osbs/rhel8-postgresql-12
     container_name: db
+    hostname: db
     environment:
       POSTGRESQL_PASSWORD: velryba
       POSTGRESQL_USER: covscanhub
@@ -14,8 +15,9 @@ services:
       - internal-network
 
   covscanhub:
-    image: localhost/covscanhub
+    image: covscanhub
     container_name: covscanhub
+    hostname: covscanhub
     depends_on:
       - db
     ports:
@@ -26,10 +28,13 @@ services:
       - ./:/src:z
     stdin_open: true
     tty: true
+    environment:
+      WAIT_HOSTS: db:5432
 
   covscanworker:
-    image: localhost/covscanworker
+    image: covscanworker
     container_name: covscanworker
+    hostname: covscanworker
     depends_on:
       - covscanhub
     networks:
@@ -39,6 +44,8 @@ services:
     privileged: true
     stdin_open: true
     tty: true
+    environment:
+      WAIT_HOSTS: db:5432, covscanhub:8000
 
 networks:
   internal-network:
