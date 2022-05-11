@@ -1,4 +1,4 @@
 [flake8]
 ignore = E501
 exclude = .git,__pycache__,docs
-max-complexity = 10
+max-complexity = 15

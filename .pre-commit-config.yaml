@@ -14,4 +14,7 @@ repos:
     rev: 4.0.1
     hooks:
     -   id: flake8
-        additional_dependencies: [flake8-docstrings]
+        additional_dependencies: [
+            "flake8-blind-except==0.2.1",
+            "flake8-mutable==1.2.0",
+        ]
