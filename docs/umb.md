@@ -7,27 +7,25 @@
     - https://source.redhat.com/groups/public/identity-access-management/identity__access_management_wiki/ldap_service_accounts__certificates_for_accessing_shared_services
 
 - client certificates
-    - stage: https://ca.corp.redhat.com:8443/ca/ee/ca/displayBySerial?serialNumber=268372850 [expired]
-    - prod:  https://ca.corp.redhat.com:8443/ca/ee/ca/displayBySerial?serialNumber=12871
+    - stage: https://ca.corp.redhat.com:8443/ca/ee/ca/displayBySerial?serialNumber=268306926
+    - prod:  https://ca.corp.redhat.com:8443/ca/ee/ca/displayBySerial?serialNumber=268306930
 
 - tickets requesting access to UMB:
-    - stage: RITM0331163
-    - prod:  INC0870038
+    - RITM1174540 - LDAP service accounts
+    - RITM1177833 - UMB access request
 
 - obtaining a client certificate in file:
-	- import the certificate into Firefox
-	- go to Edit -> Preferences -> Privacy & Security -> View Certificates
-	- find the certificate, then click Backup -> msg-client-covscan.p12
-	- type passphrase
-	- run: openssl pkcs12 -in msg-client-covscan.p12 -nodes -out msg-client-covscan.crt
-	- type the same passphrase
-	- open msg-client-covscan.crt and manually delete all CA certificates
-	- run: { openssl x509 -in msg-client-covscan.crt && openssl rsa -in msg-client-covscan.crt;} > msg-client-covscan.pem
+    $ git clone https://gitlab.corp.redhat.com/it-iam/utility.git
+    $ cd utility/PKI
+    $ ./get_rhcs_app_cert.sh covscan nonprod
+    [...]
 
-- renewal of the client certificate:
-    - go to: https://ca.corp.redhat.com/ca/ee/ca/profileSelect?profileId=caManualRenewal [does not work]
-    - enter serial ID of the current client certificate and click Submit
-    - follow the steps above to obtain the client certificate in file
+    $ { openssl x509 -in nonprod-covscan.crt && openssl rsa -in nonprod-covscan.key;} > nonprod-umb-covscan.pem
+
+    $ ./get_rhcs_app_cert.sh covscan prod
+    [...]
+
+    $ { openssl x509 -in covscan.crt && openssl rsa -in covscan.key;} > umb-covscan.pem
 
 ## Debug UMB
 ```

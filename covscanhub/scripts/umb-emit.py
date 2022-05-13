@@ -10,8 +10,12 @@ class UMBSender(proton.handlers.MessagingHandler):
     def __init__(self, key, msg):
         super(UMBSender, self).__init__()
         self.urls = [
-                'amqps://messaging-devops-broker01.web.stage.ext.phx2.redhat.com:5671',
-                'amqps://messaging-devops-broker02.web.stage.ext.phx2.redhat.com:5671']
+                'amqps://umb-broker01.stage.api.redhat.com:5671',
+                'amqps://umb-broker02.stage.api.redhat.com:5671',
+                'amqps://umb-broker03.stage.api.redhat.com:5671',
+                'amqps://umb-broker04.stage.api.redhat.com:5671',
+                'amqps://umb-broker05.stage.api.redhat.com:5671',
+                'amqps://umb-broker06.stage.api.redhat.com:5671']
         self.cert = '/etc/covscanhub/msg-client-covscan.pem'
         self.topic = 'topic://VirtualTopic.eng.covscan.scan.unfinished'
         self.scan_id = msg['scan_id']
