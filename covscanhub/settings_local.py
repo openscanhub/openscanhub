@@ -145,8 +145,12 @@ BZ_API_KEY = "xxxxxx"
 ET_URL = 'https://errata-web-01.host.stage.eng.bos.redhat.com'
 
 UMB_BROKER_URLS = [
-    'amqps://messaging-devops-broker01.dev1.ext.devlab.redhat.com:5671',
-    'amqps://messaging-devops-broker02.dev1.ext.devlab.redhat.com:5671']
+    'amqps://umb-broker01.stage.api.redhat.com:5671',
+    'amqps://umb-broker02.stage.api.redhat.com:5671',
+    'amqps://umb-broker03.stage.api.redhat.com:5671',
+    'amqps://umb-broker04.stage.api.redhat.com:5671',
+    'amqps://umb-broker05.stage.api.redhat.com:5671',
+    'amqps://umb-broker06.stage.api.redhat.com:5671']
 
 UMB_CLIENT_CERT = '/etc/covscanhub/msg-client-covscan.pem'
 UMB_TOPIC_PREFIX = 'topic://VirtualTopic.eng.covscan.scan'
