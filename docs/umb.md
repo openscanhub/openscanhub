@@ -15,6 +15,7 @@
     - RITM1177833 - UMB access request
 
 - obtaining a client certificate in file:
+```
     $ git clone https://gitlab.corp.redhat.com/it-iam/utility.git
     $ cd utility/PKI
     $ ./get_rhcs_app_cert.sh covscan nonprod
@@ -26,6 +27,7 @@
     [...]
 
     $ { openssl x509 -in covscan.crt && openssl rsa -in covscan.key;} > umb-covscan.pem
+```
 
 ## Debug UMB
 ```
