@@ -1,3 +1,11 @@
+check_host_os() {
+  echo "$OSTYPE" | grep -q 'darwin'
+  if test $? = 0; then
+    alias podman=docker
+    alias podman-compose=docker-compose
+  fi
+}
+
 # wait until something listens on the specified port
 wait_for_port() (
   set +x
@@ -33,3 +41,5 @@ version_compare() {
 
   test "$(printf '%s\n' "$requiredver" "$currentver" | sort -V | head -n1)" = "$requiredver"
 }
+
+check_host_os

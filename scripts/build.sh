@@ -52,8 +52,10 @@ test_build_env() (
   test -f containers/Dockerfile.worker || return 3
   test -f docker-compose.yml || return 3
 
+  [[ "$(type podman)" =~ docker ]] && return 0
+
   # test if podman-compose is installed
-  [[ ! $(podman-compose -v) ]] && return 2
+  [ ! "$(podman-compose -v)" ] && return 2
 
   # test its version
   mapfile -t < <(grep ' version' <(podman-compose -v) |\
