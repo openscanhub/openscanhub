@@ -14,11 +14,6 @@ RUN dnf install -y https://kojipkgs.fedoraproject.org//packages/epel-release/8/1
 # internal copr kdudka/mock needed for csmock-core-configs
 RUN cd /etc/yum.repos.d/ && curl -O https://copr.devel.redhat.com/coprs/kdudka/mock/repo/epel-8/kdudka-mock-epel-8.repo
 
-# Some packages are not available from epel repository
-# so we have to take them directly from brew (RHEL builds)
-# - python3-gssapi is a transitive dependency of python3-koji
-# - systemd-container and createrepo_c are needed for mock
-
 RUN dnf -y --setopt=tsflags=nodocs install \
     boost-python3 \
     boost-regex \
