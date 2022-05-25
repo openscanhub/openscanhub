@@ -9,7 +9,6 @@ import logging
 from django.core.exceptions import ObjectDoesNotExist
 from kobo.django.upload.models import FileUpload
 
-from covscanhub.errata.utils import depend_on
 from covscanhub.other.exceptions import PackageBlacklistedException, PackageNotEligibleException
 from covscanhub.scan.models import PackageAttribute, ScanBinding, ClientAnalyzer, Profile
 from covscanhub.scan.xmlrpc_helper import cancel_scan
