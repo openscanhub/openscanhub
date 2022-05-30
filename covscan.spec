@@ -9,6 +9,7 @@ BuildArch:      noarch
 BuildRequires:  python3-devel
 BuildRequires:  python3-six
 BuildRequires:  python3-kobo-client
+BuildRequires:  systemd-rpm-macros
 
 %{?!git_version: %global git_version %{version}}
 
@@ -154,7 +155,7 @@ chmod 0755 $RPM_BUILD_ROOT%{python3_sitelib}/covscanhub/manage.py
 %files worker
 %defattr(644,root,root,755)
 %{python3_sitelib}/covscand
-%attr(755,root,root) /etc/init.d/covscand
+%{_unitdir}/covscand.service
 %attr(754,root,root) /usr/sbin/covscand
 
 %files worker-conf-devel
@@ -165,6 +166,15 @@ chmod 0755 $RPM_BUILD_ROOT%{python3_sitelib}/covscanhub/manage.py
 
 %files worker-conf-prod
 %attr(640,root,root) %config(noreplace) /etc/covscan/covscand.conf.prod
+
+%post
+%systemd_post covscand.service
+
+%preun
+%systemd_preun covscand.service
+
+%postun
+%systemd_postun_with_restart covscand.service
 
 %files hub
 %defattr(-,root,apache,-)

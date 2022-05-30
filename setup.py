@@ -34,8 +34,8 @@ data_files = {
         "covscanhub/covscanhub-httpd.conf.prod",
         "covscanhub/covscanhub-httpd.conf.stage",
     ],
-    "/etc/init.d": [
-        "files/etc/init.d/covscand",
+    "/usr/lib/systemd/system": [
+        "files/etc/systemd/system/covscand.service",
     ],
     "/etc/bash_completion.d": [
         "files/etc/bash_completion.d/covscan.bash",
