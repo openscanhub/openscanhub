@@ -9,8 +9,6 @@ Because we need to fix issues in Kobo as well as in Covscan, we should use it di
 * Switch to the main covscan folder (where covscan, covscand, and covscanhub are).
 * Clone Kobo project: `git clone git@github.com:release-engineering/kobo.git`
 
-Note: Recently, we had to make some changes in kobo to improve its compatibility with Python 3 and newer Django. Until the fixes are merged upstream, use this fork instead of the official source: https://github.com/frenzymadness/kobo
-
 ## Covscan worker
 
 Worker depends on some system packages not available from PyPI, needs to run under root user and has kinda complex setup which are all the reasons to run it in a container.
@@ -73,7 +71,7 @@ u.save()
 
 After the first-time setup, all you need is `podman-compose stop` and `podman-compose start`. If, for any reason, you need to start from scratch, `podman-compose down` stops and destroys all the containers and `podman-compose up` starts their fresh copies. The last two commands work also for specific services so you can destroy also only the covscanhub instance and keep the db.
 
-This step also saves their configuration so you can start them individualy then via `podman start -a db`. It's good idea to start them in separated terminal windows so their outputs are not combined.
+This step also saves their configuration so you can start them individually then via `podman start -a db`. It's good idea to start them in separated terminal windows so their outputs are not combined.
 
 #### Configuration of hub ← worker connection
 
