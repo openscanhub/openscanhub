@@ -1538,6 +1538,38 @@
   }
 },
 {
+  "pk": 167,
+  "model": "scan.mockconfig",
+  "fields": {
+    "enabled": true,
+    "name": "fedora-36-x86_64"
+  }
+},
+{
+  "pk": 168,
+  "model": "scan.mockconfig",
+  "fields": {
+    "enabled": true,
+    "name": "fedora-35-aarch64"
+  }
+},
+{
+  "pk": 169,
+  "model": "scan.mockconfig",
+  "fields": {
+    "enabled": true,
+    "name": "fedora-36-aarch64"
+  }
+},
+{
+  "pk": 170,
+  "model": "scan.mockconfig",
+  "fields": {
+    "enabled": true,
+    "name": "fedora-rawhide-aarch64"
+  }
+},
+{
   "pk": 1,
   "model": "scan.profile",
   "fields": {
