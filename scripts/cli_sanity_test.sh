@@ -124,22 +124,24 @@ mock-task() {
 }
 
 main() {
-  set +x
-  set +e
+  set -x
 
   local config
   local build
   TEMPOUT=$(mktemp -dt cli-test-XXXXXX)
 
-  [ "$DEPLOY" = true ] && ./scripts/deploy.sh --debug
+  if [ "$DEPLOY" = true ]; then
+    ./scripts/deploy.sh --debug || exit "$?"
+  fi
 
-  test_fixture
-
-  cov-list ""
-
-  cov-mock-build ""
-
-  cov-version-diff-build ""
+  if [[ "$(type podman)" =~ docker ]]; then
+    podman start covscanclient
+  else
+    test_fixture
+    cov-list ""
+    cov-mock-build ""
+    cov-version-diff-build ""
+  fi
 
   # TODO: test cancel-tasks and find-tasks
 }

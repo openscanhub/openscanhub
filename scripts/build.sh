@@ -15,6 +15,7 @@ main() {
     set -x
     podman build -f containers/Dockerfile.worker -t covscanworker .
     podman build -f containers/Dockerfile.hub -t covscanhub .
+    podman build -f containers/Dockerfile.client -t covscanclient .
     podman pull registry-proxy.engineering.redhat.com/rh-osbs/rhel8-postgresql-12
   )
 
@@ -44,7 +45,9 @@ test_build_env() (
   # check that we are in the top-level diretory of our git repo
   test -d .git || return 3
   test -f containers/Dockerfile.hub || return 3
+  test -f containers/run_hub.sh || return 3
   test -f containers/Dockerfile.worker || return 3
+  test -f containers/Dockerfile.client || return 3
   test -f docker-compose.yml || return 3
 
   [[ "$(type podman)" =~ docker ]] && return 0

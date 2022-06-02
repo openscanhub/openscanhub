@@ -49,5 +49,21 @@ services:
       WAIT_HOSTS: db:5432, covscanhub:8000
     always-start: false
 
+  covscanclient:
+    image: covscanclient
+    container_name: covscanclient
+    hostname: covscanclient
+    depends_on:
+      - covscanhub
+    networks:
+      - internal-network
+    volumes:
+      - ./:/src:z
+    stdin_open: true
+    tty: true
+    environment:
+      WAIT_HOSTS: db:5432, covscanhub:8000
+    always-start: false
+
 networks:
   internal-network:

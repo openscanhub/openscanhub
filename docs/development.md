@@ -21,9 +21,13 @@ Update `HUB_URL` and possibly other values in `covscand/covscand-local.conf`.
 
 Because some of the dependencies of covscan hub are also not available on PyPI, we have to use containerized environment with all the important packages.
 
+## Covscan client
+
+In case the dependencies of covscan client are not available on your system, you can use containerized environment for the covscan client, too.
+
 ### Prepare container images
 
-Just run `podman build -f containers/Dockerfile.hub -t covscanhub .` and after a while, you'll have container image ready.
+Just run `podman build -f containers/Dockerfile.hub -t covscanhub .` and after a while, you'll have container image ready. You can do the same in case you need the client image with `podman build -f containers/Dockerfile.client -t covscanclient .`.
 Also, pull container image for the database layer: `podman pull registry-proxy.engineering.redhat.com/rh-osbs/rhel8-postgresql-12`.
 
 ### Prepare the cluster
@@ -54,20 +58,23 @@ You can start the worker container in the same way, but not now as the hub is no
 
 * Enter the interactive shell inside the running container: `podman exec -it covscanhub python3 covscanhub/manage.py shell`
 * Create user and admin:
-```py
-from django.contrib.auth import get_user_model
-User = get_user_model()
-User.objects.create_user('username', 'user@redhat.com', 'xxxxxx')
-User.objects.create_superuser('admin', 'user@redhat.com', 'xxxxxx')
-```
-or, if the users already exist, you can change admin pass like this:
-```py
-from django.contrib.auth import get_user_model
-User = get_user_model()
-u = User.objects.get(username='admin')
-u.set_password('velryba')
-u.save()
-```
+
+  ```py
+  from django.contrib.auth import get_user_model
+  User = get_user_model()
+  User.objects.create_user('username', 'user@redhat.com', 'xxxxxx')
+  User.objects.create_superuser('admin', 'user@redhat.com', 'xxxxxx')
+  ```
+
+  or, if the users already exist, you can change admin pass like this:
+
+  ```py
+  from django.contrib.auth import get_user_model
+  User = get_user_model()
+  u = User.objects.get(username='admin')
+  u.set_password('velryba')
+  u.save()
+  ```
 
 After the first-time setup, all you need is `podman-compose stop` and `podman-compose start`. If, for any reason, you need to start from scratch, `podman-compose down` stops and destroys all the containers and `podman-compose up` starts their fresh copies. The last two commands work also for specific services so you can destroy also only the covscanhub instance and keep the db.
 
@@ -83,17 +90,25 @@ Update important settings in `covscan/covscan-local.conf` - namely HUB_URL, USER
 
 Covscan client depends on six and koji Python modules. You should install them system-wide `dnf install python3-six python3-koji`.  You can also install them into a virtual environment `pip install six koji` but in that case, the packages like requests and urllib3 will ignore system-wide certificate authorities. In that case, setting `REQUESTS_CA_BUNDLE` env variable to something like `/etc/ssl/certs/ca-bundle.crt` might help.
 
-Covscan client should now be able to connect to the hub and send it tasks. You can test it by these commands:
+As pointed above, all of these dependencies are automatically set up in the client container, so you can use that.
 
-```
-COVSCAN_CONFIG_FILE=covscan/covscan-local.conf PYTHONPATH=.:kobo python3 covscan/covscan list-mock-configs
-COVSCAN_CONFIG_FILE=covscan/covscan-local.conf PYTHONPATH=.:kobo python3 covscan/covscan mock-build --config=fedora-35-x86_64 --brew-build curl-7.79.1-1.fc35
-```
+* Covscan client should now be able to connect to the hub and send it tasks. You can test it by these commands:
 
-Note: You can also set these variables permanently to your bashrc.
+  ```bash
+  COVSCAN_CONFIG_FILE=covscan/covscan-local.conf PYTHONPATH=.:kobo python3 covscan/covscan list-mock-configs
+  COVSCAN_CONFIG_FILE=covscan/covscan-local.conf PYTHONPATH=.:kobo python3 covscan/covscan mock-build --config=fedora-35-x86_64 --brew-build curl-7.79.1-1.fc35
+  ```
+
+  Note: You can also set these variables permanently to your bashrc.
+
+* Or, in the container (which already has the needed variables exported):
+
+  ```bash
+  docker exec -i covscanclient python3 covscan/covscan list-mock-configs
+  docker exec -i covscanclient python3 covscan/covscan mock-build --config=fedora-35-x86_64 --brew-build curl-7.79.1-1.fc35
+  ```
 
 # Developing covscan
-
 
 ## Code path when submitting user scan
 
