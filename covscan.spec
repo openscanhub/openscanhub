@@ -1,5 +1,5 @@
 Name:           covscan
-Version:        0.8.0
+Version:        %{version}
 Release:        3%{?dist}
 License:        Commercial
 Summary:        Coverity scan scheduler
@@ -11,8 +11,6 @@ BuildRequires:  python3-six
 BuildRequires:  python3-kobo-client
 BuildRequires:  systemd-rpm-macros
 
-%{?!git_version: %global git_version %{version}}
-
 %description
 CovScan is a Coverity scan scheduler.
 It consists of central hub, workers and cli client.
@@ -22,8 +20,8 @@ It consists of central hub, workers and cli client.
 Summary: CovScan CLI client
 Requires: koji
 Requires: python3-kobo-client >= 0.15.1-100
-Requires: %{name}-common = %{git_version}-%{release}
-Obsoletes: python3-%{name}-client < %{git_version}-%{release}
+Requires: %{name}-common = %{version}-%{release}
+Obsoletes: python3-%{name}-client < %{version}-%{release}
 
 %description client
 CovScan CLI client
@@ -43,13 +41,13 @@ Requires: koji
 Requires: python3-kobo-client
 Requires: python3-kobo-rpmlib
 Requires: python3-kobo-worker
-Requires: %{name}-common = %{git_version}-%{release}
-Requires: %{name}-worker-conf = %{git_version}-%{release}
-Obsoletes: covscan-worker-prod < %{git_version}-%{release}
-Obsoletes: covscan-worker-stage < %{git_version}-%{release}
-Obsoletes: python3-%{name}-worker < %{git_version}-%{release}
-Obsoletes: python3-covscan-worker-prod < %{git_version}-%{release}
-Obsoletes: python3-covscan-worker-stage < %{git_version}-%{release}
+Requires: %{name}-common = %{version}-%{release}
+Requires: %{name}-worker-conf = %{version}-%{release}
+Obsoletes: covscan-worker-prod < %{version}-%{release}
+Obsoletes: covscan-worker-stage < %{version}-%{release}
+Obsoletes: python3-%{name}-worker < %{version}-%{release}
+Obsoletes: python3-covscan-worker-prod < %{version}-%{release}
+Obsoletes: python3-covscan-worker-stage < %{version}-%{release}
 
 %description worker
 CovScan worker
@@ -82,13 +80,13 @@ Requires: python3-csdiff
 
 Requires: python3-django-debug-toolbar > 1.0
 
-Requires: %{name}-common = %{git_version}-%{release}
-Requires: %{name}-hub-conf = %{git_version}-%{release}
-Obsoletes: covscan-hub-prod < %{git_version}-%{release}
-Obsoletes: covscan-hub-stage < %{git_version}-%{release}
-Obsoletes: python3-covscan-hub-prod < %{git_version}-%{release}
-Obsoletes: python3-covscan-hub-stage < %{git_version}-%{release}
-Obsoletes: python3-%{name}-hub < %{git_version}-%{release}
+Requires: %{name}-common = %{version}-%{release}
+Requires: %{name}-hub-conf = %{version}-%{release}
+Obsoletes: covscan-hub-prod < %{version}-%{release}
+Obsoletes: covscan-hub-stage < %{version}-%{release}
+Obsoletes: python3-covscan-hub-prod < %{version}-%{release}
+Obsoletes: python3-covscan-hub-stage < %{version}-%{release}
+Obsoletes: python3-%{name}-hub < %{version}-%{release}
 
 %description hub
 CovScan xml-rpc interface and web application
@@ -99,7 +97,7 @@ for alt in devel stage prod; do
 cat << EOF
 %package ${sub}-conf-${alt}
 Summary: Covscan ${sub} ${alt} configuration
-Provides: covscan-${sub}-conf = %{git_version}-%{release}
+Provides: covscan-${sub}-conf = %{version}-%{release}
 Conflicts: covscan-${sub}-conf
 RemovePathPostfixes: .${alt}
 %description ${sub}-conf-${alt}
@@ -146,7 +144,7 @@ chmod 0755 $RPM_BUILD_ROOT%{python3_sitelib}/covscanhub/manage.py
 %attr(644,root,root) %config(noreplace) /etc/covscan/covscan.conf
 %{_sysconfdir}/bash_completion.d/
 %{python3_sitelib}/covscan
-%{python3_sitelib}/covscan-%{version}-py%{python3_version}.egg-info
+%{python3_sitelib}/covscan-*-py%{python3_version}.egg-info
 
 %files common
 %defattr(644,root,root,755)

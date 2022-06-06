@@ -2,27 +2,16 @@
 # -*- coding: utf-8 -*-
 
 
-import os
 import distutils.command.sdist
-from distutils.core import setup
+import os
 from distutils.command.install import INSTALL_SCHEMES
-from scripts.include import *
+from distutils.core import setup
 
+from scripts.include import get_files, get_git_date_and_time, get_git_version
 
-project_name         = "covscan"
-project_dirs         = ["covscan", "covscand", "covscanhub", "covscancommon"]
-project_url          = "https://gitlab.cee.redhat.com/covscan/covscan"
-project_author       = "Red Hat, Inc."
-project_author_email = "ttomecek@redhat.com"
-project_description  = "Coverity scan scheduler"
-package_name         = "%s" % project_name
-package_module_name  = project_name
-package_version      = [0, 8, 0, "final", ""]
-
-
-script_files = []
-
-
+# Add "git" to the end of the list to build from git commit
+package_version = [0, 8, 0]
+packages = ["covscan", "covscand", "covscanhub", "covscancommon"]
 data_files = {
     "/etc/covscan": [
         "covscan/covscan.conf",
@@ -47,48 +36,38 @@ data_files = {
         "covscand/covscand",
     ],
 }
-
-
 package_data = {
-    "covscanhub": get_files("covscanhub", "static") + \
-            get_files("covscanhub", "templates") + \
-            get_files("covscanhub", "media") + \
-            get_files("covscanhub", "scan/fixtures") + \
-            get_files("covscanhub", "errata/fixtures") + \
-            get_files("covscanhub", "fixtures") + \
-            ["covscanhub.wsgi",
-             "settings_local.py.prod",
-             "settings_local.py.stage",
-             'scripts/checker_groups.txt']
+    "covscanhub": [
+        "covscanhub.wsgi",
+        "settings_local.py.prod",
+        "settings_local.py.stage",
+        "scripts/checker_groups.txt",
+    ]
 }
 
+for folder in (
+    "static",
+    "templates",
+    "media",
+    "scan/fixtures",
+    "errata/fixtures",
+    "fixtures",
+):
+    package_data["covscanhub"].extend(get_files("covscanhub", folder))
 
 # override default tarball format with bzip2
-distutils.command.sdist.sdist.default_format = { 'posix': 'bztar', }
-
+distutils.command.sdist.sdist.default_format = {
+    "posix": "bztar",
+}
 
 if os.path.isdir(".git"):
     # we're building from a git repo -> store version tuple to __init__.py
-    if package_version[3] == "git":
-        force = True
-        git_version = get_git_version(os.path.dirname(__file__))
-        git_date = get_git_date(os.path.dirname(__file__))
-        package_version[4] = "%s.%s" % (git_date, git_version)
-
-    for i in project_dirs:
-        file_name = os.path.join(i, "version.py")
-        write_version(file_name, package_version)
-
-
-# read package version from the module
-package_module = __import__(project_dirs[0] + ".version")
-package_version = get_version(package_module)
-packages = get_packages(project_dirs)
-
-
-root_dir = os.path.dirname(__file__)
-if root_dir != "":
-    os.chdir(root_dir)
+    if package_version[-1] == "git":
+        git_version = get_git_version(os.path.dirname(os.path.abspath(__file__)))
+        git_date, git_time = get_git_date_and_time(
+            os.path.dirname(os.path.abspath(__file__))
+        )
+        package_version += [git_date, git_time, git_version]
 
 
 # force to install data files to site-packages
@@ -97,14 +76,13 @@ for scheme in INSTALL_SCHEMES.values():
 
 
 setup(
-    name         = package_name,
-    version      = package_version.replace(" ", "_").replace("-", "_"),
-    url          = project_url,
-    author       = project_author,
-    author_email = project_author_email,
-    description  = project_description,
-    packages     = packages,
-    package_data = package_data,
-    data_files   = data_files.items(),
-    scripts      = script_files,
+    name="covscan",
+    version=".".join(map(str, package_version)),
+    url="https://gitlab.cee.redhat.com/covscan/covscan",
+    author="Red Hat, Inc.",
+    author_email="ttomecek@redhat.com",
+    description="Coverity scan scheduler",
+    packages=packages,
+    package_data=package_data,
+    data_files=data_files.items(),
 )

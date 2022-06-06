@@ -17,6 +17,7 @@ clean:
 	@python setup.py clean
 	rm -f MANIFEST
 	rm -f ./*.src.rpm
+	rm -rf dist
 	find . -\( -name "*.pyc" -o -name '*.pyo' -o -name "*~" -\) -delete
 
 
@@ -31,22 +32,15 @@ log:
 source: clean
 	@python setup.py sdist --formats=bztar
 
-RPM_VER = $(shell rpmspec -q --srpm --queryformat '%{version}' covscan.spec)
-GIT_VER = $(shell git describe | sed -e 's/^covscan-//' -e "s/-.*-/.$$(git log --pretty="%cd" --date=iso -1 | tr -d ':-' | tr ' ' . | cut -d. -f 1,2)./")
+VERSION = $(shell echo dist/*.tar.bz2 | sed "s/.*covscan-\(.*\).tar.bz2/\1/g")
 
 srpm: source
-	echo "%global git_version $(GIT_VER)" > dist/covscan.spec
-ifneq ($(RPM_VER),$(GIT_VER))
-	cp -afv dist/covscan-$(RPM_VER).tar.bz2 dist/covscan-$(GIT_VER).tar.bz2
-	sed -e 's/$(RPM_VER)$$/$(GIT_VER)/' -e 's/%{version}/$(RPM_VER)/' -e 's/^%setup -q/%setup -q -n covscan-$(RPM_VER)/' covscan.spec >> dist/covscan.spec
-else
+	echo "%global version $(VERSION)" > dist/covscan.spec
 	cat covscan.spec >> dist/covscan.spec
-endif
 	rpmbuild -bs "dist/covscan.spec"                    \
 		--define "_sourcedir ./dist"                \
 		--define "_specdir ."                       \
-		--define "_srcrpmdir ."						\
-		--define "git_version $(GIT_VER)"
+		--define "_srcrpmdir ."
 
 lint-all:
 	pre-commit run --all-files
