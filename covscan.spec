@@ -71,14 +71,13 @@ Requires: gzip
 Requires: python3-qpid-proton
 # hub is interacting with brew
 Requires: koji
-# extract tarballs created by cov-mockbuild
+# extract tarballs created by csmock
 Requires: xz
 
 Requires: csdiff
-Requires: python3-csdiff
-Requires: python3-bugzilla
-Requires: yum
 Requires: file
+Requires: python3-bugzilla
+Requires: python3-csdiff
 
 Requires: python3-django-debug-toolbar > 1.0
 
