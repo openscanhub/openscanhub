@@ -50,27 +50,3 @@ endif
 
 lint-all:
 	pre-commit run --all-files
-
-lint-ci:
-	pre-commit run --from-ref origin/master --to-ref HEAD
-
-prepare-env:
-	rm -rf kobo
-	git clone --depth 1 https://github.com/release-engineering/kobo.git
-
-prepare-containers:
-	podman pull registry-proxy.engineering.redhat.com/rh-osbs/rhel8-postgresql-12
-	podman build -f containers/Dockerfile.hub -t covscanhub .
-	podman build -f containers/Dockerfile.worker -t covscanworker .
-
-start-containers:
-	podman-compose up --no-start
-	podman start db covscanhub
-
-test-hub:
-	podman exec -it covscanhub python3 covscanhub/manage.py test || exit 1
-
-teardown-containers:
-	podman-compose logs db
-	podman-compose logs covscanhub
-	podman-compose down

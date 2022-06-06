@@ -5,16 +5,22 @@ lint:
   before_script:
     - dnf install -y pre-commit make git-core
   script:
-    - make lint-ci
+    - pre-commit run --from-ref origin/master --to-ref HEAD
 
 test:
   tags:
     - covscan-ci-runner
   before_script:
-    - make prepare-env
-    - make prepare-containers
-    - make start-containers
+    - rm -rf kobo
+    - git clone --depth 1 https://github.com/release-engineering/kobo.git
+    - podman pull registry-proxy.engineering.redhat.com/rh-osbs/rhel8-postgresql-12
+    - podman build -f containers/Dockerfile.hub -t covscanhub .
+    - podman build -f containers/Dockerfile.worker -t covscanworker .
+    - podman-compose up --no-start
+    - podman start db covscanhub
   script:
-    - make test-hub
+    - podman exec -it covscanhub python3 covscanhub/manage.py test || exit 1
   after_script:
-    - make teardown-containers
+    - podman-compose logs db
+    - podman-compose logs covscanhub
+    - podman-compose down
