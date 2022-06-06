@@ -30,6 +30,7 @@ services:
     tty: true
     environment:
       WAIT_HOSTS: db:5432
+    always-start: false
 
   covscanworker:
     image: covscanworker
@@ -46,6 +47,7 @@ services:
     tty: true
     environment:
       WAIT_HOSTS: db:5432, covscanhub:8000
+    always-start: false
 
 networks:
   internal-network:
