@@ -7,9 +7,11 @@ import os
 from distutils.command.install import INSTALL_SCHEMES
 from distutils.core import setup
 
-from scripts.include import get_files, get_git_date_and_time, get_git_version
+from scripts.include import (get_files, get_git_date_and_time, get_git_version,
+                             git_check_tag_for_HEAD)
 
-# Add "git" to the end of the list to build from git commit
+THIS_FILE_PATH = os.path.dirname(os.path.abspath(__file__))
+
 package_version = [0, 8, 0]
 packages = ["covscan", "covscand", "covscanhub", "covscancommon"]
 data_files = {
@@ -61,12 +63,10 @@ distutils.command.sdist.sdist.default_format = {
 }
 
 if os.path.isdir(".git"):
-    # we're building from a git repo -> store version tuple to __init__.py
-    if package_version[-1] == "git":
-        git_version = get_git_version(os.path.dirname(os.path.abspath(__file__)))
-        git_date, git_time = get_git_date_and_time(
-            os.path.dirname(os.path.abspath(__file__))
-        )
+    if not git_check_tag_for_HEAD(THIS_FILE_PATH):
+        package_version.append("git")
+        git_version = get_git_version(THIS_FILE_PATH)
+        git_date, git_time = get_git_date_and_time(THIS_FILE_PATH)
         package_version += [git_date, git_time, git_version]
 
 
