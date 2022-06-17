@@ -1,27 +1,23 @@
 # -*- coding: utf-8 -*-
-from glob import glob
-import json
-import re
-import os
 import datetime
+import json
 import logging
+import re
+
 import six.moves.cPickle as pickle
-from covscanhub.other import get_or_none
-
-from covscanhub.scan.messaging import post_qpid_message
-from covscanhub.other.scan import remove_duplicities
-
-from django.db import models, transaction
 from django.conf import settings
 from django.contrib.auth import get_user_model
-from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
-from django.utils.safestring import mark_safe
+from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
+from django.db import models, transaction
 from django.urls import reverse
-
-from kobo.hub.models import Task
-from kobo.types import Enum, EnumItem
+from django.utils.safestring import mark_safe
 from kobo.client.constants import TASK_STATES
 from kobo.django.fields import JSONField
+from kobo.hub.models import Task
+from kobo.types import Enum, EnumItem
+
+from covscanhub.other import get_or_none
+from covscanhub.scan.messaging import post_qpid_message
 
 logger = logging.getLogger(__name__)
 
@@ -182,7 +178,7 @@ class SystemRelease(models.Model):
     # rhel-6.4 | rhel-7 etc.
     tag = models.CharField("Short tag", max_length=16, blank=False)
 
-    #Red Hat Enterprise Linux 6 etc.
+    # Red Hat Enterprise Linux 6 etc.
     product = models.CharField("Product name", max_length=128, blank=False)
 
     # release number (y) -- RHEL-x.y
@@ -210,7 +206,7 @@ statistical data will be harvested for this system release.")
         """
         return product version (such as 7.0, 6.4, etc.), created for BZ
         """
-        return "%s.%s" % (re.search('(\d)', self.product).group(1),
+        return "%s.%s" % (re.search(r'(\d)', self.product).group(1),
                           self.release)
 
 
@@ -407,7 +403,7 @@ class PackageAttribute(models.Model):
     BLOCKED: {Y | N}
      * If this is set to True, the package is blacklisted -- not accepted
     for scanning.
-    
+
     ELIGIBLE: {Y | N}
      * Is package scannable? You may have package written in different language
     that is supported by your scanner.
@@ -445,7 +441,6 @@ class PackageAttribute(models.Model):
             return cls.objects.get(package=package, release=release, key=key)
         else:
             return cls.objects.get(package=package, release=release)
-
 
     @classmethod
     def blocked(cls, package, release):
@@ -570,7 +565,7 @@ class Scan(models.Model):
     """
     Stores information about submitted scans from Errata Tool
     """
-    #yum-3.4.3-42.el7
+    # yum-3.4.3-42.el7
     nvr = models.CharField("NVR", max_length=512,
                            blank=False, help_text="Name-Version-Release")
 
@@ -582,21 +577,21 @@ class Scan(models.Model):
                                         choices=SCAN_STATES.get_mapping(),
                                         help_text="Current scan state")
 
-    #information for differential scan -- which version of package we are
-    #diffing to
+    # information for differential scan -- which version of package we are
+    # diffing to
     base = models.ForeignKey('self', verbose_name="Base Scan",
                              blank=True, null=True,
                              help_text="NVR of package to diff against",
                              related_name="base_scan", on_delete=models.CASCADE)
-    #user scans dont have to specify this option -- allow None
+    # user scans dont have to specify this option -- allow None
     tag = models.ForeignKey(Tag, verbose_name="Tag",
                             blank=True, null=True,
                             help_text="Tag from brew", on_delete=models.CASCADE)
 
     username = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 
-    #date when there was last access to scan
-    #should change when:
+    # date when there was last access to scan
+    # should change when:
     #   - scan has finished
     #   - waiver added
     #   - waiver invalidated
@@ -691,7 +686,7 @@ counted in statistics.")
                     self.tag.release.tag)
             except KeyError:
                 d = AppSettings.setting_waiver_is_overdue()
-            except Exception as e:
+            except Exception as e:  # noqa: B902
                 logger.error('Failed to get release specific waiver overdue \
 setting: %s', e)
                 return None
@@ -699,7 +694,6 @@ setting: %s', e)
                 self.last_access > datetime.datetime.now() + d
         else:
             return None
-
 
     @classmethod
     def create_scan(cls, scan_type, nvr, username, package,
@@ -1199,7 +1193,6 @@ class ClientAnalyzerManager(models.Manager, ClientAnalyzerMixin):
 
 class ClientAnalyzer(models.Model):
     analyzer = models.ForeignKey("Analyzer", blank=True, null=True, on_delete=models.CASCADE)
-    #name = models.CharField(max_length=64)
     version = models.CharField(max_length=32, blank=True, null=True)
     enabled = models.BooleanField(default=True)
     # what covscan-client option enables analyzer
