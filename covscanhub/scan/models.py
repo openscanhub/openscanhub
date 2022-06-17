@@ -1000,6 +1000,13 @@ class ETMapping(models.Model):
             self.save()
 
 
+def decode_pickle(val):
+    """Decode pickle loaded from database"""
+    text = val.replace('\r\n', '\n')
+    data = bytes(text, encoding='utf-8')
+    return pickle.loads(data)
+
+
 class AppSettings(models.Model):
     """
     Settings for covscan stored in DB so they can be easily changed.
@@ -1009,7 +1016,7 @@ class AppSettings(models.Model):
 
     CHECK_USER_CAN_SUBMIT_SCAN { Y, N }
 
-    WAIVER_IS_OVERDUE pickled/jsoned datetime.delta
+    WAIVER_IS_OVERDUE pickled datetime.delta
     WAIVER_IS_OVERDUE_RELSPEC release specific ^
 
     ACTUAL_SCANNER tuple('coverity', '6.5.0')
@@ -1063,12 +1070,7 @@ class AppSettings(models.Model):
     @classmethod
     def setting_waiver_is_overdue(cls):
         """Time period when run is marked as not processed -- default value"""
-        try:
-            return pickle.loads(
-                str(cls.objects.get(key="WAIVER_IS_OVERDUE").value))
-        except Exception:
-            return json.loads(
-                str(cls.objects.get(key="WAIVER_IS_OVERDUE").value))
+        return decode_pickle(cls.objects.get(key="WAIVER_IS_OVERDUE").value)
 
     @classmethod
     def settings_waiver_is_overdue_relspec(cls):
@@ -1078,10 +1080,7 @@ class AppSettings(models.Model):
             pickle.dumps('release__tag', 'timedelta')
         """
         q = cls.objects.filter(key="WAIVER_IS_OVERDUE_RELSPEC")
-        try:
-            return dict(pickle.loads(str(o.value)) for o in q)
-        except Exception:
-            return dict(json.loads(str(o.value)) for o in q)
+        return dict(decode_pickle(o.value) for o in q)
 
     @classmethod
     def settings_waiver_overdue_by_release(cls, short_tag):
