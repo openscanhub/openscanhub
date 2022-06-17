@@ -1,6 +1,6 @@
 Name:           covscan
 Version:        %{version}
-Release:        3%{?dist}
+Release:        1%{?dist}
 License:        Commercial
 Summary:        Coverity scan scheduler
 Source:         %{name}-%{version}.tar.bz2
@@ -197,6 +197,9 @@ chmod 0755 $RPM_BUILD_ROOT%{python3_sitelib}/covscanhub/manage.py
 
 
 %changelog
+* Fri Jun 17 2022 Kamil Dudka <kdudka@redhat.com> - 0.8.1-1
+- bump version to make upgrades to git snapshots work again
+
 * Thu Apr 07 2022 Lumír Balhar <lbalhar@redhat.com> - 0.8.0-3
 - Reorganize specfile and add covscan-common
 
