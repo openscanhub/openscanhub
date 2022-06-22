@@ -137,6 +137,9 @@ cp -R covscanhub/scripts/checker_groups.txt %{buildroot}%{python3_sitelib}/covsc
 # make manage.py executable
 chmod 0755 %{buildroot}%{python3_sitelib}/covscanhub/manage.py
 
+# scripts are needed for setup.py, no longer needed
+rm -rf %{buildroot}%{python3_sitelib}/scripts
+
 %files client
 %defattr(644,root,root,755)
 %attr(755,root,root) /usr/bin/covscan
