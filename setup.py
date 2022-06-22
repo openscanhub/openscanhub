@@ -1,11 +1,10 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-
-import distutils.command.sdist
 import os
 from distutils.command.install import INSTALL_SCHEMES
-from distutils.core import setup
+
+from setuptools import find_packages, setup
 
 from scripts.include import (get_files, get_git_date_and_time, get_git_version,
                              git_check_tag_for_HEAD)
@@ -13,7 +12,6 @@ from scripts.include import (get_files, get_git_date_and_time, get_git_version,
 THIS_FILE_PATH = os.path.dirname(os.path.abspath(__file__))
 
 package_version = [0, 8, 1]
-packages = ["covscan", "covscand", "covscanhub", "covscancommon"]
 data_files = {
     "/etc/covscan": [
         "covscan/covscan.conf",
@@ -57,11 +55,6 @@ for folder in (
 ):
     package_data["covscanhub"].extend(get_files("covscanhub", folder))
 
-# override default tarball format with bzip2
-distutils.command.sdist.sdist.default_format = {
-    "posix": "bztar",
-}
-
 if os.path.isdir(".git"):
     if not git_check_tag_for_HEAD(THIS_FILE_PATH):
         package_version.append("git")
@@ -82,7 +75,7 @@ setup(
     author="Red Hat, Inc.",
     author_email="ttomecek@redhat.com",
     description="Coverity scan scheduler",
-    packages=packages,
+    packages=find_packages(),
     package_data=package_data,
     data_files=data_files.items(),
 )

@@ -4,9 +4,3 @@ include COPYING
 include LICENSE
 include MANIFEST.in
 include README
-include Makefile
-recursive-include files *
-recursive-include covscan *.py *.conf covscan
-recursive-include covscand *.py *.conf covscand
-recursive-include covscanhub *.py *.conf *.json *.html *.css *.js *.png *.wsgi
-recursive-include scripts *.py *.sh
