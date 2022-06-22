@@ -113,7 +113,6 @@ done;done)
 
 
 %install
-rm -rf ${RPM_BUILD_ROOT}
 %py3_install
 
 # avoid transforming /usr/bin/env -S ... to /usr/bin/-S
@@ -122,21 +121,21 @@ rm -rf ${RPM_BUILD_ROOT}
 # tweak python paths in config files
 
 # FIXME
-sed -i 's@/lib/python2.[0-9]@/lib/python%{python3_version}@g' ${RPM_BUILD_ROOT}/etc/httpd/conf.d/covscanhub-httpd.conf.*
+sed -i 's@/lib/python2.[0-9]@/lib/python%{python3_version}@g' %{buildroot}/etc/httpd/conf.d/covscanhub-httpd.conf.*
 
 # create /var/lib dirs
-mkdir -p $RPM_BUILD_ROOT/var/lib/covscanhub/tasks
-mkdir -p $RPM_BUILD_ROOT/var/lib/covscanhub/upload
+mkdir -p %{buildroot}/var/lib/covscanhub/tasks
+mkdir -p %{buildroot}/var/lib/covscanhub/upload
 
 # create log file
-mkdir -p $RPM_BUILD_ROOT/var/log/covscanhub
-touch $RPM_BUILD_ROOT/var/log/covscanhub/covscanhub.log
+mkdir -p %{buildroot}/var/log/covscanhub
+touch %{buildroot}/var/log/covscanhub/covscanhub.log
 
 # copy checker_groups.txt
-cp -R covscanhub/scripts/checker_groups.txt $RPM_BUILD_ROOT/%{python3_sitelib}/covscanhub/scripts/
+cp -R covscanhub/scripts/checker_groups.txt %{buildroot}%{python3_sitelib}/covscanhub/scripts/
 
 # make manage.py executable
-chmod 0755 $RPM_BUILD_ROOT%{python3_sitelib}/covscanhub/manage.py
+chmod 0755 %{buildroot}%{python3_sitelib}/covscanhub/manage.py
 
 %files client
 %defattr(644,root,root,755)
