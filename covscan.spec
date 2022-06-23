@@ -7,6 +7,7 @@ Source:         %{name}-%{version}.tar.bz2
 BuildArch:      noarch
 
 BuildRequires:  python3-devel
+BuildRequires:  python3-setuptools
 BuildRequires:  python3-six
 BuildRequires:  python3-kobo-client
 BuildRequires:  systemd-rpm-macros
