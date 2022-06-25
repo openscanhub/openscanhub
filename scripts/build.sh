@@ -1,48 +1,29 @@
 #!/usr/bin/env bash
 
 # shellcheck disable=1091
-. "./scripts/utils.sh" --source-only
+. './scripts/utils.sh' --source-only
 
-RUN=false
+# podman-compose is currently unable to use profiles
+# see: https://github.com/containers/podman-compose/issues/430
+CONTAINERS='db osh-hub osh-worker'
+if [[ "$(type podman)" =~ docker ]]; then
+  PROFILE="--profile=full-dev"
+else
+  PROFILE=""
+fi
+START='--no-start'
 
 main() {
   test_build_env || exit "$?"
 
-  set -e
+  set -ex
 
-  # prepare the containers (should be cheap if already prepared)
-  (\
-    set -x
-    podman pull registry-proxy.engineering.redhat.com/rh-osbs/rhel8-postgresql-12
-    podman build -f containers/worker.Dockerfile -t osh-worker .
-    podman build -f containers/hub/Dockerfile -t osh-hub .
-  )
-  if [[ ! "$(type podman)" =~ docker ]]; then
-    (\
-      set -x
-      podman build -f containers/client.Dockerfile -t osh-client .
-    )
-  fi
+  # when running the down command docker won't stop osh-client if not specified
+  # causing errors when trying to remove the network
+  # we also can't specify container names in down command
+  eval podman-compose "$PROFILE" down
 
-  # HACK: just for safety, use the down command before proceeding
-  # up command errors out when the pods are already built
-  # this ensures we "restart" them from a known state
-  # TODO: find a better way to (re)build env
-  podman-compose down
-  if [[ ! "$(type podman)" =~ docker ]]; then
-    (set -x; podman-compose --profile full-dev up --no-start)
-  else
-    (set -x; podman-compose up --no-start db osh-hub osh-worker)
-  fi
-
-  if [ "$RUN" = true ]; then
-    run
-  fi
-}
-
-run() {
-  set -x
-  podman start db osh-hub
+  eval podman-compose up --build "$START" "$CONTAINERS"
 }
 
 #Used for testing the build environment
@@ -89,7 +70,7 @@ test_build_env() (
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --run)
-      RUN=true
+      START='-d'
       shift
       ;;
     *)

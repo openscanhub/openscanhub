@@ -131,7 +131,7 @@ main() {
   TEMPOUT=$(mktemp -dt cli-test-XXXXXX)
 
   if [ "$DEPLOY" = true ]; then
-    ./scripts/deploy.sh --debug || exit "$?"
+    ./scripts/deploy.sh --debug --no-interactive || exit "$?"
   fi
 
   if [[ "$(type podman)" =~ docker ]]; then

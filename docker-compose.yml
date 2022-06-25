@@ -1,4 +1,4 @@
-version: '3'
+version: '3.8'
 
 services:
   db:
@@ -16,6 +16,9 @@ services:
 
   osh-hub:
     image: osh-hub
+    build:
+      context: .
+      dockerfile: ./containers/hub/Dockerfile
     container_name: osh-hub
     hostname: osh-hub
     depends_on:
@@ -31,6 +34,9 @@ services:
 
   osh-worker:
     image: osh-worker
+    build:
+      context: .
+      dockerfile: ./containers/worker.Dockerfile
     container_name: osh-worker
     hostname: osh-worker
     depends_on:
@@ -45,6 +51,9 @@ services:
 
   osh-client:
     image: osh-client
+    build:
+      context: .
+      dockerfile: ./containers/client.Dockerfile
     container_name: osh-client
     hostname: osh-client
     depends_on:
