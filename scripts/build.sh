@@ -13,18 +13,27 @@ main() {
   # prepare the containers (should be cheap if already prepared)
   (\
     set -x
-    podman build -f containers/Dockerfile.worker -t osh-worker .
-    podman build -f containers/Dockerfile.hub -t osh-hub .
-    podman build -f containers/Dockerfile.client -t osh-client .
     podman pull registry-proxy.engineering.redhat.com/rh-osbs/rhel8-postgresql-12
+    podman build -f containers/worker.Dockerfile -t osh-worker .
+    podman build -f containers/hub/Dockerfile -t osh-hub .
   )
+  if [[ ! "$(type podman)" =~ docker ]]; then
+    (\
+      set -x
+      podman build -f containers/client.Dockerfile -t osh-client .
+    )
+  fi
 
   # HACK: just for safety, use the down command before proceeding
   # up command errors out when the pods are already built
   # this ensures we "restart" them from a known state
   # TODO: find a better way to (re)build env
   podman-compose down
-  (set -x; podman-compose up --no-start)
+  if [[ ! "$(type podman)" =~ docker ]]; then
+    (set -x; podman-compose --profile full-dev up --no-start)
+  else
+    (set -x; podman-compose up --no-start db osh-hub osh-worker)
+  fi
 
   if [ "$RUN" = true ]; then
     run
@@ -44,10 +53,10 @@ test_build_env() (
   set +e
   # check that we are in the top-level diretory of our git repo
   test -d .git || return 3
-  test -f containers/Dockerfile.hub || return 3
-  test -f containers/run_hub.sh || return 3
-  test -f containers/Dockerfile.worker || return 3
-  test -f containers/Dockerfile.client || return 3
+  test -f containers/hub/Dockerfile || return 3
+  test -f containers/hub/run.sh || return 3
+  test -f containers/worker.Dockerfile || return 3
+  test -f containers/client.Dockerfile || return 3
   test -f docker-compose.yml || return 3
 
   [[ "$(type podman)" =~ docker ]] && return 0

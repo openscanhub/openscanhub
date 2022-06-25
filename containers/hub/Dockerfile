@@ -42,11 +42,11 @@ RUN dnf -y --setopt=tsflags=nodocs install \
     postgresql{,-libs} \
     xz
 
-COPY containers/run_hub.sh /run_hub.sh
-RUN chmod +x /run_hub.sh
+COPY containers/hub/run.sh /run.sh
+RUN chmod +x /run.sh
 
 WORKDIR /src
 
 ENV PYTHONPATH=.:kobo
 
-CMD /run_hub.sh
+CMD /run.sh

@@ -13,7 +13,7 @@ Because we need to fix issues in Kobo as well as in OpenScanHub, we should use i
 
 Worker depends on some system packages not available from PyPI, needs to run under root user and has kinda complex setup which are all the reasons to run it in a container.
 
-Build the container via: `podman build -f containers/Dockerfile.worker -t osh-worker .`.
+Build the container via: `podman build -f containers/worker.Dockerfile -t osh-worker .`.
 
 Update `HUB_URL` and possibly other values in `covscand/covscand-local.conf`.
 
@@ -27,7 +27,7 @@ In case the dependencies of OSH client are not available on your system, you can
 
 ### Prepare container images
 
-Just run `podman build -f containers/Dockerfile.hub -t osh-hub .` and after a while, you'll have container image ready. You can do the same in case you need the client image with `podman build -f containers/Dockerfile.client -t osh-client .`.
+Just run `podman build -f containers/hub/Dockerfile -t osh-hub .` and after a while, you'll have container image ready. You can do the same in case you need the client image with `podman build -f containers/client.Dockerfile -t osh-client .`.
 Also, pull container image for the database layer: `podman pull registry-proxy.engineering.redhat.com/rh-osbs/rhel8-postgresql-12`.
 
 ### Prepare the cluster
