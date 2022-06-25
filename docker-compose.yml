@@ -28,9 +28,6 @@ services:
       - ./:/src:z
     stdin_open: true
     tty: true
-    environment:
-      WAIT_HOSTS: db:5432
-    always-start: false
 
   osh-worker:
     image: osh-worker
@@ -45,9 +42,6 @@ services:
     privileged: true
     stdin_open: true
     tty: true
-    environment:
-      WAIT_HOSTS: db:5432, osh-hub:8000
-    always-start: false
 
   osh-client:
     image: osh-client
@@ -61,9 +55,8 @@ services:
       - ./:/src:z
     stdin_open: true
     tty: true
-    environment:
-      WAIT_HOSTS: db:5432, osh-hub:8000
-    always-start: false
+    profiles:
+      - full-dev
 
 networks:
   internal-network:
