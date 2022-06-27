@@ -24,6 +24,9 @@ DATABASES = {
         'PASSWORD': 'velryba',
         'HOST': 'db',
         'PORT': '5432',
+        'TEST': {
+                'NAME': 'covscanhub-test',
+        },
     },
 }
 
