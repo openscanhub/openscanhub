@@ -104,8 +104,8 @@ As pointed above, all of these dependencies are automatically set up in the clie
 * Or, in the container (which already has the needed variables exported):
 
   ```bash
-  docker exec -i covscanclient python3 covscan/covscan list-mock-configs
-  docker exec -i covscanclient python3 covscan/covscan mock-build --config=fedora-35-x86_64 --brew-build curl-7.79.1-1.fc35
+  podman exec -i covscanclient python3 covscan/covscan list-mock-configs
+  podman exec -i covscanclient python3 covscan/covscan mock-build --config=fedora-35-x86_64 --brew-build curl-7.79.1-1.fc35
   ```
 
 # Developing covscan
