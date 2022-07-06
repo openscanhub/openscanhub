@@ -51,8 +51,6 @@ If you want to, you can restore a database backup from the production server. If
 
 Now, you can start the hub with: `podman start -a covscanhub`. The hub will try to apply known migrations to your database. If it fails, all the migrations will be faked. Make sure your database is either empty or in a consistent state.
 
-You can start the worker container in the same way, but not now as the hub is not yet ready for it.
-
 #### Covscan hub users
 
 * Enter the interactive shell inside the running container: `podman exec -it covscanhub python3 covscanhub/manage.py shell`
@@ -82,6 +80,14 @@ This step also saves their configuration so you can start them individually then
 #### Configuration of hub ← worker connection
 
 Go to admin interface and add a new worker with noarch, default channel and worker key from its config file.
+
+## Covscan worker
+
+You can use covscan client to submit builds, but a covscan worker must be started manually for the builds to be successful:
+
+  ```bash
+     podman start -a covscanworker
+  ```
 
 ## Covscan client
 
