@@ -14,10 +14,6 @@ PASSWD=xxxxxx
 
 (set +e; wait_for_container 'HUB')
 
-# load fixtures
-podman exec -i covscanhub python3 covscanhub/manage.py \
-    loaddata ./covscanhub/{errata,scan}/fixtures/initial_data.json
-
 # create covscan users
 podman exec -i covscanhub python3 covscanhub/manage.py shell << EOF
 from django.contrib.auth import get_user_model

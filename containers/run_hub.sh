@@ -18,6 +18,14 @@ if [ $? -gt 0 ]; then
   python3.6 covscanhub/manage.py migrate --fake
 fi
 
+# If the table of mock configs is empty, we most likely have an empty database.
+# In this case, we load the initial data into the database to make the Covscan
+# hub work.
+if [ "$(python3.6 covscanhub/manage.py dumpdata scan.MockConfig)" = "[]" ]; then
+  python3.6 covscanhub/manage.py loaddata \
+    covscanhub/{errata,scan}/fixtures/initial_data.json
+fi
+
 # Run a dummy SMTP server in background
 python3.6 -m smtpd -n -c DebuggingServer localhost:25 >> covscanhub/emails.log &
 
