@@ -60,16 +60,6 @@ AUTHENTICATION_BACKENDS = (
 
 AUTH_USER_MODEL = 'kobo_auth.User'
 
-MIDDLEWARE_CLASSES = (
-    #'django.middleware.transaction.TransactionMiddleware',
-
-    'kobo.django.auth.middleware.LimitedRemoteUserMiddleware',
-
-
-    # kobo related middleware:
-   
-)
-
 MIDDLEWARE = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
