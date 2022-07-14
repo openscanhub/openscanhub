@@ -1268,7 +1268,7 @@ class AnalyzerVersionManager(models.Manager):
 class AnalyzerVersion(models.Model):
     version = models.CharField(max_length=64)
     analyzer = models.ForeignKey(Analyzer, on_delete=models.CASCADE)
-    mocks = models.ManyToManyField(MockConfig, blank=True, null=True, related_name="analyzers")
+    mocks = models.ManyToManyField(MockConfig, blank=True, related_name="analyzers")
     date_created = models.DateTimeField(auto_now_add=True)
 
     objects = AnalyzerVersionManager()
