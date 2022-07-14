@@ -4,6 +4,7 @@
 # DEBUG = True
 
 from __future__ import absolute_import
+
 import os
 
 # Definition of PROJECT_DIR, just for convenience:
@@ -72,7 +73,7 @@ MIDDLEWARE = (
     'kobo.hub.middleware.WorkerMiddleware',
     'kobo.django.menu.middleware.MenuMiddleware',
     'debug_toolbar.middleware.DebugToolbarMiddleware',
-    )
+)
 
 INTERNAL_IPS = ('127.0.0.1',)
 
@@ -106,7 +107,7 @@ INSTALLED_APPS = (
     'covscanhub.stats',
 
     # better ./manage.py shell
-    #'django_extensions',
+    # 'django_extensions',
     'debug_toolbar',
 )
 
@@ -140,25 +141,25 @@ XMLRPC_METHODS = {
     'client': (
         # module with rpc methods     prefix which is added to all methods from
         #                             the module
-        ('kobo.hub.xmlrpc.auth',          'auth'),
-        ('kobo.hub.xmlrpc.client',        'client'),
-        ('kobo.hub.xmlrpc.system',        'system'),
-        ('kobo.django.upload.xmlrpc',     'upload'),
+        ('kobo.hub.xmlrpc.auth', 'auth'),
+        ('kobo.hub.xmlrpc.client', 'client'),
+        ('kobo.hub.xmlrpc.system', 'system'),
+        ('kobo.django.upload.xmlrpc', 'upload'),
         ('covscanhub.cs_xmlrpc.mock_config', 'mock_config'),
-        ('covscanhub.cs_xmlrpc.scan',        'scan'),
+        ('covscanhub.cs_xmlrpc.scan', 'scan'),
     ),
     'worker': (
-        ('kobo.hub.xmlrpc.auth',      'auth'),
-        ('kobo.hub.xmlrpc.system',    'system'),
-        ('kobo.hub.xmlrpc.worker',    'worker'),
+        ('kobo.hub.xmlrpc.auth', 'auth'),
+        ('kobo.hub.xmlrpc.system', 'system'),
+        ('kobo.hub.xmlrpc.worker', 'worker'),
         ('kobo.django.upload.xmlrpc', 'upload'),
-        ('kobo.hub.xmlrpc.client',    'client'),
-        ('covscanhub.cs_xmlrpc.worker',  'worker'),
+        ('kobo.hub.xmlrpc.client', 'client'),
+        ('covscanhub.cs_xmlrpc.worker', 'worker'),
     ),
     'kerbauth': (
         ('covscanhub.cs_xmlrpc.errata', 'errata'),
-        ('covscanhub.cs_xmlrpc.test',   'test'),
-        ('kobo.hub.xmlrpc.auth',     'auth'),
+        ('covscanhub.cs_xmlrpc.test', 'test'),
+        ('kobo.hub.xmlrpc.auth', 'auth'),
     ),
 
 }
@@ -173,6 +174,6 @@ VALID_TASK_LOG_EXTENSIONS = ['.log', '.ini', '.err', '.out', '.js', '.txt']
 
 # override default values with custom ones from local settings
 try:
-    from .settings_local import *
+    from .settings_local import *  # noqa
 except ImportError:
     pass
