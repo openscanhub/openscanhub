@@ -96,7 +96,7 @@ As pointed above, all of these dependencies are automatically set up in the clie
 
   ```bash
   COVSCAN_CONFIG_FILE=covscan/covscan-local.conf PYTHONPATH=.:kobo python3 covscan/covscan list-mock-configs
-  COVSCAN_CONFIG_FILE=covscan/covscan-local.conf PYTHONPATH=.:kobo python3 covscan/covscan mock-build --config=fedora-35-x86_64 --brew-build curl-7.79.1-1.fc35
+  COVSCAN_CONFIG_FILE=covscan/covscan-local.conf PYTHONPATH=.:kobo python3 covscan/covscan mock-build --config=fedora-36-x86_64 --brew-build units-2.21-4.fc36
   ```
 
   Note: You can also set these variables permanently to your bashrc.
@@ -105,7 +105,7 @@ As pointed above, all of these dependencies are automatically set up in the clie
 
   ```bash
   podman exec -i covscanclient python3 covscan/covscan list-mock-configs
-  podman exec -i covscanclient python3 covscan/covscan mock-build --config=fedora-35-x86_64 --brew-build curl-7.79.1-1.fc35
+  podman exec -i covscanclient python3 covscan/covscan mock-build --config=fedora-36-x86_64 --brew-build units-2.21-4.fc36
   ```
 
 # Developing covscan
