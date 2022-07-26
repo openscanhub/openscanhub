@@ -59,22 +59,22 @@ You can start the worker container in the same way, but not now as the hub is no
 * Enter the interactive shell inside the running container: `podman exec -it covscanhub python3 covscanhub/manage.py shell`
 * Create user and admin:
 
-  ```py
-  from django.contrib.auth import get_user_model
-  User = get_user_model()
-  User.objects.create_user('username', 'user@redhat.com', 'xxxxxx')
-  User.objects.create_superuser('admin', 'user@redhat.com', 'xxxxxx')
-  ```
+```py
+from django.contrib.auth import get_user_model
+User = get_user_model()
+User.objects.create_user('user', 'user@redhat.com', 'xxxxxx')
+User.objects.create_superuser('admin', 'user@redhat.com', 'xxxxxx')
+```
 
-  or, if the users already exist, you can change admin pass like this:
+or, if the users already exist, you can change admin pass like this:
 
-  ```py
-  from django.contrib.auth import get_user_model
-  User = get_user_model()
-  u = User.objects.get(username='admin')
-  u.set_password('velryba')
-  u.save()
-  ```
+```py
+from django.contrib.auth import get_user_model
+User = get_user_model()
+u = User.objects.get(username='admin')
+u.set_password('velryba')
+u.save()
+```
 
 After the first-time setup, all you need is `podman-compose stop` and `podman-compose start`. If, for any reason, you need to start from scratch, `podman-compose down` stops and destroys all the containers and `podman-compose up` starts their fresh copies. The last two commands work also for specific services so you can destroy also only the covscanhub instance and keep the db.
 
