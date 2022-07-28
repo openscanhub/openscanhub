@@ -125,8 +125,7 @@ done;done)
 sed -i 's@/lib/python2.[0-9]@/lib/python%{python3_version}@g' %{buildroot}/etc/httpd/conf.d/covscanhub-httpd.conf.*
 
 # create /var/lib dirs
-mkdir -p %{buildroot}/var/lib/covscanhub/tasks
-mkdir -p %{buildroot}/var/lib/covscanhub/upload
+mkdir -p %{buildroot}/var/lib/covscanhub/{tasks,upload,worker}
 
 # create log file
 mkdir -p %{buildroot}/var/log/covscanhub
@@ -183,9 +182,7 @@ rm -rf %{buildroot}%{python3_sitelib}/scripts
 %exclude %{python3_sitelib}/covscanhub/settings_local.py*
 %dir %attr(775,root,apache) /var/log/covscanhub
 %ghost %attr(640,apache,apache) /var/log/covscanhub/covscanhub.log
-%dir %attr(775,root,apache) /var/lib/covscanhub
-%dir %attr(775,root,apache) /var/lib/covscanhub/tasks
-%dir %attr(775,root,apache) /var/lib/covscanhub/upload
+%attr(775,root,apache) /var/lib/covscanhub
 
 %files hub-conf-devel
 %{python3_sitelib}/covscanhub/settings_local.py
