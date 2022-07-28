@@ -3,17 +3,16 @@
 Util functions related to processing data -- results of analysis
 """
 
+import json
+import logging
 import os
 import pipes
-import logging
-import json
-
-from covscanhub.other.decorators import public
-from covscancommon.constants import *
 
 from kobo.shortcuts import run
-from covscanhub.service.path import TaskResultPaths
 
+from covscancommon.constants import CSDIFF_ARGS
+from covscanhub.other.decorators import public
+from covscanhub.service.path import TaskResultPaths
 
 logger = logging.getLogger(__name__)
 
@@ -38,9 +37,9 @@ def csdiff(old, new, result, workdir):
     compare `old` and `new` files and store the diff in `result`
     all three files have '.err' type
     """
-    #whole csdiff call must be in one string, because character '>' cannot be
-    #enclosed into quotes -- command '"csdiff" "-j" "old.err" "new.err" ">"
-    #"csdiff.out"' does not work
+    # whole csdiff call must be in one string, because character '>' cannot be
+    # enclosed into quotes -- command '"csdiff" "-j" "old.err" "new.err" ">"
+    # "csdiff.out"' does not work
     diff_cmd = ' '.join(['csdiff', CSDIFF_ARGS, pipes.quote(old),
                          pipes.quote(new), '>', result])
     return _run(diff_cmd, workdir)
