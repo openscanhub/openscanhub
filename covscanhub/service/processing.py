@@ -125,13 +125,12 @@ class TaskDiffer(object):
 @public
 def add_title_to_json(path, title):
     # encoding="utf-8" is needed to load JSON with utf-8 chars on RHEL-8 when running in POSIX locale
-    fd = open(path, "r+", encoding="utf-8")
-    loaded_json = json.load(fd)
-    loaded_json['scan']['title'] = title
-    fd.seek(0)
-    fd.truncate()
-    json.dump(loaded_json, fd, indent=4)
-    fd.close()
+    with open(path, "r+", encoding="utf-8") as fd:
+        loaded_json = json.load(fd)
+        loaded_json['scan']['title'] = title
+        fd.seek(0)
+        fd.truncate()
+        json.dump(loaded_json, fd, indent=4)
 
 
 @public
