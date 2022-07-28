@@ -32,14 +32,14 @@ WSGISocketPrefix /var/run/wsgi
 
     <Location "/covscanhub/xmlrpc/kerbauth/">
         AuthType GSSAPI
-	GssapiCredStore keytab:/etc/httpd/conf/HTTP-covscan.lab.eng.brq.redhat.com.keytab
+	GssapiCredStore keytab:/etc/httpd/conf/httpd.keytab
         AuthName "Covscan XML-RPC Interface"
         Require valid-user
     </Location>
 
     <Location "/covscanhub/auth/krb5login/">
         AuthType GSSAPI
-	GssapiCredStore keytab:/etc/httpd/conf/HTTP-covscan.lab.eng.brq.redhat.com.keytab
+	GssapiCredStore keytab:/etc/httpd/conf/httpd.keytab
         AuthName "Covscan WEB-UI Login"
         Require valid-user
     </Location>
