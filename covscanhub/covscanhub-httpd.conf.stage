@@ -21,7 +21,7 @@ WSGISocketPrefix /var/run/wsgi
 
 # <VirtualHost *:443>
     # WSGI handler
-    WSGIDaemonProcess covscan display-name=%{GROUP}
+    WSGIDaemonProcess covscan display-name=%{GROUP} locale='C.UTF-8'
     WSGIProcessGroup covscan
     WSGIScriptAlias /covscanhub /usr/lib/python3.6/site-packages/covscanhub/covscanhub.wsgi process-group=covscan
 
