@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 
+import six
 from django import forms
 from django.db.models import Q
 
-from covscanhub.waiving.models import WAIVER_TYPES
 from covscanhub.scan.service import get_used_releases
-import six
+from covscanhub.waiving.models import WAIVER_TYPES
 
 
 class WaiverForm(forms.Form):
@@ -14,7 +14,7 @@ class WaiverForm(forms.Form):
             (w, WAIVER_TYPES.get_item_help_text(w)) for w in WAIVER_TYPES
         )
     )
-    message = forms.CharField(widget=forms.widgets.Textarea(attrs={'rows':25, 'cols':80}),
+    message = forms.CharField(widget=forms.widgets.Textarea(attrs={'rows': 25, 'cols': 80}),
                               initial="This defect is not a bug because...")
 
 
