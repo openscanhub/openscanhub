@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
-from django.http import HttpResponseRedirect
-from django.conf import settings
 from re import compile
 
+from django.conf import settings
+from django.http import HttpResponseRedirect
 from django.urls import reverse
 
 
