@@ -81,6 +81,8 @@ Requires: python3-csdiff
 
 Requires: python3-django-debug-toolbar > 1.0
 
+Requires(post): /usr/bin/pg_isready
+
 Requires: %{name}-common = %{version}-%{release}
 Requires: %{name}-hub-conf = %{version}-%{release}
 Obsoletes: covscan-hub-prod < %{version}-%{release}
@@ -183,6 +185,12 @@ rm -rf %{buildroot}%{python3_sitelib}/scripts
 %dir %attr(775,root,apache) /var/log/covscanhub
 %ghost %attr(640,apache,apache) /var/log/covscanhub/covscanhub.log
 %attr(775,root,apache) /var/lib/covscanhub
+
+# this only takes an effect if PostgreSQL is running and the database exists
+%post hub
+exec &> /var/log/covscanhub/post-install-%{name}-%{version}-%{release}.log
+set -x
+pg_isready -h localhost && %{python3_sitelib}/covscanhub/manage.py migrate
 
 %files hub-conf-devel
 %{python3_sitelib}/covscanhub/settings_local.py
