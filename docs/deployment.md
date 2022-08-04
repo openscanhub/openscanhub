@@ -30,11 +30,6 @@ su - postgres -c psql
 gzip -cd covscandb.sql.gz | su - postgres -c 'psql covscanhub'
 ```
 
-- execute conversion SQL script:
-```sh
-su - postgres -c 'psql covscanhub' < production_to_dev_database.sql
-```
-
 - update permissions on the `covscanhub` database:
 ```sh
 su - postgres -c 'psql covscanhub'
@@ -44,8 +39,7 @@ su - postgres -c 'psql covscanhub'
 
 - mark all migrations as applied:
 ```sh
-python3.6 /usr/lib/python3.6/site-packages/covscanhub/manage.py migrate --fake
-python3.6 /usr/lib/python3.6/site-packages/covscanhub/manage.py migrate
+/usr/lib/python3.6/site-packages/covscanhub/manage.py migrate
 ```
 
 - start web server:

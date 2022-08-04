@@ -46,7 +46,6 @@ If you want to, you can restore a database backup from the production server. If
 
 * Download database backup from https://covscan-stage.lab.eng.brq2.redhat.com/covscanhub.db.gz
 * Import the database into the running container: `gzip -cd covscanhub.db.gz | podman exec -i db psql -h localhost -U covscanhub`
-* Run the migration SQL script: `cat production_to_dev_database.sql | podman exec -i db psql -h localhost -U covscanhub`
 
 ### Start the hub
 
