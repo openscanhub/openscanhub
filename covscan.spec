@@ -158,6 +158,15 @@ rm -rf %{buildroot}%{python3_sitelib}/scripts
 %{_unitdir}/covscand.service
 %attr(754,root,root) /usr/sbin/covscand
 
+%post worker
+%systemd_post covscand.service
+
+%preun worker
+%systemd_preun covscand.service
+
+%postun worker
+%systemd_postun_with_restart covscand.service
+
 %files worker-conf-devel
 %attr(640,root,root) %config(noreplace) /etc/covscan/covscand.conf
 
@@ -166,15 +175,6 @@ rm -rf %{buildroot}%{python3_sitelib}/scripts
 
 %files worker-conf-prod
 %attr(640,root,root) %config(noreplace) /etc/covscan/covscand.conf.prod
-
-%post
-%systemd_post covscand.service
-
-%preun
-%systemd_preun covscand.service
-
-%postun
-%systemd_postun_with_restart covscand.service
 
 %files hub
 %defattr(-,root,apache,-)
