@@ -108,6 +108,40 @@ As pointed above, all of these dependencies are automatically set up in the clie
   podman exec -i covscanclient python3 covscan/covscan mock-build --config=fedora-36-x86_64 --brew-build units-2.21-4.fc36
   ```
 
+## XML-RPC interface used by Errata Tool
+
+* create Errata Scan using password authentication - new pkg:
+```sh
+covsan/covscanhub/scripts/covscan-xmlrpc-client.py \
+    --hub http://covscanhub/xmlrpc/kerbauth/ \
+    --username=kdudka --password=xxxxxx \
+    create-scan -t curl-7.29.0-25.el7 \
+    --et-scan-id 1234 --advisory-id 4567 \
+    --owner kdudka --release RHEL-7.7.0 \
+    --base NEW_PACKAGE
+```
+
+* create Errata Scan using password authentication - update:
+```sh
+covscan/covscanhub/scripts/covscan-xmlrpc-client.py \
+    --hub http://covscanhub/xmlrpc/kerbauth/ \
+    --username=kdudka --password=xxxxxx \
+    create-scan -t curl-7.29.0-55.el7 \
+    --et-scan-id 1234 --advisory-id 4567 \
+    --owner kdudka --release RHEL-7.7.0 \
+    --base curl-7.29.0-25.el7
+```
+
+* create Errata Scan using Kerberos authentication:
+```sh
+covscan/covscanhub/scripts/covscan-xmlrpc-client.py \
+    --hub https://covscan.lab.eng.brq.redhat.com/covscanhub/xmlrpc/kerbauth/ \
+    create-scan -t curl-7.29.0-55.el7 \
+    --et-scan-id 1234 --advisory-id 4567 \
+    --owner kdudka --release RHEL-7.7.0 \
+    --base curl-7.29.0-25.el7
+```
+
 # Developing covscan
 
 ## Code path when submitting user scan
