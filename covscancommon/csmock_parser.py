@@ -31,6 +31,7 @@ import logging
 import os
 import pipes
 import re
+import shlex
 import shutil
 import subprocess
 import sys
@@ -245,7 +246,7 @@ class CsmockRunner(object):
                     subprocess.check_call(inner_cmd2)
                 except subprocess.CalledProcessError:
                     subprocess.check_call(['su', '-', su_user, '-c', "%s" % pipes.quote(' '.join(inner_cmd2))])
-            command = 'su - %s --session-command "%s"' % (pipes.quote(su_user), command)
+            command = 'su - %s --session-command %s' % (pipes.quote(su_user), pipes.quote(command))
 
         retcode, _ = run(command, stdout=True, can_fail=True, return_stdout=False, buffer_size=2, show_cmd=True, universal_newlines=True, errors="backslashreplace")
         if output_path:
@@ -295,8 +296,18 @@ class CsmockRunner(object):
 
         if output_path:
             cmd += ' -o %s' % (pipes.quote(output_path))
+
         if additional_arguments:
-            cmd += ' ' + additional_arguments
+            # split/quote/rejoin to avoid shell injection
+            try:
+                split_args = shlex.split(additional_arguments)
+
+                # starting with Python 3.8, one can use + shlex.join(split_args)
+                cmd += ' ' + ' '.join(shlex.quote(arg) for arg in split_args)
+            except ValueError as e:
+                logger.error("failed to parse csmock arguments: %s" % e)
+                return None, 2
+
         cmd += ' ' + srpm_path
         return self.do(cmd, su_user=su_user, **kwargs)
 
