@@ -206,7 +206,7 @@ class CsmockRunner(object):
                 shutil.rmtree(self.tmpdir)
             except OSError:
                 # dangling temp dir
-                # could be erased with sudo rm -rf self.tmpdir
+                # could be erased with rm -rf self.tmpdir
                 pass
 
     def download_csmock_model(self, model_url, model_name):
@@ -218,7 +218,7 @@ class CsmockRunner(object):
         six.moves.urllib.request.urlretrieve(model_url, model_path)
         return model_path
 
-    def do(self, command, output_path=None, su_user=None, use_sudo=False, **kwargs):
+    def do(self, command, output_path=None, su_user=None, **kwargs):
         """ we are expecting that csmock will produce and output """
         if not command:
             logger.error("no cs* command specified!")
@@ -235,26 +235,18 @@ class CsmockRunner(object):
 
         if su_user:
             if self.our_temp_dir:
-                if use_sudo:
-                    subprocess.check_call(['sudo', '--',
-                                           'chown', '%s:%s' % (su_user, su_user), self.tmpdir])
-                    subprocess.check_call(['sudo', '-u', pipes.quote(su_user), '--',
-                                           'chmod', 'go+rx', self.tmpdir])
-                else:
-                    inner_cmd = ['chown', '%s:%s' % (su_user, su_user), self.tmpdir]
-                    try:
-                        subprocess.check_call(inner_cmd)
-                    except subprocess.CalledProcessError:
-                        subprocess.check_call(['su', '-', '-c', "%s" % pipes.quote(' '.join(inner_cmd))])
-                    inner_cmd2 = ['chmod', 'go+rx', self.tmpdir]
-                    try:
-                        subprocess.check_call(inner_cmd2)
-                    except subprocess.CalledProcessError:
-                        subprocess.check_call(['su', '-', su_user, '-c', "%s" % pipes.quote(' '.join(inner_cmd2))])
+                inner_cmd = ['chown', '%s:%s' % (su_user, su_user), self.tmpdir]
+                try:
+                    subprocess.check_call(inner_cmd)
+                except subprocess.CalledProcessError:
+                    subprocess.check_call(['su', '-', '-c', "%s" % pipes.quote(' '.join(inner_cmd))])
+                inner_cmd2 = ['chmod', 'go+rx', self.tmpdir]
+                try:
+                    subprocess.check_call(inner_cmd2)
+                except subprocess.CalledProcessError:
+                    subprocess.check_call(['su', '-', su_user, '-c', "%s" % pipes.quote(' '.join(inner_cmd2))])
             command = 'su - %s --session-command "%s"' % (pipes.quote(su_user), command)
-        if use_sudo:
-            command = 'sudo ' + command
-        #retcode = subprocess.call(command, shell=True, stdout=subprocess.PIPE)
+
         retcode, _ = run(command, stdout=True, can_fail=True, return_stdout=False, buffer_size=2, show_cmd=True, universal_newlines=True, errors="backslashreplace")
         if output_path:
             return output_path, retcode
@@ -278,7 +270,7 @@ class CsmockRunner(object):
         return glob_results[-1], retcode
 
     def analyze(self, analyzers, srpm_path, profile=None, su_user=None, additional_arguments=None,
-                use_sudo=False, result_filename=None, **kwargs):
+                result_filename=None, **kwargs):
         if result_filename is None:
             result_filename = os.path.basename(srpm_path)[:-8]
         if self.tmpdir:
@@ -306,10 +298,10 @@ class CsmockRunner(object):
         if additional_arguments:
             cmd += ' ' + additional_arguments
         cmd += ' ' + srpm_path
-        return self.do(cmd, su_user=su_user, use_sudo=use_sudo, **kwargs)
+        return self.do(cmd, su_user=su_user, **kwargs)
 
     def srpm_download_analyze(self, analyzers, srpm_name, srpm_url, profile=None,
-                              su_user=None, additional_arguments=None, use_sudo=False, **kwargs):
+                              su_user=None, additional_arguments=None, **kwargs):
         """ download srpm from remote location and analyze it"""
         logger.debug("additional args = %s, kwargs = %s", additional_arguments, kwargs)
         if self.tmpdir:
@@ -317,12 +309,12 @@ class CsmockRunner(object):
         else:
             srpm_path = os.path.join(os.getcwd(), srpm_name)
         six.moves.urllib.request.urlretrieve(srpm_url, srpm_path)
-        return self.analyze(analyzers, srpm_path, profile, su_user, additional_arguments, use_sudo, **kwargs)
+        return self.analyze(analyzers, srpm_path, profile, su_user, additional_arguments, **kwargs)
 
     def koji_analyze(self, analyzers, nvr, profile=None, su_user=None,
-                     additional_arguments=None, koji_bin="koji", use_sudo=False, **kwargs):
+                     additional_arguments=None, koji_bin="koji", **kwargs):
         if profile == "cspodman":
-            return self.analyze(analyzers, nvr, profile, su_user, additional_arguments, use_sudo, result_filename=nvr, **kwargs)
+            return self.analyze(analyzers, nvr, profile, su_user, additional_arguments, result_filename=nvr, **kwargs)
 
         download_cmd = [koji_bin, "download-build", "--quiet", "--arch=src", nvr]
         try:
@@ -357,10 +349,10 @@ class CsmockRunner(object):
             print("unexpected MIME type: %s" % mime_type, file=sys.stderr)
             return (None, 2)
 
-        return self.analyze(analyzers, srpm_path, profile, su_user, additional_arguments, use_sudo, result_filename=nvr, **kwargs)
+        return self.analyze(analyzers, srpm_path, profile, su_user, additional_arguments, result_filename=nvr, **kwargs)
 
     def no_scan(self, analyzers, profile=None, su_user=None, additional_arguments=None,
-                use_sudo=False, **kwargs):
+                **kwargs):
         """
         execute csmock command for listing analyzers and versions
         returns path to dir with results
@@ -381,7 +373,7 @@ class CsmockRunner(object):
         cmd += ' --no-scan'
         if additional_arguments:
             cmd += ' ' + additional_arguments
-        return self.do(cmd, output_path=output_path, su_user=su_user, use_sudo=use_sudo, **kwargs)
+        return self.do(cmd, output_path=output_path, su_user=su_user, **kwargs)
 
 
 def unpack_and_return_api(tb_path, in_dir=""):

@@ -112,7 +112,7 @@ class TestCsmockAPI(object):
             user = 'asd'
             path = os.path.join(runner.tmpdir, 'output.tar.xz')
             output_path, err_code = runner.do('-t clang,cppcheck --no-scan',
-                                              output_path=path, su_user=user, use_sudo=True)
+                                              output_path=path, su_user=user)
             assert pwd.getpwuid(os.stat(output_path).st_uid).pw_name == user
 
     def test_koji_analyze(self):
