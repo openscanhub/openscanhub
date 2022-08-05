@@ -1,5 +1,4 @@
 #!/usr/bin/python -tt
-#-*- coding: utf-8 -*-
 
 """
 
@@ -25,20 +24,21 @@ csmock python api
 }
 """
 from __future__ import print_function
+
 import glob
-import os
-import sys
 import json
+import logging
+import os
 import pipes
+import re
 import shutil
 import subprocess
+import sys
 import tempfile
-import logging
-import six.moves.urllib.request
-import re
 
-from kobo.shortcuts import run
 import six
+import six.moves.urllib.request
+from kobo.shortcuts import run
 
 __all__ = ('CsmockAPI', 'CsmockRunner', 'ResultsExtractor')
 
@@ -152,7 +152,7 @@ class CsmockAPI(object):
     def get_scan_metadata(self):
         try:
             return self.json_result['scan']
-        except Exception:
+        except Exception: # noqa
             return {}
 
     def json(self):
@@ -263,7 +263,7 @@ class CsmockRunner(object):
             path = self.tmpdir
         else:
             # search current directory for the results if not tmpdir is set
-            path ='.'
+            path = '.'
         glob_pattern = os.path.join(path, '*.tar.xz')
         glob_results = glob.glob(glob_pattern)
 
@@ -288,7 +288,7 @@ class CsmockRunner(object):
 
         if output_path == srpm_path:
             # use a different output path to avoid overwriting the input tarball
-            output_path = re.sub('\.tar\.xz$', '-results.tar.xz', output_path)
+            output_path = re.sub('\\.tar\\.xz$', '-results.tar.xz', output_path)
 
         if profile == "cspodman":
             cmd = "cspodman"

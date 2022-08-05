@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 
 from __future__ import print_function
-import os
-import json
-import tempfile
-import unittest
-#from covscanhub.service.loading import load_defects_from_file, get_defect_stats
 
+import os
+import pwd
+
+from covscancommon.csmock_parser import (CsmockAPI, CsmockRunner,
+                                         ResultsExtractor)
 
 DEFECTS_JSON = """
 {
@@ -82,30 +82,6 @@ DEFECTS_JSON = """
 }
 """
 
-
-#class TestLoading(unittest.TestCase):
-#    def test_load_defects_from_file(self):
-#        fd, tmp_filename = tempfile.mkstemp()
-#        try:
-#            os.write(fd, DEFECTS_JSON)
-#            os.close(fd)
-#            defects = load_defects_from_file(tmp_filename)
-#            self.assertEqual(len(defects), 3)
-#            self.assertTrue('events' in defects[0])
-#        finally:
-#            os.remove(tmp_filename)
-#
-#    def test_get_defect_stats(self):
-#        defects = json.loads(DEFECTS_JSON)
-#        stats = get_defect_stats(defects['defects'])
-#        self.assertEqual(stats['CHECKER1'], 2)
-#        self.assertEqual(stats['CHECKER2'], 1)
-
-import pwd
-import glob
-import pytest
-
-from covscancommon.csmock_parser import CsmockRunner, CsmockAPI, ResultsExtractor
 
 # SRPM = os.path.join(os.getcwd(), 'isync-1.1.1-3.fc22.src.rpm')
 #
