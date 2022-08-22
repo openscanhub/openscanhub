@@ -13,9 +13,9 @@ main() {
   # prepare the containers (should be cheap if already prepared)
   (\
     set -x
-    podman build -f containers/Dockerfile.worker -t covscanworker .
-    podman build -f containers/Dockerfile.hub -t covscanhub .
-    podman build -f containers/Dockerfile.client -t covscanclient .
+    podman build -f containers/Dockerfile.worker -t osh-worker .
+    podman build -f containers/Dockerfile.hub -t osh-hub .
+    podman build -f containers/Dockerfile.client -t osh-client .
     podman pull registry-proxy.engineering.redhat.com/rh-osbs/rhel8-postgresql-12
   )
 
@@ -33,7 +33,7 @@ main() {
 
 run() {
   set -x
-  podman start db covscanhub
+  podman start db osh-hub
 }
 
 #Used for testing the build environment

@@ -14,10 +14,10 @@ services:
     networks:
       - internal-network
 
-  covscanhub:
-    image: covscanhub
-    container_name: covscanhub
-    hostname: covscanhub
+  osh-hub:
+    image: osh-hub
+    container_name: osh-hub
+    hostname: osh-hub
     depends_on:
       - db
     ports:
@@ -32,12 +32,12 @@ services:
       WAIT_HOSTS: db:5432
     always-start: false
 
-  covscanworker:
-    image: covscanworker
-    container_name: covscanworker
-    hostname: covscanworker
+  osh-worker:
+    image: osh-worker
+    container_name: osh-worker
+    hostname: osh-worker
     depends_on:
-      - covscanhub
+      - osh-hub
     networks:
       - internal-network
     volumes:
@@ -46,15 +46,15 @@ services:
     stdin_open: true
     tty: true
     environment:
-      WAIT_HOSTS: db:5432, covscanhub:8000
+      WAIT_HOSTS: db:5432, osh-hub:8000
     always-start: false
 
-  covscanclient:
-    image: covscanclient
-    container_name: covscanclient
-    hostname: covscanclient
+  osh-client:
+    image: osh-client
+    container_name: osh-client
+    hostname: osh-client
     depends_on:
-      - covscanhub
+      - osh-hub
     networks:
       - internal-network
     volumes:
@@ -62,7 +62,7 @@ services:
     stdin_open: true
     tty: true
     environment:
-      WAIT_HOSTS: db:5432, covscanhub:8000
+      WAIT_HOSTS: db:5432, osh-hub:8000
     always-start: false
 
 networks:

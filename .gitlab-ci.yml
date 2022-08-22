@@ -14,13 +14,13 @@ test:
     - rm -rf kobo
     - git clone --depth 1 https://github.com/release-engineering/kobo.git
     - podman pull registry-proxy.engineering.redhat.com/rh-osbs/rhel8-postgresql-12
-    - podman build -f containers/Dockerfile.hub -t covscanhub .
+    - podman build -f containers/Dockerfile.hub -t osh-hub .
     - podman build -f containers/Dockerfile.worker -t covscanworker .
     - podman-compose up --no-start
-    - podman start db covscanhub
+    - podman start db osh-hub
   script:
-    - podman exec -it covscanhub python3 covscanhub/manage.py test || exit 1
+    - podman exec -it osh-hub python3 covscanhub/manage.py test || exit 1
   after_script:
     - podman-compose logs db
-    - podman-compose logs covscanhub
+    - podman-compose logs osh-hub
     - podman-compose down

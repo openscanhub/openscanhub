@@ -135,7 +135,7 @@ main() {
   fi
 
   if [[ "$(type podman)" =~ docker ]]; then
-    podman start covscanclient
+    podman start osh-client
   else
     test_fixture
     cov-list ""

@@ -12,10 +12,10 @@ check_host_os
 wait_for_container() {
   filename="/$1_IS_READY"
   for _ in $(seq 60); do
-    podman exec -i covscanhub bash -c "[[ -f $filename ]]"
+    podman exec -i osh-hub bash -c "[[ -f $filename ]]"
     retval=$?
     if [[ $retval = 0 ]]; then
-      podman exec -i covscanhub bash -c "rm $filename"
+      podman exec -i osh-hub bash -c "rm $filename"
       break
     fi
     sleep 1

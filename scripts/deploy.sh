@@ -34,7 +34,7 @@ main() {
       gzip -cd covscanhub.db.gz | podman exec -i db psql -h localhost -U covscanhub
       # HACK: this should be turned into a function
       # ref: https://stackoverflow.com/a/16853755/9814181
-      podman exec -i covscanhub python3 covscanhub/manage.py shell << EOF
+      podman exec -i osh-hub python3 covscanhub/manage.py shell << EOF
 from django.contrib.auth import get_user_model
 User = get_user_model()
 User.objects.create_user('user', 'user@redhat.com', 'xxxxxx')
@@ -46,7 +46,7 @@ EOF
     # TODO: insert worker config
   fi
 
-  (set -x; podman start covscanworker)
+  (set -x; podman start osh-worker)
 }
 
 #Used for testing the deployment environment

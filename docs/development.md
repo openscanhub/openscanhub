@@ -1,33 +1,33 @@
 # Development environment
 
-As simple as possible development setup for all three major parts of Covscan pipeline. We want to make it compatible with Python 3.6 (the main Python in RHEL 8, supported for its whole lifetime) so we use that specific version inside and outside of the container.
+As simple as possible development setup for all three major parts of OpenScanHub (OSH) pipeline. We want to make it compatible with Python 3.6 (the main Python in RHEL 8, supported for its whole lifetime) so we use that specific version inside and outside of the container.
 
 ## Kobo
 
-Because we need to fix issues in Kobo as well as in Covscan, we should use it directly as cloned repository - this allows us to make changes in its code, test them and create a PR from them as quicky as possible.
+Because we need to fix issues in Kobo as well as in OpenScanHub, we should use it directly as cloned repository - this allows us to make changes in its code, test them and create a PR from them as quicky as possible.
 
 * Switch to the main covscan folder (where covscan, covscand, and covscanhub are).
 * Clone Kobo project: `git clone git@github.com:release-engineering/kobo.git`
 
-## Covscan worker
+## OSH worker
 
 Worker depends on some system packages not available from PyPI, needs to run under root user and has kinda complex setup which are all the reasons to run it in a container.
 
-Build the container via: `podman build -f containers/Dockerfile.worker -t covscanworker .`.
+Build the container via: `podman build -f containers/Dockerfile.worker -t osh-worker .`.
 
 Update `HUB_URL` and possibly other values in `covscand/covscand-local.conf`.
 
-## Covscan hub
+## OSH hub
 
-Because some of the dependencies of covscan hub are also not available on PyPI, we have to use containerized environment with all the important packages.
+Because some of the dependencies of OSH hub are also not available on PyPI, we have to use containerized environment with all the important packages.
 
-## Covscan client
+## OSH client
 
-In case the dependencies of covscan client are not available on your system, you can use containerized environment for the covscan client, too.
+In case the dependencies of OSH client are not available on your system, you can use containerized environment for the osh-client, too.
 
 ### Prepare container images
 
-Just run `podman build -f containers/Dockerfile.hub -t covscanhub .` and after a while, you'll have container image ready. You can do the same in case you need the client image with `podman build -f containers/Dockerfile.client -t covscanclient .`.
+Just run `podman build -f containers/Dockerfile.hub -t osh-hub .` and after a while, you'll have container image ready. You can do the same in case you need the client image with `podman build -f containers/Dockerfile.client -t osh-client .`.
 Also, pull container image for the database layer: `podman pull registry-proxy.engineering.redhat.com/rh-osbs/rhel8-postgresql-12`.
 
 ### Prepare the cluster
@@ -42,18 +42,19 @@ Run the following command in the separated terminal window so you can follow its
 
 #### Restore the database from backup, if you want
 
-If you want to, you can restore a database backup from the production server. If not, you can skip these steps and covscanhub will create an empty database for you.
+If you want to, you can restore a database backup from the production server. If not, you can skip these steps and osh-hub will create an empty database for you.
 
 * Download database backup from https://covscan-stage.lab.eng.brq2.redhat.com/covscanhub.db.gz
 * Import the database into the running container: `gzip -cd covscanhub.db.gz | podman exec -i db psql -h localhost -U covscanhub`
 
-### Start the hub
+### Start the OSH hub
 
-Now, you can start the hub with: `podman start -a covscanhub`. The hub will try to apply known migrations to your database. If it fails, all the migrations will be faked. Make sure your database is either empty or in a consistent state.
+Now, you can start the hub with: `podman start -a osh-hub`. The hub will try to apply known migrations to your database. If it fails, all the migrations will be faked. Make sure your database is either empty or in a consistent state.
 
-#### Covscan hub users
 
-* Enter the interactive shell inside the running container: `podman exec -it covscanhub python3 covscanhub/manage.py shell`
+#### OSH hub users
+
+* Enter the interactive shell inside the running container: `podman exec -it osh-hub python3 covscanhub/manage.py shell`
 * Create user and admin:
 
 ```py
@@ -73,7 +74,7 @@ u.set_password('velryba')
 u.save()
 ```
 
-After the first-time setup, all you need is `podman-compose stop` and `podman-compose start`. If, for any reason, you need to start from scratch, `podman-compose down` stops and destroys all the containers and `podman-compose up` starts their fresh copies. The last two commands work also for specific services so you can destroy also only the covscanhub instance and keep the db.
+After the first-time setup, all you need is `podman-compose stop` and `podman-compose start`. If, for any reason, you need to start from scratch, `podman-compose down` stops and destroys all the containers and `podman-compose up` starts their fresh copies. The last two commands work also for specific services so you can destroy also only the osh-hub instance and keep the db.
 
 This step also saves their configuration so you can start them individually then via `podman start -a db`. It's good idea to start them in separated terminal windows so their outputs are not combined.
 
@@ -81,23 +82,23 @@ This step also saves their configuration so you can start them individually then
 
 Go to admin interface and add a new worker with noarch, default channel and worker key from its config file.
 
-## Covscan worker
+## OSH worker
 
-You can use covscan client to submit builds, but a covscan worker must be started manually for the builds to be successful:
+You can use OSH client to submit builds, but a OSH worker must be started manually for the builds to be successful:
 
   ```bash
-     podman start -a covscanworker
+     podman start -a osh-worker
   ```
 
-## Covscan client
+## OSH client
 
 Update important settings in `covscan/covscan-local.conf` - namely HUB_URL, USERNAME, PASSWORD.
 
-Covscan client depends on six and koji Python modules. You should install them system-wide `dnf install python3-six python3-koji`.  You can also install them into a virtual environment `pip install six koji` but in that case, the packages like requests and urllib3 will ignore system-wide certificate authorities. In that case, setting `REQUESTS_CA_BUNDLE` env variable to something like `/etc/ssl/certs/ca-bundle.crt` might help.
+OSH client depends on six and koji Python modules. You should install them system-wide `dnf install python3-six python3-koji`.  You can also install them into a virtual environment `pip install six koji` but in that case, the packages like requests and urllib3 will ignore system-wide certificate authorities. In that case, setting `REQUESTS_CA_BUNDLE` env variable to something like `/etc/ssl/certs/ca-bundle.crt` might help.
 
 As pointed above, all of these dependencies are automatically set up in the client container, so you can use that.
 
-* Covscan client should now be able to connect to the hub and send it tasks. You can test it by these commands:
+* OSH client should now be able to connect to the hub and send it tasks. You can test it by these commands:
 
   ```bash
   COVSCAN_CONFIG_FILE=covscan/covscan-local.conf PYTHONPATH=.:kobo python3 covscan/covscan list-mock-configs
@@ -110,8 +111,8 @@ As pointed above, all of these dependencies are automatically set up in the clie
 * Or, in the container (which already has the needed variables exported):
 
   ```bash
-  podman exec -i covscanclient python3 covscan/covscan list-mock-configs
-  podman exec -i covscanclient python3 covscan/covscan mock-build --config=fedora-36-x86_64 --brew-build units-2.21-4.fc36
+  podman exec -i osh-client python3 covscan/covscan list-mock-configs
+  podman exec -i osh-client python3 covscan/covscan mock-build --config=fedora-36-x86_64 --brew-build units-2.21-4.fc36
   ```
 
 ## XML-RPC interface used by Errata Tool
@@ -175,12 +176,12 @@ covscanhub/scripts/covscan-xmlrpc-client.py
 
 For more info, please check docstring of the script.
 
-# Testing covscan
+# Testing OSH
 
 ## Running unit tests
 
 Unit tests in Django are executed by `manage.py test` command. Since unit tests
-in covscan contain also tests for models, a running service with database is
+in OSH contain also tests for models, a running service with database is
 needed.
 
 To run unit tests
@@ -190,9 +191,9 @@ To run unit tests
      Django creates its own isolated database instance and things such
      credentials and user accounts are mocked by Django unit test framework
      (see [Writing and running tests](https://docs.djangoproject.com/en/2.2/topics/testing/overview/#module-django.test) for more info)
-2. ensure containers are running or create and run them by `podman-compose up -d db covscanhub`
+2. ensure containers are running or create and run them by `podman-compose up -d db osh-hub`
    command
-3. run unit tests by `podman-compose exec covscanhub python3 covscanhub/manage.py test`
+3. run unit tests by `podman-compose exec osh-hub python3 covscanhub/manage.py test`
    command
 4. after you are done with unit testing, you can tear down the whole container
    stack by `podman-compose down`

@@ -9,13 +9,13 @@ set -x
 # weak password used for testing purposes only
 PASSWD=xxxxxx
 
-# start db and covscanhub to apply migrations
+# start db and osh-hub to apply migrations
 ./scripts/build.sh --run
 
 (set +e; wait_for_container 'HUB')
 
 # create covscan users
-podman exec -i covscanhub python3 covscanhub/manage.py shell << EOF
+podman exec -i osh-hub python3 covscanhub/manage.py shell << EOF
 from django.contrib.auth import get_user_model
 User = get_user_model()
 print(User.objects.create_superuser('admin', 'kdudka@redhat.com', '${PASSWD}'))
