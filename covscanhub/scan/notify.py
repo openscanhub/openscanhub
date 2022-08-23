@@ -1,20 +1,18 @@
 # -*- coding: utf-8 -*-
 """functions related to sending e-mail notifications"""
 
-import socket
 import logging
-
-from django.core.mail import get_connection, EmailMessage
-from django.urls import reverse
-from django.conf import settings
+import socket
 
 import kobo.hub.xmlrpc.client
-from kobo.hub.models import Task
+from django.conf import settings
+from django.core.mail import EmailMessage, get_connection
+from django.urls import reverse
 from kobo.client.constants import TASK_STATES
+from kobo.hub.models import Task
 
-from covscanhub.scan.models import Scan, SCAN_STATES
-from covscanhub.scan.models import AppSettings
-from covscanhub.service.loading import load_defects, get_defect_stats
+from covscanhub.scan.models import SCAN_STATES, AppSettings, Scan
+from covscanhub.service.loading import get_defect_stats, load_defects
 from covscanhub.waiving.service import get_scans_new_defects_count
 
 __all__ = (
@@ -252,7 +250,7 @@ of states:"
             (self.scan.nvr),
             'guide_message': "Comment from %s posted on %s:\n\n%s\n" % (
                 commenter,
-                date.strftime('%Y-%m-%d %H:%M:%S'), # TODO: add %Z - TZ
+                date.strftime('%Y-%m-%d %H:%M:%S'),  # TODO: add %Z - TZ
                 message
             )
         }

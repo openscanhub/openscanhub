@@ -1,10 +1,13 @@
 # -*- coding: utf-8 -*-
 
 from __future__ import print_function
+
 import os
 import sys
-from kobo.worker import TaskBase
+
 import kobo.tback
+from kobo.worker import TaskBase
+
 from covscancommon.csmock_parser import CsmockRunner
 
 kobo.tback.set_except_hook()
@@ -94,7 +97,6 @@ class ErrataDiffBuild(TaskBase):
             self.fail()
         else:
             self.hub.worker.finish_scan(scan_id, base_results)
-
 
     @classmethod
     def cleanup(cls, hub, conf, task_info):

@@ -1,11 +1,10 @@
 # -*- coding: utf-8 -*-
 
-from __future__ import print_function
-from __future__ import absolute_import
-
-import six
+from __future__ import absolute_import, print_function
 
 import re
+
+import six
 
 from covscancommon.utils.conf import get_conf
 
@@ -53,12 +52,13 @@ def verify_cim_string(s):
     """
     # Kamil's pattern ^([^@:]+):([^@]+)(?:@([^:/]+)(?::([^/]+)(?:/(.+))?)?)?$
     pattern = "^(?P<user>[^@:]+):(?P<passwd>[^@]+?)\
-(@(?P<server>[^:/]+):(?P<port>\d+)(/(?P<stream>.+))?)?$"
+(@(?P<server>[^:/]+):(?P<port>\\d+)(/(?P<stream>.+))?)?$"
     m = re.match(pattern, s)
     if m:
         return m.groupdict()
     else:
         raise RuntimeError("%s is an invalid string" % s)
+
 
 if __name__ == '__main__':
     test_data = [
@@ -108,8 +108,6 @@ expected:", entry[1], 'got: ', to_verify)
             result = verify_cim_string(entry)
             raise AssertionError
         except AssertionError:
-            print(entry, 'is invalid string and should have been denied!', \
-                result)
+            print(entry, 'is invalid string and should have been denied!', result)
         except RuntimeError:
             pass
-
