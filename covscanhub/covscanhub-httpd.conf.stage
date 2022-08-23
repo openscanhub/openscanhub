@@ -6,11 +6,11 @@ WSGISocketPrefix /var/run/wsgi
 # DumpIOOutput On
 # LogLevel dumpio:trace7
 
-# <VirtualHost *:80>
-#     RewriteEngine On
-#     RewriteCond %{HTTPS} off
-#     RewriteRule (.*) https://%{HTTP_HOST}%{REQUEST_URI}
-# </VirtualHost>
+<VirtualHost *:80>
+    RewriteEngine On
+    RewriteCond %{HTTPS} off
+    RewriteRule (.*) https://%{HTTP_HOST}%{REQUEST_URI}
+</VirtualHost>
 
 <VirtualHost *:443>
     SSLEngine on
@@ -19,7 +19,7 @@ WSGISocketPrefix /var/run/wsgi
     SSLCertificateChainFile /etc/httpd/conf/covscan.lab.eng.brq.redhat.com-ca.crt
 </VirtualHost>
 
-# <VirtualHost *:443>
+<VirtualHost *:443>
     # WSGI handler
     WSGIDaemonProcess covscan display-name=%{GROUP} locale='C.UTF-8'
     WSGIProcessGroup covscan
@@ -51,4 +51,4 @@ WSGISocketPrefix /var/run/wsgi
         AuthName "Covscan WEB-UI Login"
         Require valid-user
     </Location>
-# </VirtualHost>
+</VirtualHost>
