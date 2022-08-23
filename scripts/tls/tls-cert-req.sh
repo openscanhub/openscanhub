@@ -1,7 +1,7 @@
 #!/bin/bash -x
 
 KEY_LEN=4096
-HOST="cov01.lab.eng.brq.redhat.com"
+HOST="cov01.lab.eng.brq2.redhat.com"
 UPLOAD_URL="https://ca.corp.redhat.com/ca/ee/ca/profileSelect?profileId=caServerCert"
 
 openssl genrsa $KEY_LEN > $HOST.key
@@ -23,7 +23,7 @@ CN=$HOST
 
 [ req_ext ]
 subjectAltName = @alt_names
- 
+
 [ alt_names ]
 DNS.1 = $HOST
 EOF

@@ -84,10 +84,10 @@ if __name__ == '__main__':
             'port': None,
             'stream': None,
         }),
-        ('admin:xxxxxx@cov01.lab.eng.brq.redhat.com:8080', {
+        ('admin:xxxxxx@cov01.lab.eng.brq2.redhat.com:8080', {
             'user': 'admin',
             'passwd': 'xxxxxx',
-            'server': 'cov01.lab.eng.brq.redhat.com',
+            'server': 'cov01.lab.eng.brq2.redhat.com',
             'port': '8080',
             'stream': None,
         }),

@@ -1,4 +1,4 @@
-ServerName covscan.lab.eng.brq.redhat.com
+ServerName covscan.lab.eng.brq2.redhat.com
 WSGISocketPrefix /var/run/wsgi
 
 # LoadModule dumpio_module modules/mod_dumpio.so
@@ -14,9 +14,9 @@ WSGISocketPrefix /var/run/wsgi
 
 <VirtualHost *:443>
     SSLEngine on
-    SSLCertificateFile      /etc/httpd/conf/covscan.lab.eng.brq.redhat.com.crt
-    SSLCertificateKeyFile   /etc/httpd/conf/covscan.lab.eng.brq.redhat.com.key
-    SSLCertificateChainFile /etc/httpd/conf/covscan.lab.eng.brq.redhat.com-ca.crt
+    SSLCertificateFile      /etc/httpd/conf/covscan.lab.eng.brq2.redhat.com.crt
+    SSLCertificateKeyFile   /etc/httpd/conf/covscan.lab.eng.brq2.redhat.com.key
+    SSLCertificateChainFile /etc/httpd/conf/covscan.lab.eng.brq2.redhat.com-ca.crt
 </VirtualHost>
 
 <VirtualHost *:443>
@@ -40,14 +40,14 @@ WSGISocketPrefix /var/run/wsgi
 
     <Location "/covscanhub/xmlrpc/kerbauth/">
         AuthType GSSAPI
-	GssapiCredStore keytab:/etc/httpd/conf/HTTP-covscan.lab.eng.brq.redhat.com.keytab
+        GssapiCredStore keytab:/etc/httpd/conf/HTTP-covscan.lab.eng.brq2.redhat.com.keytab
         AuthName "Covscan XML-RPC Interface"
         Require valid-user
     </Location>
 
     <Location "/covscanhub/auth/krb5login/">
         AuthType GSSAPI
-	GssapiCredStore keytab:/etc/httpd/conf/HTTP-covscan.lab.eng.brq.redhat.com.keytab
+        GssapiCredStore keytab:/etc/httpd/conf/HTTP-covscan.lab.eng.brq2.redhat.com.keytab
         AuthName "Covscan WEB-UI Login"
         Require valid-user
     </Location>

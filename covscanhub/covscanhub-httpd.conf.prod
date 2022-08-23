@@ -14,9 +14,9 @@ WSGISocketPrefix /var/run/wsgi
     WSGIScriptAlias /covscanhub /usr/lib/python3.6/site-packages/covscanhub/covscanhub.wsgi process-group=covscan
 
     SSLEngine on
-    SSLCertificateFile      /etc/httpd/conf/cov01.lab.eng.brq.redhat.com-ssl/cov01.lab.eng.brq.redhat.com.crt
-    SSLCertificateKeyFile   /etc/httpd/conf/cov01.lab.eng.brq.redhat.com-ssl/cov01.lab.eng.brq.redhat.com.key
-    SSLCertificateChainFile /etc/httpd/conf/cov01.lab.eng.brq.redhat.com-ssl/cov01.lab.eng.brq.redhat.com-ca.crt
+    SSLCertificateFile      /etc/httpd/conf/cov01.lab.eng.brq2.redhat.com.crt
+    SSLCertificateKeyFile   /etc/httpd/conf/cov01.lab.eng.brq2.redhat.com.key
+    SSLCertificateChainFile /etc/httpd/conf/cov01.lab.eng.brq2.redhat.com-ca.crt
 
     # needed for Apache 2.4
     <Directory "/usr/lib/python3.6/site-packages/covscanhub">

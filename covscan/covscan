@@ -31,8 +31,9 @@ def main(args=None):
         return 2
 
     # xmlrpclib/httplib do not follow HTTP redirect
-    if conf["HUB_URL"] == "http://cov01.lab.eng.brq.redhat.com/covscanhub/xmlrpc":
-        conf["HUB_URL"] = "https://cov01.lab.eng.brq.redhat.com/covscanhub/xmlrpc"
+    if conf["HUB_URL"] in ["http://cov01.lab.eng.brq.redhat.com/covscanhub/xmlrpc",
+            "https://cov01.lab.eng.brq.redhat.com/covscanhub/xmlrpc"]:
+        conf["HUB_URL"] = "https://cov01.lab.eng.brq2.redhat.com/covscanhub/xmlrpc"
         sys.stderr.write("warning: forcing %s as HUB_URL, please update covscan configuration!\n" % conf["HUB_URL"])
 
     if sys.version_info[0] >= 3 and conf['AUTH_METHOD'] == 'krbv':

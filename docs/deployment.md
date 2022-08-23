@@ -52,26 +52,26 @@ firewall-cmd --reload
 ```
 
 - disable sending of e-mails:
-    - https://covscan.lab.eng.brq.redhat.com/covscanhub/auth/krb5login/
-    - https://covscan.lab.eng.brq.redhat.com/covscanhub/admin/scan/appsettings/1/change/
+    - https://covscan.lab.eng.brq2.redhat.com/covscanhub/auth/krb5login/
+    - https://covscan.lab.eng.brq2.redhat.com/covscanhub/admin/scan/appsettings/1/change/
     - set value to `N` and save
 
 - enable Covscan stage worker:
-    - https://covscan.lab.eng.brq.redhat.com/covscanhub/admin/hub/worker/add/
-    - enter worker key from `/etc/covscan/covscand.conf` on covscan.lab.eng.brq.redhat.com
-    - set name to `covscan.lab.eng.brq.redhat.com`
+    - https://covscan.lab.eng.brq2.redhat.com/covscanhub/admin/hub/worker/add/
+    - enter worker key from `/etc/covscan/covscand.conf` on covscan.lab.eng.brq2.redhat.com
+    - set name to `covscan.lab.eng.brq2.redhat.com`
     - pick `noarch` arch and `default` channel
     - set max load to 2 and save
 
 - submit an ET task with:
 ```sh
 covscanhub/scripts/covscan-xmlrpc-client.py \
-    --hub https://covscan.lab.eng.brq.redhat.com/covscanhub/xmlrpc/kerbauth/ \
+    --hub https://covscan.lab.eng.brq2.redhat.com/covscanhub/xmlrpc/kerbauth/ \
     create-scan -t libidn2-2.3.0-7.el9 --base NEW_PACKAGE --release RHEL-9.0.0 \
     --et-scan-id 1234 --advisory-id 4567 --owner kdudka
 ```
 
-- check the waiving page: https://covscan.lab.eng.brq.redhat.com/covscanhub/waiving/
+- check the waiving page: https://covscan.lab.eng.brq2.redhat.com/covscanhub/waiving/
 
 - check the log file: `/var/log/covscanhub/covscanhub.log`
 
@@ -84,7 +84,7 @@ covscanhub/scripts/covscan-xmlrpc-client.py \
 
 - transfer persistent data of covscanhub (takes approx one day to complete):
 ```sh
-ssh root@cov01.lab.eng.brq.redhat.com \
+ssh root@cov01.lab.eng.brq2.redhat.com \
     tar -C /var/lib -c covscanhub | pv \
     | tar -xvC /var/lib
 ```
@@ -102,14 +102,14 @@ systemctl enable --now postfix
 
 - transfer TLS certificate and Kerberos keytab from the running instance:
 ```sh
-ssh root@cov01.lab.eng.brq.redhat.com \
-    tar -C /etc/httpd/conf -c cov01.lab.eng.brq.redhat.com-ssl httpd.keytab \
+ssh root@cov01.lab.eng.brq2.redhat.com \
+    tar -C /etc/httpd/conf -c cov01.lab.eng.brq2.redhat.com-ssl httpd.keytab \
     | tar -xvC /etc/httpd/conf
 ```
 
 - transfer UMB client certificate:
 ```sh
-ssh root@cov01.lab.eng.brq.redhat.com tar -C /etc -c covscanhub | tar -xvC /etc
+ssh root@cov01.lab.eng.brq2.redhat.com tar -C /etc -c covscanhub | tar -xvC /etc
 ```
 
 - set `BZ_API_KEY` in `/usr/lib/python3.6/site-packages/covscanhub/settings_local.py`

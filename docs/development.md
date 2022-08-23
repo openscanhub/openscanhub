@@ -134,7 +134,7 @@ covscan/covscanhub/scripts/covscan-xmlrpc-client.py \
 * create Errata Scan using Kerberos authentication:
 ```sh
 covscan/covscanhub/scripts/covscan-xmlrpc-client.py \
-    --hub https://covscan.lab.eng.brq.redhat.com/covscanhub/xmlrpc/kerbauth/ \
+    --hub https://covscan.lab.eng.brq2.redhat.com/covscanhub/xmlrpc/kerbauth/ \
     create-scan -t curl-7.29.0-55.el7 \
     --et-scan-id 1234 --advisory-id 4567 \
     --owner kdudka --release RHEL-7.7.0 \

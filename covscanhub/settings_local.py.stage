@@ -88,7 +88,7 @@ LOGGING = {
 # system time zone.
 TIME_ZONE = 'Europe/Prague'
 
-KRB_AUTH_PRINCIPAL = 'HTTP/covscan.lab.eng.brq.redhat.com@REDHAT.COM'
+KRB_AUTH_PRINCIPAL = 'HTTP/covscan.lab.eng.brq2.redhat.com@REDHAT.COM'
 KRB_AUTH_KEYTAB = '/etc/httpd/conf/httpd.keytab'
 
 LANGUAGE_CODE = 'en-us'
@@ -166,4 +166,4 @@ QPID_CONNECTION = {
     'routing_key': "covscan.scan",
 }
 
-ALLOWED_HOSTS = ['covscan.lab.eng.brq.redhat.com']
+ALLOWED_HOSTS = ['covscan.lab.eng.brq2.redhat.com']

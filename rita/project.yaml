@@ -19,10 +19,10 @@ description: |
     them running, etc. The covscan team takes care of that. You just provide an
     SRPM (or NVR to download one from brew/koji) and the list of static
     analyzers to use. Once a covscan task is submitted, you can expect an
-    e-mail notification with the results. 
+    e-mail notification with the results.
 
     1. Install appropriate repo file
-    [LINK](https://cov01.lab.eng.brq.redhat.com/coverity/install/covscan/)
+    [LINK](https://cov01.lab.eng.brq2.redhat.com/coverity/install/covscan/)
 
     2. Install covscan client
 

@@ -65,8 +65,6 @@ class ErrataDiffBuild(TaskBase):
                 #     self._subtask_list.remove(i)
                 # ValueError: list.remove(x): x not in list
                 #
-                # https://uqtm.lab.eng.brq.redhat.com/covscanhub/task/749/log/traceback.log
-                #
                 # FIXME: workaround it here for now
                 pass
             self.hub.worker.set_scan_to_scanning(scan_id)
