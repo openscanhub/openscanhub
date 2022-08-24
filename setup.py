@@ -11,7 +11,7 @@ from scripts.include import (get_files, get_git_date_and_time, get_git_version,
 
 THIS_FILE_PATH = os.path.dirname(os.path.abspath(__file__))
 
-package_version = [0, 8, 1]
+package_version = [0, 8, 2]
 data_files = {
     "/etc/covscan": [
         "covscan/covscan.conf",

@@ -197,6 +197,9 @@ rm -rf %{buildroot}%{python3_sitelib}/scripts
 
 
 %changelog
+* Wed Aug 24 2022 Kamil Dudka <kdudka@redhat.com> - 0.8.2-1
+- update production hub URL in default configuration of covscan-client
+
 * Fri Jun 17 2022 Kamil Dudka <kdudka@redhat.com> - 0.8.1-1
 - bump version to make upgrades to git snapshots work again
 
