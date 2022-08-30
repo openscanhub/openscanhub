@@ -1,38 +1,42 @@
 # -*- coding: utf-8 -*-
 
 import datetime
-import os
 import logging
+import os
+
+import six
 import six.moves.urllib.parse
-
 from django.conf import settings
-from django.shortcuts import get_object_or_404
-from django.urls import reverse
-from django.shortcuts import render
-from django.http import HttpResponseRedirect
 from django.core.exceptions import ObjectDoesNotExist
+from django.http import HttpResponseRedirect
+from django.shortcuts import get_object_or_404, render
+from django.urls import reverse
 from django.views.generic.list import ListView
-from covscanhub.other import get_or_none
 
-from covscanhub.scan.models import SCAN_STATES, ScanBinding, Package,\
-    SystemRelease, ETMapping, Scan, SCAN_TYPES_TARGET
+from covscancommon.constants import (ERROR_DIFF_FILE, ERROR_HTML_FILE,
+                                     ERROR_TXT_FILE, FIXED_DIFF_FILE,
+                                     FIXED_HTML_FILE, FIXED_TXT_FILE)
+from covscanhub.other import get_or_none
 from covscanhub.scan.compare import get_compare_title
+from covscanhub.scan.models import (SCAN_STATES, SCAN_TYPES_TARGET, ETMapping,
+                                    Package, Scan, ScanBinding, SystemRelease)
+from covscanhub.scan.notify import send_notif_new_comment
 from covscanhub.scan.service import get_latest_sb_by_package
 from covscanhub.scan.xmlrpc_helper import scan_notification_email
-from covscanhub.scan.notify import send_notif_new_comment
-
-from covscanhub.service.processing import task_has_results, task_is_diffed
-
-from covscancommon.constants import *
-
-from covscanhub.waiving.bugzilla_reporting import create_bugzilla, \
-    get_unreported_bugs, update_bugzilla
-from covscanhub.waiving.models import *
-from covscanhub.waiving.forms import WaiverForm, ScanListSearchForm
-from covscanhub.waiving.service import get_unwaived_rgs, get_last_waiver, \
-    display_in_result, get_defects_diff_display, waiver_condition, get_waivers_for_rg, apply_waiver
-import six
-
+from covscanhub.service.processing import task_has_results
+from covscanhub.waiving.bugzilla_reporting import (create_bugzilla,
+                                                   get_unreported_bugs,
+                                                   update_bugzilla)
+from covscanhub.waiving.forms import ScanListSearchForm, WaiverForm
+from covscanhub.waiving.models import (DEFECT_STATES, RESULT_GROUP_STATES,
+                                       WAIVER_LOG_ACTIONS, WAIVER_TYPES,
+                                       WAIVER_TYPES_HELP_TEXTS, Bugzilla,
+                                       CheckerGroup, Defect, ResultGroup,
+                                       Waiver, WaivingLog)
+from covscanhub.waiving.service import (apply_waiver, display_in_result,
+                                        get_defects_diff_display,
+                                        get_last_waiver, get_unwaived_rgs,
+                                        get_waivers_for_rg, waiver_condition)
 
 logger = logging.getLogger(__name__)
 
@@ -223,9 +227,9 @@ def get_tupled_data(output):
 
     # find best match: 6 is too much and 3 is too few
     # FIXME: 5 columns doesn't work
-    #if len(output.keys()) % 4 == 0:
+    # if len(output.keys()) % 4 == 0:
     column_count = 4
-    #else:
+    # else:
     #    column_count = 5
 
     output_keys = list(output.keys())
@@ -482,13 +486,12 @@ def waiver(request, sb_id, result_group_id):
         context['form_message'] = 'This is not the newest scan.'
 
     # merge already created context with result context
-    context = context.copy() #TODO: check if .copy() is really needed
+    context = context.copy()  # TODO: check if .copy() is really needed
     context.update(get_result_context(request, sb))
 
     context['active_group'] = result_group_object
     context['defects'] = Defect.objects.filter(result_group=result_group_id,
-                                               state=DEFECT_STATES['NEW']).\
-                                                   order_by("order")
+                                               state=DEFECT_STATES['NEW']).order_by("order")
     context['waiving_logs'] = get_waivers_for_rg(result_group_object)
 
     context['defects_list_class'] = 'new'
@@ -538,8 +541,7 @@ def fixed_defects(request, sb_id, result_group_id):
 
     context['active_group'] = ResultGroup.objects.get(id=result_group_id)
     context['defects'] = Defect.objects.filter(result_group=result_group_id,
-                                               state=DEFECT_STATES['FIXED']).\
-                                               order_by("order")
+                                               state=DEFECT_STATES['FIXED']).order_by("order")
     context['display_form'] = False
     context['display_waivers'] = False
     context['form_message'] = "This group can't be waived, because these \
@@ -586,8 +588,7 @@ def previously_waived(request, sb_id, result_group_id):
 
     context['active_group'] = ResultGroup.objects.get(id=result_group_id)
     context['defects'] = Defect.objects.filter(result_group=result_group_id,
-                                               state=DEFECT_STATES['PREVIOUSLY_WAIVED']).\
-                                               order_by("order")
+                                               state=DEFECT_STATES['PREVIOUSLY_WAIVED']).order_by("order")
     context['waiving_logs'] = WaivingLog.objects.filter(
         waiver__result_group=result_group_id).exclude(
         state=WAIVER_LOG_ACTIONS['DELETE'])
@@ -628,7 +629,7 @@ def newest_result(request, package_name, release_tag):
 
 
 def etmapping_latest(request, etmapping_id):
-    """
+    r"""
     url(r"^et_mapping/(?P<etmapping_id>\d+)/$",
         "covscanhub.waiving.views.etmapping_latest",
         name="waiving/etmapping_id"),
