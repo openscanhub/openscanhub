@@ -155,7 +155,7 @@
 {% if logs %}
 <div>
 <ul>
-{% for log, log_label in logs.iteritems %}
+{% for log, log_label in logs.items %}
   <li><a href="{% url 'task/log' sb.task.id log %}">{{ log_label }}</a> [<a href="{% url 'task/log' sb.task.id log %}?format=raw">download</a>]</li>
 {% endfor %}
 </ul>

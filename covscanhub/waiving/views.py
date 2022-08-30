@@ -187,7 +187,7 @@ def add_logs_to_context(sb):
     """
     for i in sb.task.logs.list:
         basename = os.path.basename(i)
-        for path, label in file_labels.iteritems():
+        for path, label in file_labels.items():
             if basename.endswith(path):
                 logs[i] = label
     context['logs'] = logs

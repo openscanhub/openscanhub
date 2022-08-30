@@ -16,7 +16,7 @@
     <th>{% trans "Name" %}</th>
     <th>{% trans "Last Value" %}</th>
   </tr>
-{% for stat_type, data_tuple in results.iteritems %}
+{% for stat_type, data_tuple in results.items %}
   <tr>
     <td><a href="{{ data_tuple.1 }}">{{ stat_type.short_comment }}</a></td>
     <td>{{ data_tuple.0|intword }}</td>
