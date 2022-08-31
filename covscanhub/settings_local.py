@@ -162,4 +162,4 @@ QPID_CONNECTION = {
     'routing_key': 'covscan.scan',
 }
 
-ALLOWED_HOSTS = ['localhost', 'covscanhub']
+ALLOWED_HOSTS = ['*']
