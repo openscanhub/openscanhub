@@ -95,7 +95,8 @@ As pointed above, all of these dependencies are automatically set up in the clie
 
   ```bash
   COVSCAN_CONFIG_FILE=covscan/covscan-local.conf PYTHONPATH=.:kobo python3 covscan/covscan list-mock-configs
-  COVSCAN_CONFIG_FILE=covscan/covscan-local.conf PYTHONPATH=.:kobo python3 covscan/covscan mock-build --config=fedora-36-x86_64 --brew-build units-2.21-4.fc36
+  COVSCAN_CONFIG_FILE=covscan/covscan-local.conf PYTHONPATH=.:kobo python3 covscan/covscan mock-build --config=fedora-36-x86_64 --brew-build units-2.21-4.fc36 --nowait
+  COVSCAN_CONFIG_FILE=covscan/covscan-local.conf PYTHONPATH=.:kobo python3 covscan/covscan watch-log 1 #Replace 1 with task id
   ```
 
   Note: You can also set these variables permanently to your bashrc.
