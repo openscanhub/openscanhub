@@ -1,6 +1,6 @@
 Name:           covscan
 Version:        %{version}
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Commercial
 Summary:        Coverity scan scheduler
 Source:         %{name}-%{version}.tar.bz2
@@ -58,6 +58,7 @@ Summary: CovScan xml-rpc interface and web application
 Requires: boost-python3
 Requires: httpd
 Requires: mod_auth_gssapi
+Requires: mod_ssl
 Requires: python3-django
 Requires: python3-kobo-client
 Requires: python3-kobo-django
@@ -205,6 +206,9 @@ pg_isready -h localhost && %{python3_sitelib}/covscanhub/manage.py migrate
 
 
 %changelog
+* Thu Sep 01 2022 Siteshwar Vashisht <svashisht@redhat.com> - 0.8.2-2
+- Add mod_ssl as runtime dependency
+
 * Wed Aug 24 2022 Kamil Dudka <kdudka@redhat.com> - 0.8.2-1
 - update production hub URL in default configuration of covscan-client
 
