@@ -152,16 +152,6 @@
 <a href="{% url 'task/detail' sb.task.id %}">Task</a>
 {% endif %}
 
-{% if logs %}
-<div>
-<ul>
-{% for log, log_label in logs.items %}
-  <li><a href="{% url 'task/log' sb.task.id log %}">{{ log_label }}</a> [<a href="{% url 'task/log' sb.task.id log %}?format=raw">download</a>]</li>
-{% endfor %}
-</ul>
-</div>
-{% endif %}
-
 <div id="result_links">
     {% if first_sb %}
         <span class="link">
