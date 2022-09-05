@@ -122,10 +122,16 @@ done;done)
 # avoid transforming /usr/bin/env -S ... to /usr/bin/-S
 %global __brp_mangle_shebangs_exclude_from %{_bindir}/covscan
 
-# tweak python paths in config files
+# rename settings_local.{stage,prod}.* -> settings_local.*.{stage,prod}
+for i in stage prod; do (
+    cd %{buildroot}%{python3_sitelib}/covscanhub
+    eval mv -v settings_local.{${i}.py,py.${i}}
 
-# FIXME
-sed -i 's@/lib/python2.[0-9]@/lib/python%{python3_version}@g' %{buildroot}/etc/httpd/conf.d/covscanhub-httpd.conf.*
+    cd __pycache__
+    for j in settings_local.${i}.*; do
+        eval mv -v $j "settings_local\\${j#settings_local.${i}}.${i}"
+    done
+) done
 
 # create /var/lib dirs
 mkdir -p %{buildroot}/var/lib/covscanhub/{tasks,upload,worker}
@@ -183,6 +189,7 @@ rm -rf %{buildroot}%{python3_sitelib}/scripts
 %defattr(-,root,apache,-)
 %{python3_sitelib}/covscanhub
 %exclude %{python3_sitelib}/covscanhub/settings_local.py*
+%exclude %{python3_sitelib}/covscanhub/__pycache__/settings_local.*
 %dir %attr(775,root,apache) /var/log/covscanhub
 %ghost %attr(640,apache,apache) /var/log/covscanhub/covscanhub.log
 %attr(775,root,apache) /var/lib/covscanhub
@@ -195,13 +202,16 @@ pg_isready -h localhost && %{python3_sitelib}/covscanhub/manage.py migrate
 
 %files hub-conf-devel
 %{python3_sitelib}/covscanhub/settings_local.py
+%{python3_sitelib}/covscanhub/__pycache__/settings_local*.pyc
 
 %files hub-conf-stage
 %{python3_sitelib}/covscanhub/settings_local.py.stage
+%{python3_sitelib}/covscanhub/__pycache__/settings_local*.pyc.stage
 %attr(640,root,root) %config(noreplace) /etc/httpd/conf.d/covscanhub-httpd.conf.stage
 
 %files hub-conf-prod
 %{python3_sitelib}/covscanhub/settings_local.py.prod
+%{python3_sitelib}/covscanhub/__pycache__/settings_local*.pyc.prod
 %attr(640,root,root) %config(noreplace) /etc/httpd/conf.d/covscanhub-httpd.conf.prod
 
 

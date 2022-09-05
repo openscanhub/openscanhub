@@ -39,8 +39,6 @@ data_files = {
 package_data = {
     "covscanhub": [
         "covscanhub.wsgi",
-        "settings_local.py.prod",
-        "settings_local.py.stage",
         "scripts/checker_groups.txt",
     ]
 }
