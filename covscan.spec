@@ -193,12 +193,23 @@ rm -rf %{buildroot}%{python3_sitelib}/scripts
 %dir %attr(775,root,apache) /var/log/covscanhub
 %ghost %attr(640,apache,apache) /var/log/covscanhub/covscanhub.log
 %attr(775,root,apache) /var/lib/covscanhub
+%ghost %attr(640,apache,apache) /var/lib/covscanhub/secret_key
 
-# this only takes an effect if PostgreSQL is running and the database exists
 %post hub
 exec &> /var/log/covscanhub/post-install-%{name}-%{version}-%{release}.log
 set -x
+umask 0026
+
+if ! test -e /var/lib/covscanhub/secret_key; then
+    # generate Django secret key for a fresh installation
+    %{__python3} -c "from django.core.management.utils import get_random_secret_key
+print(get_random_secret_key())" > /var/lib/covscanhub/secret_key
+    chown apache:apache /var/lib/covscanhub/secret_key
+fi
+
+# this only takes an effect if PostgreSQL is running and the database exists
 pg_isready -h localhost && %{python3_sitelib}/covscanhub/manage.py migrate
+
 
 %files hub-conf-devel
 %{python3_sitelib}/covscanhub/settings_local.py

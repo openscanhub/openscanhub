@@ -13,6 +13,9 @@ PROJECT_DIR = os.path.dirname(__file__)
 
 URL_PREFIX = "/covscanhub"
 
+# file to read the real SECRET_KEY from
+SECRET_KEY_FILE = "/var/lib/covscanhub/secret_key"
+
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
 LANGUAGE_CODE = 'en-us'
@@ -42,8 +45,9 @@ STATICFILES_DIRS = (
 ROOT_URLCONF = 'covscanhub.urls'
 ROOT_MENUCONF = 'covscanhub.menu'
 
-# Make this unique, and don't share it with anybody.
-SECRET_KEY = '$e9r6h6n@@zw)g@_6vkiug_ys0pv)tn(2x4e@zgkaany8qau8@'
+# dummy secret key
+# (will be overridden by the content of SECRET_KEY_FILE if available)
+SECRET_KEY = 'x' * 50
 
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
@@ -176,4 +180,12 @@ VALID_TASK_LOG_EXTENSIONS = ['.log', '.ini', '.err', '.out', '.js', '.txt']
 try:
     from .settings_local import *  # noqa
 except ImportError:
+    pass
+
+# read the real SECRET_KEY from SECRET_KEY_FILE if availble
+try:
+    with open(SECRET_KEY_FILE, 'r') as f:
+        key = f.readline()
+        SECRET_KEY = key.strip()
+except OSError:
     pass
