@@ -37,7 +37,7 @@ su - postgres -c 'psql covscanhub'
     GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA "public" TO "covscanhub";
 ```
 
-- mark all migrations as applied:
+- apply all migrations:
 ```sh
 /usr/lib/python3.6/site-packages/covscanhub/manage.py migrate
 ```
