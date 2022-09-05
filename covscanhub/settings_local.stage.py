@@ -5,8 +5,9 @@ Instance-specific settings.
 Staging instance
 """
 
-import kobo
 import os
+
+import kobo
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
@@ -27,16 +28,16 @@ DATABASES = {
         'PASSWORD': 'velryba',
         'HOST': 'localhost',
         'PORT': '5432',
-        #'ATOMIC_REQUESTS': True
+        # 'ATOMIC_REQUESTS': True
     }
-#    'migration': {
-#        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-#        'NAME': 'migration',
-#        'USER': 'covscanhub',
-#        'PASSWORD': 'velryba',
-#        'HOST': 'localhost',
-#        'PORT': '5432',
-#    }
+    # 'migration': {
+    #     'ENGINE': 'django.db.backends.postgresql_psycopg2',
+    #     'NAME': 'migration',
+    #     'USER': 'covscanhub',
+    #     'PASSWORD': 'velryba',
+    #     'HOST': 'localhost',
+    #     'PORT': '5432',
+    # }
 }
 
 LOGGING = {
@@ -66,11 +67,11 @@ LOGGING = {
             'level': 'DEBUG',
             'propagate': True,
         },
-#        'django.db.backends': {
-#            'handlers': ['file'],
-#            'propagate': False,
-#            'level': 'INFO',
-#        },
+        # 'django.db.backends': {
+        #     'handlers': ['file'],
+        #     'propagate': False,
+        #     'level': 'INFO',
+        # },
         'kobo': {
             'handlers': ['file'],
             'level': 'DEBUG',

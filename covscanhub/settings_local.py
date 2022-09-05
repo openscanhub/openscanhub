@@ -5,8 +5,9 @@ Instance-specific settings.
 Devel instance
 """
 
-import kobo
 import os
+
+import kobo
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
@@ -62,11 +63,11 @@ LOGGING = {
             'level': 'DEBUG',
             'propagate': True,
         },
-#        'django.db.backends': {
-#            'handlers': ['file'],
-#            'propagate': False,
-#            'level': 'INFO',
-#        },
+        # 'django.db.backends': {
+        #     'handlers': ['file'],
+        #     'propagate': False,
+        #     'level': 'INFO',
+        # },
         'kobo': {
             'handlers': ['file'],
             'level': 'DEBUG',
@@ -83,11 +84,6 @@ LOGGING = {
 # If running in a Windows environment this must be set to the same as your
 # system time zone.
 TIME_ZONE = 'Europe/Prague'
-
-#KRB_AUTH_PRINCIPAL_SERVICE = 'covscan/covscan-stage.lab.eng.brq2.redhat.com@REDHAT.COM'
-#KRB_AUTH_KEYTAB = '/etc/httpd/conf/httpd.keytab'
-#
-#LANGUAGE_CODE = 'en-us'
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash if there is a path component (optional in other cases).

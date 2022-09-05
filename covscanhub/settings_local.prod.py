@@ -5,8 +5,9 @@ Instance-specific settings.
 Production instance
 """
 
-import kobo
 import os
+
+import kobo
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
@@ -66,11 +67,11 @@ LOGGING = {
             'level': 'DEBUG',
             'propagate': True,
         },
-#        'kobo': {
-#            'handlers': ['file'],
-#            'level': 'DEBUG',
-#            'propagate': True,
-#        }
+        # 'kobo': {
+        #     'handlers': ['file'],
+        #     'level': 'DEBUG',
+        #     'propagate': True,
+        # }
     }
 }
 
