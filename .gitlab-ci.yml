@@ -24,3 +24,21 @@ test:
     - podman-compose logs db
     - podman-compose logs osh-hub
     - podman-compose down
+
+gitlab-ci-build-on-copr:
+  tags:
+    - shared
+  image: "quay.io/fedora/fedora:35"
+  before_script:
+    - mkdir -p ~/.config
+    - echo "[copr-cli]" > ~/.config/rhcopr
+    - echo "$COPR_CLI_USERNAME" | base64 --decode >> ~/.config/rhcopr
+    - echo "$COPR_CLI_TOKEN" | base64 --decode >> ~/.config/rhcopr
+    - echo "$COPR_CLI_LOGIN" | base64 --decode >> ~/.config/rhcopr
+    - echo "$COPR_CLI_COPR_URL" | base64 --decode >> ~/.config/rhcopr
+    - dnf install -y findutils git make python python3-dnf-plugins-core python3-setuptools rpm-build
+    - dnf copr enable copr.devel.redhat.com/rhcopr-project/toolset -y
+    - dnf install -y rhcopr
+  script:
+    - make srpm
+    - rhcopr build gitlab-ci-build-on-copr *.src.rpm

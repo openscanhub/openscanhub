@@ -198,6 +198,30 @@ To run unit tests
 4. after you are done with unit testing, you can tear down the whole container
    stack by `podman-compose down`
 
+# Copr Builds
+
+GitLab CI is configured to trigger Copr builds on each update on [Copr](https://copr.devel.redhat.com/coprs/openscanhub-team/gitlab-ci-build-on-copr/builds/). If you want to use `rhcopr` locally, you can install it from [this repository](https://copr.devel.redhat.com/coprs/rhcopr-project/toolset/).
+
+## How to set up required variables:
+- Login to your Copr account and note Copr CLI Configurations from [this url](https://copr.devel.redhat.com/api/). 
+
+- On GitLab CI, go to `Project page` -> `Settings` -> `CI/CD` and select `Variables`.
+
+- Add masked variables as `base64` encoded values for these variables:
+```
+COPR_CLI_USERNAME
+COPR_CLI_TOKEN
+COPR_CLI_LOGIN
+COPR_CLI_COPR_URL
+```
+
+  These variables are stored separately due to character limit imposed by GitLab and they are required to be stored in base64 form.
+
+## How does GitLab CI build on Copr:
+
+- Decode base64 encoded masked variables from GitLab CI.
+- Store decoded variables in `~/.config/rhcopr` configuration file.
+- Trigger a Copr build through `rhcopr` and wait for it's result.
 
 ## Custom Gitlab CI runner
 
