@@ -28,7 +28,7 @@ test:
 gitlab-ci-build-on-copr:
   tags:
     - shared
-  image: "quay.io/fedora/fedora:35"
+  image: "registry.access.redhat.com/ubi8"
   before_script:
     - mkdir -p ~/.config
     - echo "[copr-cli]" > ~/.config/rhcopr
@@ -40,9 +40,16 @@ gitlab-ci-build-on-copr:
     - echo "$COPR_CLI_LOGIN" | base64 --decode >> ~/.config/rhcopr
     - echo -n "copr_url = " >> ~/.config/rhcopr
     - echo "$COPR_CLI_COPR_URL" | base64 --decode >> ~/.config/rhcopr
-    - dnf install -y findutils git make python python3-dnf-plugins-core python3-setuptools rpm-build
+    - dnf install -y findutils git make python36 python3-dnf-plugins-core python3-setuptools rpm-build
+    - dnf install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
+    - cp containers/rhel-8-pulp.repo containers/rcm-tools-for-rhel-8.repo /etc/yum.repos.d/
+    - dnf copr enable @copr/copr -y
     - dnf copr enable copr.devel.redhat.com/rhcopr-project/toolset -y
     - dnf install -y rhcopr
   script:
     - make srpm
-    - rhcopr build gitlab-ci-build-on-copr *.src.rpm
+    - rhcopr build gitlab-ci-build-on-copr *.src.rpm | tee rhcopr-build.log
+    - copr_url=$(grep "https://copr.*coprs/build/" rhcopr-build.log)
+    - build_id=$(basename $copr_url)
+    - rhcopr download-build $build_id -r epel-8-x86_64
+    - dnf install -y $(echo epel-8-x86_64/*.rpm | grep -v "prod\|stage\|src")

@@ -14,7 +14,7 @@ help:
 
 
 clean:
-	@python setup.py clean
+	@python3 setup.py clean
 	rm -f MANIFEST
 	rm -f ./*.src.rpm
 	rm -rf dist
@@ -22,7 +22,7 @@ clean:
 
 
 install:
-	@python setup.py install
+	@python3 setup.py install
 
 
 log:
@@ -30,7 +30,7 @@ log:
 
 
 source: clean
-	@python setup.py sdist --formats=bztar
+	@python3 setup.py sdist --formats=bztar
 
 VERSION = $(shell echo dist/*.tar.bz2 | sed "s/.*covscan-\(.*\).tar.bz2/\1/g")
 
