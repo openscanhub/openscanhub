@@ -32,9 +32,13 @@ gitlab-ci-build-on-copr:
   before_script:
     - mkdir -p ~/.config
     - echo "[copr-cli]" > ~/.config/rhcopr
+    - echo -n "username = " >> ~/.config/rhcopr
     - echo "$COPR_CLI_USERNAME" | base64 --decode >> ~/.config/rhcopr
+    - echo -n "token = " >> ~/.config/rhcopr
     - echo "$COPR_CLI_TOKEN" | base64 --decode >> ~/.config/rhcopr
+    - echo -n "login = " >> ~/.config/rhcopr
     - echo "$COPR_CLI_LOGIN" | base64 --decode >> ~/.config/rhcopr
+    - echo -n "copr_url = " >> ~/.config/rhcopr
     - echo "$COPR_CLI_COPR_URL" | base64 --decode >> ~/.config/rhcopr
     - dnf install -y findutils git make python python3-dnf-plugins-core python3-setuptools rpm-build
     - dnf copr enable copr.devel.redhat.com/rhcopr-project/toolset -y
