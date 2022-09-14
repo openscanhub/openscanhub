@@ -52,4 +52,4 @@ gitlab-ci-build-on-copr:
     - copr_url=$(grep "https://copr.*coprs/build/" rhcopr-build.log)
     - build_id=$(basename $copr_url)
     - rhcopr download-build $build_id -r epel-8-x86_64
-    - dnf install -y $(echo epel-8-x86_64/*.rpm | grep -v "prod\|stage\|src")
+    - dnf install -y $(ls epel-8-x86_64/*.rpm | grep -v "prod\|stage\|src")
