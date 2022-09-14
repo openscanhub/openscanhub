@@ -27,9 +27,13 @@ test:
 
 gitlab-ci-build-on-copr:
   tags:
-    - shared
-  image: "registry.access.redhat.com/ubi8"
+    - gitlab-ci-build-on-copr
   before_script:
+    # We are making lots of tweaks in configurations while setting up this job, which may cause
+    # issues with SELinux. Keep SELinux in permissive mode and fix any SELinux warnings before
+    # enabling it in future.
+    - setenforce 0
+    - dnf remove -y $(rpm -qa | grep -i covscan)
     - mkdir -p ~/.config
     - echo "[copr-cli]" > ~/.config/rhcopr
     - echo -n "username = " >> ~/.config/rhcopr
@@ -40,11 +44,14 @@ gitlab-ci-build-on-copr:
     - echo "$COPR_CLI_LOGIN" | base64 --decode >> ~/.config/rhcopr
     - echo -n "copr_url = " >> ~/.config/rhcopr
     - echo "$COPR_CLI_COPR_URL" | base64 --decode >> ~/.config/rhcopr
-    - dnf install -y findutils git make python36 python3-dnf-plugins-core python3-setuptools rpm-build
-    - dnf install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
+    - systemctl status
     - cp containers/rhel-8-pulp.repo containers/rcm-tools-for-rhel-8.repo /etc/yum.repos.d/
+    - cd /etc/yum.repos.d/ && curl -O https://copr.devel.redhat.com/coprs/kdudka/mock/repo/epel-8/kdudka-mock-epel-8.repo && cd -
+    - dnf install -y findutils git make openssl python36 python3-dnf-plugins-core python3-setuptools rpm-build postgresql-server
+    - dnf install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
     - dnf copr enable @copr/copr -y
     - dnf copr enable copr.devel.redhat.com/rhcopr-project/toolset -y
+    - dnf copr enable redhat/kdudka/covscan-testing -y
     - dnf install -y rhcopr
   script:
     - make srpm
@@ -52,4 +59,34 @@ gitlab-ci-build-on-copr:
     - copr_url=$(grep "https://copr.*coprs/build/" rhcopr-build.log)
     - build_id=$(basename $copr_url)
     - rhcopr download-build $build_id -r epel-8-x86_64
-    - dnf install -y $(ls epel-8-x86_64/*.rpm | grep -v "prod\|stage\|src")
+    - dnf install -y $(ls epel-8-x86_64/*.rpm | grep -v "stage\|prod\|src")
+    - cp covscanhub/settings_local.stage.py /usr/lib/python3.6/site-packages/covscanhub/settings_local.py
+    - sed -i "s/\['covscan.lab.eng.brq2.redhat.com'\]/\['*'\]/" /usr/lib/python3.6/site-packages/covscanhub/settings_local.py
+    - systemctl stop httpd postgresql
+    - mv -fvT --backup=numbered /var/lib/pgsql/data/ /root/pgsql-data
+    - postgresql-setup --initdb
+    - sed -e 's|ident$|md5|' -i /var/lib/pgsql/data/pg_hba.conf
+    - systemctl enable --now postgresql
+    - scripts/setup_db.sh
+    # coverity user is required to run builds
+    - adduser coverity -G mock || true
+    # Enable below line if SELinux is in restrictive mode
+    # setsebool -P httpd_can_network_connect 1
+    # Set up self signed certificate before starting httpd
+    - cd /etc/httpd/conf && openssl req -newkey rsa:4096 -nodes -keyout localhost.key -x509 -sha256 -days 365 -addext "subjectAltName = DNS:localhost, DNS:localhost, DNS:127.0.0.1" -subj "/C=CZ/ST=/L=/O=Red Hat/OU=Plumbers/CN=localhost" -out localhost.crt && cd -
+    - cd /etc/pki/ca-trust/source/anchors/ && cp /etc/httpd/conf/localhost.crt . && update-ca-trust && cd -
+    - cp covscanhub/covscanhub-httpd.conf.stage /etc/httpd/conf.d/covscanhub-httpd.conf
+    # Use `localhost` as the domain name on GitLab CI runner
+    - sed -i "s/covscan.lab.eng.brq2.redhat.com/localhost/" /etc/httpd/conf.d/covscanhub-httpd.conf
+    # Remove root ca configuration
+    - sed -i "/SSLCertificateChainFile/d" /etc/httpd/conf.d/covscanhub-httpd.conf
+    - touch /var/log/covscanhub/covscanhub.log && chown apache:apache /var/log/covscanhub/covscanhub.log
+    - systemctl enable --now httpd
+    - systemctl start covscand
+    # Enable below lines if firewall is enabled
+    # firewall-cmd --zone=public --add-port=80/tcp --permanent
+    # firewall-cmd --zone=public --add-port=443/tcp --permanent
+    # firewall-cmd --reload
+    - sed -i "s|http://osh-hub:8000|https://localhost/covscanhub|g" covscan/covscan-local.conf
+    - COVSCAN_CONFIG_FILE=covscan/covscan-local.conf /usr/bin/covscan mock-build --config=fedora-36-x86_64 --brew-build units-2.21-4.fc36
+    - COVSCAN_CONFIG_FILE=covscan/covscan-local.conf /usr/bin/covscan task-info 1 | grep "is_failed = False"

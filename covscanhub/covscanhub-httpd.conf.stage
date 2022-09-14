@@ -17,9 +17,7 @@ WSGISocketPrefix /var/run/wsgi
     SSLCertificateFile      /etc/httpd/conf/covscan.lab.eng.brq2.redhat.com.crt
     SSLCertificateKeyFile   /etc/httpd/conf/covscan.lab.eng.brq2.redhat.com.key
     SSLCertificateChainFile /etc/httpd/conf/covscan.lab.eng.brq2.redhat.com-ca.crt
-</VirtualHost>
 
-<VirtualHost *:443>
     # WSGI handler
     WSGIDaemonProcess covscan display-name=%{GROUP} locale='C.UTF-8'
     WSGIProcessGroup covscan
