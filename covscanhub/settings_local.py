@@ -7,16 +7,12 @@ Devel instance
 
 import os
 
-import kobo
-
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
     ('Kamil Dudka', 'kdudka@redhat.com'),
 )
-
-PROJECT_DIR = os.path.dirname(__file__)
 
 MANAGERS = ADMINS
 
@@ -85,39 +81,8 @@ LOGGING = {
 # system time zone.
 TIME_ZONE = 'Europe/Prague'
 
-# URL that handles the media served from MEDIA_ROOT. Make sure to use a
-# trailing slash if there is a path component (optional in other cases).
-# Examples: "http://media.lawrence.com", "http://example.com/media/"
-MEDIA_URL = '/covscanhub/media/'
-
-# URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
-# trailing slash.
-# Examples: "http://foo.com/media/", "/media/".
-ADMIN_MEDIA_PREFIX = '/covscanhub/admin/media/'
-
-TEMPLATE_DIRS = (
-    # directories with templates
-    os.path.join(PROJECT_DIR, "templates"),
-    os.path.join(os.path.dirname(kobo.__file__), "hub", "templates"),
-)
-
-TEMPLATES = [
-    {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': TEMPLATE_DIRS,
-        'APP_DIRS': True,
-        'OPTIONS': {
-            'context_processors': [
-                "django.contrib.auth.context_processors.auth",
-                "django.contrib.messages.context_processors.messages",
-                "django.template.context_processors.media",
-                "django.template.context_processors.request",
-                "kobo.django.menu.context_processors.menu_context_processor",
-                "django.template.context_processors.static",
-            ],
-        },
-    },
-]
+# KRB_AUTH_PRINCIPAL =
+# KRB_AUTH_KEYTAB =
 
 ###############################################################################
 # COVSCAN SPECIFIC
@@ -131,9 +96,6 @@ TASK_DIR = os.path.join(FILES_PATH, 'tasks')
 
 # Root directory for uploaded files
 UPLOAD_DIR = os.path.join(FILES_PATH, 'upload')
-
-LOGIN_URL_NAME = 'auth/krb5login'
-LOGIN_EXEMPT_URLS = ['.*xmlrpc/.*']
 
 BZ_URL = "https://bugzilla.stage.redhat.com/xmlrpc.cgi"
 BZ_API_KEY = "xxxxxx"
