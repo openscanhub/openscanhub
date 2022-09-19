@@ -29,14 +29,6 @@ DATABASES = {
         'HOST': 'localhost',
         'PORT': '5432',
     },
-    'migration': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'migration',
-        'USER': 'covscanhub',
-        'PASSWORD': 'velryba',
-        'HOST': 'localhost',
-        'PORT': '5432',
-    }
 }
 
 LOGGING = {
@@ -67,11 +59,6 @@ LOGGING = {
             'level': 'DEBUG',
             'propagate': True,
         },
-        # 'kobo': {
-        #     'handlers': ['file'],
-        #     'level': 'DEBUG',
-        #     'propagate': True,
-        # }
     }
 }
 

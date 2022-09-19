@@ -28,16 +28,7 @@ DATABASES = {
         'PASSWORD': 'velryba',
         'HOST': 'localhost',
         'PORT': '5432',
-        # 'ATOMIC_REQUESTS': True
-    }
-    # 'migration': {
-    #     'ENGINE': 'django.db.backends.postgresql_psycopg2',
-    #     'NAME': 'migration',
-    #     'USER': 'covscanhub',
-    #     'PASSWORD': 'velryba',
-    #     'HOST': 'localhost',
-    #     'PORT': '5432',
-    # }
+    },
 }
 
 LOGGING = {
