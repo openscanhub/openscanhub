@@ -160,11 +160,4 @@ UMB_BROKER_URLS = [
 UMB_CLIENT_CERT = '/etc/covscanhub/msg-client-covscan.pem'
 UMB_TOPIC_PREFIX = 'topic://VirtualTopic.eng.covscan.scan'
 
-QPID_CONNECTION = {
-    'broker': "amqps://qpid.stage.engineering.redhat.com",
-    'address': "eso.topic",
-    'mechanism': "GSSAPI",
-    'routing_key': "covscan.scan",
-}
-
 ALLOWED_HOSTS = ['covscan.lab.eng.brq2.redhat.com']
