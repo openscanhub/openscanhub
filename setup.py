@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 import os
-from distutils.command.install import INSTALL_SCHEMES
 
 from setuptools import find_packages, setup
 
@@ -59,12 +58,6 @@ if os.path.isdir(".git"):
         git_version = get_git_version(THIS_FILE_PATH)
         git_date, git_time = get_git_date_and_time(THIS_FILE_PATH)
         package_version += [git_date, git_time, git_version]
-
-
-# force to install data files to site-packages
-for scheme in INSTALL_SCHEMES.values():
-    scheme["data"] = scheme["purelib"]
-
 
 setup(
     name="covscan",
