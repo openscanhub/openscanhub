@@ -67,8 +67,24 @@ test_build_env() (
   return 0
 )
 
+clean() {
+  podman-compose down -v
+  CONTAINERS=$(podman ps -a | grep 'covscan\|osh' | sed -e "s/[[:space:]]\{2,\}/,/g" | cut -d, -f1)
+  echo "$CONTAINERS" | xargs podman rm -f
+  IMAGES=$(shell podman images | grep 'covscan\|osh' | sed -e "s/[[:space:]]\{2,\}/,/g" | cut -d, -f3)
+  echo "$IMAGES" | xargs podman rmi -f
+}
+
 while [[ $# -gt 0 ]]; do
   case "$1" in
+    --full-dev)
+      CONTAINERS+=' osh-client'
+      shift
+      ;;
+    --clean)
+      clean
+      exit "$?"
+      ;;
     --run)
       START='-d'
       shift

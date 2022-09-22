@@ -16,6 +16,7 @@ interruption() {
 declare -g TEMPOUT
 
 DEPLOY=false
+FULL_DEV=""
 NOWAIT=true
 # RETRY=false
 
@@ -123,6 +124,10 @@ mock-task() {
   wait
 }
 
+set_full_dev() {
+  FULL_DEV="--full-dev"
+}
+
 main() {
   set -x
 
@@ -130,11 +135,15 @@ main() {
   local build
   TEMPOUT=$(mktemp -dt cli-test-XXXXXX)
 
-  if [ "$DEPLOY" = true ]; then
-    ./scripts/deploy.sh --debug --no-interactive || exit "$?"
+  if [[ "$(type podman)" =~ docker ]]; then
+    set_full_dev
   fi
 
-  if [[ "$(type podman)" =~ docker ]]; then
+  if [ "$DEPLOY" = true ]; then
+    ./scripts/deploy.sh --debug "$FULL_DEV" --no-interactive || exit "$?"
+  fi
+
+  if [[ -z "$FULL_DEV" ]]; then
     podman start osh-client
   else
     test_fixture
@@ -150,6 +159,10 @@ while [[ $# -gt 0 ]]; do
   case "$1" in
     --deploy)
       DEPLOY=true
+      shift
+      ;;
+    --full-dev)
+      set_full_dev
       shift
       ;;
     *)

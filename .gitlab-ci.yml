@@ -7,7 +7,7 @@ lint:
   script:
     - git remote -v | grep -q 'covscan.*covscan/covscan' || git remote add covscan https://gitlab.cee.redhat.com/covscan/covscan
     - GIT_SSL_NO_VERIFY=true git fetch covscan
-    - GIT_SSL_NO_VERIFY=true pre-commit run --from-ref covscan/master --to-ref HEAD
+    - GIT_SSL_NO_VERIFY=true make lint REPO=covscan
 
 django-unit-tests:
   tags:

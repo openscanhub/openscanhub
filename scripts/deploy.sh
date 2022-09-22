@@ -17,7 +17,7 @@ main() {
 
     (set -x; podman start osh-worker)
 
-    if [[ "$(type podman)" =~ docker ]]; then
+    if [[ "$(type podman)" =~ docker || "$FULL_DEV" = true ]]; then
       (set -x; podman run -it "$INTERACTIVE" osh-client bash)
     fi
 
@@ -74,6 +74,10 @@ while [[ $# -gt 0 ]]; do
   case "$1" in
     --debug)
       DEBUG=true
+      shift
+      ;;
+    --full-dev)
+      FULL_DEV=true
       shift
       ;;
     --no-interactive)

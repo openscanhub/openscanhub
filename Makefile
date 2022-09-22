@@ -6,23 +6,50 @@ help:
 	@echo
 	@echo "Available targets are:"
 	@echo " help                    show this text"
+	@echo " build			builds basic development environment"
 	@echo " clean                   remove python bytecode and temp files"
+	@echo " clean-dev               also cleans up development environment"
+	@echo " full-dev		builds full development environment"
 	@echo " install                 install program on current system"
+	@echo " lint			run pre-commit linters on branch"
 	@echo " lint-all                run pre-commit linters on all files"
 	@echo " log                     prepare changelog for spec file"
 	@echo " source                  create source tarball"
+	@echo " tests			run tests"
 
 
-clean:
+install:
+	@python3 setup.py install
+
+
+build:
+	@./scripts/build.sh
+
+
+full-dev:
+	@./scripts/build.sh --full-dev
+
+
+tests:
+	@./scripts/cli_sanity_test.sh
+
+
+clean-local-python:
 	@python3 setup.py clean
+
+
+clean-local-files:
 	rm -f MANIFEST
 	rm -f ./*.src.rpm
 	rm -rf dist
 	find . -\( -name "*.pyc" -o -name '*.pyo' -o -name "*~" -\) -delete
 
 
-install:
-	@python3 setup.py install
+clean: clean-local-python clean-local-files
+
+
+clean-dev: clean-local-files
+	@./scripts/build.sh --clean
 
 
 log:
@@ -41,6 +68,13 @@ srpm: source
 		--define "_sourcedir ./dist"	\
 		--define "_specdir ."		\
 		--define "_srcrpmdir ."
+
+REPO = origin
+BRANCH = master
+
+lint:
+	pre-commit run --show-diff-on-failure --color=always --from-ref $(REPO)/$(BRANCH) --to-ref HEAD
+
 
 lint-all:
 	pre-commit run --show-diff-on-failure --color=always --all-files
