@@ -200,7 +200,7 @@ To run unit tests
 
 # Copr Builds
 
-GitLab CI is configured to trigger Copr builds on each update on [Copr](https://copr.devel.redhat.com/coprs/openscanhub-team/gitlab-ci-build-on-copr/builds/). If you want to use `rhcopr` locally, you can install it from [this repository](https://copr.devel.redhat.com/coprs/rhcopr-project/toolset/).
+GitLab CI is configured to trigger Copr builds on each update on [Copr](https://copr.devel.redhat.com/coprs/openscanhub-team/gitlab-ci-build-on-copr/builds/). If you want to use `rhcopr` locally, you can install it from [this repository](https://copr.devel.redhat.com/coprs/rhcopr-project/toolset/). If you are making merge requests from your own fork, you need to fork [this project](https://copr.devel.redhat.com/coprs/openscanhub-team/gitlab-ci-build-on-copr/) in your namespace. For example https://copr.devel.redhat.com/coprs/svashish/gitlab-ci-build-on-copr/
 
 ## How to set up required variables:
 - Login to your Copr account and note Copr CLI Configurations from [this url](https://copr.devel.redhat.com/api/). 
