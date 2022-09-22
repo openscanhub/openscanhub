@@ -5,6 +5,12 @@ EXPOSE 8000
 # Internal repositories with all RHEL packages and RCM tools
 COPY containers/rhel-8-pulp.repo containers/rcm-tools-for-rhel-8.repo /etc/yum.repos.d/
 
+WORKDIR /src
+
+ENV PYTHONPATH=.:kobo
+
+RUN echo -e "max_parallel_downloads=20\nfastestmirror=True" >> /etc/dnf/dnf.conf
+
 # Internal CA
 RUN cd /etc/pki/ca-trust/source/anchors/ && \
     curl -O https://password.corp.redhat.com/RH-IT-Root-CA.crt && \
@@ -15,8 +21,6 @@ RUN dnf install -y https://kojipkgs.fedoraproject.org//packages/epel-release/8/1
 
 # internal copr kdudka/mock needed for csmock-core-configs (mock configs are required by unit tests)
 RUN cd /etc/yum.repos.d/ && curl -O https://copr.devel.redhat.com/coprs/kdudka/mock/repo/epel-8/kdudka-mock-epel-8.repo
-
-RUN echo -e "max_parallel_downloads=20\nfastestmirror=True" >> /etc/dnf/dnf.conf
 
 RUN dnf -y --setopt=tsflags=nodocs install \
     /usr/bin/krb5-config \
@@ -44,9 +48,5 @@ RUN dnf -y --setopt=tsflags=nodocs install \
 
 COPY containers/hub/run.sh /run.sh
 RUN chmod +x /run.sh
-
-WORKDIR /src
-
-ENV PYTHONPATH=.:kobo
 
 CMD /run.sh
