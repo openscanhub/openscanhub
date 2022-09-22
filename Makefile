@@ -26,7 +26,7 @@ install:
 
 
 log:
-	@(LC_ALL=C date +"* %a %b %e %Y `git config --get user.name` <`git config --get user.email`> - VERSION"; git log --pretty="format:- %s (%an)" | cat) | less
+	@(LC_ALL=C date +"* %a %b %e %Y `git config --get user.name` <`git config --get user.email`> - VERSION"; git log --pretty="format:- %s (%an)") | less
 
 
 source: clean
@@ -37,10 +37,10 @@ VERSION = $(shell echo dist/*.tar.bz2 | sed "s/.*covscan-\(.*\).tar.bz2/\1/g")
 srpm: source
 	echo "%global version $(VERSION)" > dist/covscan.spec
 	cat covscan.spec >> dist/covscan.spec
-	rpmbuild -bs "dist/covscan.spec"                    \
-		--define "_sourcedir ./dist"                \
-		--define "_specdir ."                       \
+	rpmbuild -bs "dist/covscan.spec"	\
+		--define "_sourcedir ./dist"	\
+		--define "_specdir ."		\
 		--define "_srcrpmdir ."
 
 lint-all:
-	pre-commit run --all-files
+	pre-commit run --show-diff-on-failure --color=always --all-files
