@@ -17,6 +17,8 @@ test:
     - podman build -f containers/Dockerfile.hub -t osh-hub .
     - podman build -f containers/Dockerfile.worker -t covscanworker .
     - podman-compose up -d db osh-hub
+    - while ! podman exec -it osh-hub pg_isready -h db; do sleep 0.5; done
+    - podman exec -it db psql -c 'ALTER USER covscanhub CREATEDB;'
   script:
     - podman exec -it osh-hub python3 covscanhub/manage.py test || exit 1
   after_script:
