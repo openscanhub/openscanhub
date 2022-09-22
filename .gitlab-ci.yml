@@ -5,7 +5,9 @@ lint:
   before_script:
     - dnf install -y pre-commit make git-core
   script:
-    - pre-commit run --from-ref origin/master --to-ref HEAD
+    - git remote -v | grep -q 'covscan.*covscan/covscan' || git remote add covscan https://gitlab.cee.redhat.com/covscan/covscan
+    - GIT_SSL_NO_VERIFY=true git fetch covscan
+    - GIT_SSL_NO_VERIFY=true pre-commit run --from-ref covscan/master --to-ref HEAD
 
 test:
   tags:
@@ -20,7 +22,7 @@ test:
     - while ! podman exec -it osh-hub pg_isready -h db; do sleep 0.5; done
     - podman exec -it db psql -c 'ALTER USER covscanhub CREATEDB;'
   script:
-    - podman exec -it osh-hub python3 covscanhub/manage.py test || exit 1
+    - podman exec -it osh-hub python3 covscanhub/manage.py test -v 3 || exit 1
   after_script:
     - podman-compose logs db
     - podman-compose logs osh-hub
