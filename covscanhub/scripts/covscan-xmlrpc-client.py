@@ -280,7 +280,7 @@ def main():
     delta = datetime.datetime.now() - before
     logger.debug('Execution took %d.%d s.', delta.seconds, delta.microseconds)
     logger.info("Everything is fine.")
-    return 1
+    return 0
 
 
 if __name__ == '__main__':
