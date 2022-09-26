@@ -30,14 +30,10 @@ def get_home_dir():
     Return user home directory
     """
     path = os.path.expanduser('~')
-    for env_var in ('HOME', 'USERPROFILE'):
-        if os.path.isdir(path):
-            break
-        path = os.environ.get(env_var, '')
-    if path:
+    if os.path.isdir(path):
         return path
     else:
-        raise RuntimeError('Please define environment variable $HOME')
+        raise RuntimeError('Please define a valid environment variable $HOME')
 
 
 class Conf(object):
