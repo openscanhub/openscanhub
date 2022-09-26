@@ -28,7 +28,7 @@ test:
     - podman-compose logs osh-hub
     - podman-compose down
 
-gitlab-ci-build-on-copr:
+build-on-copr:
   tags:
     - gitlab-ci-build-on-copr
   before_script:
@@ -63,6 +63,12 @@ gitlab-ci-build-on-copr:
     - build_id=$(basename $copr_url)
     - rhcopr download-build $build_id -r epel-8-x86_64
     - dnf install -y $(ls epel-8-x86_64/*.rpm | grep -v "stage\|prod\|src")
+
+build-sample-package:
+  needs: [build-on-copr]
+  tags:
+    - gitlab-ci-build-on-copr
+  script:
     - cp covscanhub/settings_local.stage.py /usr/lib/python3.6/site-packages/covscanhub/settings_local.py
     - sed -i "s/\['covscan.lab.eng.brq2.redhat.com'\]/\['*'\]/" /usr/lib/python3.6/site-packages/covscanhub/settings_local.py
     - systemctl stop httpd postgresql
@@ -78,11 +84,7 @@ gitlab-ci-build-on-copr:
     # Set up self signed certificate before starting httpd
     - cd /etc/httpd/conf && openssl req -newkey rsa:4096 -nodes -keyout localhost.key -x509 -sha256 -days 365 -addext "subjectAltName = DNS:localhost, DNS:localhost, DNS:127.0.0.1" -subj "/C=CZ/ST=/L=/O=Red Hat/OU=Plumbers/CN=localhost" -out localhost.crt && cd -
     - cd /etc/pki/ca-trust/source/anchors/ && cp /etc/httpd/conf/localhost.crt . && update-ca-trust && cd -
-    - cp covscanhub/covscanhub-httpd.conf.stage /etc/httpd/conf.d/covscanhub-httpd.conf
-    # Use `localhost` as the domain name on GitLab CI runner
-    - sed -i "s/covscan.lab.eng.brq2.redhat.com/localhost/" /etc/httpd/conf.d/covscanhub-httpd.conf
-    # Remove root ca configuration
-    - sed -i "/SSLCertificateChainFile/d" /etc/httpd/conf.d/covscanhub-httpd.conf
+    - cp covscanhub/covscanhub-httpd.conf /etc/httpd/conf.d/covscanhub-httpd.conf
     - touch /var/log/covscanhub/covscanhub.log && chown apache:apache /var/log/covscanhub/covscanhub.log
     - systemctl enable --now httpd
     - systemctl start covscand
@@ -93,3 +95,17 @@ gitlab-ci-build-on-copr:
     - sed -i "s|http://osh-hub:8000|https://localhost/covscanhub|g" covscan/covscan-local.conf
     - COVSCAN_CONFIG_FILE=covscan/covscan-local.conf /usr/bin/covscan mock-build --config=fedora-36-x86_64 --brew-build units-2.21-4.fc36
     - COVSCAN_CONFIG_FILE=covscan/covscan-local.conf /usr/bin/covscan task-info 1 | grep "is_failed = False"
+
+run-errata-test:
+  needs: [build-sample-package]
+  tags:
+    - gitlab-ci-build-on-copr
+  script:
+    - covscanhub/scripts/covscan-xmlrpc-client.py --hub "https://localhost/covscanhub/xmlrpc/kerbauth/" --username=user --password=xxxxxx create-scan -b python-six-1.3.0-4.el7 -t python-six-1.9.0-2.el7 --et-scan-id=1 --release=RHEL-7.2.0 --owner=admin --advisory-id=1
+
+stages:
+  - lint
+  - test
+  - build-on-copr
+  - build-sample-package
+  - run-errata
