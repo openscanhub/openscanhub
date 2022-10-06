@@ -196,7 +196,12 @@ rm -rf %{buildroot}%{python3_sitelib}/scripts
 %ghost %attr(640,apache,apache) /var/lib/covscanhub/secret_key
 
 %post hub
-exec &> /var/log/covscanhub/post-install-%{name}-%{version}-%{release}.log
+exec &>> /var/log/covscanhub/post-install-%{name}-%{version}-%{release}.log
+
+# record timestamp
+echo -n '>>> '
+date -R
+
 set -x
 umask 0026
 
