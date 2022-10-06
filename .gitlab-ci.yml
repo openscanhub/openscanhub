@@ -9,7 +9,7 @@ lint:
     - GIT_SSL_NO_VERIFY=true git fetch covscan
     - GIT_SSL_NO_VERIFY=true pre-commit run --from-ref covscan/master --to-ref HEAD
 
-test:
+django-unit-tests:
   tags:
     - covscan-ci-runner
   before_script:
@@ -17,7 +17,6 @@ test:
     - git clone --depth 1 https://github.com/release-engineering/kobo.git
     - podman pull registry-proxy.engineering.redhat.com/rh-osbs/rhel8-postgresql-12
     - podman build -f containers/Dockerfile.hub -t osh-hub .
-    - podman build -f containers/Dockerfile.worker -t covscanworker .
     - podman-compose up -d db osh-hub
     - while ! podman exec -it osh-hub pg_isready -h db; do sleep 0.5; done
     - podman exec -it db psql -c 'ALTER USER covscanhub CREATEDB;'
