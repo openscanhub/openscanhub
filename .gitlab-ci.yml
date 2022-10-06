@@ -108,4 +108,4 @@ stages:
   - test
   - build-on-copr
   - build-sample-package
-  - run-errata
+  - run-errata-test
