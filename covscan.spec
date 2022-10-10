@@ -217,17 +217,17 @@ pg_isready -h localhost && %{python3_sitelib}/covscanhub/manage.py migrate
 
 
 %files hub-conf-devel
-%{python3_sitelib}/covscanhub/settings_local.py
-%{python3_sitelib}/covscanhub/__pycache__/settings_local*.pyc
+%attr(640,root,apache) %config(noreplace) %{python3_sitelib}/covscanhub/settings_local.py
+%attr(640,root,apache) %config(noreplace) %{python3_sitelib}/covscanhub/__pycache__/settings_local*.pyc
 
 %files hub-conf-stage
-%{python3_sitelib}/covscanhub/settings_local.py.stage
-%{python3_sitelib}/covscanhub/__pycache__/settings_local*.pyc.stage
+%attr(640,root,apache) %config(noreplace) %{python3_sitelib}/covscanhub/settings_local.py.stage
+%attr(640,root,apache) %config(noreplace) %{python3_sitelib}/covscanhub/__pycache__/settings_local*.pyc.stage
 %attr(640,root,root) %config(noreplace) /etc/httpd/conf.d/covscanhub-httpd.conf.stage
 
 %files hub-conf-prod
-%{python3_sitelib}/covscanhub/settings_local.py.prod
-%{python3_sitelib}/covscanhub/__pycache__/settings_local*.pyc.prod
+%attr(640,root,apache) %config(noreplace) %{python3_sitelib}/covscanhub/settings_local.py.prod
+%attr(640,root,apache) %config(noreplace) %{python3_sitelib}/covscanhub/__pycache__/settings_local*.pyc.prod
 %attr(640,root,root) %config(noreplace) /etc/httpd/conf.d/covscanhub-httpd.conf.prod
 
 
