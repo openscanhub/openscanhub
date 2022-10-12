@@ -30,6 +30,7 @@ RUN dnf -y --setopt=tsflags=nodocs install \
     gcc \
     gzip \
     python3-bugzilla \
+    python3-coverage \
     python3-csdiff \
     python3-devel \
     python3-django{,-debug-toolbar} \
