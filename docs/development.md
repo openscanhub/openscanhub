@@ -178,6 +178,11 @@ For more info, please check docstring of the script.
 
 # Testing OSH
 
+## Test Coverage
+
+Latest test coverage report of `master` branch for Django unit tests can be seen in [GitLab CI](https://gitlab.cee.redhat.com/covscan/covscan/-/jobs/artifacts/master/file/htmlcov/index.html?job=django-unit-tests).
+
+
 ## Running unit tests
 
 Unit tests in Django are executed by `manage.py test` command. Since unit tests
