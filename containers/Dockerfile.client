@@ -19,6 +19,7 @@ RUN echo -e "max_parallel_downloads=20\nfastestmirror=True" >> /etc/dnf/dnf.conf
 RUN dnf -y --setopt=tsflags=nodocs install \
     file \
     gzip \
+    python3-coverage \
     python3-koji \
     python3-six \
     python36 \

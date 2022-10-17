@@ -25,6 +25,7 @@ RUN dnf -y --setopt=tsflags=nodocs install \
     file \
     gzip \
     koji \
+    python3-coverage \
     python3-gssapi \
     python3-six \
     python36 \
@@ -42,4 +43,4 @@ ENV COVSCAND_CONFIG_FILE=covscand/covscand-local.conf
 
 RUN touch /WORKER_IS_READY
 
-CMD python3.6 covscand/covscand -f
+CMD coverage-3.6 run --parallel-mode --omit="*site-packages*,*kobo*," covscand/covscand -f

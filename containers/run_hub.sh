@@ -32,4 +32,4 @@ python3.6 -m smtpd -n -c DebuggingServer localhost:25 >> covscanhub/emails.log &
 touch /HUB_IS_READY
 
 # Run main web app
-python3.6 covscanhub/manage.py runserver 0.0.0.0:8000
+coverage-3.6 run --parallel-mode --omit="*site-packages*,*kobo*," covscanhub/manage.py runserver 0.0.0.0:8000
