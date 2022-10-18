@@ -29,10 +29,7 @@ def get_home_dir():
     """
     Return user home directory
     """
-    try:
-        path = os.path.expanduser('~')
-    except Exception:
-        path = ''
+    path = os.path.expanduser('~')
     for env_var in ('HOME', 'USERPROFILE'):
         if os.path.isdir(path):
             break
