@@ -7,9 +7,9 @@ Script for cron that submits actual statistical data
 
 import sys
 import os
+from pathlib import Path
 
-PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.dirname
-    (os.path.abspath(__file__))))
+PROJECT_DIR = Path(__file__).parents[2]
 
 if PROJECT_DIR not in sys.path:
     sys.path.append(PROJECT_DIR)

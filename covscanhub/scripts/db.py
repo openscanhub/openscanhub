@@ -8,6 +8,7 @@ import os
 import re
 import sys
 from optparse import OptionParser
+from pathlib import Path
 
 import six
 import six.moves.cPickle as pickle
@@ -23,12 +24,7 @@ from covscanhub.stats.models import StatType
 from covscanhub.stats.service import get_mapping
 from covscanhub.waiving.models import Checker, CheckerGroup
 
-PROJECT_DIR = os.path.dirname(
-    os.path.dirname(
-        os.path.dirname(os.path.abspath(__file__))
-    )
-)
-
+PROJECT_DIR = Path(__file__).parents[2]
 
 if PROJECT_DIR not in sys.path:
     sys.path.append(PROJECT_DIR)

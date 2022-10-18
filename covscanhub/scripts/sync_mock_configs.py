@@ -6,9 +6,9 @@ import os
 import re
 import sys
 from optparse import OptionParser
+from pathlib import Path
 
-PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.dirname
-                              (os.path.abspath(__file__))))
+PROJECT_DIR = Path(__file__).parents[2]
 
 if PROJECT_DIR not in sys.path:
     print('%s is not on sys.path' % PROJECT_DIR)
