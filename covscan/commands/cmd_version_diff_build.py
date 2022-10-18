@@ -32,7 +32,6 @@ class Version_Diff_Build(covscan.CovScanCommand):
         add_aggressive_option(self.parser)
         add_concurrency_option(self.parser)
         add_clang_option(self.parser)
-        add_no_cov_option(self.parser)
         add_comp_warnings_option(self.parser)
         add_analyzers_option(self.parser)
         add_profile_option(self.parser)
@@ -107,7 +106,6 @@ local file"
         security = kwargs.pop("security")
         concurrency = kwargs.pop("concurrency")
         clang = kwargs.pop('clang', False)
-        no_cov = kwargs.pop('no_cov', False)
         warn_level = kwargs.pop('warn_level', '0')
         analyzers = kwargs.pop('analyzers', '')
         profile = kwargs.pop('profile', None)
@@ -207,8 +205,6 @@ is not even one in your user configuration file \
             options_forwarded["cppcheck"] = cppcheck
         if clang:
             options_forwarded['clang'] = clang
-        if no_cov:
-            options_forwarded['no_coverity'] = no_cov
         if warn_level:
             options_forwarded['warning_level'] = warn_level
         if analyzers:

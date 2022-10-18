@@ -50,16 +50,6 @@ def add_clang_option(parser):
     )
 
 
-def add_no_cov_option(parser):
-    parser.add_option(
-        "-b",
-        "--no-cov",
-        default=False,
-        action="store_true",
-        help="DEPRECATED (use --analyzer to select analyzers)"
-    )
-
-
 def add_comp_warnings_option(parser):
     parser.add_option(
         "-w",
