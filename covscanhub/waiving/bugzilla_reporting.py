@@ -1,14 +1,15 @@
 # -*- coding: utf-8 -*-
 
 from __future__ import absolute_import
+
 import bugzilla
 import six.moves.xmlrpc_client
-
 from django.conf import settings
 from django.urls import reverse
+
 from covscanhub.other import get_or_none
 
-from .models import Waiver, WAIVER_TYPES, Bugzilla, ResultGroup
+from .models import WAIVER_TYPES, Bugzilla, ResultGroup, Waiver
 
 
 def has_bugzilla(package, release):

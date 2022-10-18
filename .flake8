@@ -1,6 +1,7 @@
 [flake8]
-ignore = E501
+ignore = E501, W503
 exclude = .git,__pycache__,docs
 max-complexity = 15
 per_file_ignores =
     covscan/commands/cmd_diff_build.py:C901
+    covscan/commands/cmd_version_diff_build.py:C901

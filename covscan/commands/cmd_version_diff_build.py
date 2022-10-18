@@ -1,18 +1,25 @@
 # -*- coding: utf-8 -*-
 
-from __future__ import print_function
-from __future__ import absolute_import
+from __future__ import absolute_import, print_function
 
-import os
+from kobo.shortcuts import random_string
+from six.moves.xmlrpc_client import Fault
 
 import covscan
-from kobo.shortcuts import random_string
-from .shortcuts import verify_brew_koji_build, verify_mock, upload_file, \
-    handle_perm_denied
-from .common import *
 from covscan.commands.analyzers import check_analyzers
 from covscancommon.utils.conf import get_conf
-from six.moves.xmlrpc_client import Fault
+
+from .common import (add_aggressive_option, add_all_option,
+                     add_analyzers_option, add_clang_option,
+                     add_comment_option, add_comp_warnings_option,
+                     add_concurrency_option, add_config_option,
+                     add_cppcheck_option, add_csmock_args_option,
+                     add_custom_model_option, add_email_to_option,
+                     add_keep_covdata_option, add_nowait_option,
+                     add_priority_option, add_profile_option,
+                     add_security_option, add_task_id_file_option)
+from .shortcuts import (handle_perm_denied, upload_file,
+                        verify_brew_koji_build, verify_mock)
 
 
 class Version_Diff_Build(covscan.CovScanCommand):
@@ -115,26 +122,26 @@ local file"
         if comment:
             options_consumed['comment'] = comment
 
-        #both bases are specified
+        # both bases are specified
         if base_brew_build and base_srpm:
             self.parser.error("Choose exactly one option (--base-brew-build, \
 --base-srpm), not both of them.")
 
-        #both nvr/targets are specified
+        # both nvr/targets are specified
         if brew_build and srpm:
             self.parser.error("Choose exactly one option (--nvr-brew-build, \
 --nvr-srpm), not both of them.")
 
-        #no package option specified
-        if (not base_brew_build and not brew_build and
-                not srpm and not base_srpm):
+        # no package option specified
+        if (not base_brew_build and not brew_build and not srpm and not
+                base_srpm):
             self.parser.error("Please specify both builds or SRPMs.")
 
-        #no base specified
+        # no base specified
         if not base_brew_build and not base_srpm:
             self.parser.error("You haven't specified base.")
 
-        #no nvr/target specified
+        # no nvr/target specified
         if not brew_build and not srpm:
             self.parser.error("You haven't specified target.")
 
@@ -165,8 +172,8 @@ a SRPM")
 is not even one in your user configuration file \
 (~/.config/covscan/covscan.conf) nor in system configuration file \
 (/etc/covscan/covscan.conf)")
-            print("Mock config for base not specified, using default one: %s" \
-                % base_config)
+            print("Mock config for base not specified, using default one: %s" %
+                  base_config)
 
         if not config:
             if base_config:
@@ -178,8 +185,8 @@ is not even one in your user configuration file \
 is not even one in your user configuration file \
 (~/.config/covscan/covscan.conf) nor in system configuration file \
 (/etc/covscan/covscan.conf)")
-            print("Mock config for target not specified, using default: %s" \
-                % config)
+            print("Mock config for target not specified, using default: %s" %
+                  config)
 
         # login to the hub
         self.set_hub(username, password)
@@ -242,8 +249,10 @@ is not even one in your user configuration file \
             options_consumed['csmock_args'] = csmock_args
         if cov_custom_model:
             target_dir = random_string(32)
-            upload_model_id, err_code, err_msg = upload_file(self.hub, cov_custom_model,
-                                                       target_dir, self.parser)
+            upload_model_id, err_code, err_msg = upload_file(self.hub,
+                                                             cov_custom_model,
+                                                             target_dir,
+                                                             self.parser)
             options_consumed["upload_model_id"] = upload_model_id
 
         task_id = self.submit_task(options_consumed, options_forwarded)

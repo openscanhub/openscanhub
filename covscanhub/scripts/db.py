@@ -57,6 +57,12 @@ def set_options():
 
 
 def set_checker_groups():
+    chgrp_file = open(os.path.join(settings.PROJECT_DIR,
+                                   'scripts',
+                                   'checker_groups.txt'), 'r')
+
+    lines = chgrp_file.readlines()
+
     checker_pattern = re.compile(r'\d+\s+(?P<checker>[\w\.]+)')
     separator_pattern = re.compile(r'\-+')
     ch_grp_pattern = re.compile(r'(?P<group>[\w\+ ]+)')
@@ -124,13 +130,13 @@ def release_tree():
     r = ReleaseMapping()
     r.template = "RHEL-%s.%s"
     r.priority = 1
-    r.release_tag = r'^RHEL-(\d+)\.(\d+)\.0$'
+    r.release_tag = r"^RHEL-(\d+)\.(\d+)\.0$"
     r.save()
 
     r = ReleaseMapping()
     r.template = "RHEL-%s.%s"
     r.priority = 2
-    r.release_tag = r'^FAST(\d+)\.(\d+)$'
+    r.release_tag = r"^FAST(\d+)\.(\d+)$"
     r.save()
 
     x_list = [5, 6, 7]

@@ -1,34 +1,25 @@
 # -*- coding: utf-8 -*-
 
 import logging
-
 import re
+
 from django.conf import settings
+from kobo.hub.models import TASK_STATES, Task
 
 from covscanhub.errata.check import check_nvr, check_package_eligibility
-from covscanhub.errata.utils import spawn_scan_task, _spawn_scan_task
-
-
-#from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
-
-from covscanhub.scan.models import Scan, SCAN_STATES, SCAN_TYPES, Package, \
-    ScanBinding, MockConfig, ReleaseMapping, ETMapping, \
-    SCAN_STATES_IN_PROGRESS, AppSettings, SCAN_TYPES_TARGET
-from covscanhub.scan.xmlrpc_helper import cancel_scan
-from covscanhub.other.shortcuts import check_brew_build, \
-    check_and_create_dirs
+from covscanhub.errata.utils import _spawn_scan_task, spawn_scan_task
 from covscanhub.other.exceptions import ScanException
-from covscanhub.scan.service import get_latest_sb_by_package, \
-    get_latest_binding
+from covscanhub.other.shortcuts import check_and_create_dirs, check_brew_build
+from covscanhub.scan.models import (SCAN_STATES, SCAN_STATES_IN_PROGRESS,
+                                    SCAN_TYPES, SCAN_TYPES_TARGET, AppSettings,
+                                    ETMapping, MockConfig, Package,
+                                    ReleaseMapping, Scan, ScanBinding)
+from covscanhub.scan.service import (get_latest_binding,
+                                     get_latest_sb_by_package)
+from covscanhub.scan.xmlrpc_helper import cancel_scan
 from covscanhub.service.processing import task_has_results
 
-from kobo.hub.models import Task, TASK_STATES
-
 logger = logging.getLogger(__name__)
-
-######
-# BASE
-######
 
 
 def create_errata_base_scan(d, parent_task_id):
@@ -85,9 +76,9 @@ def obtain_base(d, task_id):
     found = bool(binding)
     if found:
         actual_scanner = AppSettings.settings_actual_scanner()
-        if (binding.scan.state == SCAN_STATES['QUEUED'] or
-            binding.scan.state == SCAN_STATES['SCANNING']) and \
-                binding.result is None:
+        if ((binding.scan.state == SCAN_STATES['QUEUED']
+            or binding.scan.state == SCAN_STATES['SCANNING'])
+                and binding.result is None):
             return binding.scan
         elif binding.result is None:
             found = False
@@ -126,9 +117,9 @@ def assign_mock_config(dist_tag):
         fallback to rhel-6 -- there is at least some output
     """
     try:
-        release = re.match(".+\.el(\d)", dist_tag).group(1)
+        release = re.match(r".+\.el(\d)", dist_tag).group(1)
         mock = MockConfig.objects.get(name="rhel-%s-x86_64" % release)
-    except Exception as ex:
+    except Exception as ex:  # noqa: B902
         logger.error("Unable to find proper mock profile for dist_tag %s: %s"
                      % (dist_tag, ex))
         return MockConfig.objects.get(get="rhel-6-x86_64").name
@@ -209,12 +200,12 @@ def create_errata_scan(kwargs, etm):
                               created)
     d['package'] = package
 
-    ## one of RHEL-6.2.0, RHEL-6.2.z, etc.
-    #rhel_version = return_or_raise('rhel_version', kwargs)
+    # one of RHEL-6.2.0, RHEL-6.2.z, etc.
+    # rhel_version = return_or_raise('rhel_version', kwargs)
 
     options['brew_build'] = kwargs['target']
 
-    #Label, description or any reason for this task.
+    # Label, description or any reason for this task.
     d['task_label'] = kwargs['target']
 
     d.setdefault('priority', settings.ET_SCAN_PRIORITY)
@@ -275,9 +266,9 @@ def rescan(scan, user):
         raise ScanException("Latest run %d of %s haven't \
 failed. This is not supported." % (latest_binding.scan.id, scan.nvr))
 
-    #scan is base scan
+    # scan is base scan
     if latest_binding.scan.is_errata_base_scan():
-        #clone does not support cloning of child tasks only
+        # clone does not support cloning of child tasks only
         task_id = Task.create_task(
             owner_name=latest_binding.task.owner.username,
             label=latest_binding.task.label,

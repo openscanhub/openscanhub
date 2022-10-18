@@ -24,9 +24,8 @@ from covscan.commands.common import (add_aggressive_option, add_all_option,
                                      add_email_to_option,
                                      add_install_to_chroot_option,
                                      add_keep_covdata_option,
-                                     add_no_cov_option, add_nowait_option,
-                                     add_priority_option, add_profile_option,
-                                     add_security_option,
+                                     add_nowait_option, add_priority_option,
+                                     add_profile_option, add_security_option,
                                      add_task_id_file_option)
 from covscan.commands.shortcuts import (handle_perm_denied, upload_file,
                                         verify_brew_koji_build, verify_mock)
