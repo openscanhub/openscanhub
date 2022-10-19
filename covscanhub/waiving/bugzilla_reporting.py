@@ -81,7 +81,7 @@ def create_bugzilla(request, package, release):
         base = "NEW_PACKAGE"
 
     comment = """
-Coverity has found defect(s) in package %(package)s
+Csmock has found defect(s) in package %(package)s
 
 Package was scanned as differential scan:
 
@@ -91,7 +91,7 @@ Package was scanned as differential scan:
 %(groups)s
 == Notes ==
 If you have any questions, feel free to ask at Red Hat IRC channel \
-#coverity or coverity-users@redhat.com .
+#covscan.
 
 == Marked waivers ==
 """ % {
