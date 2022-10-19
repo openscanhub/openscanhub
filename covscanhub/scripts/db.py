@@ -177,7 +177,7 @@ def set_default_settings():
                    pickle.dumps(datetime.timedelta(days=-7)))
 
     db_set_default("ACTUAL_SCANNER",
-                   pickle.dumps(('coverity', '6.5.0')))
+                   pickle.dumps(('csmock', '3.3.4')))
 
     # release specific, structure: tuple('short_tag', timedelta)
     bindings = (

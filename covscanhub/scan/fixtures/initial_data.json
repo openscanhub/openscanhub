@@ -98,7 +98,7 @@
   "pk": 5,
   "model": "scan.appsettings",
   "fields": {
-    "value": "[\"coverity\", \"2021.9.0\"]",
+    "value": "[\"csmock\", \"3.3.4\"]",
     "key": "ACTUAL_SCANNER"
   }
 },

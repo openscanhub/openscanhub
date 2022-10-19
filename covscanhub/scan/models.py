@@ -1019,7 +1019,7 @@ class AppSettings(models.Model):
     WAIVER_IS_OVERDUE pickled datetime.delta
     WAIVER_IS_OVERDUE_RELSPEC release specific ^
 
-    ACTUAL_SCANNER tuple('coverity', '6.5.0')
+    ACTUAL_SCANNER tuple('csmock', '3.3.4')
 
     SCANNING_COMMAND_RELSPEC -- override of default
     """
