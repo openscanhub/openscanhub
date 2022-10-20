@@ -1,10 +1,13 @@
 # -*- coding: utf-8 -*-
 
 from __future__ import print_function
+
 import os
 import sys
-from kobo.worker import TaskBase
+
 import kobo.tback
+from kobo.worker import TaskBase
+
 from covscancommon.csmock_parser import CsmockRunner
 
 kobo.tback.set_except_hook()
@@ -42,7 +45,7 @@ class AnalyzerVersionRetriever(TaskBase):
 
             # upload results back to hub
             if not os.path.exists(path):
-                    print("Tarball with results does not exist: %s" % path, file=sys.stderr)
+                print("Tarball with results does not exist: %s" % path, file=sys.stderr)
             base_path = os.path.basename(path)
             with open(path, "rb") as f:
                 self.hub.upload_task_log(f, self.task_id, base_path)

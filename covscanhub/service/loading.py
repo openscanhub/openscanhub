@@ -4,13 +4,12 @@
 module for loading defects from JSON formatted files and making operations upon these data
 """
 
-import json
 import logging
 
 from kobo.hub.models import Task
+
 from covscancommon.csmock_parser import CsmockAPI
 from covscanhub.service.path import TaskResultPaths
-
 
 logger = logging.getLogger(__name__)
 

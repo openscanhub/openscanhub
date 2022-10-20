@@ -2,36 +2,39 @@
 # -*- coding: utf-8 -*-
 
 from __future__ import print_function
-import sys
+
+import datetime
 import os
 import re
-import six.moves.cPickle as pickle
-import datetime
+import sys
+from optparse import OptionParser
+
 import six
+import six.moves.cPickle as pickle
+from django.conf import settings
+from django.core.exceptions import ObjectDoesNotExist
+from kobo.hub.models import Arch, Channel
 from six.moves import range
 
+from covscancommon.constants import DEFAULT_CHECKER_GROUP
+from covscanhub.scan.models import (AppSettings, MockConfig, ReleaseMapping,
+                                    SystemRelease, Tag)
+from covscanhub.stats.models import StatType
+from covscanhub.stats.service import get_mapping
+from covscanhub.waiving.models import Checker, CheckerGroup
 
-PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.dirname
-    (os.path.abspath(__file__))))
+PROJECT_DIR = os.path.dirname(
+    os.path.dirname(
+        os.path.dirname(os.path.abspath(__file__))
+    )
+)
+
 
 if PROJECT_DIR not in sys.path:
     sys.path.append(PROJECT_DIR)
 
+
 os.environ['DJANGO_SETTINGS_MODULE'] = 'covscanhub.settings'
-
-from kobo.hub.models import Arch, Channel
-
-from covscancommon.constants import DEFAULT_CHECKER_GROUP
-from covscanhub.waiving.models import Checker, CheckerGroup
-from covscanhub.stats.models import StatType
-from covscanhub.scan.models import Tag, SystemRelease, MockConfig, \
-    ReleaseMapping, AppSettings
-from covscanhub.stats.service import get_mapping
-
-from django.core.exceptions import ObjectDoesNotExist
-from django.conf import settings
-
-from optparse import OptionParser
 
 
 def set_options():
@@ -58,9 +61,9 @@ def set_options():
 
 
 def set_checker_groups():
-    checker_pattern = re.compile('\d+\s+(?P<checker>[\w\.]+)')
-    separator_pattern = re.compile('\-+')
-    ch_grp_pattern = re.compile('(?P<group>[\w\+ ]+)')
+    checker_pattern = re.compile(r'\d+\s+(?P<checker>[\w\.]+)')
+    separator_pattern = re.compile(r'\-+')
+    ch_grp_pattern = re.compile(r'(?P<group>[\w\+ ]+)')
 
     data = {}
 
@@ -121,17 +124,17 @@ def download_mock_configs():
 
 
 def release_tree():
-    #release parsing
+    # release parsing
     r = ReleaseMapping()
     r.template = "RHEL-%s.%s"
     r.priority = 1
-    r.release_tag = "^RHEL-(\d+)\.(\d+)\.0$"
+    r.release_tag = r'^RHEL-(\d+)\.(\d+)\.0$'
     r.save()
 
     r = ReleaseMapping()
     r.template = "RHEL-%s.%s"
     r.priority = 2
-    r.release_tag = "^FAST(\d+)\.(\d+)$"
+    r.release_tag = r'^FAST(\d+)\.(\d+)$'
     r.save()
 
     x_list = [5, 6, 7]
@@ -210,7 +213,7 @@ def set_statistics():
         try:
             s = StatType.objects.get(key=desc[0])
         except ObjectDoesNotExist:
-            #tag, short_comment, comment, group, order
+            # tag, short_comment, comment, group, order
             s, created = StatType.objects.get_or_create(
                 key=desc[0], short_comment=desc[1], comment=desc[2],
                 group=desc[3], order=desc[4], is_release_specific=(
@@ -238,6 +241,7 @@ couple of seconds, please be patient.')
         set_default_settings()
     if options.mock:
         download_mock_configs()
+
 
 if __name__ == '__main__':
     main()

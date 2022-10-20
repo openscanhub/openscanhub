@@ -6,11 +6,11 @@ Created on Mon Aug 20 10:36:56 2012
 @author: Tomas Tomecek <ttomecek@redhat.com>
 """
 
-import sys
 import datetime
-import kobo.process
+import sys
 
-from qpid.messaging import Connection, MessagingError, Empty
+import kobo.process
+from qpid.messaging import Connection, exceptions
 from qpid.util import URL
 
 
@@ -37,17 +37,16 @@ def daemon_main():
             receiver = session.receiver(receiver_address)
 
             while True:
-                #message = receiver.fetch(timeout=1)
+                # message = receiver.fetch(timeout=1)
                 message = receiver.fetch()
                 if message:
                     output.write('%s Accepted message %s [%s]\n' % (
                         datetime.datetime.now(), message.subject, message.content))
                 session.acknowledge()
 
-        except MessagingError as m:
-            output.write("\n%s\n" % repr(m))
-        except Exception as e:
-            output.write("\n%s\n" % repr(e))
+        except (exceptions.ConnectionError, exceptions.SessionError,
+                exceptions.TransactionError, exceptions.MessagingError) as e:
+            output.write(f"\n{repr(e)}\n")
         finally:
             connection.close()
         output.write("Exiting.\n")

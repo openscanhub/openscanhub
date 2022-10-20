@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
 
 from __future__ import print_function
+
 import os
 import sys
-import six.moves.urllib.parse
 
+import six.moves.urllib.parse
 from kobo.worker import TaskBase
+
 from covscancommon.csmock_parser import CsmockRunner
 
 

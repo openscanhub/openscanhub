@@ -7,9 +7,9 @@ from __future__ import absolute_import
 
 import os
 import sys
-from six.moves.configparser import SafeConfigParser
 
 import kobo.conf
+from six.moves.configparser import SafeConfigParser
 
 CONFIG_FILE_NAME = 'covscan.conf'
 CONFIG_PATH_PREFIX = '.config/covscan'

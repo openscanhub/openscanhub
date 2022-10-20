@@ -6,27 +6,21 @@
 """
 
 from __future__ import absolute_import
-import os
-import re
-import logging
-import datetime
-import tempfile
-import shutil
-import pipes
-import pycsdiff
 
 import json
+import logging
+import os
+import pipes
+import shutil
+import tempfile
+
+import pycsdiff
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Sum
-
-from covscancommon.constants import ERROR_DIFF_FILE, FIXED_DIFF_FILE,\
-    DEFAULT_CHECKER_GROUP, SCAN_RESULTS_FILENAME
-from .models import DEFECT_STATES, RESULT_GROUP_STATES, Defect, Result, \
-    Checker, CheckerGroup, Waiver, ResultGroup, WaivingLog
-
-from kobo.hub.models import Task
 from kobo.shortcuts import run
 
+from .models import (DEFECT_STATES, RESULT_GROUP_STATES, Defect, ResultGroup,
+                     Waiver, WaivingLog)
 
 logger = logging.getLogger(__name__)
 
@@ -65,7 +59,7 @@ def find_processed_in_past(result):
                 rg.defect_type = DEFECT_STATES['PREVIOUSLY_WAIVED']
                 rg.save()
 
-                #also changes states for defects
+                # also changes states for defects
                 for d in Defect.objects.filter(result_group=rg):
                     d.state = DEFECT_STATES['PREVIOUSLY_WAIVED']
                     d.save()
@@ -77,7 +71,7 @@ def get_unwaived_rgs(result):
         for specific Result
     """
     return ResultGroup.objects.filter(result=result,
-        state=RESULT_GROUP_STATES['NEEDS_INSPECTION'])
+                                      state=RESULT_GROUP_STATES['NEEDS_INSPECTION'])
 
 
 def assign_if_true(d, key, value):
@@ -174,13 +168,10 @@ def get_last_waiver(checker_group, package, release, exclude=None):
         # return all RGs newer that latest_waiver's run, if these are changed
         # it means that last waiver is not valid
         rgs = ResultGroup.objects.filter(
-            result__date_submitted__gt=
-                latest_waiver.result_group.result.date_submitted,
+            result__date_submitted__gt=latest_waiver.result_group.result.date_submitted,
             checker_group=latest_waiver.result_group.checker_group,
-            result__scanbinding__scan__package=
-                latest_waiver.result_group.result.scanbinding.scan.package,
-            result__scanbinding__scan__tag__release=
-                latest_waiver.result_group.result.scanbinding.scan.tag.release,
+            result__scanbinding__scan__package=latest_waiver.result_group.result.scanbinding.scan.package,
+            result__scanbinding__scan__tag__release=latest_waiver.result_group.result.scanbinding.scan.tag.release,
         ).exclude(id=exclude).values_list('state', flat=True).distinct()
         if RESULT_GROUP_STATES['NEEDS_INSPECTION'] in rgs:
             return None
@@ -243,10 +234,10 @@ def get_defects_diff_display(response=None, checker_group=None,
     if response is None:
         response = {}
     defects_diff = 0
-    #defects_diff = get_defects_diff(checker_group=checker_group,
-    #                                result=result,
-    #                                defect_type=defect_type,
-    #                                rg=rg)
+    # defects_diff = get_defects_diff(checker_group=checker_group,
+    #                                 result=result,
+    #                                 defect_type=defect_type,
+    #                                 rg=rg)
     if defects_diff:  # not None & != 0
         if defect_type == DEFECT_STATES['NEW']:
             if defects_diff > 0:
@@ -331,26 +322,3 @@ def apply_waiver(rg, sb, waiver):
 
         if not get_unwaived_rgs(sb.result):
             sb.scan.finalize()
-
-"""
-def waiver_condition(result_group):
-    \"\"\"
-    Function that contains condition for successfull waive -- there has to
-    exist waiver from user who is in group 'qa' and 'devel'
-
-    @param waivers_list: list of Waiver objects
-    @type waivers_list: list
-
-    @rtype: bool
-    @return: True if condition holds and group is waived False otherwise
-    \"\"\"
-    #this should be in settings probably -- group names that users have to be
-    #in to successfully waive
-    required_groups = [u'qa', u'devel']
-    ack_missing_from = set(required_groups)
-    for waiver in result_group.get_waivers():
-        ack_missing_from = ack_missing_from.difference(
-            *waiver.user.groups.all().values_list('name')
-        )
-    return not bool(ack_missing_from)
-"""
