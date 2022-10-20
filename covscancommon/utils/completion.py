@@ -34,9 +34,9 @@ def write_configs():
     write configs which were retieved from hub to pickle can
     """
     can_path = get_can_path()
-    fd = open(can_path, 'w')
-    configs = get_configs_from_hub()
-    pickle.dump(configs, fd)
+    with open(can_path, 'w') as fd:
+        configs = get_configs_from_hub()
+        pickle.dump(configs, fd)
     return configs
 
 
@@ -45,17 +45,16 @@ def list_enabled_mock_configs():
     this function should be called from outside world
     """
     try:
-        can = open(get_can_path(), 'r')
+        with open(get_can_path(), 'r') as can:
+            can_time = datetime.datetime.fromtimestamp(
+                os.path.getmtime(get_can_path()))
+
+            if can_time + datetime.timedelta(minutes=5) > datetime.datetime.now():
+                enabled_configs = pickle.load(can)
+            else:
+                enabled_configs = write_configs()
     except IOError:
         enabled_configs = write_configs()
-    else:
-        can_time = datetime.datetime.fromtimestamp(
-            os.path.getmtime(get_can_path()))
-
-        if can_time + datetime.timedelta(minutes=5) > datetime.datetime.now():
-            enabled_configs = pickle.load(can)
-        else:
-            enabled_configs = write_configs()
     for emc in enabled_configs:
         print(emc['name'])
 

@@ -79,9 +79,8 @@ class Conf(object):
             config.set('CIM', 'port', '')
             config.set('CIM', 'stream', '')
 
-            f = open(config_path, 'w')
-            config.write(f)
-            f.close()
+            with open(config_path, 'w') as f:
+                config.write(f)
 
         return config_path
 

@@ -118,12 +118,10 @@ def compare_result_groups_shell(rg1, rg2):
     os.chmod(tmp_dir, 0o775)
     fd1, filename1 = tempfile.mkstemp(prefix='rg1', text=True, dir=tmp_dir)
     fd2, filename2 = tempfile.mkstemp(prefix='rg2', text=True, dir=tmp_dir)
-    file1 = os.fdopen(fd1, 'w')
-    json.dump(dict1, file1)
-    file1.close()
-    file2 = os.fdopen(fd2, 'w')
-    json.dump(dict2, file2)
-    file2.close()
+    with os.fdopen(fd1, 'w') as file1:
+        json.dump(dict1, file1)
+    with os.fdopen(fd2, 'w') as file2:
+        json.dump(dict2, file2)
 
     diff_cmd = ' '.join(['csdiff', '-j',
                          pipes.quote(os.path.join(tmp_dir, filename1)),

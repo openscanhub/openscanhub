@@ -15,42 +15,42 @@ from qpid.util import URL
 
 
 def daemon_main():
-    output = open("/var/tmp/qpid_listener.log", "a+")
-    output.write("Daemon started.\n")
     key = 'covscan.scan.#'
     BROKER = "qpid-stage.app.eng.bos.redhat.com"
     mechanism = "GSSAPI"
     url = URL(BROKER)
-    connection = Connection(url=url, sasl_mechanisms=mechanism)
-    try:
-        connection.open()
-        session = connection.session()
+    with open("/var/tmp/qpid_listener.log", "a+") as output:
+        output.write("Daemon started.\n")
+        connection = Connection(url=url, sasl_mechanisms=mechanism)
+        try:
+            connection.open()
+            session = connection.session()
 
-        receiver_address = """tmp.covscan_rec_queue; { create: receiver,
-                                               node: { type: queue, durable: False,
-                                                       x-declare: { exclusive: False,
-                                                                    auto-delete: True,
-                                                                    arguments: {'qpid.policy_type': ring,
-                                                                                'qpid.max_size': 50000000}},
-                                                       x-bindings: [{exchange:'eso.topic', queue:'tmp.covscan_rec_queue', key:'%s'}] }}""" % key
+            receiver_address = """tmp.covscan_rec_queue; { create: receiver,
+                                                   node: { type: queue, durable: False,
+                                                           x-declare: { exclusive: False,
+                                                                        auto-delete: True,
+                                                                        arguments: {'qpid.policy_type': ring,
+                                                                                    'qpid.max_size': 50000000}},
+                                                           x-bindings: [{exchange:'eso.topic', queue:'tmp.covscan_rec_queue', key:'%s'}] }}""" % key
 
-        receiver = session.receiver(receiver_address)
+            receiver = session.receiver(receiver_address)
 
-        while True:
-            #message = receiver.fetch(timeout=1)
-            message = receiver.fetch()
-            if message:
-                output.write('%s Accepted message %s [%s]\n' % (
-                    datetime.datetime.now(), message.subject, message.content))
-            session.acknowledge()
+            while True:
+                #message = receiver.fetch(timeout=1)
+                message = receiver.fetch()
+                if message:
+                    output.write('%s Accepted message %s [%s]\n' % (
+                        datetime.datetime.now(), message.subject, message.content))
+                session.acknowledge()
 
-    except MessagingError as m:
-        output.write("\n%s\n" % repr(m))
-    except Exception as e:
-        output.write("\n%s\n" % repr(e))
-    finally:
-        connection.close()
-    output.write("Exiting.\n")
+        except MessagingError as m:
+            output.write("\n%s\n" % repr(m))
+        except Exception as e:
+            output.write("\n%s\n" % repr(e))
+        finally:
+            connection.close()
+        output.write("Exiting.\n")
     sys.exit(0)
 
 

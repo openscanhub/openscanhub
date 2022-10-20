@@ -78,8 +78,8 @@ class VersionDiffBuild(TaskBase):
                 print("No results available", file=sys.stderr)
                 self.fail()
             base_results = os.path.basename(results)
-            self.hub.upload_task_log(open(results, "rb"),
-                                     self.task_id, base_results)
+            with open(results, "rb") as f:
+                self.hub.upload_task_log(f, self.task_id, base_results)
         self.hub.worker.finish_task(self.task_id)
         if retcode > 0:
             print("Scanning have not completed successfully (%d)" % retcode, file=sys.stderr)

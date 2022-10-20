@@ -58,12 +58,6 @@ def set_options():
 
 
 def set_checker_groups():
-    chgrp_file = open(os.path.join(settings.PROJECT_DIR,
-                                   'scripts',
-                                   'checker_groups.txt'), 'r')
-
-    lines = chgrp_file.readlines()
-
     checker_pattern = re.compile('\d+\s+(?P<checker>[\w\.]+)')
     separator_pattern = re.compile('\-+')
     ch_grp_pattern = re.compile('(?P<group>[\w\+ ]+)')
@@ -72,14 +66,18 @@ def set_checker_groups():
 
     ch_grp = None
 
+    with open(os.path.join(settings.PROJECT_DIR,
+                           'scripts',
+                           'checker_groups.txt'), 'r') as chgrp_file:
+        lines = chgrp_file.readlines()
     for line in lines:
         if line == '\n':
             continue
         match = re.match(checker_pattern, line)
         if match:
             if ch_grp is None:
-                raise RuntimeError('Detected checker before any checker group\
-, invalid file.')
+                raise RuntimeError(('Detected checker before any checker'
+                                    'group, invalid file.'))
             else:
                 data[ch_grp].append(match.group('checker'))
         else:
@@ -90,9 +88,8 @@ def set_checker_groups():
             else:
                 match = re.match(separator_pattern, line)
                 if not match:
-                    raise RuntimeError("Line wasn't matched. You have \
-provided invalid file.")
-    chgrp_file.close()
+                    raise RuntimeError(('Line wasn\'t matched. You have'
+                                        'provided an invalid file.'))
     CheckerGroup.objects.get_or_create(name=DEFAULT_CHECKER_GROUP)
     for group, checkers in six.iteritems(data):
         ch, created = CheckerGroup.objects.get_or_create(name=group,

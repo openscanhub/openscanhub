@@ -17,12 +17,11 @@ logger = logging.getLogger(__name__)
 
 def load_file_content(file_path):
     try:
-        fd = open(file_path, 'r')
+        with open(file_path, 'r') as fd:
+            content = fd.read()
     except IOError:
         logger.critical('Unable to open file %s', file_path)
         return
-    content = fd.read()
-    fd.close()
     return content
 
 
