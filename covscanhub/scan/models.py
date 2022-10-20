@@ -1021,11 +1021,6 @@ class AppSettings(models.Model):
 
     ACTUAL_SCANNER tuple('coverity', '6.5.0')
 
-    DEFAULT_SCANNING_COMMAND -- command for running analysis
-     * this string should accept these dynamic variables:
-      * srpm_path -- absolute path to SRPM
-      * tmp_dir -- temporary created dir
-      * mock_profile -- mock profile used for analysis
     SCANNING_COMMAND_RELSPEC -- override of default
     """
     key = models.CharField(max_length=128, blank=False, null=False)

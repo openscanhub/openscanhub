@@ -111,14 +111,6 @@
   }
 },
 {
-  "pk": 7,
-  "model": "scan.appsettings",
-  "fields": {
-    "value": "su - coverity -c 'cd %(tmp_dir)s ; cov-mockbuild -c -l %(mock_profile)s %(srpm_path)s --security --concurrency'",
-    "key": "DEFAULT_SCANNING_COMMAND"
-  }
-},
-{
   "pk": 11,
   "model": "scan.appsettings",
   "fields": {
