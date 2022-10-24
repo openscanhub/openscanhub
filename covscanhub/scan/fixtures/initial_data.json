@@ -21,13 +21,6 @@
   }
 },
 {
-  "pk": 4,
-  "model": "scan.analyzer",
-  "fields": {
-    "name": "coverity"
-  }
-},
-{
   "pk": 5,
   "model": "scan.analyzer",
   "fields": {
@@ -158,19 +151,6 @@
   }
 },
 {
-  "pk": 1,
-  "model": "scan.clientanalyzer",
-  "fields": {
-    "build_append_args": "--cov-use-version cov-sa-6.6",
-    "cli_short_command": "",
-    "enabled": false,
-    "analyzer": 4,
-    "build_append": "coverity",
-    "version": "6.6.2",
-    "cli_long_command": "cov-6.6"
-  }
-},
-{
   "pk": 2,
   "model": "scan.clientanalyzer",
   "fields": {
@@ -181,19 +161,6 @@
     "build_append": "clang",
     "version": "dist",
     "cli_long_command": "clang"
-  }
-},
-{
-  "pk": 3,
-  "model": "scan.clientanalyzer",
-  "fields": {
-    "build_append_args": null,
-    "cli_short_command": "",
-    "enabled": false,
-    "analyzer": null,
-    "build_append": "",
-    "version": "6.5.3",
-    "cli_long_command": "cov-6.5.3"
   }
 },
 {
@@ -210,32 +177,6 @@
   }
 },
 {
-  "pk": 5,
-  "model": "scan.clientanalyzer",
-  "fields": {
-    "build_append_args": "--cov-use-version cov-sa-7.0",
-    "cli_short_command": "",
-    "enabled": false,
-    "analyzer": 4,
-    "build_append": "coverity",
-    "version": "7.0.3",
-    "cli_long_command": "cov-7.0"
-  }
-},
-{
-  "pk": 6,
-  "model": "scan.clientanalyzer",
-  "fields": {
-    "build_append_args": "--cov-use-version cov-sa-7.5",
-    "cli_short_command": "",
-    "enabled": false,
-    "analyzer": 4,
-    "build_append": "coverity",
-    "version": "7.5.1",
-    "cli_long_command": "cov-7.5"
-  }
-},
-{
   "pk": 8,
   "model": "scan.clientanalyzer",
   "fields": {
@@ -246,19 +187,6 @@
     "build_append": "gcc",
     "version": "dist",
     "cli_long_command": "gcc"
-  }
-},
-{
-  "pk": 9,
-  "model": "scan.clientanalyzer",
-  "fields": {
-    "build_append_args": "--cov-use-version cov-sa-7.6",
-    "cli_short_command": "",
-    "enabled": false,
-    "analyzer": 4,
-    "build_append": "coverity",
-    "version": "7.6.1",
-    "cli_long_command": "cov-7.6"
   }
 },
 {
@@ -301,136 +229,6 @@
   }
 },
 {
-  "pk": 13,
-  "model": "scan.clientanalyzer",
-  "fields": {
-    "build_append_args": "--cov-use-version cov-sa-7.7",
-    "cli_short_command": "",
-    "enabled": false,
-    "analyzer": 4,
-    "build_append": "coverity",
-    "version": "7.7.0",
-    "cli_long_command": "cov-7.7"
-  }
-},
-{
-  "pk": 14,
-  "model": "scan.clientanalyzer",
-  "fields": {
-    "build_append_args": "--cov-use-version cov-sa-8.0",
-    "cli_short_command": "",
-    "enabled": false,
-    "analyzer": 4,
-    "build_append": "coverity",
-    "version": "8.0.0",
-    "cli_long_command": "cov-8.0"
-  }
-},
-{
-  "pk": 15,
-  "model": "scan.clientanalyzer",
-  "fields": {
-    "build_append_args": "--cov-use-version cov-sa-8.1",
-    "cli_short_command": "",
-    "enabled": false,
-    "analyzer": 4,
-    "build_append": "coverity",
-    "version": "8.1.0",
-    "cli_long_command": "cov-8.1"
-  }
-},
-{
-  "pk": 16,
-  "model": "scan.clientanalyzer",
-  "fields": {
-    "build_append_args": "--cov-use-version cov-sa-8.5",
-    "cli_short_command": "",
-    "enabled": false,
-    "analyzer": 4,
-    "build_append": "coverity",
-    "version": "8.5.0",
-    "cli_long_command": "cov-8.5"
-  }
-},
-{
-  "pk": 17,
-  "model": "scan.clientanalyzer",
-  "fields": {
-    "build_append_args": "--cov-use-version cov-sa-8.6",
-    "cli_short_command": "",
-    "enabled": false,
-    "analyzer": 4,
-    "build_append": "coverity",
-    "version": "8.6.0",
-    "cli_long_command": "cov-8.6"
-  }
-},
-{
-  "pk": 18,
-  "model": "scan.clientanalyzer",
-  "fields": {
-    "build_append_args": "--cov-use-version cov-sa-8.7",
-    "cli_short_command": "",
-    "enabled": false,
-    "analyzer": 4,
-    "build_append": "coverity",
-    "version": "8.7.0",
-    "cli_long_command": "cov-8.7"
-  }
-},
-{
-  "pk": 19,
-  "model": "scan.clientanalyzer",
-  "fields": {
-    "build_append_args": "--cov-use-version cov-sa-2017.07",
-    "cli_short_command": "",
-    "enabled": false,
-    "analyzer": 4,
-    "build_append": "coverity",
-    "version": "2017.07",
-    "cli_long_command": "cov-2017.07"
-  }
-},
-{
-  "pk": 20,
-  "model": "scan.clientanalyzer",
-  "fields": {
-    "build_append_args": "--cov-use-version cov-sa-2018.01",
-    "cli_short_command": "",
-    "enabled": false,
-    "analyzer": 4,
-    "build_append": "coverity",
-    "version": "2018.01",
-    "cli_long_command": "cov-2018.01"
-  }
-},
-{
-  "pk": 21,
-  "model": "scan.clientanalyzer",
-  "fields": {
-    "build_append_args": "--cov-use-version cov-sa-2018.03",
-    "cli_short_command": "",
-    "enabled": false,
-    "analyzer": 4,
-    "build_append": "coverity",
-    "version": "2018.03",
-    "cli_long_command": "cov-2018.03"
-  }
-},
-{
-  "pk": 22,
-  "model": "scan.clientanalyzer",
-  "fields": {
-    "build_append_args": "--cov-use-version cov-sa-2018.06",
-    "cli_short_command": "",
-    "enabled": false,
-    "analyzer": 4,
-    "build_append": "coverity",
-    "version": "2018.06",
-    "cli_long_command": "cov-2018.06"
-  }
-},
-{
   "pk": 23,
   "model": "scan.clientanalyzer",
   "fields": {
@@ -444,136 +242,6 @@
   }
 },
 {
-  "pk": 24,
-  "model": "scan.clientanalyzer",
-  "fields": {
-    "build_append_args": "--cov-use-version cov-sa-2018.09",
-    "cli_short_command": "",
-    "enabled": false,
-    "analyzer": 4,
-    "build_append": "coverity",
-    "version": "2018.09",
-    "cli_long_command": "cov-2018.09"
-  }
-},
-{
-  "pk": 25,
-  "model": "scan.clientanalyzer",
-  "fields": {
-    "build_append_args": "--cov-use-instance /opt/cov-sa-2018.12",
-    "cli_short_command": "",
-    "enabled": false,
-    "analyzer": 4,
-    "build_append": "coverity",
-    "version": "2018.12",
-    "cli_long_command": "cov-2018.12"
-  }
-},
-{
-  "pk": 26,
-  "model": "scan.clientanalyzer",
-  "fields": {
-    "build_append_args": "--cov-use-version cov-sa-2019.03",
-    "cli_short_command": "",
-    "enabled": false,
-    "analyzer": 4,
-    "build_append": "coverity",
-    "version": "2019.03",
-    "cli_long_command": "cov-2019.03"
-  }
-},
-{
-  "pk": 27,
-  "model": "scan.clientanalyzer",
-  "fields": {
-    "build_append_args": "--cov-use-version cov-sa-2019.06",
-    "cli_short_command": "",
-    "enabled": false,
-    "analyzer": 4,
-    "build_append": "coverity",
-    "version": "2019.06",
-    "cli_long_command": "cov-2019.06"
-  }
-},
-{
-  "pk": 28,
-  "model": "scan.clientanalyzer",
-  "fields": {
-    "build_append_args": "--cov-use-version cov-sa-2019.09",
-    "cli_short_command": "",
-    "enabled": false,
-    "analyzer": 4,
-    "build_append": "coverity",
-    "version": "2019.09",
-    "cli_long_command": "cov-2019.09"
-  }
-},
-{
-  "pk": 29,
-  "model": "scan.clientanalyzer",
-  "fields": {
-    "build_append_args": "--cov-use-instance /opt/cov-sa-2019.12",
-    "cli_short_command": "",
-    "enabled": false,
-    "analyzer": 4,
-    "build_append": "coverity",
-    "version": "2019.12",
-    "cli_long_command": "cov-2019.12"
-  }
-},
-{
-  "pk": 30,
-  "model": "scan.clientanalyzer",
-  "fields": {
-    "build_append_args": "--cov-use-instance /opt/cov-sa-2020.03",
-    "cli_short_command": "",
-    "enabled": false,
-    "analyzer": 4,
-    "build_append": "coverity",
-    "version": "2020.03",
-    "cli_long_command": "cov-2020.03"
-  }
-},
-{
-  "pk": 31,
-  "model": "scan.clientanalyzer",
-  "fields": {
-    "build_append_args": "--cov-use-instance /opt/cov-sa-2020.06",
-    "cli_short_command": "",
-    "enabled": false,
-    "analyzer": 4,
-    "build_append": "coverity",
-    "version": "2020.06",
-    "cli_long_command": "cov-2020.06"
-  }
-},
-{
-  "pk": 32,
-  "model": "scan.clientanalyzer",
-  "fields": {
-    "build_append_args": "--cov-use-instance /opt/cov-sa-2020.09",
-    "cli_short_command": "",
-    "enabled": false,
-    "analyzer": 4,
-    "build_append": "coverity",
-    "version": "2020.09",
-    "cli_long_command": "cov-2020.09"
-  }
-},
-{
-  "pk": 33,
-  "model": "scan.clientanalyzer",
-  "fields": {
-    "build_append_args": "--cov-use-instance /opt/cov-sa-2020.12",
-    "cli_short_command": "",
-    "enabled": true,
-    "analyzer": 4,
-    "build_append": "coverity",
-    "version": "2020.12",
-    "cli_long_command": "cov-2020.12"
-  }
-},
-{
   "pk": 34,
   "model": "scan.clientanalyzer",
   "fields": {
@@ -584,45 +252,6 @@
     "build_append": "valgrind",
     "version": "dist",
     "cli_long_command": "valgrind"
-  }
-},
-{
-  "pk": 35,
-  "model": "scan.clientanalyzer",
-  "fields": {
-    "build_append_args": "--cov-use-instance /opt/cov-sa-2021.03",
-    "cli_short_command": "",
-    "enabled": false,
-    "analyzer": 4,
-    "build_append": "coverity",
-    "version": "2021.03",
-    "cli_long_command": "cov-2021.03"
-  }
-},
-{
-  "pk": 36,
-  "model": "scan.clientanalyzer",
-  "fields": {
-    "build_append_args": "--cov-use-instance /opt/cov-sa-2021.06",
-    "cli_short_command": "",
-    "enabled": true,
-    "analyzer": 4,
-    "build_append": "coverity",
-    "version": "2021.06",
-    "cli_long_command": "cov-2021.06"
-  }
-},
-{
-  "pk": 37,
-  "model": "scan.clientanalyzer",
-  "fields": {
-    "build_append_args": "--cov-use-instance /opt/cov-sa-2021.09",
-    "cli_short_command": "",
-    "enabled": true,
-    "analyzer": 4,
-    "build_append": "coverity",
-    "version": "2021.9.0",
-    "cli_long_command": "cov-2021.9.0"
   }
 },
 {
@@ -1603,7 +1232,7 @@
   "pk": 4,
   "model": "scan.profile",
   "fields": {
-    "command_arguments": "{\"analyzers\": \"gcc,clang,cppcheck,coverity,shellcheck,pylint\", \"csmock_args\": \"--gcc-analyze\"}",
+    "command_arguments": "{\"analyzers\": \"gcc,clang,cppcheck,shellcheck,pylint\", \"csmock_args\": \"--gcc-analyze\"}",
     "enabled": false,
     "name": "multi",
     "description": "profile with all analyzers enabled"
@@ -1613,17 +1242,17 @@
   "pk": 5,
   "model": "scan.profile",
   "fields": {
-    "command_arguments": "{\"analyzers\": \"gcc,coverity\", \"koji_bin\": \"brew\", \"csmock_args\": \"--cov-use-instance /opt/cov-sa-2021.09\"}",
+    "command_arguments": "{\"analyzers\": \"gcc\", \"koji_bin\": \"brew\"}",
     "enabled": true,
     "name": "cov-unstable",
-    "description": "experimental profile using the latest release of Coverity Analysis"
+    "description": "experimental profile using the latest release of csmock"
   }
 },
 {
   "pk": 6,
   "model": "scan.profile",
   "fields": {
-    "command_arguments": "{\"analyzers\": \"gcc,clang,cppcheck,coverity\", \"koji_bin\": \"brew\", \"csmock_args\": \"--cov-analyze-java --use-host-cppcheck\"}",
+    "command_arguments": "{\"analyzers\": \"gcc,clang,cppcheck\", \"koji_bin\": \"brew\", \"csmock_args\": \"--cov-analyze-java --use-host-cppcheck\"}",
     "enabled": false,
     "name": "errata-el5",
     "description": "errata profile without ShellCheck, which is currently not available on el5"
@@ -1633,7 +1262,7 @@
   "pk": 7,
   "model": "scan.profile",
   "fields": {
-    "command_arguments": "{\"analyzers\": \"gcc,cppcheck,coverity\", \"koji_bin\": \"brew\", \"csmock_args\": \"--cov-analyze-java --use-host-cppcheck\"}",
+    "command_arguments": "{\"analyzers\": \"gcc,cppcheck\", \"koji_bin\": \"brew\", \"csmock_args\": \"--cov-analyze-java --use-host-cppcheck\"}",
     "enabled": false,
     "name": "errata-el8",
     "description": "errata profile without Clang, which is currently not available on el8"
@@ -1723,7 +1352,7 @@
   "pk": 16,
   "model": "scan.profile",
   "fields": {
-    "command_arguments": "{\"analyzers\": \"gcc,clang,cppcheck,coverity,shellcheck,unicontrol\", \"koji_bin\": \"brew\", \"csmock_args\": \"--use-host-cppcheck --gcc-analyze --unicontrol-notests --unicontrol-bidi-only\"}",
+    "command_arguments": "{\"analyzers\": \"gcc,clang,cppcheck,shellcheck,unicontrol\", \"koji_bin\": \"brew\", \"csmock_args\": \"--use-host-cppcheck --gcc-analyze --unicontrol-notests --unicontrol-bidi-only\"}",
     "enabled": true,
     "name": "mass-scan-el9",
     "description": "profile for RHEL-9 mass scan (currently same as the default profile)"
@@ -1743,40 +1372,10 @@
   "pk": 19,
   "model": "scan.profile",
   "fields": {
-    "command_arguments": "{\"analyzers\": \"gcc,clang,cppcheck,coverity,shellcheck\", \"koji_bin\": \"brew\", \"csmock_args\": \"--use-host-cppcheck --gcc-analyze --rpm-build-opts='--define \\\\\\\"_target_cpu s390x\\\\\\\"' --keep-going\"}",
+    "command_arguments": "{\"analyzers\": \"gcc,clang,cppcheck,shellcheck\", \"koji_bin\": \"brew\", \"csmock_args\": \"--use-host-cppcheck --gcc-analyze --rpm-build-opts='--define \\\\\\\"_target_cpu s390x\\\\\\\"' --keep-going\"}",
     "enabled": false,
     "name": "s390x-hack",
     "description": "profile for emergency scanning of s390x packages in x86_64 buildroot"
-  }
-},
-{
-  "pk": 20,
-  "model": "scan.profile",
-  "fields": {
-    "command_arguments": "{\"analyzers\": \"gcc,coverity\", \"koji_bin\": \"brew\", \"csmock_args\": \"--cov-use-instance /opt/cov-sa-2021.06  --cov-misra-config c2012_1 --cov-misra-config cpp2008_1\"}",
-    "enabled": false,
-    "name": "cov-misra",
-    "description": "experimental profile with the default set of latest MISRA checkers for C/C++ enabled"
-  }
-},
-{
-  "pk": 21,
-  "model": "scan.profile",
-  "fields": {
-    "command_arguments": "{\"analyzers\": \"gcc,coverity\", \"koji_bin\": \"brew\", \"csmock_args\": \"--cov-use-instance /opt/cov-sa-2021.06 --cov-misra-config c2012_1\"}",
-    "enabled": false,
-    "name": "cov-misra-c",
-    "description": "experimental profile with the c2012_1 set of MISRA checkers for C enabled"
-  }
-},
-{
-  "pk": 22,
-  "model": "scan.profile",
-  "fields": {
-    "command_arguments": "{\"analyzers\": \"gcc,coverity\", \"koji_bin\": \"brew\", \"csmock_args\": \"--cov-use-instance /opt/cov-sa-2021.06 --cov-misra-config cpp2008_1\"}",
-    "enabled": false,
-    "name": "cov-misra-cxx",
-    "description": "experimental profile with the cpp2008_1 set of MISRA checkers for C++ enabled"
   }
 },
 {
