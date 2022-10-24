@@ -9,17 +9,28 @@ check_host_os() {
 
 check_host_os
 
+#This function checks container status
+#
+# @param $1 container name (e.g. hub, worker, client)
+#
+# Returns:
+# 0 if container is running, 1 if it isn't started in 60s
 wait_for_container() {
-  filename="/$1_IS_READY"
+  filename="$(echo "$1" | tr '[:lower:]' '[:upper:]')"
+  filename+="_IS_READY"
+
+  containername="osh-"
+  containername+="$(echo "$1" | tr '[:upper:]' '[:lower:]')"
+
   for _ in $(seq 60); do
-    podman exec -i osh-hub bash -c "[[ -f $filename ]]"
+    podman exec -i "$containername" bash -c "[[ -f /$filename ]]"
     retval=$?
     if [[ $retval = 0 ]]; then
-      podman exec -i osh-hub bash -c "rm $filename"
-      break
+      return 0
     fi
     sleep 1
   done
+  return 1
 }
 
 #This function checks against a program version

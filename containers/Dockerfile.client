@@ -36,4 +36,6 @@ WORKDIR /src
 ENV PYTHONPATH=.:kobo
 ENV COVSCAN_CONFIG_FILE=covscan/covscan-local.conf
 
+RUN touch /CLIENT_IS_READY
+
 CMD /test.sh
