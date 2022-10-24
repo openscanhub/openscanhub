@@ -17,11 +17,6 @@
     * Probably it is a problem with sqlite database, try to run it again.
     * If it does not work, run other kind of task (f.e. MockBuild, DiffBuild), it will run the more cleaner way, it simply cleans the mess. 
 
-* Csmock does not know --cov-analyze-opts option: csmock: error: File name '--security --concurrency' starts with '--', which looks like option.
-    * Install (big, 1.5 GB) **csmock coverity plugin** in worker docker container: 
-    
-        `yum install csmock-plugin-coverity -y`
-
 * Mock build fails with csmock error: unrecognized arguments: --security
     * Default profile is not set correctly, see [covscan/INSTALL](https://gitlab.cee.redhat.com/covscan/covscan/blob/master/INSTALL) guide for correct setup.
     * Csmock does not directly have --security parameter but it is used for --cov-analyze-opts= param.
