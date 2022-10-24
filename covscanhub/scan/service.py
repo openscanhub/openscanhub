@@ -49,9 +49,9 @@ def run_diff(task_dir, base_task_dir, nvr, base_nvr):
     new_err = os.path.join(task_dir, nvr, 'run1', nvr + '.js')
 
     if not os.path.exists(old_err) or not os.path.exists(new_err):
-        logger.critical('Error output from coverity does not exist: \
+        logger.critical('Error output from csmock does not exist: \
 old: %s new: %s', old_err, new_err)
-        raise ScanException('Error output from coverity does not exist: \
+        raise ScanException('Error output from csmock does not exist: \
 old: %s new: %s', old_err, new_err)
 
     #csdiff [options] old.err new.err
