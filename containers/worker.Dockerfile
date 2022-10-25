@@ -36,6 +36,8 @@ RUN dnf -y --setopt=tsflags=nodocs install \
     python36 \
     xz
 
+RUN adduser csmock -G mock
+
 # override config_opts['use_bootstrap'] from mock config to make it work in a container
 RUN sed -e 's|print_main_output=True"|&, "--no-bootstrap-chroot"|' -i /usr/bin/csmock
 

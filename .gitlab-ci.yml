@@ -104,8 +104,8 @@ build-sample-package:
     - sed -e 's|ident$|md5|' -i /var/lib/pgsql/data/pg_hba.conf
     - systemctl enable --now postgresql
     - scripts/setup_db.sh
-    # coverity user is required to run builds
-    - adduser coverity -G mock || true
+    # csmock user is required to run builds
+    - adduser csmock -G mock || true
     # Enable below line if SELinux is in restrictive mode
     # setsebool -P httpd_can_network_connect 1
     # Set up self signed certificate before starting httpd
