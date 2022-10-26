@@ -3,8 +3,9 @@
 Common functions for tasks, DRY
 """
 
-import re
 import os
+import re
+
 from kobo.shortcuts import run
 
 

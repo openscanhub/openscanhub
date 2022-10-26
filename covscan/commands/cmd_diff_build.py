@@ -1,21 +1,36 @@
 # -*- coding: utf-8 -*-
 
-from __future__ import print_function
-from __future__ import absolute_import
-
-import six
+from __future__ import absolute_import, print_function
 
 import os
-from six.moves import urllib
-import covscan
 
-from six.moves.xmlrpc_client import Fault
+import six
 from kobo.shortcuts import random_string
-from covscan.commands.shortcuts import verify_brew_koji_build, verify_mock, \
-    upload_file, handle_perm_denied
-from covscan.commands.common import *
-from covscancommon.utils.conf import get_conf
+from six.moves import urllib
+from six.moves.xmlrpc_client import Fault
+
+import covscan
 from covscan.commands.analyzers import check_analyzers
+from covscan.commands.common import (add_aggressive_option, add_all_option,
+                                     add_analyzers_option,
+                                     add_brew_build_option, add_clang_option,
+                                     add_comment_option,
+                                     add_comp_warnings_option,
+                                     add_concurrency_option, add_config_option,
+                                     add_cppcheck_option,
+                                     add_csmock_args_option,
+                                     add_custom_model_option,
+                                     add_download_results_option,
+                                     add_email_to_option,
+                                     add_install_to_chroot_option,
+                                     add_keep_covdata_option,
+                                     add_no_cov_option, add_nowait_option,
+                                     add_priority_option, add_profile_option,
+                                     add_security_option,
+                                     add_task_id_file_option)
+from covscan.commands.shortcuts import (handle_perm_denied, upload_file,
+                                        verify_brew_koji_build, verify_mock)
+from covscancommon.utils.conf import get_conf
 
 
 class Diff_Build(covscan.CovScanCommand):
@@ -196,8 +211,10 @@ is not even one in your user configuration file \
             options['csmock_args'] = csmock_args
         if cov_custom_model:
             target_dir = random_string(32)
-            upload_model_id, err_code, err_msg = upload_file(self.hub, cov_custom_model,
-                                                       target_dir, self.parser)
+            upload_model_id, err_code, err_msg = upload_file(self.hub,
+                                                             cov_custom_model,
+                                                             target_dir,
+                                                             self.parser)
             options["upload_model_id"] = upload_model_id
 
         if packages_to_install:

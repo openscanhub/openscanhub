@@ -1,27 +1,27 @@
 # -*- coding: utf-8 -*-
 
 
-import os
 import logging
+import os
 import shutil
 
+from kobo.django.upload.models import FileUpload
 from kobo.hub.decorators import validate_worker
 from kobo.hub.models import Task
-from kobo.django.upload.models import FileUpload
-from covscancommon.csmock_parser import CsmockAPI, unpack_and_return_api
+
+from covscancommon.csmock_parser import unpack_and_return_api
 from covscanhub.errata.models import ScanningSession
-from covscanhub.errata.scanner import prepare_base_scan, obtain_base2, BaseNotValidException
+from covscanhub.errata.scanner import (BaseNotValidException, obtain_base2,
+                                       prepare_base_scan)
 from covscanhub.other.decorators import public
-
-from covscanhub.scan.models import ScanBinding, AnalyzerVersion
+from covscanhub.scan.models import (AnalyzerVersion, AppSettings, Scan,
+                                    ScanBinding)
 from covscanhub.scan.notify import send_task_notification
-from covscanhub.scan.xmlrpc_helper import finish_scan as h_finish_scan,\
-    fail_scan as h_fail_scan, scan_notification_email, prepare_version_retriever
-from covscanhub.scan.models import SCAN_STATES, Scan, \
-    SCAN_STATES_IN_PROGRESS, AppSettings
-
+from covscanhub.scan.xmlrpc_helper import fail_scan as h_fail_scan
+from covscanhub.scan.xmlrpc_helper import finish_scan as h_finish_scan
+from covscanhub.scan.xmlrpc_helper import (prepare_version_retriever,
+                                           scan_notification_email)
 from covscanhub.waiving.results_loader import TaskResultsProcessor
-
 
 logger = logging.getLogger(__name__)
 
@@ -192,4 +192,3 @@ def ensure_base_is_scanned_properly(request, scan_id, task_id):
             scan.set_base(base_scan)
     else:
         logger.info('Scan %s does not need base' % scan)
-

@@ -7,27 +7,31 @@ logic for spawning tasks
 
 """
 from __future__ import absolute_import
-import os
+
 import logging
+import os
 import pipes
 import shutil
+
+import six
 from kobo.django.upload.models import FileUpload
+from kobo.hub.models import TASK_STATES, Task
+
 from covscanhub.errata.check import check_analyzers, check_srpm, check_upload
 from covscanhub.errata.models import ScanningSession
 from covscanhub.errata.service import return_or_raise
 from covscanhub.errata.utils import is_rebase
-from covscanhub.other.exceptions import PackageBlacklistedException, PackageNotEligibleException
+from covscanhub.other.exceptions import (PackageBlacklistedException,
+                                         PackageNotEligibleException)
+from covscanhub.scan.models import (REQUEST_STATES, SCAN_TYPES, AppSettings,
+                                    ClientAnalyzer, ETMapping, MockConfig,
+                                    Package, Profile, Scan, ScanBinding, Tag)
 from covscanhub.scan.service import get_latest_binding
 from covscanhub.service.processing import task_has_results
 
+from .check import (check_build, check_nvr, check_obsolete_scan,
+                    check_package_is_blocked)
 from .utils import get_or_fail
-from .check import check_nvr, check_obsolete_scan, check_build, check_package_is_blocked
-from covscanhub.scan.models import Package, Tag, Scan, SCAN_TYPES, ScanBinding, ETMapping, REQUEST_STATES, MockConfig, \
-    ClientAnalyzer, AppSettings, Profile
-
-from kobo.hub.models import Task, TASK_STATES
-import six
-
 
 logger = logging.getLogger(__name__)
 
@@ -453,9 +457,7 @@ class ClientScanScheduler(AbstractClientScanScheduler):
         if self.email_to:
             self.task_args['args']['email_to'] = self.email_to
 
-
     def spawn(self):
-        """ """
         task_id = Task.create_task(**self.task_args)
         task = Task.objects.get(id=task_id)
         task_dir = Task.get_task_dir(task_id, create=True)
@@ -726,7 +728,7 @@ def handle_scan(kwargs):
     except RuntimeError as ex:
         status = 'ERROR'
         message = u'Unable to submit the scan, error: %s' % ex
-    except Exception as ex:
+    except Exception as ex:  # noqa: B902
         status = 'ERROR'
         message = six.text_type(ex)
     else:
