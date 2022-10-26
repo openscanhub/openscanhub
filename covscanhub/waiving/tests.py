@@ -1,23 +1,9 @@
 # -*- coding: utf-8 -*-
 
-import datetime
-import os
 import random
-
-from covscanhub.other.test_enviroment import *
-from covscanhub.scripts.db import set_checker_groups
-from covscanhub.scan.models import *
-from covscanhub.waiving.models import *
-from covscanhub.waiving.service import *
-from covscanhub.cs_xmlrpc.errata import create_errata_diff_scan
-
 from unittest import TestCase
-from django.test import Client
-from django.conf import settings
-import json
-from django.db.models import Q
 
-from kobo.hub.models import Task
+from django.test import Client
 
 
 class BasicWebTestCase(TestCase):
