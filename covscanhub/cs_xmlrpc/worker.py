@@ -9,7 +9,6 @@ from kobo.hub.decorators import validate_worker
 from kobo.hub.models import Task
 from kobo.django.upload.models import FileUpload
 from covscancommon.csmock_parser import CsmockAPI, unpack_and_return_api
-from covscancommon.tasks import construct_cim_string
 from covscanhub.errata.models import ScanningSession
 from covscanhub.errata.scanner import prepare_base_scan, obtain_base2, BaseNotValidException
 from covscanhub.other.decorators import public
@@ -18,10 +17,9 @@ from covscanhub.scan.models import ScanBinding, AnalyzerVersion
 from covscanhub.scan.notify import send_task_notification
 from covscanhub.scan.xmlrpc_helper import finish_scan as h_finish_scan,\
     fail_scan as h_fail_scan, scan_notification_email, prepare_version_retriever
-from covscanhub.scan.models import SCAN_STATES, Scan, TaskExtension, \
+from covscanhub.scan.models import SCAN_STATES, Scan, \
     SCAN_STATES_IN_PROGRESS, AppSettings
 
-from django.core.exceptions import ObjectDoesNotExist
 from covscanhub.waiving.results_loader import TaskResultsProcessor
 
 
@@ -56,17 +54,6 @@ def finish_task(request, task_id):
             if not task.is_failed():
                 task.fail_task()
 
-
-@validate_worker
-@public
-def get_cim_arg(request, task_id):
-    try:
-        cim_dict = TaskExtension.objects.get(task__id=task_id).secret_args
-    except ObjectDoesNotExist:
-        return None
-    else:
-        cim_str = construct_cim_string(cim_dict)
-        return "--cov-commit-to '%s'" % cim_str
 
 # ET SCANS
 

@@ -65,13 +65,6 @@ class Conf(object):
             # user should decide what does he want at his own conf file
             config.set('General', 'DefaultMockConfig', '')
 
-            config.add_section('CIM')
-            config.set('CIM', 'user', '')
-            config.set('CIM', 'password', '')
-            config.set('CIM', 'server', '')
-            config.set('CIM', 'port', '')
-            config.set('CIM', 'stream', '')
-
             with open(config_path, 'w') as f:
                 config.write(f)
 
@@ -94,25 +87,6 @@ class Conf(object):
         if not def_config:
             def_config = self.system_conf['DEFAULT_MOCKCONFIG']
         return def_config
-
-    def get_cim_data(self):
-        """
-        Return name of default MockConfig
-        """
-        cim_data = {
-            'user': self.conf.get('CIM', 'user', False, {'user': None}),
-            'passwd': self.conf.get('CIM', 'password', False, {'password': None}),
-            'server': self.conf.get('CIM', 'server', False, {'server': None}),
-            'port': self.conf.get('CIM', 'port', False, {'port': None}),
-            'stream': self.conf.get('CIM', 'stream', False, {'stream': None}),
-        }
-        # when user provides only credentials and not server:port, use default
-        # from system config
-        if cim_data['user'] is not None and cim_data['server'] is None:
-            cim_data['server'] = self.system_conf['CIM_SERVER']
-            cim_data['port'] = self.system_conf['CIM_PORT']
-
-        return cim_data
 
 
 def get_conf(system_conf=None):

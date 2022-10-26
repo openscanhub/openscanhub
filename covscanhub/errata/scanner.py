@@ -23,7 +23,7 @@ from covscanhub.service.processing import task_has_results
 from .utils import get_or_fail
 from .check import check_nvr, check_obsolete_scan, check_build, check_package_is_blocked
 from covscanhub.scan.models import Package, Tag, Scan, SCAN_TYPES, ScanBinding, ETMapping, REQUEST_STATES, MockConfig, \
-    ClientAnalyzer, TaskExtension, AppSettings, Profile
+    ClientAnalyzer, AppSettings, Profile
 
 from kobo.hub.models import Task, TASK_STATES
 import six
@@ -398,8 +398,6 @@ class ClientScanScheduler(AbstractClientScanScheduler):
             if self.priority >= 20 and not self.user.is_staff:
                 raise RuntimeError("Only admin is able to set higher priority than 20!")
 
-        self.cim = self.options.get('CIM', None)
-
         self.client_csmock_args = self.options.get('csmock_args', None)
 
         self.email_to = self.options.get("email_to", None)
@@ -461,9 +459,6 @@ class ClientScanScheduler(AbstractClientScanScheduler):
         task_id = Task.create_task(**self.task_args)
         task = Task.objects.get(id=task_id)
         task_dir = Task.get_task_dir(task_id, create=True)
-
-        if self.cim:
-            TaskExtension(task=task, secret_args=self.cim).save()
 
         if self.upload_id:
             # move file to task dir, remove upload record and make the task

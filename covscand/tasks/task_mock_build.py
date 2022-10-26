@@ -32,13 +32,6 @@ class MockBuild(TaskBase):
         task_url = self.hub.client.task_url(self.task_id)
         result_filename = self.args.pop("result_filename", None)
 
-        cim = self.hub.worker.get_cim_arg(self.task_id)
-        if cim:
-            if csmock_args:
-                csmock_args += " %s" % cim
-            else:
-                csmock_args = cim
-
         with CsmockRunner() as runner:
             if custom_model_name:
                 model_url = six.moves.urllib.parse.urljoin(task_url, 'log/%s?format=raw' % custom_model_name)

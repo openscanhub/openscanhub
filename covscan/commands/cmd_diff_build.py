@@ -15,7 +15,6 @@ from covscan.commands.shortcuts import verify_brew_koji_build, verify_mock, \
     upload_file, handle_perm_denied
 from covscan.commands.common import *
 from covscancommon.utils.conf import get_conf
-from covscancommon.utils.cim import extract_cim_data
 from covscan.commands.analyzers import check_analyzers
 
 
@@ -54,16 +53,6 @@ class Diff_Build(covscan.CovScanCommand):
         add_all_option(self.parser)
         add_security_option(self.parser)
         add_custom_model_option(self.parser)
-
-        self.parser.add_option(
-            "-m",
-            dest="commit_string",
-            metavar="user:passwd@host:port/stream",
-            help="""Commit results to Integrity Manager. You can specify \
-the target host/stream as an optional argument using the
-following format: "user:passwd@host:port/stream". User and password might be \
-stored in user configuration file."""
-        )
 
         add_install_to_chroot_option(self.parser)
 
@@ -112,7 +101,6 @@ exist." % self.results_store_file)
         all_option = kwargs.pop("all")
         security = kwargs.pop("security")
         concurrency = kwargs.pop("concurrency")
-        commit_string = kwargs.pop("commit_string", None)
         self.results_store_file = kwargs.pop("results_dir", None)
         clang = kwargs.pop('clang', False)
         no_cov = kwargs.pop('no_cov', False)
@@ -163,13 +151,6 @@ is not even one in your user configuration file \
         # options setting
 
         options = {}
-        # check CIM string, it might be empty, so `if commit_string` is
-        #  a bad idea
-        if commit_string is not None:
-            try:
-                options['CIM'] = extract_cim_data(commit_string)
-            except RuntimeError as ex:
-                self.parser.error(ex.message)
         if email_to:
             options["email_to"] = email_to
         if priority is not None:
