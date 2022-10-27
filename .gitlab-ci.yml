@@ -32,6 +32,18 @@ django-unit-tests:
     - podman-compose logs osh-hub
     - podman-compose down
 
+init-db-script:
+  tags:
+    - covscan-ci-runner
+  before_script:
+    - git clone --depth 1 https://github.com/release-engineering/kobo.git
+  script:
+    - covscanhub/scripts/init-db.sh
+  after_script:
+    - podman-compose logs db
+    - podman-compose logs osh-hub
+    - podman-compose down
+
 build-on-copr:
   tags:
     - gitlab-ci-build-on-copr
