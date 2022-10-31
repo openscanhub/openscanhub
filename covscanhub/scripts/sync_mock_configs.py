@@ -2,11 +2,16 @@
 # -*- coding: utf-8 -*-
 
 from __future__ import print_function
+
 import os
 import re
 import sys
 from optparse import OptionParser
 from pathlib import Path
+
+from django.core.exceptions import ObjectDoesNotExist
+
+from covscanhub.scan.models import MockConfig
 
 PROJECT_DIR = Path(__file__).parents[2]
 
@@ -16,9 +21,6 @@ if PROJECT_DIR not in sys.path:
 
 os.environ['DJANGO_SETTINGS_MODULE'] = 'covscanhub.settings'
 
-from covscanhub.scan.models import MockConfig
-from django.core.exceptions import ObjectDoesNotExist
-
 
 def sync(enabled_state):
     profile_files = os.listdir('/etc/mock')
@@ -26,7 +28,7 @@ def sync(enabled_state):
     all_configs = MockConfig.objects.all()
 
     for f in profile_files:
-        if re.match('[\w\-\.]+-[\w\-\.]+-[\w\-\.]+\.cfg', f):
+        if re.match(r'[\w\-\.]+-[\w\-\.]+-[\w\-\.]+\.cfg', f):
             try:
                 m = MockConfig.objects.get(name=f[:-4])
                 all_configs.remove(m)
@@ -54,6 +56,7 @@ def set_options():
 def main():
     parser, options, args = set_options()
     sync(options.enabled)
+
 
 if __name__ == '__main__':
     main()
