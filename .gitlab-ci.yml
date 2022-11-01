@@ -17,7 +17,6 @@ django-unit-tests:
     paths:
       - htmlcov/
   before_script:
-    - rm -rf kobo
     - git clone --depth 1 https://github.com/release-engineering/kobo.git
     - podman pull registry-proxy.engineering.redhat.com/rh-osbs/rhel8-postgresql-12
     - podman build -f containers/Dockerfile.hub -t osh-hub .
