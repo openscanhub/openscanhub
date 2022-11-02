@@ -1,4 +1,7 @@
+### Sequence 1 ###
+
 lint:
+  needs: []
   tags:
     - shared
   image: "quay.io/fedora/fedora:35"
@@ -9,7 +12,22 @@ lint:
     - GIT_SSL_NO_VERIFY=true git fetch covscan
     - GIT_SSL_NO_VERIFY=true make lint REPO=covscan
 
+### Sequence 2 ###
+
+run-hub-and-minimal-db:
+  needs: []
+  tags:
+    - covscan-ci-runner
+  before_script:
+    - gitlab-job-guard --private-token="$GITLAB_API_TOKEN"
+    - git clone --depth 1 https://github.com/release-engineering/kobo.git
+  script:
+    - covscanhub/scripts/init-db.sh
+
 django-unit-tests:
+  needs:
+    - job: run-hub-and-minimal-db
+      artifacts: true
   tags:
     - covscan-ci-runner
   artifacts:
@@ -18,7 +36,6 @@ django-unit-tests:
       - htmlcov/
   before_script:
     - git clone --depth 1 https://github.com/release-engineering/kobo.git
-    - podman-compose up --build -d db osh-hub
     - while ! podman exec -it osh-hub pg_isready -h db; do sleep 0.5; done
     - podman exec -it db psql -c 'ALTER USER covscanhub CREATEDB;'
   script:
@@ -28,6 +45,8 @@ django-unit-tests:
     - podman-compose logs db
     - podman-compose logs osh-hub
     - podman-compose down
+
+### Sequence 3 ###
 
 integration-tests:
   tags:
@@ -43,19 +62,10 @@ integration-tests:
   after_script:
     - podman-compose down
 
-init-db-script:
-  tags:
-    - covscan-ci-runner
-  before_script:
-    - git clone --depth 1 https://github.com/release-engineering/kobo.git
-  script:
-    - covscanhub/scripts/init-db.sh
-  after_script:
-    - podman-compose logs db
-    - podman-compose logs osh-hub
-    - podman-compose down
+### Sequence 4 ###
 
-build-on-copr:
+copr-setup:
+  needs: []
   tags:
     - gitlab-ci-build-on-copr
   before_script:
@@ -64,11 +74,6 @@ build-on-copr:
     - python3 -m pip install gitlab-job-guard
     - gitlab-job-guard --private-token="$GITLAB_API_TOKEN"
     # actual job starts
-    # We are making lots of tweaks in configurations while setting up this job, which may cause
-    # issues with SELinux. Keep SELinux in permissive mode and fix any SELinux warnings before
-    # enabling it in future.
-    - setenforce 0
-    - dnf remove -y $(rpm -qa | grep -i covscan)
     - mkdir -p ~/.config
     - echo "[copr-cli]" > ~/.config/rhcopr
     - echo -n "username = " >> ~/.config/rhcopr
@@ -79,7 +84,13 @@ build-on-copr:
     - echo "$COPR_CLI_LOGIN" | base64 --decode >> ~/.config/rhcopr
     - echo -n "copr_url = " >> ~/.config/rhcopr
     - echo "$COPR_CLI_COPR_URL" | base64 --decode >> ~/.config/rhcopr
+    # We are making lots of tweaks in configurations while setting up this job, which may cause
+    # issues with SELinux. Keep SELinux in permissive mode and fix any SELinux warnings before
+    # enabling it in future.
+    - setenforce 0
+    - dnf remove -y $(rpm -qa | grep -i covscan)
     - systemctl status
+  script:
     - cp containers/rhel-8-pulp.repo containers/rcm-tools-for-rhel-8.repo /etc/yum.repos.d/
     - cd /etc/yum.repos.d/ && curl -O https://copr.devel.redhat.com/coprs/kdudka/mock/repo/epel-8/kdudka-mock-epel-8.repo && cd -
     - dnf install -y findutils git make openssl python36 python3-dnf-plugins-core python3-setuptools rpm-build postgresql-server
@@ -88,22 +99,35 @@ build-on-copr:
     - dnf copr enable copr.devel.redhat.com/rhcopr-project/toolset -y
     - dnf copr enable redhat/kdudka/covscan-testing -y
     - dnf install -y rhcopr
+
+covscan-build-on-copr:
+  needs:
+    - job: copr-setup
+      artifacts: true
+  tags:
+    - gitlab-ci-build-on-copr
   script:
     - make srpm
     - rhcopr build gitlab-ci-build-on-copr *.src.rpm | tee rhcopr-build.log
+  after_script:
     - copr_url=$(grep "https://copr.*coprs/build/" rhcopr-build.log)
     - build_id=$(basename $copr_url)
     - rhcopr download-build $build_id -r epel-8-x86_64
     - dnf install -y $(ls epel-8-x86_64/*.rpm | grep -v "stage\|prod\|src")
 
-build-sample-package:
-  needs: [build-on-copr]
+install-from-copr-and-setup:
+  needs:
+    - job: covscan-build-on-copr
+      artifacts: true
   tags:
     - gitlab-ci-build-on-copr
+  before_script:
+    - systemctl stop httpd postgresql
   script:
+    # setup covscanhub settings
     - cp covscanhub/settings_local.stage.py /usr/lib/python3.6/site-packages/covscanhub/settings_local.py
     - sed -i "s/\['covscan.lab.eng.brq2.redhat.com'\]/\['*'\]/" /usr/lib/python3.6/site-packages/covscanhub/settings_local.py
-    - systemctl stop httpd postgresql
+    # setup postgresql
     - mv -fvT --backup=numbered /var/lib/pgsql/data/ /root/pgsql-data
     - postgresql-setup --initdb
     - sed -e 's|ident$|md5|' -i /var/lib/pgsql/data/pg_hba.conf
@@ -120,16 +144,32 @@ build-sample-package:
     - touch /var/log/covscanhub/covscanhub.log && chown apache:apache /var/log/covscanhub/covscanhub.log
     - systemctl enable --now httpd
     - systemctl start covscand
+
+### Sequence 4.a ###
+
+sample-package-build-on-covscan:
+  needs:
+    - job: install-from-copr-and-setup
+      artifacts: true
+  tags:
+    - gitlab-ci-build-on-copr
+  before_script:
     # Enable below lines if firewall is enabled
     # firewall-cmd --zone=public --add-port=80/tcp --permanent
     # firewall-cmd --zone=public --add-port=443/tcp --permanent
     # firewall-cmd --reload
     - sed -i "s|http://osh-hub:8000|https://localhost/covscanhub|g" covscan/covscan-local.conf
+  script:
     - COVSCAN_CONFIG_FILE=covscan/covscan-local.conf /usr/bin/covscan mock-build --config=fedora-36-x86_64 --brew-build units-2.21-4.fc36
+  after_script:
     - COVSCAN_CONFIG_FILE=covscan/covscan-local.conf /usr/bin/covscan task-info 1 | grep "is_failed = False"
 
-run-errata-test:
-  needs: [build-sample-package]
+### Sequence 4.b ###
+
+errata-test:
+  needs:
+    - job: install-from-copr-and-setup
+      artifacts: true
   tags:
     - gitlab-ci-build-on-copr
   script:
