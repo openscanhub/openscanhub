@@ -59,6 +59,11 @@ build-on-copr:
   tags:
     - gitlab-ci-build-on-copr
   before_script:
+    # guard job sequence
+    - dnf install -y python3-pip
+    - python3 -m pip install gitlab-job-guard
+    - gitlab-job-guard --private-token="$GITLAB_API_TOKEN"
+    # actual job starts
     # We are making lots of tweaks in configurations while setting up this job, which may cause
     # issues with SELinux. Keep SELinux in permissive mode and fix any SELinux warnings before
     # enabling it in future.
