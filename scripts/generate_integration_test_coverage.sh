@@ -48,4 +48,5 @@ podman exec -it osh-client /usr/bin/coverage-3.6 combine
 podman exec -it osh-client /usr/bin/coverage-3.6 html
 
 # Open the coverage report under your favourite browser
-xdg-open htmlcov/index.html
+echo "Coverage report generated in 'htmlcov' directory."
+echo "Use 'xdg-open htmlcov/index.html' command to open it."

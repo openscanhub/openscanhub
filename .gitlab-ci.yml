@@ -29,6 +29,20 @@ django-unit-tests:
     - podman-compose logs osh-hub
     - podman-compose down
 
+integration-tests:
+  tags:
+    - covscan-ci-runner
+  artifacts:
+    expose_as: "Integration Tests Coverage"
+    paths:
+      - htmlcov/
+  before_script:
+    - git clone --depth 1 https://github.com/release-engineering/kobo.git
+  script:
+    - scripts/generate_integration_test_coverage.sh
+  after_script:
+    - podman-compose down
+
 init-db-script:
   tags:
     - covscan-ci-runner
