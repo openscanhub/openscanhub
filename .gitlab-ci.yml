@@ -108,7 +108,7 @@ covscan-build-on-copr:
     - gitlab-ci-build-on-copr
   script:
     - make srpm
-    - rhcopr build gitlab-ci-build-on-copr *.src.rpm | tee rhcopr-build.log
+    - (set -o pipefail; rhcopr build gitlab-ci-build-on-copr *.src.rpm | tee rhcopr-build.log)
   after_script:
     - copr_url=$(grep "https://copr.*coprs/build/" rhcopr-build.log)
     - build_id=$(basename $copr_url)
