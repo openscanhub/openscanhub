@@ -180,8 +180,7 @@ For more info, please check docstring of the script.
 
 ## Test Coverage
 
-Latest test coverage report of `master` branch for Django unit tests can be seen in [GitLab CI](https://gitlab.cee.redhat.com/covscan/covscan/-/jobs/artifacts/master/file/htmlcov/index.html?job=django-unit-tests).
-
+GitLab CI contains latest test coverage report of `master` branch for [Django unit tests](https://gitlab.cee.redhat.com/covscan/covscan/-/jobs/artifacts/master/file/htmlcov/index.html?job=django-unit-tests) and [integration tests](https://gitlab.cee.redhat.com/covscan/covscan/-/jobs/artifacts/master/file/htmlcov/index.html?job=integration-tests).
 
 ## Running unit tests
 
