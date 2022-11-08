@@ -131,7 +131,7 @@ install-from-copr-and-setup:
     - mv -fvT --backup=numbered /var/lib/pgsql/data/ /root/pgsql-data
     - postgresql-setup --initdb
     - sed -e 's|ident$|md5|' -i /var/lib/pgsql/data/pg_hba.conf
-    - systemctl enable --now postgresql
+    - systemctl start postgresql
     - scripts/setup_db.sh
     # csmock user is required to run builds
     - adduser csmock -G mock || true
@@ -142,8 +142,7 @@ install-from-copr-and-setup:
     - cp /etc/httpd/conf/localhost.crt /etc/pki/ca-trust/source/anchors/ && update-ca-trust
     - cp covscanhub/covscanhub-httpd.conf /etc/httpd/conf.d/covscanhub-httpd.conf
     - touch /var/log/covscanhub/covscanhub.log && chown apache:apache /var/log/covscanhub/covscanhub.log
-    - systemctl enable --now httpd
-    - systemctl start covscand
+    - systemctl start httpd covscand
 
 ### Sequence 4.a ###
 
