@@ -22,7 +22,7 @@ run-hub-and-minimal-db:
     - gitlab-job-guard --private-token="$GITLAB_API_TOKEN"
     - git clone --depth 1 https://github.com/release-engineering/kobo.git
   script:
-    - covscanhub/scripts/init-db.sh
+    - containers/scripts/init-db.sh
 
 django-unit-tests:
   needs:
@@ -59,7 +59,7 @@ integration-tests:
     - git clone --depth 1 https://github.com/release-engineering/kobo.git
   script:
     - sed -i "s/RUN_TASKS_IN_FOREGROUND = 0/RUN_TASKS_IN_FOREGROUND = 1/g"  covscand/covscand-local.conf
-    - scripts/generate_integration_test_coverage.sh
+    - containers/scripts/generate_integration_test_coverage.sh
   after_script:
     - podman-compose down
 

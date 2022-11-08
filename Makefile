@@ -23,11 +23,11 @@ install:
 
 
 build:
-	@./scripts/build.sh
+	@./containers/scripts/build.sh
 
 
-full-dev:
-	@./scripts/build.sh --full-dev
+full-build:
+	@./containers/scripts/build.sh --full-dev
 
 
 tests:
@@ -48,7 +48,7 @@ clean: clean-local-python clean-local-files
 
 
 clean-dev: clean-local-files
-	@./scripts/build.sh --clean
+	@./containers/scripts/build.sh --clean
 
 
 log:

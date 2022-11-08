@@ -140,7 +140,7 @@ main() {
   fi
 
   if [ "$DEPLOY" = true ]; then
-    ./scripts/deploy.sh --debug "$FULL_DEV" --no-interactive || exit "$?"
+    ./containers/scripts/deploy.sh --debug "$FULL_DEV" --no-interactive || exit "$?"
   fi
 
   if [[ -z "$FULL_DEV" ]]; then

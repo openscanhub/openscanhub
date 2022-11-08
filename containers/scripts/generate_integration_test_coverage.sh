@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 set -x
-source scripts/utils.sh
+
+# shellcheck disable=1091
+source containers/scripts/utils.sh
 
 # Only get container IDs in quiet mode
 if [[ $(podman ps -a --filter label=io.podman.compose.project=covscan -q 2>/dev/null | wc -l) -gt 0 ]]; then

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # shellcheck disable=1091
-. "./scripts/utils.sh" --source-only
+. "./containers/scripts/utils.sh" --source-only
 
 set -e
 set -x
@@ -10,7 +10,7 @@ set -x
 PASSWD=xxxxxx
 
 # start db and osh-hub to apply migrations
-./scripts/build.sh --run
+./containers/scripts/build.sh --run
 
 (set +e; wait_for_container 'HUB')
 

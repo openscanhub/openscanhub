@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # shellcheck disable=1091
-. "./scripts/utils.sh" --source-only
+. "./containers/scripts/utils.sh" --source-only
 
 DEBUG=false
 INTERACTIVE=''
@@ -13,7 +13,7 @@ main() {
   test_deploy_env || exit "$?"
 
   if [[ "$DEBUG" = true ]]; then
-    ./covscanhub/scripts/init-db.sh || exit "$?"
+    ./containers/scripts/init-db.sh || exit "$?"
 
     (set -x; podman start osh-worker)
 
@@ -24,7 +24,7 @@ main() {
     return 0
   fi
 
-  ./scripts/build.sh --run
+  ./containers/scripts/build.sh --run
 
   FILEPATH='https://covscan-stage.lab.eng.brq2.redhat.com/covscanhub.db.gz'
   DOWNLOAD=true
