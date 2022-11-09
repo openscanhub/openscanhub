@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+"""Provides function for marking different parts of two NVRs."""
 
 import itertools
 import re
