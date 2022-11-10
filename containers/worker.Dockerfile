@@ -41,8 +41,6 @@ RUN adduser csmock -G mock
 # override config_opts['use_bootstrap'] from mock config to make it work in a container
 RUN sed -e 's|print_main_output=True"|&, "--no-bootstrap-chroot"|' -i /usr/bin/csmock
 
-RUN adduser coverity -G mock
-
 RUN touch /WORKER_IS_READY
 
 CMD coverage-3.6 run --parallel-mode --omit="*site-packages*,*kobo*," covscand/covscand -f

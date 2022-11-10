@@ -14,9 +14,9 @@ rm -rf htmlcov .coverage
 # Clone kobo repository if it does not exist
 [[ -d kobo ]] || git clone --depth 1 https://github.com/release-engineering/kobo.git
 podman pull registry-proxy.engineering.redhat.com/rh-osbs/rhel8-postgresql-12
-podman build -f containers/Dockerfile.hub -t osh-hub .
-podman build -f containers/Dockerfile.worker -t osh-worker .
-podman build -f containers/Dockerfile.client -t osh-client .
+podman build -f containers/hub/Dockerfile -t osh-hub .
+podman build -f containers/worker.Dockerfile -t osh-worker .
+podman build -f containers/client.Dockerfile -t osh-client .
 podman-compose up -d db osh-hub osh-worker osh-client
 
 while ! podman exec -it osh-hub pg_isready -h db; do sleep 0.5; done
