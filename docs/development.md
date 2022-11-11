@@ -182,6 +182,10 @@ For more info, please check docstring of the script.
 
 GitLab CI contains latest test coverage report of `master` branch for [Django unit tests](https://gitlab.cee.redhat.com/covscan/covscan/-/jobs/artifacts/master/file/htmlcov/index.html?job=django-unit-tests) and [integration tests](https://gitlab.cee.redhat.com/covscan/covscan/-/jobs/artifacts/master/file/htmlcov/index.html?job=integration-tests).
 
+### Test Coverage and os.fork()
+
+The Code coverage testing module for Python does not work well with programs that use `os.fork()`.  This prevents certain parts of OSH worker code from being included in the test coverage data.  To work around this limitation, one can enable the `RUN_TASKS_IN_FOREGROUND` option in `covscand.conf` to execute tasks directly in the main OSH worker process.  An unwanted side effect of this option is that `VersionDiffBuild` and `ErrataDiffBuild` tasks always fail because they cannot create any subtask while the main task is running in foreground (thus blocking the main OSH worker process).
+
 ## Running unit tests
 
 Unit tests in Django are executed by `manage.py test` command. Since unit tests

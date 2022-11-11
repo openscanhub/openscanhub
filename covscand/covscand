@@ -2,14 +2,24 @@
 
 import sys
 
-import kobo.exceptions
 import kobo.conf
+import kobo.exceptions
 import kobo.worker.main
 import kobo.worker.tasks
+from kobo.worker.taskmanager import TaskManager
 
 # assuming all tasks are in covscand/tasks/task_*.py modules
 import covscand.tasks
 from covscancommon.utils.conf import get_config_dict
+
+
+# override the `foreground` task attribute if RUN_TASKS_IN_FOREGROUND is set in covscand.conf
+class OSHTaskManager(TaskManager):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self.conf.get("RUN_TASKS_IN_FOREGROUND"):
+            for task in self.task_container:
+                self.task_container[task].foreground = True
 
 
 def main():
@@ -24,7 +34,7 @@ def main():
         return 2
 
     try:
-        kobo.worker.main.main(conf)
+        kobo.worker.main.main(conf, None, OSHTaskManager)
     except KeyboardInterrupt:
         sys.stderr.write("\n\nExiting on user cancel.\n")
         return 1
