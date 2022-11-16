@@ -1,15 +1,24 @@
-check_host_os() {
-  echo "$OSTYPE" | grep -q 'darwin'
-  if test $? = 0; then
+# This script is made to be sourced only
+set -e
+
+# Exports host's variables to ensure compatibility
+export_host_variables() {
+  if [[ "$OSTYPE" =~ 'linux' ]]; then
+    export IS_LINUX=1
+  else
+    export IS_LINUX=0
+  fi
+
+  if test "$IS_LINUX" = 0; then
     shopt -s expand_aliases
     alias podman=docker
     alias podman-compose=docker-compose
   fi
 }
 
-check_host_os
+export_host_variables
 
-#This function checks container status
+#Checks osh container status
 #
 # @param $1 container name (e.g. hub, worker, client)
 #
@@ -22,18 +31,18 @@ wait_for_container() {
   containername="osh-"
   containername+="$(echo "$1" | tr '[:upper:]' '[:lower:]')"
 
-  for _ in $(seq 60); do
-    podman exec -i "$containername" bash -c "[[ -f /$filename ]]"
-    retval=$?
-    if [[ $retval = 0 ]]; then
-      return 0
-    fi
+  count=0
+  while ! podman exec -i "$containername" bash -c "[[ -f /$filename ]]"; do
     sleep 1
+    count=$((count + 1))
+    if test "$count" -gt 60; then
+      return 1
+    fi
   done
-  return 1
+  return 0
 }
 
-#This function checks against a program version
+# Checks against a program version
 #
 # @currentver Current software version
 # @requiredver Minimum required version
@@ -44,5 +53,9 @@ version_compare() {
   currentver="$1"
   requiredver="$2"
 
-  test "$(printf '%s\n' "$requiredver" "$currentver" | sort -V | head -n1)" = "$requiredver"
+  sorted_ver="$(printf '%s\n' "$requiredver" "$currentver" | sort -V | head -n1)"
+  if [ "$sorted_ver" = "$requiredver" ]; then
+    return 0
+  fi
+  return 1
 }
