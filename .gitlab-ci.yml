@@ -36,7 +36,6 @@ django-unit-tests:
       - htmlcov/
   before_script:
     - git clone --depth 1 https://github.com/release-engineering/kobo.git
-    - while ! podman exec -it osh-hub pg_isready -h db; do sleep 0.5; done
     - podman exec -it db psql -c 'ALTER USER covscanhub CREATEDB;'
   script:
     - podman exec -it osh-hub /usr/bin/coverage-3.6 run --omit="*site-packages*,*kobo*," covscanhub/manage.py test -v 3 || exit 1

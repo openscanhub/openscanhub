@@ -24,6 +24,11 @@ main() {
   eval podman-compose "$PROFILE" down
 
   eval podman-compose up --build "$START" "$CONTAINERS"
+
+  if [ "$START" = '-d' ]; then
+    wait_for_container 'HUB'
+    wait_for_db
+  fi
 }
 
 #Used for testing the build environment
