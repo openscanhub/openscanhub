@@ -11,7 +11,7 @@ interruption() {
 }
 
 # shellcheck disable=SC1091
-. "./scripts/utils.sh" --source-only
+source containers/scripts/utils.sh
 
 declare -g TEMPOUT
 

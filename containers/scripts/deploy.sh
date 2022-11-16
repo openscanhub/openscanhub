@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # shellcheck disable=1091
-. "./containers/scripts/utils.sh" --source-only
+source containers/scripts/utils.sh
 
 DEBUG=false
 INTERACTIVE=''
