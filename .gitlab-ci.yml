@@ -22,7 +22,7 @@ run-hub-and-minimal-db:
     - gitlab-job-guard --private-token="$GITLAB_API_TOKEN"
     - git clone --depth 1 https://github.com/release-engineering/kobo.git
   script:
-    - containers/scripts/init-db.sh
+    - containers/scripts/init-db.sh --deploy --minimal
 
 django-unit-tests:
   needs:
