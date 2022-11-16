@@ -3,6 +3,8 @@
 # shellcheck disable=1091
 source containers/scripts/utils.sh
 
+FULL_DEV=''
+FORCE=''
 DEPLOY='false'
 MINIMAL='true'
 
@@ -10,7 +12,7 @@ main() {
   set -ex
 
   if [ "$DEPLOY" = true ]; then
-    ./containers/scripts/deploy.sh
+    ./containers/scripts/deploy.sh "$FULL_DEV" "$FORCE"
   fi
 
   if [ "$MINIMAL" = true ]; then
@@ -78,6 +80,14 @@ while [[ $# -gt 0 ]]; do
   case "$1" in
     --deploy)
       DEPLOY='true'
+      shift
+      ;;
+    --force)
+      FORCE='--force'
+      shift
+      ;;
+    --full-dev)
+      FULL_DEV='--full-dev'
       shift
       ;;
     --minimal)

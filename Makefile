@@ -23,11 +23,19 @@ install:
 
 
 build:
-	@./containers/scripts/build.sh
+	@./containers/scripts/deploy.sh --no-start
 
 
 full-build:
-	@./containers/scripts/build.sh --full-dev
+	@./containers/scripts/deploy.sh --no-start --full-dev
+
+
+deploy:
+	@./containers/scripts/deploy.sh
+
+
+full-deploy:
+	@./containers/scripts/deploy.sh --full-dev
 
 
 IS_LINUX = $(shell source containers/scripts/utils.sh; echo $$IS_LINUX)
@@ -58,7 +66,7 @@ clean: clean-local-python clean-local-files
 
 
 clean-dev: clean-local-files
-	@./containers/scripts/build.sh --clean
+	@./containers/scripts/deploy.sh --clean
 
 
 log:
