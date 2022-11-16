@@ -15,9 +15,6 @@ interruption() {
 
 declare -g TEMPOUT
 
-DEPLOY=false
-FULL_DEV=""
-NOWAIT=true
 # RETRY=false
 
 test_fixture() {
@@ -69,10 +66,9 @@ mock-task() {
 
   grep -q covscan <<< "$cmd" || return 1
 
-  [ "$NOWAIT" = true ] && NOWAIT_STR="--nowait"
-  echo "+ $cmd $NOWAIT_STR"
+  echo "+ $cmd --nowait"
   output="$(mktemp)"
-  eval "$cmd $NOWAIT_STR" | tee > "$output"
+  eval "$cmd --nowait" | tee > "$output"
   task_num="$(get_task_num "$(< "$output")")"
 
   python3 covscan/covscan watch-tasks "$task_num" &
@@ -124,10 +120,6 @@ mock-task() {
   wait
 }
 
-set_full_dev() {
-  FULL_DEV="--full-dev"
-}
-
 main() {
   set -x
 
@@ -135,41 +127,12 @@ main() {
   local build
   TEMPOUT=$(mktemp -dt cli-test-XXXXXX)
 
-  if [[ "$(type podman)" =~ docker ]]; then
-    set_full_dev
-  fi
-
-  if [ "$DEPLOY" = true ]; then
-    ./containers/scripts/deploy.sh --debug "$FULL_DEV" --no-interactive || exit "$?"
-  fi
-
-  if [[ -z "$FULL_DEV" ]]; then
-    podman start osh-client
-  else
-    test_fixture
-    cov-list ""
-    cov-mock-build ""
-    cov-version-diff-build ""
-  fi
+  test_fixture
+  cov-list ""
+  cov-mock-build ""
+  cov-version-diff-build ""
 
   # TODO: test cancel-tasks and find-tasks
 }
-
-while [[ $# -gt 0 ]]; do
-  case "$1" in
-    --deploy)
-      DEPLOY=true
-      shift
-      ;;
-    --full-dev)
-      set_full_dev
-      shift
-      ;;
-    *)
-      echo "Invalid option: $1"
-      exit 22 # EINVAL
-      ;;
-  esac
-done
 
 main
