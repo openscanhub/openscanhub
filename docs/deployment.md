@@ -117,8 +117,8 @@ ssh root@cov01.lab.eng.brq2.redhat.com tar -C /etc -c covscanhub | tar -xvC /etc
 - make covscanhub logging work:
 ```sh
 dnf install policycoreutils-python-utils
-semanage fcontext -a -t httpd_log_t /var/log/covscanhub/covscanhub.log
-install -o apache -g apache -m0660 /dev/null /var/log/covscanhub/covscanhub.log
+semanage fcontext -a -t httpd_sys_rw_content_t '/var/log/covscanhub(/.*)?'
+restorecon -R /var/log/covscanhub
 ```
 
 - enable redirect to `/covscanhub` by setting `AllowOverride FileInfo`
