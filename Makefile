@@ -39,7 +39,6 @@ clean-local-python:
 
 
 clean-local-files:
-	rm -f MANIFEST
 	rm -f ./*.src.rpm
 	rm -rf dist
 	find . -\( -name "*.pyc" -o -name '*.pyo' -o -name "*~" -\) -delete
