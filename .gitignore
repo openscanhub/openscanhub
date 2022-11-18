@@ -1,10 +1,10 @@
-*.py[co]
-*.db
-*.swp
-dist/*
-*.src.rpm
 *~
-kobo/
+*.db
+*.db.gz
 *.log
 *.pid
-*.db.gz
+*.py[co]
+*.swp
+/*.src.rpm
+/dist/
+/kobo/
