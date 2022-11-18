@@ -1,11 +1,7 @@
 *.py[co]
-*.sqlite
 *.db
 *.swp
-build/*
 dist/*
-.idea
-.spyderproject
 *.src.rpm
 *~
 kobo/
