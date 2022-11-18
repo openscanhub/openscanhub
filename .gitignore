@@ -1,10 +1,12 @@
 *~
 *.db
 *.db.gz
+*.egg-info/
 *.log
 *.pid
 *.py[co]
 *.swp
+__pycache__/
 /*.src.rpm
 /dist/
 /kobo/
