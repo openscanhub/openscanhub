@@ -6,7 +6,10 @@
 *.pid
 *.py[co]
 *.swp
+.coverage*
 __pycache__/
 /*.src.rpm
+/covscan-*.tar.xz
 /dist/
+/htmlcov/
 /kobo/
