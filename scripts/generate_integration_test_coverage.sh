@@ -33,9 +33,29 @@ User.objects.create_superuser('admin', 'user@redhat.com', 'xxxxxx')
 exit()
 EOF
 
+# Run client from local repository through python coverage
+CLI_CMD=(
+    env
+    COVSCAN_CONFIG_FILE=covscan/covscan-local.conf
+    PYTHONPATH=.:kobo
+    /usr/bin/coverage-3.6 run --parallel-mode '--omit=*site-packages*,*kobo*,'
+    covscan/covscan
+)
+
+set -e; set -o pipefail
 # Only generate test coverage report for Covscan(OpenScanHub) project
-podman exec -it osh-client env COVSCAN_CONFIG_FILE=covscan/covscan-local.conf PYTHONPATH=.:kobo /usr/bin/coverage-3.6 run --parallel-mode --omit="*site-packages*,*kobo*," covscan/covscan list-mock-configs
-podman exec -it osh-client env COVSCAN_CONFIG_FILE=covscan/covscan-local.conf PYTHONPATH=.:kobo /usr/bin/coverage-3.6 run --parallel-mode --omit="*site-packages*,*kobo*," covscan/covscan mock-build --config=fedora-36-x86_64 --brew-build units-2.21-4.fc36
+podman exec -it osh-client "${CLI_CMD[@]}" list-analyzers | grep gcc
+podman exec -it osh-client "${CLI_CMD[@]}" list-profiles | grep default
+podman exec -it osh-client "${CLI_CMD[@]}" list-mock-configs | grep fedora
+podman exec osh-client "${CLI_CMD[@]}" mock-build --config=fedora-36-x86_64 --brew-build units-2.21-4.fc36 | grep http://osh-hub:8000/task/
+[[ $(podman exec osh-client "${CLI_CMD[@]}" task-info 1 | wc -l) -gt 0 ]]
+podman exec -it osh-client "${CLI_CMD[@]}" download-results 1
+untar_output=$(tar xvf units*.tar.xz)
+untar_dir_name=$(echo $untar_output | cut -d' ' -f1)
+[[ -f "$untar_dir_name/scan-results.js" ]] && [[ -f "$untar_dir_name/scan-results.html" ]] && [[ -f "$untar_dir_name/scan.log" ]]
+
+[[ $(podman exec osh-client "${CLI_CMD[@]}" find-tasks -p units) -eq 1 ]]
+set +e; set +o pipefail
 
 # We have to kill django server and worker to generate coverage files
 podman exec -i osh-worker scripts/kill_worker.sh
