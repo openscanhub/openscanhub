@@ -7,40 +7,40 @@ source containers/scripts/utils.sh
 # see: https://github.com/containers/podman-compose/issues/430
 CONTAINERS='db osh-hub osh-worker'
 if [ "$IS_LINUX" = 1 ]; then
-  PROFILE=""
+    PROFILE=""
 else
-  PROFILE="--profile=full-dev"
+    PROFILE="--profile=full-dev"
 fi
 START='-d'
 FORCE='false'
 
 help() {
-  set +x
-  echo "Usage: $0 [--help|-h] [--clean] [--force|-f] [--full-dev|-F] [--no-start]"
-  echo
-  echo "Options:"
-  echo "  --clean          Remove all containers and volumes"
-  echo "  -f, --force      Force container rebuild"
-  echo "  -F, --full-dev   Create a system-independent development environment"
-  echo "  -h, --help       Show this message"
-  echo "  --no-start       Do not start containers"
+    set +x
+    echo "Usage: $0 [--help|-h] [--clean] [--force|-f] [--full-dev|-F] [--no-start]"
+    echo
+    echo "Options:"
+    echo "  --clean          Remove all containers and volumes"
+    echo "  -f, --force      Force container rebuild"
+    echo "  -F, --full-dev   Create a system-independent development environment"
+    echo "  -h, --help       Show this message"
+    echo "  --no-start       Do not start containers"
 }
 
 main() {
-  set -ex
+    set -ex
 
-  test_build_env || exit "$?"
+    test_build_env || exit "$?"
 
-  if [ "$START" = '-d' ]; then
-    prepare_deploy
-  fi
+    if [ "$START" = '-d' ]; then
+        prepare_deploy
+    fi
 
-  eval podman-compose up --build "$START" "$CONTAINERS"
+    eval podman-compose up --build "$START" "$CONTAINERS"
 
-  if [ "$START" = '-d' ]; then
-    wait_for_container 'HUB'
-    wait_for_db
-  fi
+    if [ "$START" = '-d' ]; then
+        wait_for_container 'HUB'
+        wait_for_db
+    fi
 }
 
 #Tests the build environment
@@ -48,64 +48,64 @@ main() {
 # Returns:
 # 0 if everything is setup correctly, 1 there's a version mismatch, 2 if there are missing dependencies and 3 if there's an unknown error
 test_build_env() (
-  set +e
-  # check that we are in the top-level diretory of our git repo
-  test -d .git || return 3
-  for f in docker-compose.yml containers/{hub/{Dockerfile,run.sh},{worker,client}.Dockerfile}; do
-    test -f "$f" || {
-      echo "Missing file: $f"
-      return 3
+    set +e
+    # check that we are in the top-level diretory of our git repo
+    test -d .git || return 3
+    for f in docker-compose.yml containers/{hub/{Dockerfile,run.sh},{worker,client}.Dockerfile}; do
+        test -f "$f" || {
+            echo "Missing file: $f"
+            return 3
+        }
+    done
+
+    # test if *-compose is installed
+    command -v podman-compose >/dev/null 2>&1
+    test $? = 0 || {
+        echo 'Missing compose command'
+        return 2
     }
-  done
 
-  # test if *-compose is installed
-  command -v podman-compose >/dev/null 2>&1
-  test $? = 0 || {
-    echo 'Missing compose command'
-    return 2
-  }
+    [ "$IS_LINUX" = 0 ] && return 0
 
-  [ "$IS_LINUX" = 0 ] && return 0
+    # test podman-compose version
+    mapfile -t < <(grep ' version' <(podman-compose -v) |\
+        grep -o ' version\s.*' |\
+        sed -e 's, version\s*\([[0-9]]*\),\1,')
 
-  # test podman-compose version
-  mapfile -t < <(grep ' version' <(podman-compose -v) |\
-    grep -o ' version\s.*' |\
-    sed -e 's, version\s*\([[0-9]]*\),\1,')
+    # if podman < 3.1.0 then we need podman-compose < 1.x.x
+    PODMAN_VER="${MAPFILE[0]}"
+    PODMAN_COMPOSE_VER="${MAPFILE[1]}"
+    [[ "$(version_compare "$PODMAN_VER" "3.1.0")" = 1 ]] &&\
+        [[ "$(version_compare "$PODMAN_COMPOSE_VER" "1.0.0")" = 0 ]] && {
+            echo "podman-compose version $PODMAN_COMPOSE_VER is not compatible with podman version $PODMAN_VER"
+            return 1
+        }
 
-  # if podman < 3.1.0 then we need podman-compose < 1.x.x
-  PODMAN_VER="${MAPFILE[0]}"
-  PODMAN_COMPOSE_VER="${MAPFILE[1]}"
-  [[ "$(version_compare "$PODMAN_VER" "3.1.0")" = 1 ]] &&\
-    [[ "$(version_compare "$PODMAN_COMPOSE_VER" "1.0.0")" = 0 ]] && {
-    echo "podman-compose version $PODMAN_COMPOSE_VER is not compatible with podman version $PODMAN_VER"
-    return 1
-  }
-
-  return 0
+    return 0
 )
 
 
 prepare_deploy() {
-  test_deploy_env || exit "$?"
+    test_deploy_env || exit "$?"
 
-  if [ "$IS_LINUX" = 1 ]; then
-    LABEL_PREFIX='io.podman'
-  else
-    LABEL_PREFIX='com.docker'
-  fi
-
-  if [[ "$(podman ps -a --filter label="$LABEL_PREFIX".compose.project=covscan --filter status=running -q 2>/dev/null | wc -l)" -gt 0 ]]; then
-    if [ "$FORCE" = true ]; then
-      # when running the down command docker won't stop osh-client if not
-      # specified causing errors when trying to remove the network
-      # we also can't specify container names in down command
-      eval podman-compose "$PROFILE" down
+    if [ "$IS_LINUX" = 1 ]; then
+        LABEL_PREFIX='io.podman'
     else
-      # shellcheck disable=2016
-      echo 'One or more containers are already running under `compose`. Please use `compose down` to kill them.'
-      exit 1
+        LABEL_PREFIX='com.docker'
     fi
-  fi
+
+    if [[ "$(podman ps -a --filter label="$LABEL_PREFIX".compose.project=covscan --filter status=running -q 2>/dev/null | wc -l)" -gt 0 ]]; then
+        if [ "$FORCE" = true ]; then
+            # when running the down command docker won't stop osh-client if not
+            # specified causing errors when trying to remove the network
+            # we also can't specify container names in down command
+            eval podman-compose "$PROFILE" down
+        else
+            # shellcheck disable=2016
+            echo 'One or more containers are already running under `compose`. Please use `compose down` to kill them.'
+            exit 1
+        fi
+    fi
 }
 
 
@@ -115,51 +115,51 @@ prepare_deploy() {
 # 0 if everything is setup correctly, 1 there's a version mismatch, 2 if there
 # are missing dependencies and 3 if there's an unknown error
 test_deploy_env() (
-  set +e
-  cd kobo || return 2
-  git ls-remote https://github.com/release-engineering/kobo > /dev/null ||\
-    git ls-remote https://github.com/frenzymadness/kobo > /dev/null ||\
-    return 2
+    set +e
+    cd kobo || return 2
+    git ls-remote https://github.com/release-engineering/kobo > /dev/null ||\
+        git ls-remote https://github.com/frenzymadness/kobo > /dev/null ||\
+        return 2
 )
 
 
 clean() {
-  set -e
+    set -e
 
-  eval podman-compose "$PROFILE" down -v
-  CONTAINERS=$(podman ps -a | grep 'covscan\|osh' | sed -e "s/[[:space:]]\{2,\}/,/g" | cut -d, -f1)
-  echo "$CONTAINERS" | xargs podman rm -f
-  IMAGES=$(shell podman images | grep 'covscan\|osh' | sed -e "s/[[:space:]]\{2,\}/,/g" | cut -d, -f3)
-  echo "$IMAGES" | xargs podman rmi -f
+    eval podman-compose "$PROFILE" down -v
+    CONTAINERS=$(podman ps -a | grep 'covscan\|osh' | sed -e "s/[[:space:]]\{2,\}/,/g" | cut -d, -f1)
+    echo "$CONTAINERS" | xargs podman rm -f
+    IMAGES=$(shell podman images | grep 'covscan\|osh' | sed -e "s/[[:space:]]\{2,\}/,/g" | cut -d, -f3)
+    echo "$IMAGES" | xargs podman rmi -f
 }
 
 while [[ $# -gt 0 ]]; do
-  case "$1" in
-    --clean)
-      clean
-      exit "$?"
-      ;;
-    --force|-f)
-      FORCE='true'
-      shift
-      ;;
-    --full-dev|-F)
-      CONTAINERS+=' osh-client'
-      shift
-      ;;
-    --no-start)
-      START='--no-start'
-      shift
-      ;;
-    *)
-      if [ -z "$1" ]; then
-        shift
-      else
-        echo "Unknown option: $1"
-        exit 22 # EINVAL
-      fi
-      ;;
-  esac
+    case "$1" in
+        --clean)
+            clean
+            exit "$?"
+            ;;
+        --force|-f)
+            FORCE='true'
+            shift
+            ;;
+        --full-dev|-F)
+            CONTAINERS+=' osh-client'
+            shift
+            ;;
+        --no-start)
+            START='--no-start'
+            shift
+            ;;
+        *)
+            if [ -z "$1" ]; then
+                shift
+            else
+                echo "Unknown option: $1"
+                exit 22 # EINVAL
+            fi
+            ;;
+    esac
 done
 
 main

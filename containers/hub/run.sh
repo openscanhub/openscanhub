@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
 for _ in $(seq 100); do
-  pg_isready -h db && break
-  sleep 0.5
+    pg_isready -h db && break
+    sleep 0.5
 done
 
 # Migrations
@@ -16,15 +16,15 @@ ret=$?
 # old already-applied migrations. In that case, user is responsible
 # for the database and we can ignore issues in migrations.
 if [ "$ret" -gt 0 ]; then
-  python3.6 covscanhub/manage.py migrate --fake
+    python3.6 covscanhub/manage.py migrate --fake
 fi
 
 # If the table of mock configs is empty, we most likely have an empty database.
 # In this case, we load the initial data into the database to make the Covscan
 # hub work.
 if [ "$(python3.6 covscanhub/manage.py dumpdata scan.MockConfig)" = "[]" ]; then
-  python3.6 covscanhub/manage.py loaddata \
-    covscanhub/{errata,scan}/fixtures/initial_data.json
+    python3.6 covscanhub/manage.py loaddata \
+        covscanhub/{errata,scan}/fixtures/initial_data.json
 fi
 
 # Run a dummy SMTP server in background
