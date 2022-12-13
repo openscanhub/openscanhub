@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
 for _ in $(seq 100); do
   pg_isready -h db && break
@@ -9,12 +9,13 @@ done
 # If the database is empty or if it has records about already
 # applied migrations, this command should work without any troubles.
 python3.6 covscanhub/manage.py migrate
+ret=$?
 
 # If the pure migration fails, we either have an existing database content
 # or the content is not consistent and we need to skip some
 # old already-applied migrations. In that case, user is responsible
 # for the database and we can ignore issues in migrations.
-if [ $? -gt 0 ]; then
+if [ "$ret" -gt 0 ]; then
   python3.6 covscanhub/manage.py migrate --fake
 fi
 
