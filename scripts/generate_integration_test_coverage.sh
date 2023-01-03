@@ -55,6 +55,9 @@ untar_dir_name=$(echo $untar_output | cut -d' ' -f1)
 [[ -f "$untar_dir_name/scan-results.js" ]] && [[ -f "$untar_dir_name/scan-results.html" ]] && [[ -f "$untar_dir_name/scan.log" ]]
 
 [[ $(podman exec osh-client "${CLI_CMD[@]}" find-tasks -p units) -eq 1 ]]
+
+podman exec osh-client /usr/bin/coverage-3.6 run --parallel-mode '--omit=*site-packages*,*kobo*,' covscanhub/scripts/covscan-xmlrpc-client.py --hub http://osh-hub:8000/xmlrpc/kerbauth/ --username=user --password=xxxxxx create-scan -b python-six-1.3.0-4.el7 -t python-six-1.9.0-2.el7 --et-scan-id=1 --release=RHEL-7.2.0 --owner=admin --advisory-id=1
+
 set +e; set +o pipefail
 
 # We have to kill django server and worker to generate coverage files
