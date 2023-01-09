@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 
 import random
-from unittest import TestCase
 
-from django.test import Client
+from django.test import Client, TestCase
 
 
 class BasicWebTestCase(TestCase):
