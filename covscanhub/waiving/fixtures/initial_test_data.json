@@ -1,0 +1,4778 @@
+[
+  {
+    "model": "contenttypes.contenttype",
+    "pk": 1,
+    "fields": {
+      "app_label": "auth",
+      "model": "permission"
+    }
+  },
+  {
+    "model": "contenttypes.contenttype",
+    "pk": 2,
+    "fields": {
+      "app_label": "auth",
+      "model": "group"
+    }
+  },
+  {
+    "model": "contenttypes.contenttype",
+    "pk": 3,
+    "fields": {
+      "app_label": "kobo_auth",
+      "model": "user"
+    }
+  },
+  {
+    "model": "contenttypes.contenttype",
+    "pk": 4,
+    "fields": {
+      "app_label": "contenttypes",
+      "model": "contenttype"
+    }
+  },
+  {
+    "model": "contenttypes.contenttype",
+    "pk": 5,
+    "fields": {
+      "app_label": "sessions",
+      "model": "session"
+    }
+  },
+  {
+    "model": "contenttypes.contenttype",
+    "pk": 6,
+    "fields": {
+      "app_label": "sites",
+      "model": "site"
+    }
+  },
+  {
+    "model": "contenttypes.contenttype",
+    "pk": 7,
+    "fields": {
+      "app_label": "admin",
+      "model": "logentry"
+    }
+  },
+  {
+    "model": "contenttypes.contenttype",
+    "pk": 8,
+    "fields": {
+      "app_label": "upload",
+      "model": "fileupload"
+    }
+  },
+  {
+    "model": "contenttypes.contenttype",
+    "pk": 9,
+    "fields": {
+      "app_label": "xmlrpc",
+      "model": "xmlrpclog"
+    }
+  },
+  {
+    "model": "contenttypes.contenttype",
+    "pk": 10,
+    "fields": {
+      "app_label": "hub",
+      "model": "arch"
+    }
+  },
+  {
+    "model": "contenttypes.contenttype",
+    "pk": 11,
+    "fields": {
+      "app_label": "hub",
+      "model": "channel"
+    }
+  },
+  {
+    "model": "contenttypes.contenttype",
+    "pk": 12,
+    "fields": {
+      "app_label": "hub",
+      "model": "task"
+    }
+  },
+  {
+    "model": "contenttypes.contenttype",
+    "pk": 13,
+    "fields": {
+      "app_label": "hub",
+      "model": "worker"
+    }
+  },
+  {
+    "model": "contenttypes.contenttype",
+    "pk": 14,
+    "fields": {
+      "app_label": "errata",
+      "model": "capability"
+    }
+  },
+  {
+    "model": "contenttypes.contenttype",
+    "pk": 15,
+    "fields": {
+      "app_label": "errata",
+      "model": "scanningsession"
+    }
+  },
+  {
+    "model": "contenttypes.contenttype",
+    "pk": 16,
+    "fields": {
+      "app_label": "scan",
+      "model": "analyzer"
+    }
+  },
+  {
+    "model": "contenttypes.contenttype",
+    "pk": 17,
+    "fields": {
+      "app_label": "scan",
+      "model": "analyzerversion"
+    }
+  },
+  {
+    "model": "contenttypes.contenttype",
+    "pk": 18,
+    "fields": {
+      "app_label": "scan",
+      "model": "appsettings"
+    }
+  },
+  {
+    "model": "contenttypes.contenttype",
+    "pk": 19,
+    "fields": {
+      "app_label": "scan",
+      "model": "clientanalyzer"
+    }
+  },
+  {
+    "model": "contenttypes.contenttype",
+    "pk": 20,
+    "fields": {
+      "app_label": "scan",
+      "model": "etmapping"
+    }
+  },
+  {
+    "model": "contenttypes.contenttype",
+    "pk": 21,
+    "fields": {
+      "app_label": "scan",
+      "model": "mockconfig"
+    }
+  },
+  {
+    "model": "contenttypes.contenttype",
+    "pk": 22,
+    "fields": {
+      "app_label": "scan",
+      "model": "package"
+    }
+  },
+  {
+    "model": "contenttypes.contenttype",
+    "pk": 23,
+    "fields": {
+      "app_label": "scan",
+      "model": "packageattribute"
+    }
+  },
+  {
+    "model": "contenttypes.contenttype",
+    "pk": 24,
+    "fields": {
+      "app_label": "scan",
+      "model": "packagecapability"
+    }
+  },
+  {
+    "model": "contenttypes.contenttype",
+    "pk": 25,
+    "fields": {
+      "app_label": "scan",
+      "model": "permissions"
+    }
+  },
+  {
+    "model": "contenttypes.contenttype",
+    "pk": 26,
+    "fields": {
+      "app_label": "scan",
+      "model": "profile"
+    }
+  },
+  {
+    "model": "contenttypes.contenttype",
+    "pk": 27,
+    "fields": {
+      "app_label": "scan",
+      "model": "releasemapping"
+    }
+  },
+  {
+    "model": "contenttypes.contenttype",
+    "pk": 28,
+    "fields": {
+      "app_label": "scan",
+      "model": "scan"
+    }
+  },
+  {
+    "model": "contenttypes.contenttype",
+    "pk": 29,
+    "fields": {
+      "app_label": "scan",
+      "model": "scanbinding"
+    }
+  },
+  {
+    "model": "contenttypes.contenttype",
+    "pk": 30,
+    "fields": {
+      "app_label": "scan",
+      "model": "systemrelease"
+    }
+  },
+  {
+    "model": "contenttypes.contenttype",
+    "pk": 31,
+    "fields": {
+      "app_label": "scan",
+      "model": "tag"
+    }
+  },
+  {
+    "model": "contenttypes.contenttype",
+    "pk": 32,
+    "fields": {
+      "app_label": "scan",
+      "model": "taskextension"
+    }
+  },
+  {
+    "model": "contenttypes.contenttype",
+    "pk": 33,
+    "fields": {
+      "app_label": "waiving",
+      "model": "bugzilla"
+    }
+  },
+  {
+    "model": "contenttypes.contenttype",
+    "pk": 34,
+    "fields": {
+      "app_label": "waiving",
+      "model": "checker"
+    }
+  },
+  {
+    "model": "contenttypes.contenttype",
+    "pk": 35,
+    "fields": {
+      "app_label": "waiving",
+      "model": "checkergroup"
+    }
+  },
+  {
+    "model": "contenttypes.contenttype",
+    "pk": 36,
+    "fields": {
+      "app_label": "waiving",
+      "model": "defect"
+    }
+  },
+  {
+    "model": "contenttypes.contenttype",
+    "pk": 37,
+    "fields": {
+      "app_label": "waiving",
+      "model": "result"
+    }
+  },
+  {
+    "model": "contenttypes.contenttype",
+    "pk": 38,
+    "fields": {
+      "app_label": "waiving",
+      "model": "resultgroup"
+    }
+  },
+  {
+    "model": "contenttypes.contenttype",
+    "pk": 39,
+    "fields": {
+      "app_label": "waiving",
+      "model": "waiver"
+    }
+  },
+  {
+    "model": "contenttypes.contenttype",
+    "pk": 40,
+    "fields": {
+      "app_label": "waiving",
+      "model": "waivinglog"
+    }
+  },
+  {
+    "model": "contenttypes.contenttype",
+    "pk": 41,
+    "fields": {
+      "app_label": "stats",
+      "model": "statresults"
+    }
+  },
+  {
+    "model": "contenttypes.contenttype",
+    "pk": 42,
+    "fields": {
+      "app_label": "stats",
+      "model": "stattype"
+    }
+  },
+  {
+    "model": "sessions.session",
+    "pk": "g8hwe7b7kufvo2clxsk36xrf6waqa5df",
+    "fields": {
+      "session_data": "ZmQ4YTM1OGM3MzE1YmVlOGQ2M2Q4ZGNhYjIzZTc5YTc4ZDhjNzVjOTp7Il9hdXRoX3VzZXJfaWQiOiI2IiwiX2F1dGhfdXNlcl9iYWNrZW5kIjoia29iby5kamFuZ28uYXV0aC5rcmI1LktyYjVSZW1vdGVVc2VyQmFja2VuZCIsIl9hdXRoX3VzZXJfaGFzaCI6IjRmNmU2MTk5MDVjNTFhMmRlOTc4M2FlOTZiNDMyNjNkYzEwZmFkN2YifQ==",
+      "expire_date": "2022-12-09T15:21:00.384"
+    }
+  },
+  {
+    "model": "sessions.session",
+    "pk": "knnpbeqfkgi3g1qits9v22x3vfywzhzp",
+    "fields": {
+      "session_data": "ZmQ4YTM1OGM3MzE1YmVlOGQ2M2Q4ZGNhYjIzZTc5YTc4ZDhjNzVjOTp7Il9hdXRoX3VzZXJfaWQiOiI2IiwiX2F1dGhfdXNlcl9iYWNrZW5kIjoia29iby5kamFuZ28uYXV0aC5rcmI1LktyYjVSZW1vdGVVc2VyQmFja2VuZCIsIl9hdXRoX3VzZXJfaGFzaCI6IjRmNmU2MTk5MDVjNTFhMmRlOTc4M2FlOTZiNDMyNjNkYzEwZmFkN2YifQ==",
+      "expire_date": "2022-12-09T15:21:05.573"
+    }
+  },
+  {
+    "model": "sessions.session",
+    "pk": "psdm68zjvzfbw569txachyup3p59v6bl",
+    "fields": {
+      "session_data": "ZmQ4YTM1OGM3MzE1YmVlOGQ2M2Q4ZGNhYjIzZTc5YTc4ZDhjNzVjOTp7Il9hdXRoX3VzZXJfaWQiOiI2IiwiX2F1dGhfdXNlcl9iYWNrZW5kIjoia29iby5kamFuZ28uYXV0aC5rcmI1LktyYjVSZW1vdGVVc2VyQmFja2VuZCIsIl9hdXRoX3VzZXJfaGFzaCI6IjRmNmU2MTk5MDVjNTFhMmRlOTc4M2FlOTZiNDMyNjNkYzEwZmFkN2YifQ==",
+      "expire_date": "2022-12-09T15:25:22.420"
+    }
+  },
+  {
+    "model": "sessions.session",
+    "pk": "xe7vi5j4xogefp78a9c5ppzkwg76l5nf",
+    "fields": {
+      "session_data": "M2MxNGRlNzJiYjczMTI4NDU4OTg3ZDdiM2Q0MTM0ZGVhMjI0ZWIwNDp7Il9hdXRoX3VzZXJfaWQiOiIyIiwiX2F1dGhfdXNlcl9iYWNrZW5kIjoiZGphbmdvLmNvbnRyaWIuYXV0aC5iYWNrZW5kcy5Nb2RlbEJhY2tlbmQiLCJfYXV0aF91c2VyX2hhc2giOiIyOTlhODUwMDdlNmNhMjE3OTFhNWRjMGY3OTc4ZTg1ZWQyOGRlZjkzIn0=",
+      "expire_date": "2022-12-09T15:20:57.016"
+    }
+  },
+  {
+    "model": "sites.site",
+    "pk": 1,
+    "fields": {
+      "domain": "example.com",
+      "name": "example.com"
+    }
+  },
+  {
+    "model": "hub.arch",
+    "pk": 1,
+    "fields": {
+      "name": "noarch",
+      "pretty_name": "noarch"
+    }
+  },
+  {
+    "model": "hub.channel",
+    "pk": 1,
+    "fields": {
+      "name": "default"
+    }
+  },
+  {
+    "model": "hub.worker",
+    "pk": 1,
+    "fields": {
+      "worker_key": "JjHIQ5rgBsvvOHgft1rxf8n46fFVytQY8icVCiuCSvKjV9IVzzlXd8YVGlNA0RcY",
+      "name": "localhost",
+      "enabled": true,
+      "max_load": 2,
+      "max_tasks": 0,
+      "min_priority": 0,
+      "ready": true,
+      "task_count": 0,
+      "current_load": 0,
+      "arches": [
+        1
+      ],
+      "channels": [
+        1
+      ]
+    }
+  },
+  {
+    "model": "errata.scanningsession",
+    "pk": 1,
+    "fields": {
+      "name": "ERRATA",
+      "description": "Periodic scans of packages released by Errata Tool",
+      "options": "\"{\\\"comment_template\\\": \\\"errata process scan of %(target)s\\\", \\\"task_priority\\\": 20, \\\"method\\\": \\\"ErrataDiffBuild\\\"}\"",
+      "profile": 1,
+      "caps": []
+    }
+  },
+  {
+    "model": "scan.mockconfig",
+    "pk": 1,
+    "fields": {
+      "name": "epel-6-x86_64",
+      "enabled": false
+    }
+  },
+  {
+    "model": "scan.mockconfig",
+    "pk": 2,
+    "fields": {
+      "name": "fedora-devel-x86_64",
+      "enabled": false
+    }
+  },
+  {
+    "model": "scan.mockconfig",
+    "pk": 3,
+    "fields": {
+      "name": "fedora-17-x86_64",
+      "enabled": false
+    }
+  },
+  {
+    "model": "scan.mockconfig",
+    "pk": 5,
+    "fields": {
+      "name": "fedora-rawhide-cscan",
+      "enabled": false
+    }
+  },
+  {
+    "model": "scan.mockconfig",
+    "pk": 15,
+    "fields": {
+      "name": "epel-5-x86_64",
+      "enabled": false
+    }
+  },
+  {
+    "model": "scan.mockconfig",
+    "pk": 16,
+    "fields": {
+      "name": "fedora-rawhide-abrt",
+      "enabled": false
+    }
+  },
+  {
+    "model": "scan.mockconfig",
+    "pk": 19,
+    "fields": {
+      "name": "fedora-15-x86_64",
+      "enabled": false
+    }
+  },
+  {
+    "model": "scan.mockconfig",
+    "pk": 21,
+    "fields": {
+      "name": "fedora-4-x86_64-epel",
+      "enabled": false
+    }
+  },
+  {
+    "model": "scan.mockconfig",
+    "pk": 22,
+    "fields": {
+      "name": "fedora-rawhide-x86_64-pwouters",
+      "enabled": false
+    }
+  },
+  {
+    "model": "scan.mockconfig",
+    "pk": 25,
+    "fields": {
+      "name": "fedora-16-cscan",
+      "enabled": false
+    }
+  },
+  {
+    "model": "scan.mockconfig",
+    "pk": 29,
+    "fields": {
+      "name": "epel-4-x86_64",
+      "enabled": false
+    }
+  },
+  {
+    "model": "scan.mockconfig",
+    "pk": 30,
+    "fields": {
+      "name": "fedora-16-xscan",
+      "enabled": false
+    }
+  },
+  {
+    "model": "scan.mockconfig",
+    "pk": 31,
+    "fields": {
+      "name": "fedora-5-x86_64-epel",
+      "enabled": false
+    }
+  },
+  {
+    "model": "scan.mockconfig",
+    "pk": 32,
+    "fields": {
+      "name": "fedora-16-abrt",
+      "enabled": false
+    }
+  },
+  {
+    "model": "scan.mockconfig",
+    "pk": 34,
+    "fields": {
+      "name": "fedora-17-x86_64-pwouters",
+      "enabled": false
+    }
+  },
+  {
+    "model": "scan.mockconfig",
+    "pk": 38,
+    "fields": {
+      "name": "rhel-7-alpha2-x86_64-cscan",
+      "enabled": false
+    }
+  },
+  {
+    "model": "scan.mockconfig",
+    "pk": 40,
+    "fields": {
+      "name": "rhel-5-test-x86_64-xscan",
+      "enabled": false
+    }
+  },
+  {
+    "model": "scan.mockconfig",
+    "pk": 41,
+    "fields": {
+      "name": "fedora-18-xscan2",
+      "enabled": false
+    }
+  },
+  {
+    "model": "scan.mockconfig",
+    "pk": 43,
+    "fields": {
+      "name": "rhel-7-x86_64-nightly-cscan",
+      "enabled": false
+    }
+  },
+  {
+    "model": "scan.mockconfig",
+    "pk": 49,
+    "fields": {
+      "name": "rhel-7-x86_64-cscan",
+      "enabled": false
+    }
+  },
+  {
+    "model": "scan.mockconfig",
+    "pk": 55,
+    "fields": {
+      "name": "fedora-17-cscan",
+      "enabled": false
+    }
+  },
+  {
+    "model": "scan.mockconfig",
+    "pk": 58,
+    "fields": {
+      "name": "fedora-16-x86_64",
+      "enabled": false
+    }
+  },
+  {
+    "model": "scan.mockconfig",
+    "pk": 62,
+    "fields": {
+      "name": "fedora-rawhide-xscan",
+      "enabled": false
+    }
+  },
+  {
+    "model": "scan.mockconfig",
+    "pk": 63,
+    "fields": {
+      "name": "rhel-7-alpha2-x86_64-xscan",
+      "enabled": false
+    }
+  },
+  {
+    "model": "scan.mockconfig",
+    "pk": 64,
+    "fields": {
+      "name": "fedora-17-xscan",
+      "enabled": false
+    }
+  },
+  {
+    "model": "scan.mockconfig",
+    "pk": 65,
+    "fields": {
+      "name": "rhel-7-x86_64-nightly-xscan",
+      "enabled": false
+    }
+  },
+  {
+    "model": "scan.mockconfig",
+    "pk": 66,
+    "fields": {
+      "name": "fedora-rawhide-x86_64",
+      "enabled": true
+    }
+  },
+  {
+    "model": "scan.mockconfig",
+    "pk": 67,
+    "fields": {
+      "name": "fedora-rawhide-xscan2",
+      "enabled": false
+    }
+  },
+  {
+    "model": "scan.mockconfig",
+    "pk": 70,
+    "fields": {
+      "name": "fedora-18-cscan",
+      "enabled": false
+    }
+  },
+  {
+    "model": "scan.mockconfig",
+    "pk": 72,
+    "fields": {
+      "name": "fedora-rawhide-x86_64-cscan",
+      "enabled": false
+    }
+  },
+  {
+    "model": "scan.mockconfig",
+    "pk": 73,
+    "fields": {
+      "name": "fedora-14-x86_64",
+      "enabled": false
+    }
+  },
+  {
+    "model": "scan.mockconfig",
+    "pk": 75,
+    "fields": {
+      "name": "fedora-18-xscan",
+      "enabled": false
+    }
+  },
+  {
+    "model": "scan.mockconfig",
+    "pk": 80,
+    "fields": {
+      "name": "rhel-5.6-x86_64-cscan",
+      "enabled": false
+    }
+  },
+  {
+    "model": "scan.mockconfig",
+    "pk": 81,
+    "fields": {
+      "name": "rhel-5.7-x86_64-cscan",
+      "enabled": false
+    }
+  },
+  {
+    "model": "scan.mockconfig",
+    "pk": 87,
+    "fields": {
+      "name": "rhel-6-abrt-x86_64",
+      "enabled": false
+    }
+  },
+  {
+    "model": "scan.mockconfig",
+    "pk": 88,
+    "fields": {
+      "name": "rhel-5.9-x86_64-cscan",
+      "enabled": false
+    }
+  },
+  {
+    "model": "scan.mockconfig",
+    "pk": 89,
+    "fields": {
+      "name": "fedora-19-cscan",
+      "enabled": false
+    }
+  },
+  {
+    "model": "scan.mockconfig",
+    "pk": 90,
+    "fields": {
+      "name": "rhel-5-x86_64",
+      "enabled": true
+    }
+  },
+  {
+    "model": "scan.mockconfig",
+    "pk": 91,
+    "fields": {
+      "name": "rhel-6-x86_64",
+      "enabled": true
+    }
+  },
+  {
+    "model": "scan.mockconfig",
+    "pk": 92,
+    "fields": {
+      "name": "rhel-7-x86_64",
+      "enabled": true
+    }
+  },
+  {
+    "model": "scan.mockconfig",
+    "pk": 93,
+    "fields": {
+      "name": "rhel-6-rebuild-x86_64",
+      "enabled": false
+    }
+  },
+  {
+    "model": "scan.mockconfig",
+    "pk": 94,
+    "fields": {
+      "name": "rhel-5-rebuild-x86_64",
+      "enabled": false
+    }
+  },
+  {
+    "model": "scan.mockconfig",
+    "pk": 95,
+    "fields": {
+      "name": "fedora-20-xscan",
+      "enabled": false
+    }
+  },
+  {
+    "model": "scan.mockconfig",
+    "pk": 96,
+    "fields": {
+      "name": "fedora-20-cockpit",
+      "enabled": false
+    }
+  },
+  {
+    "model": "scan.mockconfig",
+    "pk": 97,
+    "fields": {
+      "name": "fedora-18-x86_64",
+      "enabled": false
+    }
+  },
+  {
+    "model": "scan.mockconfig",
+    "pk": 98,
+    "fields": {
+      "name": "fedora-19-x86_64",
+      "enabled": false
+    }
+  },
+  {
+    "model": "scan.mockconfig",
+    "pk": 99,
+    "fields": {
+      "name": "fedora-20-x86_64",
+      "enabled": false
+    }
+  },
+  {
+    "model": "scan.mockconfig",
+    "pk": 100,
+    "fields": {
+      "name": "fedora-21-x86_64",
+      "enabled": false
+    }
+  },
+  {
+    "model": "scan.mockconfig",
+    "pk": 101,
+    "fields": {
+      "name": "rhel-6-x86_64-jfilak",
+      "enabled": false
+    }
+  },
+  {
+    "model": "scan.mockconfig",
+    "pk": 102,
+    "fields": {
+      "name": "fedora-22-x86_64",
+      "enabled": false
+    }
+  },
+  {
+    "model": "scan.mockconfig",
+    "pk": 103,
+    "fields": {
+      "name": "rhel-7-x86_64-kdudka",
+      "enabled": false
+    }
+  },
+  {
+    "model": "scan.mockconfig",
+    "pk": 104,
+    "fields": {
+      "name": "rhel-6-x86_64-kdudka",
+      "enabled": false
+    }
+  },
+  {
+    "model": "scan.mockconfig",
+    "pk": 105,
+    "fields": {
+      "name": "rhel-7-x86_64-basescan",
+      "enabled": true
+    }
+  },
+  {
+    "model": "scan.mockconfig",
+    "pk": 106,
+    "fields": {
+      "name": "rhel-6-x86_64-basescan",
+      "enabled": true
+    }
+  },
+  {
+    "model": "scan.mockconfig",
+    "pk": 107,
+    "fields": {
+      "name": "fedora-23-x86_64",
+      "enabled": false
+    }
+  },
+  {
+    "model": "scan.mockconfig",
+    "pk": 108,
+    "fields": {
+      "name": "rhel-6-x86_64-basescan-62",
+      "enabled": false
+    }
+  },
+  {
+    "model": "scan.mockconfig",
+    "pk": 109,
+    "fields": {
+      "name": "fedora-24-x86_64",
+      "enabled": false
+    }
+  },
+  {
+    "model": "scan.mockconfig",
+    "pk": 110,
+    "fields": {
+      "name": "fedora-25-x86_64",
+      "enabled": false
+    }
+  },
+  {
+    "model": "scan.mockconfig",
+    "pk": 111,
+    "fields": {
+      "name": "rhel-7.1.z-x86_64",
+      "enabled": true
+    }
+  },
+  {
+    "model": "scan.mockconfig",
+    "pk": 112,
+    "fields": {
+      "name": "rhel-7.2.z-x86_64",
+      "enabled": true
+    }
+  },
+  {
+    "model": "scan.mockconfig",
+    "pk": 113,
+    "fields": {
+      "name": "rhel-7.3.z-x86_64",
+      "enabled": true
+    }
+  },
+  {
+    "model": "scan.mockconfig",
+    "pk": 114,
+    "fields": {
+      "name": "fedora-26-x86_64",
+      "enabled": false
+    }
+  },
+  {
+    "model": "scan.mockconfig",
+    "pk": 115,
+    "fields": {
+      "name": "rhel-7-x86_64-sso",
+      "enabled": false
+    }
+  },
+  {
+    "model": "scan.mockconfig",
+    "pk": 116,
+    "fields": {
+      "name": "fedora-27-x86_64",
+      "enabled": false
+    }
+  },
+  {
+    "model": "scan.mockconfig",
+    "pk": 117,
+    "fields": {
+      "name": "rhel-7.4.z-x86_64",
+      "enabled": true
+    }
+  },
+  {
+    "model": "scan.mockconfig",
+    "pk": 118,
+    "fields": {
+      "name": "ceph-2-rhel-7-x86_64",
+      "enabled": true
+    }
+  },
+  {
+    "model": "scan.mockconfig",
+    "pk": 119,
+    "fields": {
+      "name": "ceph-3.0-rhel-7-x86_64",
+      "enabled": true
+    }
+  },
+  {
+    "model": "scan.mockconfig",
+    "pk": 120,
+    "fields": {
+      "name": "rhel-6.8.z-x86_64",
+      "enabled": true
+    }
+  },
+  {
+    "model": "scan.mockconfig",
+    "pk": 121,
+    "fields": {
+      "name": "rhos-12.0-rhel-7-x86_64",
+      "enabled": true
+    }
+  },
+  {
+    "model": "scan.mockconfig",
+    "pk": 122,
+    "fields": {
+      "name": "ceph-1.3-rhel-7-x86_64",
+      "enabled": true
+    }
+  },
+  {
+    "model": "scan.mockconfig",
+    "pk": 123,
+    "fields": {
+      "name": "rhel-7-shellcheck-x86_64",
+      "enabled": false
+    }
+  },
+  {
+    "model": "scan.mockconfig",
+    "pk": 124,
+    "fields": {
+      "name": "rhel-6.6.z-x86_64",
+      "enabled": true
+    }
+  },
+  {
+    "model": "scan.mockconfig",
+    "pk": 125,
+    "fields": {
+      "name": "fedora-28-x86_64",
+      "enabled": false
+    }
+  },
+  {
+    "model": "scan.mockconfig",
+    "pk": 126,
+    "fields": {
+      "name": "rhel-7.5.z-x86_64",
+      "enabled": true
+    }
+  },
+  {
+    "model": "scan.mockconfig",
+    "pk": 127,
+    "fields": {
+      "name": "rhel-8.0-x86_64",
+      "enabled": false
+    }
+  },
+  {
+    "model": "scan.mockconfig",
+    "pk": 128,
+    "fields": {
+      "name": "fedora-29-x86_64",
+      "enabled": false
+    }
+  },
+  {
+    "model": "scan.mockconfig",
+    "pk": 129,
+    "fields": {
+      "name": "rhel-8-x86_64",
+      "enabled": true
+    }
+  },
+  {
+    "model": "scan.mockconfig",
+    "pk": 130,
+    "fields": {
+      "name": "rhel-8-mod-x86_64",
+      "enabled": false
+    }
+  },
+  {
+    "model": "scan.mockconfig",
+    "pk": 131,
+    "fields": {
+      "name": "rhel-7.6.z-x86_64",
+      "enabled": true
+    }
+  },
+  {
+    "model": "scan.mockconfig",
+    "pk": 132,
+    "fields": {
+      "name": "fedora-29-x86_64-mcrha",
+      "enabled": false
+    }
+  },
+  {
+    "model": "scan.mockconfig",
+    "pk": 133,
+    "fields": {
+      "name": "rhel-8.0.0.z-x86_64",
+      "enabled": true
+    }
+  },
+  {
+    "model": "scan.mockconfig",
+    "pk": 134,
+    "fields": {
+      "name": "fedora-30-x86_64",
+      "enabled": false
+    }
+  },
+  {
+    "model": "scan.mockconfig",
+    "pk": 135,
+    "fields": {
+      "name": "rhel-8-x86_64-basescan",
+      "enabled": true
+    }
+  },
+  {
+    "model": "scan.mockconfig",
+    "pk": 136,
+    "fields": {
+      "name": "rhel-8.0.0.z-mod-x86_64",
+      "enabled": false
+    }
+  },
+  {
+    "model": "scan.mockconfig",
+    "pk": 137,
+    "fields": {
+      "name": "rhel-7.7.z-x86_64",
+      "enabled": true
+    }
+  },
+  {
+    "model": "scan.mockconfig",
+    "pk": 138,
+    "fields": {
+      "name": "ceph-4.0-rhel-8-x86_64",
+      "enabled": true
+    }
+  },
+  {
+    "model": "scan.mockconfig",
+    "pk": 139,
+    "fields": {
+      "name": "fedora-31-x86_64",
+      "enabled": false
+    }
+  },
+  {
+    "model": "scan.mockconfig",
+    "pk": 140,
+    "fields": {
+      "name": "fedora-32-x86_64",
+      "enabled": false
+    }
+  },
+  {
+    "model": "scan.mockconfig",
+    "pk": 141,
+    "fields": {
+      "name": "rhel-8.1.0.z-x86_64",
+      "enabled": true
+    }
+  },
+  {
+    "model": "scan.mockconfig",
+    "pk": 142,
+    "fields": {
+      "name": "rhel-6.9.z-x86_64",
+      "enabled": true
+    }
+  },
+  {
+    "model": "scan.mockconfig",
+    "pk": 143,
+    "fields": {
+      "name": "cspodman",
+      "enabled": true
+    }
+  },
+  {
+    "model": "scan.mockconfig",
+    "pk": 144,
+    "fields": {
+      "name": "rhel-8.1.0.z-mod-x86_64",
+      "enabled": false
+    }
+  },
+  {
+    "model": "scan.mockconfig",
+    "pk": 145,
+    "fields": {
+      "name": "rhaos-a-rhel-7-x86_64",
+      "enabled": true
+    }
+  },
+  {
+    "model": "scan.mockconfig",
+    "pk": 146,
+    "fields": {
+      "name": "rhaos-a-rhel-8-x86_64",
+      "enabled": true
+    }
+  },
+  {
+    "model": "scan.mockconfig",
+    "pk": 147,
+    "fields": {
+      "name": "rhaos-b-rhel-7-x86_64",
+      "enabled": true
+    }
+  },
+  {
+    "model": "scan.mockconfig",
+    "pk": 148,
+    "fields": {
+      "name": "rhaos-b-rhel-8-x86_64",
+      "enabled": true
+    }
+  },
+  {
+    "model": "scan.mockconfig",
+    "pk": 149,
+    "fields": {
+      "name": "rhel-8.2.0.z-x86_64",
+      "enabled": true
+    }
+  },
+  {
+    "model": "scan.mockconfig",
+    "pk": 150,
+    "fields": {
+      "name": "rhel-7.8.z-x86_64",
+      "enabled": true
+    }
+  },
+  {
+    "model": "scan.mockconfig",
+    "pk": 151,
+    "fields": {
+      "name": "rhel-8.2.0.z-mod-x86_64",
+      "enabled": false
+    }
+  },
+  {
+    "model": "scan.mockconfig",
+    "pk": 152,
+    "fields": {
+      "name": "fedora-33-x86_64",
+      "enabled": false
+    }
+  },
+  {
+    "model": "scan.mockconfig",
+    "pk": 153,
+    "fields": {
+      "name": "eln-x86_64",
+      "enabled": true
+    }
+  },
+  {
+    "model": "scan.mockconfig",
+    "pk": 154,
+    "fields": {
+      "name": "fedora-32-x86_64-mcrha",
+      "enabled": false
+    }
+  },
+  {
+    "model": "scan.mockconfig",
+    "pk": 155,
+    "fields": {
+      "name": "rhel-8.3.0.z-x86_64",
+      "enabled": true
+    }
+  },
+  {
+    "model": "scan.mockconfig",
+    "pk": 156,
+    "fields": {
+      "name": "rhel-9-alpha-x86_64",
+      "enabled": true
+    }
+  },
+  {
+    "model": "scan.mockconfig",
+    "pk": 157,
+    "fields": {
+      "name": "fedora-34-x86_64",
+      "enabled": true
+    }
+  },
+  {
+    "model": "scan.mockconfig",
+    "pk": 158,
+    "fields": {
+      "name": "rhel-9-beta-x86_64",
+      "enabled": true
+    }
+  },
+  {
+    "model": "scan.mockconfig",
+    "pk": 159,
+    "fields": {
+      "name": "rhel-8.4.0.z-x86_64",
+      "enabled": true
+    }
+  },
+  {
+    "model": "scan.mockconfig",
+    "pk": 160,
+    "fields": {
+      "name": "rhel-8.3.0.z-mod-x86_64",
+      "enabled": false
+    }
+  },
+  {
+    "model": "scan.mockconfig",
+    "pk": 161,
+    "fields": {
+      "name": "rhel-8.4.0.z-mod-x86_64",
+      "enabled": false
+    }
+  },
+  {
+    "model": "scan.mockconfig",
+    "pk": 162,
+    "fields": {
+      "name": "rhel-9-x86_64",
+      "enabled": true
+    }
+  },
+  {
+    "model": "scan.mockconfig",
+    "pk": 163,
+    "fields": {
+      "name": "rhel-9-x86_64-basescan",
+      "enabled": true
+    }
+  },
+  {
+    "model": "scan.mockconfig",
+    "pk": 164,
+    "fields": {
+      "name": "fedora-35-x86_64",
+      "enabled": true
+    }
+  },
+  {
+    "model": "scan.mockconfig",
+    "pk": 165,
+    "fields": {
+      "name": "rhel-7-scl-x86_64",
+      "enabled": true
+    }
+  },
+  {
+    "model": "scan.mockconfig",
+    "pk": 166,
+    "fields": {
+      "name": "rhel-8.5.0.z-x86_64",
+      "enabled": true
+    }
+  },
+  {
+    "model": "scan.mockconfig",
+    "pk": 167,
+    "fields": {
+      "name": "fedora-36-x86_64",
+      "enabled": true
+    }
+  },
+  {
+    "model": "scan.mockconfig",
+    "pk": 168,
+    "fields": {
+      "name": "fedora-35-aarch64",
+      "enabled": true
+    }
+  },
+  {
+    "model": "scan.mockconfig",
+    "pk": 169,
+    "fields": {
+      "name": "fedora-36-aarch64",
+      "enabled": true
+    }
+  },
+  {
+    "model": "scan.mockconfig",
+    "pk": 170,
+    "fields": {
+      "name": "fedora-rawhide-aarch64",
+      "enabled": true
+    }
+  },
+  {
+    "model": "scan.systemrelease",
+    "pk": 2,
+    "fields": {
+      "tag": "rhel-5.0",
+      "product": "Red Hat Enterprise Linux 5",
+      "release": 0,
+      "active": false,
+      "parent": null
+    }
+  },
+  {
+    "model": "scan.systemrelease",
+    "pk": 3,
+    "fields": {
+      "tag": "rhel-5.1",
+      "product": "Red Hat Enterprise Linux 5",
+      "release": 1,
+      "active": false,
+      "parent": 2
+    }
+  },
+  {
+    "model": "scan.systemrelease",
+    "pk": 4,
+    "fields": {
+      "tag": "rhel-5.2",
+      "product": "Red Hat Enterprise Linux 5",
+      "release": 2,
+      "active": false,
+      "parent": 3
+    }
+  },
+  {
+    "model": "scan.systemrelease",
+    "pk": 5,
+    "fields": {
+      "tag": "rhel-5.3",
+      "product": "Red Hat Enterprise Linux 5",
+      "release": 3,
+      "active": false,
+      "parent": 4
+    }
+  },
+  {
+    "model": "scan.systemrelease",
+    "pk": 6,
+    "fields": {
+      "tag": "rhel-5.4",
+      "product": "Red Hat Enterprise Linux 5",
+      "release": 4,
+      "active": false,
+      "parent": 5
+    }
+  },
+  {
+    "model": "scan.systemrelease",
+    "pk": 7,
+    "fields": {
+      "tag": "rhel-5.5",
+      "product": "Red Hat Enterprise Linux 5",
+      "release": 5,
+      "active": false,
+      "parent": 6
+    }
+  },
+  {
+    "model": "scan.systemrelease",
+    "pk": 8,
+    "fields": {
+      "tag": "rhel-5.6",
+      "product": "Red Hat Enterprise Linux 5",
+      "release": 6,
+      "active": false,
+      "parent": 7
+    }
+  },
+  {
+    "model": "scan.systemrelease",
+    "pk": 9,
+    "fields": {
+      "tag": "rhel-5.7",
+      "product": "Red Hat Enterprise Linux 5",
+      "release": 7,
+      "active": false,
+      "parent": 8
+    }
+  },
+  {
+    "model": "scan.systemrelease",
+    "pk": 10,
+    "fields": {
+      "tag": "rhel-5.8",
+      "product": "Red Hat Enterprise Linux 5",
+      "release": 8,
+      "active": false,
+      "parent": 9
+    }
+  },
+  {
+    "model": "scan.systemrelease",
+    "pk": 11,
+    "fields": {
+      "tag": "rhel-5.9",
+      "product": "Red Hat Enterprise Linux 5",
+      "release": 9,
+      "active": false,
+      "parent": 10
+    }
+  },
+  {
+    "model": "scan.systemrelease",
+    "pk": 12,
+    "fields": {
+      "tag": "rhel-5.10",
+      "product": "Red Hat Enterprise Linux 5",
+      "release": 10,
+      "active": false,
+      "parent": 11
+    }
+  },
+  {
+    "model": "scan.systemrelease",
+    "pk": 13,
+    "fields": {
+      "tag": "rhel-5.11",
+      "product": "Red Hat Enterprise Linux 5",
+      "release": 11,
+      "active": false,
+      "parent": 12
+    }
+  },
+  {
+    "model": "scan.systemrelease",
+    "pk": 14,
+    "fields": {
+      "tag": "rhel-5.12",
+      "product": "Red Hat Enterprise Linux 5",
+      "release": 12,
+      "active": false,
+      "parent": 13
+    }
+  },
+  {
+    "model": "scan.systemrelease",
+    "pk": 15,
+    "fields": {
+      "tag": "rhel-5.13",
+      "product": "Red Hat Enterprise Linux 5",
+      "release": 13,
+      "active": false,
+      "parent": 14
+    }
+  },
+  {
+    "model": "scan.systemrelease",
+    "pk": 16,
+    "fields": {
+      "tag": "rhel-6.0",
+      "product": "Red Hat Enterprise Linux 6",
+      "release": 0,
+      "active": false,
+      "parent": null
+    }
+  },
+  {
+    "model": "scan.systemrelease",
+    "pk": 17,
+    "fields": {
+      "tag": "rhel-6.1",
+      "product": "Red Hat Enterprise Linux 6",
+      "release": 1,
+      "active": false,
+      "parent": 16
+    }
+  },
+  {
+    "model": "scan.systemrelease",
+    "pk": 18,
+    "fields": {
+      "tag": "rhel-6.2",
+      "product": "Red Hat Enterprise Linux 6",
+      "release": 2,
+      "active": false,
+      "parent": 17
+    }
+  },
+  {
+    "model": "scan.systemrelease",
+    "pk": 19,
+    "fields": {
+      "tag": "rhel-6.3",
+      "product": "Red Hat Enterprise Linux 6",
+      "release": 3,
+      "active": false,
+      "parent": 18
+    }
+  },
+  {
+    "model": "scan.systemrelease",
+    "pk": 20,
+    "fields": {
+      "tag": "rhel-6.4",
+      "product": "Red Hat Enterprise Linux 6",
+      "release": 4,
+      "active": false,
+      "parent": 19
+    }
+  },
+  {
+    "model": "scan.systemrelease",
+    "pk": 21,
+    "fields": {
+      "tag": "rhel-6.5",
+      "product": "Red Hat Enterprise Linux 6",
+      "release": 5,
+      "active": false,
+      "parent": 20
+    }
+  },
+  {
+    "model": "scan.systemrelease",
+    "pk": 22,
+    "fields": {
+      "tag": "rhel-6.6",
+      "product": "Red Hat Enterprise Linux 6",
+      "release": 6,
+      "active": false,
+      "parent": 21
+    }
+  },
+  {
+    "model": "scan.systemrelease",
+    "pk": 23,
+    "fields": {
+      "tag": "rhel-6.7",
+      "product": "Red Hat Enterprise Linux 6",
+      "release": 7,
+      "active": true,
+      "parent": 22
+    }
+  },
+  {
+    "model": "scan.systemrelease",
+    "pk": 24,
+    "fields": {
+      "tag": "rhel-6.8",
+      "product": "Red Hat Enterprise Linux 6",
+      "release": 8,
+      "active": false,
+      "parent": 23
+    }
+  },
+  {
+    "model": "scan.systemrelease",
+    "pk": 25,
+    "fields": {
+      "tag": "rhel-6.9",
+      "product": "Red Hat Enterprise Linux 6",
+      "release": 9,
+      "active": false,
+      "parent": 24
+    }
+  },
+  {
+    "model": "scan.systemrelease",
+    "pk": 26,
+    "fields": {
+      "tag": "rhel-6.10",
+      "product": "Red Hat Enterprise Linux 6",
+      "release": 10,
+      "active": false,
+      "parent": 25
+    }
+  },
+  {
+    "model": "scan.systemrelease",
+    "pk": 27,
+    "fields": {
+      "tag": "rhel-6.11",
+      "product": "Red Hat Enterprise Linux 6",
+      "release": 11,
+      "active": false,
+      "parent": 26
+    }
+  },
+  {
+    "model": "scan.systemrelease",
+    "pk": 28,
+    "fields": {
+      "tag": "rhel-6.12",
+      "product": "Red Hat Enterprise Linux 6",
+      "release": 12,
+      "active": false,
+      "parent": 27
+    }
+  },
+  {
+    "model": "scan.systemrelease",
+    "pk": 29,
+    "fields": {
+      "tag": "rhel-6.13",
+      "product": "Red Hat Enterprise Linux 6",
+      "release": 13,
+      "active": false,
+      "parent": 28
+    }
+  },
+  {
+    "model": "scan.systemrelease",
+    "pk": 30,
+    "fields": {
+      "tag": "rhel-7.0",
+      "product": "Red Hat Enterprise Linux 7",
+      "release": 0,
+      "active": false,
+      "parent": null
+    }
+  },
+  {
+    "model": "scan.systemrelease",
+    "pk": 31,
+    "fields": {
+      "tag": "rhel-7.1",
+      "product": "Red Hat Enterprise Linux 7",
+      "release": 1,
+      "active": false,
+      "parent": 30
+    }
+  },
+  {
+    "model": "scan.systemrelease",
+    "pk": 32,
+    "fields": {
+      "tag": "rhel-7.2",
+      "product": "Red Hat Enterprise Linux 7",
+      "release": 2,
+      "active": true,
+      "parent": 31
+    }
+  },
+  {
+    "model": "scan.systemrelease",
+    "pk": 33,
+    "fields": {
+      "tag": "rhel-7.3",
+      "product": "Red Hat Enterprise Linux 7",
+      "release": 3,
+      "active": false,
+      "parent": 32
+    }
+  },
+  {
+    "model": "scan.systemrelease",
+    "pk": 34,
+    "fields": {
+      "tag": "rhel-7.4",
+      "product": "Red Hat Enterprise Linux 7",
+      "release": 4,
+      "active": false,
+      "parent": 33
+    }
+  },
+  {
+    "model": "scan.systemrelease",
+    "pk": 35,
+    "fields": {
+      "tag": "rhel-7.5",
+      "product": "Red Hat Enterprise Linux 7",
+      "release": 5,
+      "active": false,
+      "parent": 34
+    }
+  },
+  {
+    "model": "scan.systemrelease",
+    "pk": 36,
+    "fields": {
+      "tag": "rhel-7.6",
+      "product": "Red Hat Enterprise Linux 7",
+      "release": 6,
+      "active": false,
+      "parent": 35
+    }
+  },
+  {
+    "model": "scan.systemrelease",
+    "pk": 37,
+    "fields": {
+      "tag": "rhel-7.7",
+      "product": "Red Hat Enterprise Linux 7",
+      "release": 7,
+      "active": false,
+      "parent": 36
+    }
+  },
+  {
+    "model": "scan.systemrelease",
+    "pk": 38,
+    "fields": {
+      "tag": "rhel-7.8",
+      "product": "Red Hat Enterprise Linux 7",
+      "release": 8,
+      "active": false,
+      "parent": 37
+    }
+  },
+  {
+    "model": "scan.systemrelease",
+    "pk": 39,
+    "fields": {
+      "tag": "rhel-7.9",
+      "product": "Red Hat Enterprise Linux 7",
+      "release": 9,
+      "active": false,
+      "parent": 38
+    }
+  },
+  {
+    "model": "scan.systemrelease",
+    "pk": 40,
+    "fields": {
+      "tag": "rhel-7.10",
+      "product": "Red Hat Enterprise Linux 7",
+      "release": 10,
+      "active": false,
+      "parent": 39
+    }
+  },
+  {
+    "model": "scan.systemrelease",
+    "pk": 41,
+    "fields": {
+      "tag": "rhel-7.11",
+      "product": "Red Hat Enterprise Linux 7",
+      "release": 11,
+      "active": false,
+      "parent": 40
+    }
+  },
+  {
+    "model": "scan.systemrelease",
+    "pk": 42,
+    "fields": {
+      "tag": "rhel-7.12",
+      "product": "Red Hat Enterprise Linux 7",
+      "release": 12,
+      "active": false,
+      "parent": 41
+    }
+  },
+  {
+    "model": "scan.systemrelease",
+    "pk": 43,
+    "fields": {
+      "tag": "rhel-7.13",
+      "product": "Red Hat Enterprise Linux 7",
+      "release": 13,
+      "active": false,
+      "parent": 42
+    }
+  },
+  {
+    "model": "scan.systemrelease",
+    "pk": 44,
+    "fields": {
+      "tag": "rhel-8.0",
+      "product": "Red Hat Enterprise Linux 8",
+      "release": 0,
+      "active": true,
+      "parent": null
+    }
+  },
+  {
+    "model": "scan.systemrelease",
+    "pk": 45,
+    "fields": {
+      "tag": "rhel-8.1",
+      "product": "Red Hat Enterprise Linux 8",
+      "release": 1,
+      "active": true,
+      "parent": 44
+    }
+  },
+  {
+    "model": "scan.systemrelease",
+    "pk": 46,
+    "fields": {
+      "tag": "rhel-8.2",
+      "product": "Red Hat Enterprise Linux 8",
+      "release": 2,
+      "active": true,
+      "parent": 45
+    }
+  },
+  {
+    "model": "scan.systemrelease",
+    "pk": 47,
+    "fields": {
+      "tag": "rhel-8.3",
+      "product": "Red Hat Enterprise Linux 8",
+      "release": 3,
+      "active": true,
+      "parent": 46
+    }
+  },
+  {
+    "model": "scan.systemrelease",
+    "pk": 48,
+    "fields": {
+      "tag": "rhose",
+      "product": "Red Hat OpenShift Enterprise",
+      "release": 0,
+      "active": true,
+      "parent": null
+    }
+  },
+  {
+    "model": "scan.systemrelease",
+    "pk": 49,
+    "fields": {
+      "tag": "rhel-8.4",
+      "product": "Red Hat Enterprise Linux 8",
+      "release": 4,
+      "active": true,
+      "parent": 47
+    }
+  },
+  {
+    "model": "scan.systemrelease",
+    "pk": 50,
+    "fields": {
+      "tag": "rhel-8.5",
+      "product": "Red Hat Enterprise Linux 8",
+      "release": 5,
+      "active": true,
+      "parent": 49
+    }
+  },
+  {
+    "model": "scan.systemrelease",
+    "pk": 51,
+    "fields": {
+      "tag": "rhel-9-beta",
+      "product": "Red Hat Enterprise Linux 9",
+      "release": -1,
+      "active": true,
+      "parent": null
+    }
+  },
+  {
+    "model": "scan.systemrelease",
+    "pk": 52,
+    "fields": {
+      "tag": "rhel-8.6",
+      "product": "Red Hat Enterprise Linux 8",
+      "release": 6,
+      "active": true,
+      "parent": 50
+    }
+  },
+  {
+    "model": "scan.systemrelease",
+    "pk": 53,
+    "fields": {
+      "tag": "rhel-9.0",
+      "product": "Red Hat Enterprise Linux 9",
+      "release": 0,
+      "active": true,
+      "parent": 51
+    }
+  },
+  {
+    "model": "scan.tag",
+    "pk": 2,
+    "fields": {
+      "name": "RHEL-5.0",
+      "mock": 90,
+      "release": 2
+    }
+  },
+  {
+    "model": "scan.tag",
+    "pk": 3,
+    "fields": {
+      "name": "RHEL-5.1",
+      "mock": 90,
+      "release": 3
+    }
+  },
+  {
+    "model": "scan.tag",
+    "pk": 4,
+    "fields": {
+      "name": "RHEL-5.2",
+      "mock": 90,
+      "release": 4
+    }
+  },
+  {
+    "model": "scan.tag",
+    "pk": 5,
+    "fields": {
+      "name": "RHEL-5.3",
+      "mock": 90,
+      "release": 5
+    }
+  },
+  {
+    "model": "scan.tag",
+    "pk": 6,
+    "fields": {
+      "name": "RHEL-5.4",
+      "mock": 90,
+      "release": 6
+    }
+  },
+  {
+    "model": "scan.tag",
+    "pk": 7,
+    "fields": {
+      "name": "RHEL-5.5",
+      "mock": 90,
+      "release": 7
+    }
+  },
+  {
+    "model": "scan.tag",
+    "pk": 8,
+    "fields": {
+      "name": "RHEL-5.6",
+      "mock": 90,
+      "release": 8
+    }
+  },
+  {
+    "model": "scan.tag",
+    "pk": 9,
+    "fields": {
+      "name": "RHEL-5.7",
+      "mock": 90,
+      "release": 9
+    }
+  },
+  {
+    "model": "scan.tag",
+    "pk": 10,
+    "fields": {
+      "name": "RHEL-5.8",
+      "mock": 90,
+      "release": 10
+    }
+  },
+  {
+    "model": "scan.tag",
+    "pk": 11,
+    "fields": {
+      "name": "RHEL-5.9",
+      "mock": 90,
+      "release": 11
+    }
+  },
+  {
+    "model": "scan.tag",
+    "pk": 12,
+    "fields": {
+      "name": "RHEL-5.10",
+      "mock": 90,
+      "release": 12
+    }
+  },
+  {
+    "model": "scan.tag",
+    "pk": 13,
+    "fields": {
+      "name": "RHEL-5.11",
+      "mock": 90,
+      "release": 13
+    }
+  },
+  {
+    "model": "scan.tag",
+    "pk": 14,
+    "fields": {
+      "name": "RHEL-5.12",
+      "mock": 90,
+      "release": 14
+    }
+  },
+  {
+    "model": "scan.tag",
+    "pk": 15,
+    "fields": {
+      "name": "RHEL-5.13",
+      "mock": 90,
+      "release": 15
+    }
+  },
+  {
+    "model": "scan.tag",
+    "pk": 16,
+    "fields": {
+      "name": "RHEL-6.0",
+      "mock": 91,
+      "release": 16
+    }
+  },
+  {
+    "model": "scan.tag",
+    "pk": 17,
+    "fields": {
+      "name": "RHEL-6.1",
+      "mock": 91,
+      "release": 17
+    }
+  },
+  {
+    "model": "scan.tag",
+    "pk": 18,
+    "fields": {
+      "name": "RHEL-6.2",
+      "mock": 91,
+      "release": 18
+    }
+  },
+  {
+    "model": "scan.tag",
+    "pk": 19,
+    "fields": {
+      "name": "RHEL-6.3",
+      "mock": 91,
+      "release": 19
+    }
+  },
+  {
+    "model": "scan.tag",
+    "pk": 20,
+    "fields": {
+      "name": "RHEL-6.4",
+      "mock": 91,
+      "release": 20
+    }
+  },
+  {
+    "model": "scan.tag",
+    "pk": 21,
+    "fields": {
+      "name": "RHEL-6.5",
+      "mock": 91,
+      "release": 21
+    }
+  },
+  {
+    "model": "scan.tag",
+    "pk": 22,
+    "fields": {
+      "name": "RHEL-6.6",
+      "mock": 91,
+      "release": 22
+    }
+  },
+  {
+    "model": "scan.tag",
+    "pk": 23,
+    "fields": {
+      "name": "RHEL-6.7",
+      "mock": 91,
+      "release": 23
+    }
+  },
+  {
+    "model": "scan.tag",
+    "pk": 24,
+    "fields": {
+      "name": "RHEL-6.8",
+      "mock": 91,
+      "release": 24
+    }
+  },
+  {
+    "model": "scan.tag",
+    "pk": 25,
+    "fields": {
+      "name": "RHEL-6.9",
+      "mock": 91,
+      "release": 25
+    }
+  },
+  {
+    "model": "scan.tag",
+    "pk": 26,
+    "fields": {
+      "name": "RHEL-6.10",
+      "mock": 91,
+      "release": 26
+    }
+  },
+  {
+    "model": "scan.tag",
+    "pk": 27,
+    "fields": {
+      "name": "RHEL-6.11",
+      "mock": 91,
+      "release": 27
+    }
+  },
+  {
+    "model": "scan.tag",
+    "pk": 28,
+    "fields": {
+      "name": "RHEL-6.12",
+      "mock": 91,
+      "release": 28
+    }
+  },
+  {
+    "model": "scan.tag",
+    "pk": 29,
+    "fields": {
+      "name": "RHEL-6.13",
+      "mock": 91,
+      "release": 29
+    }
+  },
+  {
+    "model": "scan.tag",
+    "pk": 30,
+    "fields": {
+      "name": "RHEL-7.0",
+      "mock": 92,
+      "release": 30
+    }
+  },
+  {
+    "model": "scan.tag",
+    "pk": 31,
+    "fields": {
+      "name": "RHEL-7.1",
+      "mock": 92,
+      "release": 31
+    }
+  },
+  {
+    "model": "scan.tag",
+    "pk": 32,
+    "fields": {
+      "name": "RHEL-7.2",
+      "mock": 137,
+      "release": 32
+    }
+  },
+  {
+    "model": "scan.tag",
+    "pk": 33,
+    "fields": {
+      "name": "RHEL-7.3",
+      "mock": 137,
+      "release": 33
+    }
+  },
+  {
+    "model": "scan.tag",
+    "pk": 34,
+    "fields": {
+      "name": "RHEL-7.4",
+      "mock": 137,
+      "release": 34
+    }
+  },
+  {
+    "model": "scan.tag",
+    "pk": 35,
+    "fields": {
+      "name": "RHEL-7.5",
+      "mock": 92,
+      "release": 35
+    }
+  },
+  {
+    "model": "scan.tag",
+    "pk": 36,
+    "fields": {
+      "name": "RHEL-7.6",
+      "mock": 137,
+      "release": 36
+    }
+  },
+  {
+    "model": "scan.tag",
+    "pk": 37,
+    "fields": {
+      "name": "RHEL-7.7",
+      "mock": 137,
+      "release": 37
+    }
+  },
+  {
+    "model": "scan.tag",
+    "pk": 38,
+    "fields": {
+      "name": "RHEL-7.8",
+      "mock": 150,
+      "release": 38
+    }
+  },
+  {
+    "model": "scan.tag",
+    "pk": 39,
+    "fields": {
+      "name": "RHEL-7.9",
+      "mock": 92,
+      "release": 39
+    }
+  },
+  {
+    "model": "scan.tag",
+    "pk": 40,
+    "fields": {
+      "name": "RHEL-7.10",
+      "mock": 92,
+      "release": 40
+    }
+  },
+  {
+    "model": "scan.tag",
+    "pk": 41,
+    "fields": {
+      "name": "RHEL-7.11",
+      "mock": 92,
+      "release": 41
+    }
+  },
+  {
+    "model": "scan.tag",
+    "pk": 42,
+    "fields": {
+      "name": "RHEL-7.12",
+      "mock": 92,
+      "release": 42
+    }
+  },
+  {
+    "model": "scan.tag",
+    "pk": 43,
+    "fields": {
+      "name": "RHEL-7.13",
+      "mock": 92,
+      "release": 43
+    }
+  },
+  {
+    "model": "scan.tag",
+    "pk": 44,
+    "fields": {
+      "name": "RHEL-7-CEPH-1-3",
+      "mock": 122,
+      "release": 31
+    }
+  },
+  {
+    "model": "scan.tag",
+    "pk": 45,
+    "fields": {
+      "name": "RHEL-7-CEPH-1-2",
+      "mock": 122,
+      "release": 31
+    }
+  },
+  {
+    "model": "scan.tag",
+    "pk": 46,
+    "fields": {
+      "name": "RHEL-6-CEPH-1-3",
+      "mock": 91,
+      "release": 23
+    }
+  },
+  {
+    "model": "scan.tag",
+    "pk": 47,
+    "fields": {
+      "name": "RHEL-6-CEPH-1-2",
+      "mock": 91,
+      "release": 23
+    }
+  },
+  {
+    "model": "scan.tag",
+    "pk": 48,
+    "fields": {
+      "name": "RHEL-7-CEPH-2-0",
+      "mock": 92,
+      "release": 31
+    }
+  },
+  {
+    "model": "scan.tag",
+    "pk": 49,
+    "fields": {
+      "name": "RHEL-7-CEPH-2-4",
+      "mock": 118,
+      "release": 35
+    }
+  },
+  {
+    "model": "scan.tag",
+    "pk": 50,
+    "fields": {
+      "name": "RHEL-7-CEPH-3-0",
+      "mock": 119,
+      "release": 35
+    }
+  },
+  {
+    "model": "scan.tag",
+    "pk": 51,
+    "fields": {
+      "name": "RHEL-8.0",
+      "mock": 133,
+      "release": 44
+    }
+  },
+  {
+    "model": "scan.tag",
+    "pk": 52,
+    "fields": {
+      "name": "RHEL-8.1",
+      "mock": 141,
+      "release": 45
+    }
+  },
+  {
+    "model": "scan.tag",
+    "pk": 53,
+    "fields": {
+      "name": "RHEL-8.2",
+      "mock": 149,
+      "release": 46
+    }
+  },
+  {
+    "model": "scan.tag",
+    "pk": 54,
+    "fields": {
+      "name": "RHEL-8.3",
+      "mock": 155,
+      "release": 47
+    }
+  },
+  {
+    "model": "scan.tag",
+    "pk": 55,
+    "fields": {
+      "name": "RHOSE",
+      "mock": 143,
+      "release": 48
+    }
+  },
+  {
+    "model": "scan.tag",
+    "pk": 56,
+    "fields": {
+      "name": "RHEL-8.4",
+      "mock": 159,
+      "release": 49
+    }
+  },
+  {
+    "model": "scan.tag",
+    "pk": 57,
+    "fields": {
+      "name": "RHEL-8.5",
+      "mock": 166,
+      "release": 50
+    }
+  },
+  {
+    "model": "scan.tag",
+    "pk": 58,
+    "fields": {
+      "name": "RHEL-9-BETA",
+      "mock": 158,
+      "release": 51
+    }
+  },
+  {
+    "model": "scan.tag",
+    "pk": 59,
+    "fields": {
+      "name": "RHEL-8.6",
+      "mock": 129,
+      "release": 52
+    }
+  },
+  {
+    "model": "scan.tag",
+    "pk": 60,
+    "fields": {
+      "name": "RHEL-9.0",
+      "mock": 162,
+      "release": 53
+    }
+  },
+  {
+    "model": "scan.package",
+    "pk": 1,
+    "fields": {
+      "name": "python-six",
+      "blocked": false,
+      "eligible": true
+    }
+  },
+  {
+    "model": "scan.scanbinding",
+    "pk": 1,
+    "fields": {
+      "task": 1,
+      "scan": 1,
+      "result": null
+    }
+  },
+  {
+    "model": "scan.releasemapping",
+    "pk": 1,
+    "fields": {
+      "release_tag": "^RHEL-(\\d+)\\.(\\d+)\\.[01].*$",
+      "template": "RHEL-%s.%s",
+      "priority": 1
+    }
+  },
+  {
+    "model": "scan.releasemapping",
+    "pk": 2,
+    "fields": {
+      "release_tag": "^FAST(\\d+)\\.(\\d+)$",
+      "template": "RHEL-%s.%s",
+      "priority": 2
+    }
+  },
+  {
+    "model": "scan.releasemapping",
+    "pk": 3,
+    "fields": {
+      "release_tag": "^CEPH-(\\d+)\\.(\\d+).*$",
+      "template": "RHEL-7-CEPH-%s-%s",
+      "priority": 3
+    }
+  },
+  {
+    "model": "scan.releasemapping",
+    "pk": 4,
+    "fields": {
+      "release_tag": "^RHEL-(\\d+)\\.(\\d+)\\.Z$",
+      "template": "RHEL-%s.%s",
+      "priority": 4
+    }
+  },
+  {
+    "model": "scan.releasemapping",
+    "pk": 5,
+    "fields": {
+      "release_tag": "^RHEL-(\\d+)\\.(\\d+)\\.EUS.*$",
+      "template": "RHEL-%s.%s",
+      "priority": 5
+    }
+  },
+  {
+    "model": "scan.releasemapping",
+    "pk": 6,
+    "fields": {
+      "release_tag": "^RHEL-(\\d+)\\.(\\d+)\\.z$",
+      "template": "RHEL-%s.%s",
+      "priority": 6
+    }
+  },
+  {
+    "model": "scan.releasemapping",
+    "pk": 7,
+    "fields": {
+      "release_tag": "^RHEL-(\\d+)\\.(\\d+)\\.AUS$",
+      "template": "RHEL-%s.%s",
+      "priority": 7
+    }
+  },
+  {
+    "model": "scan.releasemapping",
+    "pk": 8,
+    "fields": {
+      "release_tag": "^RHEL-ALT-(\\d+)\\.(\\d+)\\.Z$",
+      "template": "RHEL-%s.%s",
+      "priority": 8
+    }
+  },
+  {
+    "model": "scan.releasemapping",
+    "pk": 9,
+    "fields": {
+      "release_tag": "^ceph-(\\d+)\\.(\\d+).*$",
+      "template": "RHEL-7-CEPH-%s-%s",
+      "priority": 9
+    }
+  },
+  {
+    "model": "scan.releasemapping",
+    "pk": 10,
+    "fields": {
+      "release_tag": "^rhceph-(\\d+)\\.(\\d+).*$",
+      "template": "RHEL-7-CEPH-%s-%s",
+      "priority": 10
+    }
+  },
+  {
+    "model": "scan.releasemapping",
+    "pk": 11,
+    "fields": {
+      "release_tag": "^RHEL-ALT-(\\d+)\\.(\\d+)$",
+      "template": "RHEL-%s.%s",
+      "priority": 11
+    }
+  },
+  {
+    "model": "scan.releasemapping",
+    "pk": 12,
+    "fields": {
+      "release_tag": "^RHEL-(\\d+)\\.(\\d+)\\.0.Z.*$",
+      "template": "RHEL-%s.%s",
+      "priority": 12
+    }
+  },
+  {
+    "model": "scan.releasemapping",
+    "pk": 13,
+    "fields": {
+      "release_tag": "^XXX_RHOSE .*$",
+      "template": "RHOSE",
+      "priority": 13
+    }
+  },
+  {
+    "model": "scan.releasemapping",
+    "pk": 14,
+    "fields": {
+      "release_tag": "RHEL-9.0.0.BETA",
+      "template": "RHEL-9-BETA",
+      "priority": 14
+    }
+  },
+  {
+    "model": "scan.releasemapping",
+    "pk": 15,
+    "fields": {
+      "release_tag": "^XXX_OSE-LOGGING$",
+      "template": "RHOSE",
+      "priority": 15
+    }
+  },
+  {
+    "model": "scan.etmapping",
+    "pk": 1,
+    "fields": {
+      "advisory_id": "1",
+      "et_scan_id": "1",
+      "latest_run": 1,
+      "comment": "",
+      "state": 0
+    }
+  },
+  {
+    "model": "scan.appsettings",
+    "pk": 1,
+    "fields": {
+      "key": "SEND_MAIL",
+      "value": "Y"
+    }
+  },
+  {
+    "model": "scan.appsettings",
+    "pk": 2,
+    "fields": {
+      "key": "SEND_BUS_MESSAGE",
+      "value": "Y"
+    }
+  },
+  {
+    "model": "scan.appsettings",
+    "pk": 3,
+    "fields": {
+      "key": "CHECK_USER_CAN_SUBMIT_SCAN",
+      "value": "N"
+    }
+  },
+  {
+    "model": "scan.appsettings",
+    "pk": 4,
+    "fields": {
+      "key": "WAIVER_IS_OVERDUE",
+      "value": "cdatetime\ntimedelta\np1\n(I-7\nI0\nI0\ntRp2\n."
+    }
+  },
+  {
+    "model": "scan.appsettings",
+    "pk": 5,
+    "fields": {
+      "key": "ACTUAL_SCANNER",
+      "value": "[\"csmock\", \"3.3.4\"]"
+    }
+  },
+  {
+    "model": "scan.appsettings",
+    "pk": 6,
+    "fields": {
+      "key": "WAIVER_IS_OVERDUE_RELSPEC",
+      "value": "(S'rhel-6.4'\np1\ncdatetime\ntimedelta\np2\n(I-13\nI0\nI0\ntRp3\ntp4\n."
+    }
+  },
+  {
+    "model": "scan.appsettings",
+    "pk": 11,
+    "fields": {
+      "key": "ANALYZERS_VERSIONS_LAST_CHECKED",
+      "value": "{}"
+    }
+  },
+  {
+    "model": "scan.appsettings",
+    "pk": 12,
+    "fields": {
+      "key": "ANALYZERS_VERSIONS_CACHE_DURATION",
+      "value": "8"
+    }
+  },
+  {
+    "model": "scan.appsettings",
+    "pk": 13,
+    "fields": {
+      "key": "RESULTS_TB_EXCLUDE_DIRS",
+      "value": "[\"*cov\"]"
+    }
+  },
+  {
+    "model": "scan.appsettings",
+    "pk": 14,
+    "fields": {
+      "key": "SU_USER",
+      "value": "csmock"
+    }
+  },
+  {
+    "model": "scan.clientanalyzer",
+    "pk": 2,
+    "fields": {
+      "analyzer": 1,
+      "version": "dist",
+      "enabled": true,
+      "cli_short_command": "-l",
+      "cli_long_command": "clang",
+      "build_append": "clang",
+      "build_append_args": ""
+    }
+  },
+  {
+    "model": "scan.clientanalyzer",
+    "pk": 4,
+    "fields": {
+      "analyzer": 3,
+      "version": "dist",
+      "enabled": true,
+      "cli_short_command": "-c",
+      "cli_long_command": "cppcheck",
+      "build_append": "cppcheck",
+      "build_append_args": ""
+    }
+  },
+  {
+    "model": "scan.clientanalyzer",
+    "pk": 8,
+    "fields": {
+      "analyzer": 2,
+      "version": "dist",
+      "enabled": true,
+      "cli_short_command": "",
+      "cli_long_command": "gcc",
+      "build_append": "gcc",
+      "build_append_args": ""
+    }
+  },
+  {
+    "model": "scan.clientanalyzer",
+    "pk": 10,
+    "fields": {
+      "analyzer": 3,
+      "version": "2.6",
+      "enabled": true,
+      "cli_short_command": "",
+      "cli_long_command": "cppcheck-host",
+      "build_append": "cppcheck",
+      "build_append_args": "--use-host-cppcheck"
+    }
+  },
+  {
+    "model": "scan.clientanalyzer",
+    "pk": 11,
+    "fields": {
+      "analyzer": 5,
+      "version": "dist",
+      "enabled": true,
+      "cli_short_command": "",
+      "cli_long_command": "pylint",
+      "build_append": "pylint",
+      "build_append_args": ""
+    }
+  },
+  {
+    "model": "scan.clientanalyzer",
+    "pk": 12,
+    "fields": {
+      "analyzer": 6,
+      "version": "dist",
+      "enabled": true,
+      "cli_short_command": "",
+      "cli_long_command": "shellcheck",
+      "build_append": "shellcheck",
+      "build_append_args": ""
+    }
+  },
+  {
+    "model": "scan.clientanalyzer",
+    "pk": 23,
+    "fields": {
+      "analyzer": 7,
+      "version": "1.60.1599.g44eeafcf-2",
+      "enabled": false,
+      "cli_short_command": "",
+      "cli_long_command": "smatch",
+      "build_append": "smatch",
+      "build_append_args": ""
+    }
+  },
+  {
+    "model": "scan.clientanalyzer",
+    "pk": 34,
+    "fields": {
+      "analyzer": 8,
+      "version": "dist",
+      "enabled": true,
+      "cli_short_command": "",
+      "cli_long_command": "valgrind",
+      "build_append": "valgrind",
+      "build_append_args": ""
+    }
+  },
+  {
+    "model": "scan.analyzer",
+    "pk": 1,
+    "fields": {
+      "name": "clang"
+    }
+  },
+  {
+    "model": "scan.analyzer",
+    "pk": 2,
+    "fields": {
+      "name": "gcc"
+    }
+  },
+  {
+    "model": "scan.analyzer",
+    "pk": 3,
+    "fields": {
+      "name": "cppcheck"
+    }
+  },
+  {
+    "model": "scan.analyzer",
+    "pk": 5,
+    "fields": {
+      "name": "pylint"
+    }
+  },
+  {
+    "model": "scan.analyzer",
+    "pk": 6,
+    "fields": {
+      "name": "shellcheck"
+    }
+  },
+  {
+    "model": "scan.analyzer",
+    "pk": 7,
+    "fields": {
+      "name": "smatch"
+    }
+  },
+  {
+    "model": "scan.analyzer",
+    "pk": 8,
+    "fields": {
+      "name": "valgrind"
+    }
+  },
+  {
+    "model": "scan.analyzer",
+    "pk": 9,
+    "fields": {
+      "name": "gcc-analyzer"
+    }
+  },
+  {
+    "model": "scan.analyzer",
+    "pk": 10,
+    "fields": {
+      "name": "unicontrol"
+    }
+  },
+  {
+    "model": "scan.profile",
+    "pk": 1,
+    "fields": {
+      "name": "errata",
+      "description": "profile used in errata scans (currently same as the default profile)",
+      "enabled": true,
+      "command_arguments": "\"{\\\"analyzers\\\": \\\"gcc,clang,cppcheck,shellcheck\\\", \\\"koji_bin\\\": \\\"brew\\\", \\\"csmock_args\\\": \\\"--use-host-cppcheck --gcc-analyze\\\"}\""
+    }
+  },
+  {
+    "model": "scan.profile",
+    "pk": 2,
+    "fields": {
+      "name": "default",
+      "description": "default profile for user-initiated scans",
+      "enabled": true,
+      "command_arguments": "\"{\\\"analyzers\\\": \\\"gcc,clang,cppcheck,shellcheck\\\", \\\"koji_bin\\\": \\\"brew\\\", \\\"csmock_args\\\": \\\"--use-host-cppcheck --gcc-analyze\\\"}\""
+    }
+  },
+  {
+    "model": "scan.profile",
+    "pk": 3,
+    "fields": {
+      "name": "custom",
+      "description": "base profile for custom scans (without additional options, it only builds the package)",
+      "enabled": true,
+      "command_arguments": "\"{\\\"analyzers\\\": \\\"\\\"}\""
+    }
+  },
+  {
+    "model": "scan.profile",
+    "pk": 4,
+    "fields": {
+      "name": "multi",
+      "description": "profile with all analyzers enabled",
+      "enabled": false,
+      "command_arguments": "\"{\\\"analyzers\\\": \\\"gcc,clang,cppcheck,shellcheck,pylint\\\", \\\"csmock_args\\\": \\\"--gcc-analyze\\\"}\""
+    }
+  },
+  {
+    "model": "scan.profile",
+    "pk": 5,
+    "fields": {
+      "name": "cov-unstable",
+      "description": "experimental profile using the latest release of csmock",
+      "enabled": true,
+      "command_arguments": "\"{\\\"analyzers\\\": \\\"gcc\\\", \\\"koji_bin\\\": \\\"brew\\\"}\""
+    }
+  },
+  {
+    "model": "scan.profile",
+    "pk": 6,
+    "fields": {
+      "name": "errata-el5",
+      "description": "errata profile without ShellCheck, which is currently not available on el5",
+      "enabled": false,
+      "command_arguments": "\"{\\\"analyzers\\\": \\\"gcc,clang,cppcheck\\\", \\\"koji_bin\\\": \\\"brew\\\", \\\"csmock_args\\\": \\\"--cov-analyze-java --use-host-cppcheck\\\"}\""
+    }
+  },
+  {
+    "model": "scan.profile",
+    "pk": 7,
+    "fields": {
+      "name": "errata-el8",
+      "description": "errata profile without Clang, which is currently not available on el8",
+      "enabled": false,
+      "command_arguments": "\"{\\\"analyzers\\\": \\\"gcc,cppcheck\\\", \\\"koji_bin\\\": \\\"brew\\\", \\\"csmock_args\\\": \\\"--cov-analyze-java --use-host-cppcheck\\\"}\""
+    }
+  },
+  {
+    "model": "scan.profile",
+    "pk": 8,
+    "fields": {
+      "name": "smatch",
+      "description": "experimental profile for running the smatch static analyzer",
+      "enabled": false,
+      "command_arguments": "\"{\\\"analyzers\\\": \\\"smatch\\\", \\\"koji_bin\\\": \\\"brew\\\"}\""
+    }
+  },
+  {
+    "model": "scan.profile",
+    "pk": 9,
+    "fields": {
+      "name": "gcc-unstable",
+      "description": "experimental profile using non-default GCC warning flags",
+      "enabled": false,
+      "command_arguments": "\"{\\\"analyzers\\\": \\\"gcc\\\", \\\"koji_bin\\\": \\\"brew\\\", \\\"csmock_args\\\": \\\"--gcc-add-flag=-Wduplicated-branches --gcc-add-flag=-Wduplicated-cond --gcc-add-flag=-Wlogical-op --gcc-add-flag=-Wjump-misses-init --gcc-add-flag=-Wshadow --gcc-add-flag=-Wformat=2 --gcc-add-flag=-Wfloat-equal\\\"}\""
+    }
+  },
+  {
+    "model": "scan.profile",
+    "pk": 10,
+    "fields": {
+      "name": "gcc-asan",
+      "description": "experimental profile that compiles with -fsanitize=address and runs %check",
+      "enabled": true,
+      "command_arguments": "\"{\\\"analyzers\\\": \\\"gcc\\\", \\\"csmock_args\\\": \\\"--gcc-sanitize-address\\\"}\""
+    }
+  },
+  {
+    "model": "scan.profile",
+    "pk": 11,
+    "fields": {
+      "name": "gcc-lsan",
+      "description": "experimental profile that compiles with -fsanitize=leak and runs %check",
+      "enabled": true,
+      "command_arguments": "\"{\\\"analyzers\\\": \\\"gcc\\\", \\\"csmock_args\\\": \\\"--gcc-sanitize-leak\\\"}\""
+    }
+  },
+  {
+    "model": "scan.profile",
+    "pk": 12,
+    "fields": {
+      "name": "gcc-tsan",
+      "description": "experimental profile that compiles with -fsanitize=thread and runs %check",
+      "enabled": true,
+      "command_arguments": "\"{\\\"analyzers\\\": \\\"gcc\\\", \\\"csmock_args\\\": \\\"--gcc-sanitize-thread\\\"}\""
+    }
+  },
+  {
+    "model": "scan.profile",
+    "pk": 13,
+    "fields": {
+      "name": "gcc-ubsan",
+      "description": "experimental profile that compiles with -fsanitize=undefined and runs %check",
+      "enabled": true,
+      "command_arguments": "\"{\\\"analyzers\\\": \\\"gcc\\\", \\\"csmock_args\\\": \\\"--gcc-sanitize-undefined\\\"}\""
+    }
+  },
+  {
+    "model": "scan.profile",
+    "pk": 14,
+    "fields": {
+      "name": "csigsafe",
+      "description": "experimental profile that compiles with -fplugin=csigsafe",
+      "enabled": false,
+      "command_arguments": "\"{\\\"analyzers\\\": \\\"gcc\\\", \\\"csmock_args\\\": \\\"--install csigsafe --gcc-add-c-only-flag=-fplugin=csigsafe\\\"}\""
+    }
+  },
+  {
+    "model": "scan.profile",
+    "pk": 15,
+    "fields": {
+      "name": "gcc-analyzer",
+      "description": "profile that runs `gcc -fanalyzer` in the background and captures its results (currently included in the default profile)",
+      "enabled": true,
+      "command_arguments": "\"{\\\"analyzers\\\": \\\"gcc\\\", \\\"csmock_args\\\": \\\"--gcc-analyze\\\"}\""
+    }
+  },
+  {
+    "model": "scan.profile",
+    "pk": 16,
+    "fields": {
+      "name": "mass-scan-el9",
+      "description": "profile for RHEL-9 mass scan (currently same as the default profile)",
+      "enabled": true,
+      "command_arguments": "\"{\\\"analyzers\\\": \\\"gcc,clang,cppcheck,shellcheck,unicontrol\\\", \\\"koji_bin\\\": \\\"brew\\\", \\\"csmock_args\\\": \\\"--use-host-cppcheck --gcc-analyze --unicontrol-notests --unicontrol-bidi-only\\\"}\""
+    }
+  },
+  {
+    "model": "scan.profile",
+    "pk": 18,
+    "fields": {
+      "name": "valgrind",
+      "description": "experimental profile that makes binaries produced in %build run through valgrind in %check",
+      "enabled": true,
+      "command_arguments": "\"{\\\"analyzers\\\": \\\"gcc,valgrind\\\", \\\"csmock_args\\\": \\\"--gcc-del-flag=-flto=auto --keep-going\\\"}\""
+    }
+  },
+  {
+    "model": "scan.profile",
+    "pk": 19,
+    "fields": {
+      "name": "s390x-hack",
+      "description": "profile for emergency scanning of s390x packages in x86_64 buildroot",
+      "enabled": false,
+      "command_arguments": "\"{\\\"analyzers\\\": \\\"gcc,clang,cppcheck,shellcheck\\\", \\\"koji_bin\\\": \\\"brew\\\", \\\"csmock_args\\\": \\\"--use-host-cppcheck --gcc-analyze --rpm-build-opts='--define \\\\\\\\\\\\\\\"_target_cpu s390x\\\\\\\\\\\\\\\"' --keep-going\\\"}\""
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 1,
+    "fields": {
+      "name": "Can add permission",
+      "content_type": 1,
+      "codename": "add_permission"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 2,
+    "fields": {
+      "name": "Can change permission",
+      "content_type": 1,
+      "codename": "change_permission"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 3,
+    "fields": {
+      "name": "Can delete permission",
+      "content_type": 1,
+      "codename": "delete_permission"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 4,
+    "fields": {
+      "name": "Can view permission",
+      "content_type": 1,
+      "codename": "view_permission"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 5,
+    "fields": {
+      "name": "Can add group",
+      "content_type": 2,
+      "codename": "add_group"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 6,
+    "fields": {
+      "name": "Can change group",
+      "content_type": 2,
+      "codename": "change_group"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 7,
+    "fields": {
+      "name": "Can delete group",
+      "content_type": 2,
+      "codename": "delete_group"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 8,
+    "fields": {
+      "name": "Can view group",
+      "content_type": 2,
+      "codename": "view_group"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 9,
+    "fields": {
+      "name": "Can add user",
+      "content_type": 3,
+      "codename": "add_user"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 10,
+    "fields": {
+      "name": "Can change user",
+      "content_type": 3,
+      "codename": "change_user"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 11,
+    "fields": {
+      "name": "Can delete user",
+      "content_type": 3,
+      "codename": "delete_user"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 12,
+    "fields": {
+      "name": "Can view user",
+      "content_type": 3,
+      "codename": "view_user"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 13,
+    "fields": {
+      "name": "Can add content type",
+      "content_type": 4,
+      "codename": "add_contenttype"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 14,
+    "fields": {
+      "name": "Can change content type",
+      "content_type": 4,
+      "codename": "change_contenttype"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 15,
+    "fields": {
+      "name": "Can delete content type",
+      "content_type": 4,
+      "codename": "delete_contenttype"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 16,
+    "fields": {
+      "name": "Can view content type",
+      "content_type": 4,
+      "codename": "view_contenttype"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 17,
+    "fields": {
+      "name": "Can add session",
+      "content_type": 5,
+      "codename": "add_session"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 18,
+    "fields": {
+      "name": "Can change session",
+      "content_type": 5,
+      "codename": "change_session"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 19,
+    "fields": {
+      "name": "Can delete session",
+      "content_type": 5,
+      "codename": "delete_session"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 20,
+    "fields": {
+      "name": "Can view session",
+      "content_type": 5,
+      "codename": "view_session"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 21,
+    "fields": {
+      "name": "Can add site",
+      "content_type": 6,
+      "codename": "add_site"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 22,
+    "fields": {
+      "name": "Can change site",
+      "content_type": 6,
+      "codename": "change_site"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 23,
+    "fields": {
+      "name": "Can delete site",
+      "content_type": 6,
+      "codename": "delete_site"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 24,
+    "fields": {
+      "name": "Can view site",
+      "content_type": 6,
+      "codename": "view_site"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 25,
+    "fields": {
+      "name": "Can add log entry",
+      "content_type": 7,
+      "codename": "add_logentry"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 26,
+    "fields": {
+      "name": "Can change log entry",
+      "content_type": 7,
+      "codename": "change_logentry"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 27,
+    "fields": {
+      "name": "Can delete log entry",
+      "content_type": 7,
+      "codename": "delete_logentry"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 28,
+    "fields": {
+      "name": "Can view log entry",
+      "content_type": 7,
+      "codename": "view_logentry"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 29,
+    "fields": {
+      "name": "Can add file upload",
+      "content_type": 8,
+      "codename": "add_fileupload"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 30,
+    "fields": {
+      "name": "Can change file upload",
+      "content_type": 8,
+      "codename": "change_fileupload"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 31,
+    "fields": {
+      "name": "Can delete file upload",
+      "content_type": 8,
+      "codename": "delete_fileupload"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 32,
+    "fields": {
+      "name": "Can view file upload",
+      "content_type": 8,
+      "codename": "view_fileupload"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 33,
+    "fields": {
+      "name": "Can add xml rpc log",
+      "content_type": 9,
+      "codename": "add_xmlrpclog"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 34,
+    "fields": {
+      "name": "Can change xml rpc log",
+      "content_type": 9,
+      "codename": "change_xmlrpclog"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 35,
+    "fields": {
+      "name": "Can delete xml rpc log",
+      "content_type": 9,
+      "codename": "delete_xmlrpclog"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 36,
+    "fields": {
+      "name": "Can view xml rpc log",
+      "content_type": 9,
+      "codename": "view_xmlrpclog"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 37,
+    "fields": {
+      "name": "Can add arch",
+      "content_type": 10,
+      "codename": "add_arch"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 38,
+    "fields": {
+      "name": "Can change arch",
+      "content_type": 10,
+      "codename": "change_arch"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 39,
+    "fields": {
+      "name": "Can delete arch",
+      "content_type": 10,
+      "codename": "delete_arch"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 40,
+    "fields": {
+      "name": "Can view arch",
+      "content_type": 10,
+      "codename": "view_arch"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 41,
+    "fields": {
+      "name": "Can add channel",
+      "content_type": 11,
+      "codename": "add_channel"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 42,
+    "fields": {
+      "name": "Can change channel",
+      "content_type": 11,
+      "codename": "change_channel"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 43,
+    "fields": {
+      "name": "Can delete channel",
+      "content_type": 11,
+      "codename": "delete_channel"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 44,
+    "fields": {
+      "name": "Can view channel",
+      "content_type": 11,
+      "codename": "view_channel"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 45,
+    "fields": {
+      "name": "Can add task",
+      "content_type": 12,
+      "codename": "add_task"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 46,
+    "fields": {
+      "name": "Can change task",
+      "content_type": 12,
+      "codename": "change_task"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 47,
+    "fields": {
+      "name": "Can delete task",
+      "content_type": 12,
+      "codename": "delete_task"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 48,
+    "fields": {
+      "name": "Can view task",
+      "content_type": 12,
+      "codename": "view_task"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 49,
+    "fields": {
+      "name": "Can see traceback",
+      "content_type": 12,
+      "codename": "can_see_traceback"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 50,
+    "fields": {
+      "name": "Can add worker",
+      "content_type": 13,
+      "codename": "add_worker"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 51,
+    "fields": {
+      "name": "Can change worker",
+      "content_type": 13,
+      "codename": "change_worker"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 52,
+    "fields": {
+      "name": "Can delete worker",
+      "content_type": 13,
+      "codename": "delete_worker"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 53,
+    "fields": {
+      "name": "Can view worker",
+      "content_type": 13,
+      "codename": "view_worker"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 54,
+    "fields": {
+      "name": "Can add capability",
+      "content_type": 14,
+      "codename": "add_capability"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 55,
+    "fields": {
+      "name": "Can change capability",
+      "content_type": 14,
+      "codename": "change_capability"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 56,
+    "fields": {
+      "name": "Can delete capability",
+      "content_type": 14,
+      "codename": "delete_capability"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 57,
+    "fields": {
+      "name": "Can view capability",
+      "content_type": 14,
+      "codename": "view_capability"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 58,
+    "fields": {
+      "name": "Can add scanning session",
+      "content_type": 15,
+      "codename": "add_scanningsession"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 59,
+    "fields": {
+      "name": "Can change scanning session",
+      "content_type": 15,
+      "codename": "change_scanningsession"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 60,
+    "fields": {
+      "name": "Can delete scanning session",
+      "content_type": 15,
+      "codename": "delete_scanningsession"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 61,
+    "fields": {
+      "name": "Can view scanning session",
+      "content_type": 15,
+      "codename": "view_scanningsession"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 62,
+    "fields": {
+      "name": "Can add analyzer",
+      "content_type": 16,
+      "codename": "add_analyzer"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 63,
+    "fields": {
+      "name": "Can change analyzer",
+      "content_type": 16,
+      "codename": "change_analyzer"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 64,
+    "fields": {
+      "name": "Can delete analyzer",
+      "content_type": 16,
+      "codename": "delete_analyzer"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 65,
+    "fields": {
+      "name": "Can view analyzer",
+      "content_type": 16,
+      "codename": "view_analyzer"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 66,
+    "fields": {
+      "name": "Can add analyzer version",
+      "content_type": 17,
+      "codename": "add_analyzerversion"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 67,
+    "fields": {
+      "name": "Can change analyzer version",
+      "content_type": 17,
+      "codename": "change_analyzerversion"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 68,
+    "fields": {
+      "name": "Can delete analyzer version",
+      "content_type": 17,
+      "codename": "delete_analyzerversion"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 69,
+    "fields": {
+      "name": "Can view analyzer version",
+      "content_type": 17,
+      "codename": "view_analyzerversion"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 70,
+    "fields": {
+      "name": "Can add app settings",
+      "content_type": 18,
+      "codename": "add_appsettings"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 71,
+    "fields": {
+      "name": "Can change app settings",
+      "content_type": 18,
+      "codename": "change_appsettings"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 72,
+    "fields": {
+      "name": "Can delete app settings",
+      "content_type": 18,
+      "codename": "delete_appsettings"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 73,
+    "fields": {
+      "name": "Can view app settings",
+      "content_type": 18,
+      "codename": "view_appsettings"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 74,
+    "fields": {
+      "name": "Can add client analyzer",
+      "content_type": 19,
+      "codename": "add_clientanalyzer"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 75,
+    "fields": {
+      "name": "Can change client analyzer",
+      "content_type": 19,
+      "codename": "change_clientanalyzer"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 76,
+    "fields": {
+      "name": "Can delete client analyzer",
+      "content_type": 19,
+      "codename": "delete_clientanalyzer"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 77,
+    "fields": {
+      "name": "Can view client analyzer",
+      "content_type": 19,
+      "codename": "view_clientanalyzer"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 78,
+    "fields": {
+      "name": "Can add et mapping",
+      "content_type": 20,
+      "codename": "add_etmapping"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 79,
+    "fields": {
+      "name": "Can change et mapping",
+      "content_type": 20,
+      "codename": "change_etmapping"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 80,
+    "fields": {
+      "name": "Can delete et mapping",
+      "content_type": 20,
+      "codename": "delete_etmapping"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 81,
+    "fields": {
+      "name": "Can view et mapping",
+      "content_type": 20,
+      "codename": "view_etmapping"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 82,
+    "fields": {
+      "name": "Can add mock config",
+      "content_type": 21,
+      "codename": "add_mockconfig"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 83,
+    "fields": {
+      "name": "Can change mock config",
+      "content_type": 21,
+      "codename": "change_mockconfig"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 84,
+    "fields": {
+      "name": "Can delete mock config",
+      "content_type": 21,
+      "codename": "delete_mockconfig"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 85,
+    "fields": {
+      "name": "Can view mock config",
+      "content_type": 21,
+      "codename": "view_mockconfig"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 86,
+    "fields": {
+      "name": "Can add package",
+      "content_type": 22,
+      "codename": "add_package"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 87,
+    "fields": {
+      "name": "Can change package",
+      "content_type": 22,
+      "codename": "change_package"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 88,
+    "fields": {
+      "name": "Can delete package",
+      "content_type": 22,
+      "codename": "delete_package"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 89,
+    "fields": {
+      "name": "Can view package",
+      "content_type": 22,
+      "codename": "view_package"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 90,
+    "fields": {
+      "name": "Can add package attribute",
+      "content_type": 23,
+      "codename": "add_packageattribute"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 91,
+    "fields": {
+      "name": "Can change package attribute",
+      "content_type": 23,
+      "codename": "change_packageattribute"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 92,
+    "fields": {
+      "name": "Can delete package attribute",
+      "content_type": 23,
+      "codename": "delete_packageattribute"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 93,
+    "fields": {
+      "name": "Can view package attribute",
+      "content_type": 23,
+      "codename": "view_packageattribute"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 94,
+    "fields": {
+      "name": "Can add package capability",
+      "content_type": 24,
+      "codename": "add_packagecapability"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 95,
+    "fields": {
+      "name": "Can change package capability",
+      "content_type": 24,
+      "codename": "change_packagecapability"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 96,
+    "fields": {
+      "name": "Can delete package capability",
+      "content_type": 24,
+      "codename": "delete_packagecapability"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 97,
+    "fields": {
+      "name": "Can view package capability",
+      "content_type": 24,
+      "codename": "view_packagecapability"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 98,
+    "fields": {
+      "name": "Can add permissions",
+      "content_type": 25,
+      "codename": "add_permissions"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 99,
+    "fields": {
+      "name": "Can change permissions",
+      "content_type": 25,
+      "codename": "change_permissions"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 100,
+    "fields": {
+      "name": "Can delete permissions",
+      "content_type": 25,
+      "codename": "delete_permissions"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 101,
+    "fields": {
+      "name": "Can view permissions",
+      "content_type": 25,
+      "codename": "view_permissions"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 102,
+    "fields": {
+      "name": "Can submit ET scan via XML-RPC",
+      "content_type": 25,
+      "codename": "errata_xmlrpc_scan"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 103,
+    "fields": {
+      "name": "Can add profile",
+      "content_type": 26,
+      "codename": "add_profile"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 104,
+    "fields": {
+      "name": "Can change profile",
+      "content_type": 26,
+      "codename": "change_profile"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 105,
+    "fields": {
+      "name": "Can delete profile",
+      "content_type": 26,
+      "codename": "delete_profile"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 106,
+    "fields": {
+      "name": "Can view profile",
+      "content_type": 26,
+      "codename": "view_profile"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 107,
+    "fields": {
+      "name": "Can add release mapping",
+      "content_type": 27,
+      "codename": "add_releasemapping"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 108,
+    "fields": {
+      "name": "Can change release mapping",
+      "content_type": 27,
+      "codename": "change_releasemapping"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 109,
+    "fields": {
+      "name": "Can delete release mapping",
+      "content_type": 27,
+      "codename": "delete_releasemapping"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 110,
+    "fields": {
+      "name": "Can view release mapping",
+      "content_type": 27,
+      "codename": "view_releasemapping"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 111,
+    "fields": {
+      "name": "Can add scan",
+      "content_type": 28,
+      "codename": "add_scan"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 112,
+    "fields": {
+      "name": "Can change scan",
+      "content_type": 28,
+      "codename": "change_scan"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 113,
+    "fields": {
+      "name": "Can delete scan",
+      "content_type": 28,
+      "codename": "delete_scan"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 114,
+    "fields": {
+      "name": "Can view scan",
+      "content_type": 28,
+      "codename": "view_scan"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 115,
+    "fields": {
+      "name": "Can add scan binding",
+      "content_type": 29,
+      "codename": "add_scanbinding"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 116,
+    "fields": {
+      "name": "Can change scan binding",
+      "content_type": 29,
+      "codename": "change_scanbinding"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 117,
+    "fields": {
+      "name": "Can delete scan binding",
+      "content_type": 29,
+      "codename": "delete_scanbinding"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 118,
+    "fields": {
+      "name": "Can view scan binding",
+      "content_type": 29,
+      "codename": "view_scanbinding"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 119,
+    "fields": {
+      "name": "Can add system release",
+      "content_type": 30,
+      "codename": "add_systemrelease"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 120,
+    "fields": {
+      "name": "Can change system release",
+      "content_type": 30,
+      "codename": "change_systemrelease"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 121,
+    "fields": {
+      "name": "Can delete system release",
+      "content_type": 30,
+      "codename": "delete_systemrelease"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 122,
+    "fields": {
+      "name": "Can view system release",
+      "content_type": 30,
+      "codename": "view_systemrelease"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 123,
+    "fields": {
+      "name": "Can add tag",
+      "content_type": 31,
+      "codename": "add_tag"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 124,
+    "fields": {
+      "name": "Can change tag",
+      "content_type": 31,
+      "codename": "change_tag"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 125,
+    "fields": {
+      "name": "Can delete tag",
+      "content_type": 31,
+      "codename": "delete_tag"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 126,
+    "fields": {
+      "name": "Can view tag",
+      "content_type": 31,
+      "codename": "view_tag"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 127,
+    "fields": {
+      "name": "Can add task extension",
+      "content_type": 32,
+      "codename": "add_taskextension"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 128,
+    "fields": {
+      "name": "Can change task extension",
+      "content_type": 32,
+      "codename": "change_taskextension"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 129,
+    "fields": {
+      "name": "Can delete task extension",
+      "content_type": 32,
+      "codename": "delete_taskextension"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 130,
+    "fields": {
+      "name": "Can view task extension",
+      "content_type": 32,
+      "codename": "view_taskextension"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 131,
+    "fields": {
+      "name": "Can add bugzilla",
+      "content_type": 33,
+      "codename": "add_bugzilla"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 132,
+    "fields": {
+      "name": "Can change bugzilla",
+      "content_type": 33,
+      "codename": "change_bugzilla"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 133,
+    "fields": {
+      "name": "Can delete bugzilla",
+      "content_type": 33,
+      "codename": "delete_bugzilla"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 134,
+    "fields": {
+      "name": "Can view bugzilla",
+      "content_type": 33,
+      "codename": "view_bugzilla"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 135,
+    "fields": {
+      "name": "Can add checker",
+      "content_type": 34,
+      "codename": "add_checker"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 136,
+    "fields": {
+      "name": "Can change checker",
+      "content_type": 34,
+      "codename": "change_checker"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 137,
+    "fields": {
+      "name": "Can delete checker",
+      "content_type": 34,
+      "codename": "delete_checker"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 138,
+    "fields": {
+      "name": "Can view checker",
+      "content_type": 34,
+      "codename": "view_checker"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 139,
+    "fields": {
+      "name": "Can add checker group",
+      "content_type": 35,
+      "codename": "add_checkergroup"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 140,
+    "fields": {
+      "name": "Can change checker group",
+      "content_type": 35,
+      "codename": "change_checkergroup"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 141,
+    "fields": {
+      "name": "Can delete checker group",
+      "content_type": 35,
+      "codename": "delete_checkergroup"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 142,
+    "fields": {
+      "name": "Can view checker group",
+      "content_type": 35,
+      "codename": "view_checkergroup"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 143,
+    "fields": {
+      "name": "Can add defect",
+      "content_type": 36,
+      "codename": "add_defect"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 144,
+    "fields": {
+      "name": "Can change defect",
+      "content_type": 36,
+      "codename": "change_defect"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 145,
+    "fields": {
+      "name": "Can delete defect",
+      "content_type": 36,
+      "codename": "delete_defect"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 146,
+    "fields": {
+      "name": "Can view defect",
+      "content_type": 36,
+      "codename": "view_defect"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 147,
+    "fields": {
+      "name": "Can add result",
+      "content_type": 37,
+      "codename": "add_result"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 148,
+    "fields": {
+      "name": "Can change result",
+      "content_type": 37,
+      "codename": "change_result"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 149,
+    "fields": {
+      "name": "Can delete result",
+      "content_type": 37,
+      "codename": "delete_result"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 150,
+    "fields": {
+      "name": "Can view result",
+      "content_type": 37,
+      "codename": "view_result"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 151,
+    "fields": {
+      "name": "Can add result group",
+      "content_type": 38,
+      "codename": "add_resultgroup"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 152,
+    "fields": {
+      "name": "Can change result group",
+      "content_type": 38,
+      "codename": "change_resultgroup"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 153,
+    "fields": {
+      "name": "Can delete result group",
+      "content_type": 38,
+      "codename": "delete_resultgroup"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 154,
+    "fields": {
+      "name": "Can view result group",
+      "content_type": 38,
+      "codename": "view_resultgroup"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 155,
+    "fields": {
+      "name": "Can add waiver",
+      "content_type": 39,
+      "codename": "add_waiver"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 156,
+    "fields": {
+      "name": "Can change waiver",
+      "content_type": 39,
+      "codename": "change_waiver"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 157,
+    "fields": {
+      "name": "Can delete waiver",
+      "content_type": 39,
+      "codename": "delete_waiver"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 158,
+    "fields": {
+      "name": "Can view waiver",
+      "content_type": 39,
+      "codename": "view_waiver"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 159,
+    "fields": {
+      "name": "Can add waiving log",
+      "content_type": 40,
+      "codename": "add_waivinglog"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 160,
+    "fields": {
+      "name": "Can change waiving log",
+      "content_type": 40,
+      "codename": "change_waivinglog"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 161,
+    "fields": {
+      "name": "Can delete waiving log",
+      "content_type": 40,
+      "codename": "delete_waivinglog"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 162,
+    "fields": {
+      "name": "Can view waiving log",
+      "content_type": 40,
+      "codename": "view_waivinglog"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 163,
+    "fields": {
+      "name": "Can add stat results",
+      "content_type": 41,
+      "codename": "add_statresults"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 164,
+    "fields": {
+      "name": "Can change stat results",
+      "content_type": 41,
+      "codename": "change_statresults"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 165,
+    "fields": {
+      "name": "Can delete stat results",
+      "content_type": 41,
+      "codename": "delete_statresults"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 166,
+    "fields": {
+      "name": "Can view stat results",
+      "content_type": 41,
+      "codename": "view_statresults"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 167,
+    "fields": {
+      "name": "Can add stat type",
+      "content_type": 42,
+      "codename": "add_stattype"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 168,
+    "fields": {
+      "name": "Can change stat type",
+      "content_type": 42,
+      "codename": "change_stattype"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 169,
+    "fields": {
+      "name": "Can delete stat type",
+      "content_type": 42,
+      "codename": "delete_stattype"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 170,
+    "fields": {
+      "name": "Can view stat type",
+      "content_type": 42,
+      "codename": "view_stattype"
+    }
+  },
+  {
+    "model": "kobo_auth.user",
+    "pk": 1,
+    "fields": {
+      "password": "pbkdf2_sha256$150000$LGqhNdKCaEJJ$gV2uOXLmR5ZY2wma14389hk4Fb9c3eP4TdkT7uXOtdE=",
+      "last_login": null,
+      "is_superuser": true,
+      "username": "admin",
+      "first_name": "",
+      "last_name": "",
+      "email": "kdudka@redhat.com",
+      "is_staff": true,
+      "is_active": true,
+      "date_joined": "2022-11-25T15:18:49.373",
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "kobo_auth.user",
+    "pk": 2,
+    "fields": {
+      "password": "pbkdf2_sha256$150000$8R6HqSyOxT2h$MeqgwBPdW+bUUNR/r9z5SU734NwYKxljNkTZEZJ/doA=",
+      "last_login": "2022-11-25T15:20:57.014",
+      "is_superuser": false,
+      "username": "user",
+      "first_name": "",
+      "last_name": "",
+      "email": "user@example.com",
+      "is_staff": false,
+      "is_active": true,
+      "date_joined": "2022-11-25T15:18:49.414",
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "kobo_auth.user",
+    "pk": 3,
+    "fields": {
+      "password": "pbkdf2_sha256$150000$2iSsB8cKqH1C$c0lD2hUJ5hYszGeqHUaMf4qGU8hvUFvYubTzeHQWHpE=",
+      "last_login": null,
+      "is_superuser": false,
+      "username": "idoamara",
+      "first_name": "",
+      "last_name": "",
+      "email": "f{login}@redhat.com",
+      "is_staff": false,
+      "is_active": true,
+      "date_joined": "2022-11-25T15:18:49.444",
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "kobo_auth.user",
+    "pk": 4,
+    "fields": {
+      "password": "pbkdf2_sha256$150000$5BX7QZylLVqA$FE25NicL3HPZH4C2qdqP/JEnQW7JAWzIZyfFlc69s74=",
+      "last_login": null,
+      "is_superuser": false,
+      "username": "kdudka",
+      "first_name": "",
+      "last_name": "",
+      "email": "f{login}@redhat.com",
+      "is_staff": false,
+      "is_active": true,
+      "date_joined": "2022-11-25T15:18:49.473",
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "kobo_auth.user",
+    "pk": 5,
+    "fields": {
+      "password": "pbkdf2_sha256$150000$b3Fkl1T4wvq0$Q2ZQOm/VccBu4GquEsTgABoWcrfHdoN0ZpU4OHcajNQ=",
+      "last_login": null,
+      "is_superuser": false,
+      "username": "lbalhar",
+      "first_name": "",
+      "last_name": "",
+      "email": "f{login}@redhat.com",
+      "is_staff": false,
+      "is_active": true,
+      "date_joined": "2022-11-25T15:18:49.503",
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "kobo_auth.user",
+    "pk": 6,
+    "fields": {
+      "password": "",
+      "last_login": "2022-11-25T15:21:05.571",
+      "is_superuser": false,
+      "username": "worker/localhost",
+      "first_name": "",
+      "last_name": "",
+      "email": "",
+      "is_staff": false,
+      "is_active": true,
+      "date_joined": "2022-11-25T15:19:12.282",
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "hub.task",
+    "pk": 1,
+    "fields": {
+      "archive": false,
+      "owner": 2,
+      "worker": 1,
+      "parent": null,
+      "state": 5,
+      "label": "python-six-1.9.0-2.el7",
+      "exclusive": false,
+      "method": "ErrataDiffBuild",
+      "args": "\"{\\\"build\\\": \\\"python-six-1.9.0-2.el7\\\", \\\"scanning_session\\\": 1, \\\"su_user\\\": \\\"csmock\\\", \\\"base_nvr\\\": \\\"python-six-1.3.0-4.el7\\\", \\\"mock_config\\\": \\\"rhel-7.7.z-x86_64\\\", \\\"scan_id\\\": 1}\"",
+      "result": "",
+      "comment": "errata process scan of python-six-1.9.0-2.el7",
+      "arch": 1,
+      "channel": 1,
+      "timeout": null,
+      "waiting": false,
+      "awaited": false,
+      "dt_created": "2022-11-25T15:21:00.144",
+      "dt_started": "2022-11-25T15:21:00.356",
+      "dt_finished": "2022-11-25T15:21:10.758",
+      "priority": 20,
+      "weight": 1,
+      "resubmitted_by": null,
+      "resubmitted_from": null,
+      "subtask_count": 1
+    }
+  },
+  {
+    "model": "hub.task",
+    "pk": 2,
+    "fields": {
+      "archive": false,
+      "owner": 2,
+      "worker": 1,
+      "parent": 1,
+      "state": 5,
+      "label": "Refresh version cache.",
+      "exclusive": false,
+      "method": "AnalyzerVersionRetriever",
+      "args": "\"{\\\"mock_config\\\": \\\"rhel-7.7.z-x86_64\\\", \\\"analyzers\\\": \\\"gcc,clang,cppcheck,shellcheck\\\", \\\"su_user\\\": \\\"csmock\\\", \\\"csmock_args\\\": \\\"--use-host-cppcheck --gcc-analyze\\\"}\"",
+      "result": "",
+      "comment": null,
+      "arch": 1,
+      "channel": 1,
+      "timeout": null,
+      "waiting": false,
+      "awaited": false,
+      "dt_created": "2022-11-25T15:21:00.453",
+      "dt_started": "2022-11-25T15:21:05.550",
+      "dt_finished": "2022-11-25T15:21:05.832",
+      "priority": 10,
+      "weight": 1,
+      "resubmitted_by": null,
+      "resubmitted_from": null,
+      "subtask_count": 0
+    }
+  },
+  {
+    "model": "scan.scan",
+    "pk": 1,
+    "fields": {
+      "nvr": "python-six-1.9.0-2.el7",
+      "scan_type": 3,
+      "state": 1,
+      "base": null,
+      "tag": 32,
+      "username": 1,
+      "last_access": "2022-11-25T15:21:00.137",
+      "date_submitted": "2022-11-25T15:21:00.137",
+      "enabled": true,
+      "package": 1,
+      "parent": null
+    }
+  }
+]

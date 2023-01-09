@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 
-import random
+import pathlib
 
+from django.core.management import call_command
 from django.test import Client, TestCase
 
 
@@ -11,16 +12,21 @@ class BasicWebTestCase(TestCase):
     """
 
     def setUp(self):
+        fixture_path = pathlib.Path(__file__).parent.absolute() / 'fixtures/initial_test_data.json'
+        call_command('loaddata', fixture_path, verbosity=0)
         self.client = Client()
 
     def test_scans_list(self):
         r = self.client.get('/waiving/')
         self.assertEqual(r.status_code, 200)
 
-    def test_random_scans(self):
-        scan_id = random.randint(20, 100)
-        r = self.client.get('/waiving/%d/' % scan_id)
-        self.assertTrue(r.status_code in [200, 404])
+    def test_existent_scan(self):
+        r = self.client.get('/waiving/1/')
+        self.assertEqual(r.status_code, 200)
+
+    def test_non_existent_scan(self):
+        r = self.client.get('/waiving/2/')
+        self.assertEqual(r.status_code, 404)
 
     def test_home(self):
         r = self.client.get('/')
