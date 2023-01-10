@@ -27,6 +27,7 @@ RUN dnf -y --setopt=tsflags=nodocs install \
     brewkoji \
     cppcheck \
     csmock \
+    csmock-plugin-unicontrol \
     file \
     gzip \
     koji \
