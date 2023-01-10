@@ -43,7 +43,8 @@ django-unit-tests:
   after_script:
     - podman-compose logs db
     - podman-compose logs osh-hub
-    - podman-compose down
+    # must specify the containers as podman-compose down has no idea the client hasn't been prepared
+    - podman-compose down db osh-hub osh-worker
 
 ### Sequence 3 ###
 
