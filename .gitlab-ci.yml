@@ -22,7 +22,7 @@ django-unit-tests:
     paths:
       - htmlcov/
   before_script:
-    - gitlab-job-guard --private-token="$GITLAB_API_TOKEN"
+    - gitlab-job-guard --access-token="$(echo $GITLAB_API_TOKEN | base64 --decode)"
     - git clone --depth 1 https://github.com/release-engineering/kobo.git
     - containers/scripts/init-db.sh --deploy --force --minimal
     - podman exec -it db psql -c 'ALTER USER covscanhub CREATEDB;'
@@ -62,7 +62,7 @@ copr-setup:
     # guard job sequence
     - dnf install -y python3-pip
     - python3 -m pip install gitlab-job-guard setuptools
-    - gitlab-job-guard --private-token="$GITLAB_API_TOKEN"
+    - gitlab-job-guard --access-token="$(echo $GITLAB_API_TOKEN | base64 --decode)"
     # actual job starts
     - mkdir -p ~/.config
     - echo "[copr-cli]" > ~/.config/rhcopr
