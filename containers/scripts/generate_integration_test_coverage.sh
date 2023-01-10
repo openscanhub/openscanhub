@@ -46,7 +46,7 @@ main() {
 
     # `version-diff-build` needs worker to run in background
     podman exec -i osh-worker scripts/kill_worker.sh
-    sed -i "s/RUN_TASKS_IN_FOREGROUND = 1/RUN_TASKS_IN_FOREGROUND = 0/g"  covscand/covscand-local.conf
+    sed -i "s/RUN_TASKS_IN_FOREGROUND = 1/RUN_TASKS_IN_FOREGROUND = 0/g"  osh/worker/covscand-local.conf
     podman start osh-worker
     podman exec osh-client "${CLI_CMD[@]}" version-diff-build --config=fedora-36-x86_64 --brew-build units-2.21-4.fc36 --base-config=fedora-36-x86_64 --base-brew-build units-2.21-4.fc36 | grep http://osh-hub:8000/task/3
     podman exec -it osh-client "${CLI_CMD[@]}" download-results 3

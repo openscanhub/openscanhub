@@ -57,7 +57,7 @@ integration-tests:
   before_script:
     - git clone --depth 1 https://github.com/release-engineering/kobo.git
   script:
-    - sed -i "s/RUN_TASKS_IN_FOREGROUND = 0/RUN_TASKS_IN_FOREGROUND = 1/g"  covscand/covscand-local.conf
+    - sed -i "s/RUN_TASKS_IN_FOREGROUND = 0/RUN_TASKS_IN_FOREGROUND = 1/g"  osh/worker/covscand-local.conf
     - containers/scripts/generate_integration_test_coverage.sh
   after_script:
     - podman-compose down
@@ -71,7 +71,7 @@ copr-setup:
   before_script:
     # guard job sequence
     - dnf install -y python3-pip
-    - python3 -m pip install gitlab-job-guard
+    - python3 -m pip install gitlab-job-guard setuptools
     - gitlab-job-guard --private-token="$GITLAB_API_TOKEN"
     # actual job starts
     - mkdir -p ~/.config

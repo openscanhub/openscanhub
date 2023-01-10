@@ -8,8 +8,8 @@ import kobo.worker.main
 import kobo.worker.tasks
 from kobo.worker.taskmanager import TaskManager
 
-# assuming all tasks are in covscand/tasks/task_*.py modules
-import covscand.tasks
+# assuming all tasks are in osh/worker/tasks/task_*.py modules
+import osh.worker.tasks
 from covscancommon.utils.conf import get_config_dict
 
 
@@ -26,7 +26,7 @@ def main():
     # register generic kobo tasks
     kobo.worker.main.TaskContainer.register_module(kobo.worker.tasks, prefix="task_")
     # register project specific tasks
-    kobo.worker.main.TaskContainer.register_module(covscand.tasks, prefix="task_")
+    kobo.worker.main.TaskContainer.register_module(osh.worker.tasks, prefix="task_")
 
     # configuration
     conf = get_config_dict(config_env="COVSCAND_CONFIG_FILE", config_default="/etc/covscan/covscand.conf")

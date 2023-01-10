@@ -163,7 +163,7 @@ rm -rf %{buildroot}%{python3_sitelib}/scripts
 
 %files worker
 %defattr(644,root,root,755)
-%{python3_sitelib}/covscand
+%{python3_sitelib}/osh/worker
 %{_unitdir}/covscand.service
 %attr(754,root,root) /usr/sbin/covscand
 

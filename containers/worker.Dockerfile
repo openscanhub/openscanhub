@@ -6,7 +6,7 @@ COPY containers/rhel-8-pulp.repo containers/rcm-tools-for-rhel-8.repo /etc/yum.r
 WORKDIR /src
 
 ENV PYTHONPATH=.:kobo
-ENV COVSCAND_CONFIG_FILE=covscand/covscand-local.conf
+ENV COVSCAND_CONFIG_FILE=osh/worker/covscand-local.conf
 
 # Internal CA
 RUN cd /etc/pki/ca-trust/source/anchors/ && \
@@ -44,4 +44,4 @@ RUN sed -e 's|print_main_output=True"|&, "--no-bootstrap-chroot"|' -i /usr/bin/c
 
 RUN touch /WORKER_IS_READY
 
-CMD coverage-3.6 run --parallel-mode --omit="*site-packages*,*kobo*," covscand/covscand -f
+CMD coverage-3.6 run --parallel-mode --omit="*site-packages*,*kobo*," osh/worker/covscand -f

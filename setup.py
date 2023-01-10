@@ -3,10 +3,12 @@
 
 import os
 
-from setuptools import find_packages, setup
+from setuptools import PEP420PackageFinder, setup
 
 from scripts.include import (get_files, get_git_date_and_time, get_git_version,
                              git_check_tag_for_HEAD)
+
+find_namespace_packages = PEP420PackageFinder.find
 
 THIS_FILE_PATH = os.path.dirname(os.path.abspath(__file__))
 
@@ -14,9 +16,9 @@ package_version = [0, 8, 2]
 data_files = {
     "/etc/covscan": [
         "covscan/covscan.conf",
-        "covscand/covscand.conf",
-        "covscand/covscand.conf.prod",
-        "covscand/covscand.conf.stage",
+        "osh/worker/covscand.conf",
+        "osh/worker/covscand.conf.prod",
+        "osh/worker/covscand.conf.stage",
     ],
     "/etc/httpd/conf.d": [
         "covscanhub/covscanhub-httpd.conf.prod",
@@ -32,7 +34,7 @@ data_files = {
         "covscan/covscan",
     ],
     "/usr/sbin": [
-        "covscand/covscand",
+        "osh/worker/covscand",
     ],
 }
 package_data = {
@@ -66,7 +68,9 @@ setup(
     author="Red Hat, Inc.",
     author_email="ttomecek@redhat.com",
     description="Coverity scan scheduler",
-    packages=find_packages(),
+    # This expects `kobo` directory does not exist under current directory
+    # TODO: How to exclude `kobo` directory?
+    packages=find_namespace_packages(),
     package_data=package_data,
     data_files=data_files.items(),
 )
