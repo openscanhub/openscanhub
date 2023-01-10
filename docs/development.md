@@ -9,6 +9,13 @@ Because we need to fix issues in Kobo as well as in OpenScanHub, we should use i
 * Switch to the main covscan folder (where covscan, covscand, and covscanhub are).
 * Clone Kobo project: `git clone git@github.com:release-engineering/kobo.git`
 
+## Using scripts
+
+You can use `containers/scripts/init-db.sh` for deploying a basic containerized environment, which can either have a `--minimal` working database or `--restore` production state (this can take a while).
+By default, this script will deploy a `postgresql` instance, the worker and the hub, but it can also generate a containerized version of the client with the `--full-dev` option.
+
+You can skip deployment and basic settings if you use the script.
+
 ## OSH worker
 
 Worker depends on some system packages not available from PyPI, needs to run under root user and has kinda complex setup which are all the reasons to run it in a container.
