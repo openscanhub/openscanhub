@@ -273,6 +273,8 @@ True, the package is blacklisted -- not accepted for scanning.", blank=True, nul
     eligible = models.NullBooleanField(default=True,
                                        help_text="DEPRECATED, do not use; use package attribute instead.",
                                        blank=True, null=True)
+    priority_offset = models.SmallIntegerField(default=0, help_text="Set this to alter priority \
+of this packages scan")
 
     objects = PackageManager()
 
@@ -372,6 +374,9 @@ package')
             return self.eligible
         else:
             return atr.is_eligible()
+
+    def get_priority_offset(self):
+        return int(self.priority_offset)
 
 
 class PackageAttributeMixin(object):

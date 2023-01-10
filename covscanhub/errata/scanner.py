@@ -58,6 +58,7 @@ class AbstractScheduler(object):
         self.scan = None
         self.nvr = None
         self.tag = None
+        self.priority_offset = 0
 
         # transaction management
         self.is_stored = False
@@ -76,6 +77,8 @@ class AbstractScheduler(object):
         self.task_args['args']['su_user'] = AppSettings.setting_get_su_user()
         self.scan_args['nvr'] = self.nvr
         self.scan_args['username'] = self.package_owner
+        self.package = Package.objects.get_or_create_by_name(self.target_nvre_dict['name'])
+        self.priority_offset = self.package.get_priority_offset()
 
     def store(self):
         """
@@ -196,6 +199,7 @@ class AbstractTargetScheduler(AbstractScheduler):
         self.task_args['comment'] = self.scanning_session.get_option('comment_template') % {'target': self.options['target']}
         self.task_args['state'] = TASK_STATES['CREATED']
         self.task_args['priority'] = self.scanning_session.get_option('task_priority')
+        self.task_args['priority'] += self.priority_offset
 
         self.scan_args['enabled'] = True
 
@@ -206,7 +210,6 @@ class AbstractTargetScheduler(AbstractScheduler):
         if self.is_stored:
             logger.warning("Trying to call store() second time.")
             return
-        self.package = Package.objects.get_or_create_by_name(self.package_name)
 
         self.tag = Tag.objects.for_release_str(self.options['release'])
         mock_config = self.tag.mock.name
@@ -341,6 +344,32 @@ class AbstractClientScanScheduler(object):
         logger.info("Task opts are '%s'", opts)
         return opts
 
+    @classmethod
+    def determine_priority(cls, entered_priority, supposed_nvr, srpm_name):
+        """determine priority of scheduled task
+
+        :param entered_priority: priority submitted by client
+        :type entered_priority: int
+        :param supposed_nvr: supposedly valid nvr
+        :type supposed_nvr: str
+        :param srpm_name: name of submitted srpm
+        :type srpm_name: str
+        :return: priority of scheduled task
+        :rtype: int
+        """
+        if entered_priority is not None:
+            return entered_priority
+
+        priority_offset = 0
+        try:
+            nvr_dict = check_nvr(supposed_nvr or srpm_name[:-8])
+            packages = Package.objects.filter(name=nvr_dict['name'])
+            if len(packages) == 1:
+                priority_offset = packages[0].get_priority_offset()
+        except ValueError:
+            pass
+        return 10 + priority_offset
+
 
 class ClientScanScheduler(AbstractClientScanScheduler):
     """
@@ -369,6 +398,8 @@ class ClientScanScheduler(AbstractClientScanScheduler):
         # srpm
         self.build_nvr = self.options.get('brew_build', None)
         self.upload_id = self.options.get('upload_id', None)
+        self.srpm_name = None
+        self.srpm_path = None
         self.is_tarball = bool(self.options.get("tarball_build_script", None))
         check_srpm_response = check_srpm(self.upload_id, self.build_nvr, self.username, self.is_tarball)
         if check_srpm_response['type'] == 'build':
@@ -413,7 +444,8 @@ class ClientScanScheduler(AbstractClientScanScheduler):
         self.task_args['label'] = input_pkg
         self.task_args['method'] = self.method
         self.task_args['comment'] = self.comment
-        self.task_args['priority'] = self.priority or 10
+        self.task_args['priority'] = AbstractClientScanScheduler.determine_priority(
+            self.priority, self.build_nvr, self.srpm_name)
         self.task_args['state'] = TASK_STATES['CREATED']
         self.task_args['args'] = {}
         if self.build_nvr:
@@ -524,6 +556,8 @@ class ClientDiffScanScheduler(AbstractClientScanScheduler):
         self.target_upload_id = self.consume_options.get('nvr_upload_id', None)
         self.base_build_nvr = self.consume_options.get('base_brew_build', None)
         self.base_upload_id = self.consume_options.get('base_upload_id', None)
+        self.target_srpm_path = None
+        self.target_srpm_name = None
         target_check_srpm_response = check_srpm(self.target_upload_id, self.target_build_nvr, self.username)
         if target_check_srpm_response['type'] == 'build':
             self.target_build_kojibin = target_check_srpm_response['koji_bin']
@@ -578,7 +612,8 @@ class ClientDiffScanScheduler(AbstractClientScanScheduler):
         self.task_args['label'] = self.target_build_nvr or self.target_srpm_name
         self.task_args['method'] = 'VersionDiffBuild'
         self.task_args['comment'] = self.comment
-        self.task_args['priority'] = self.priority or 10
+        self.task_args['priority'] = AbstractClientScanScheduler.determine_priority(
+            self.priority, self.target_build_nvr, self.target_srpm_name)
         self.task_args['state'] = TASK_STATES['CREATED']
         self.task_args['args'] = {}
         if self.target_build_nvr:
