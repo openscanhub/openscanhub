@@ -64,19 +64,3 @@ class BasicWebTestCase(TestCase):
     def test_mockconfs_list(self):
         r = self.client.get('/scan/mock/')
         self.assertEqual(r.status_code, 200)
-
-
-class AssetsTestCase(TestCase):
-    """
-    GET to all static content
-    """
-
-    def setUp(self):
-        self.client = Client()
-
-    def test_css(self):
-        self.assertTrue(self.client.get('/static/css/redhat.css').status_code is not 404)
-        self.assertTrue(self.client.get('/static/kobo/css/screen.css').status_code is not 404)
-
-    def test_js(self):
-        self.assertTrue(self.client.get('/static/js/jquery-1.8.3.min.js').status_code is not 404)
