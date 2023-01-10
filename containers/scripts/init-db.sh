@@ -6,7 +6,20 @@ source containers/scripts/utils.sh
 FULL_DEV=''
 FORCE=''
 DEPLOY='false'
-MINIMAL='true'
+MINIMAL='false'
+
+help() {
+  set +x
+  echo "Usage: $0 [--help|-h] [--deploy|-d [--force|-f] [--full-dev|-F]] (--minimal|--restore)"
+  echo
+  echo "Options:"
+  echo "  -d, --deploy    Deploy containers"
+  echo "  -h, --help      Show this message"
+  echo "  -f, --force     Force container rebuild"
+  echo "  -F, --full-dev  Create a system-independent development environment"
+  echo "  -m, --minimal   Create a minimal database"
+  echo "  -r, --restore   Auto-restore database from backup"
+}
 
 main() {
   set -ex
@@ -17,8 +30,11 @@ main() {
 
   if [ "$MINIMAL" = true ]; then
     minimal
-  else
+  elif [ "$RESTORE" = true ]; then
     restore
+  else
+    help
+    exit 1
   fi
 }
 
@@ -78,23 +94,28 @@ EOF
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
-    --deploy)
+    --deploy|-d)
       DEPLOY='true'
       shift
       ;;
-    --force)
+    --force|-f)
       FORCE='--force'
       shift
       ;;
-    --full-dev)
+    --full-dev|-F)
       FULL_DEV='--full-dev'
       shift
       ;;
-    --minimal)
+    --help|-h)
+      help
+      exit 0
+      ;;
+    --minimal|-m)
+      MINIMAL='true'
       shift
       ;;
-    --restore)
-      MINIMAL='false'
+    --restore|-r)
+      RESTORE='true'
       shift
       ;;
     *)

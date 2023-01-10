@@ -6,11 +6,11 @@ source containers/scripts/utils.sh
 FORCE=''
 
 CLI_CMD=(
-    env
-    COVSCAN_CONFIG_FILE=covscan/covscan-local.conf
-    PYTHONPATH=.:kobo
-    /usr/bin/coverage-3.6 run --parallel-mode '--omit=*site-packages*,*kobo*,'
-    covscan/covscan
+  env
+  COVSCAN_CONFIG_FILE=covscan/covscan-local.conf
+  PYTHONPATH=.:kobo
+  /usr/bin/coverage-3.6 run --parallel-mode '--omit=*site-packages*,*kobo*,'
+  covscan/covscan
 )
 
 main() {
@@ -73,8 +73,28 @@ main() {
     echo "Use 'xdg-open htmlcov/index.html' command to open it."
 }
 
-if [ "$1" = --force ]; then
-    FORCE='--force'
-fi
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        --help|-h)
+            echo "Usage: $0 [--force|-f]"
+            echo
+            echo "Options:"
+            echo "  -f, --force  Force container rebuild"
+            exit 0
+            ;;
+        --force)
+            FORCE='--force'
+            shift
+            ;;
+        *)
+            if [ -z "$1" ]; then
+                shift
+            else
+                echo "Unknown option: $1"
+                exit 22 # EINVAL
+            fi
+            ;;
+    esac
+done
 
 main

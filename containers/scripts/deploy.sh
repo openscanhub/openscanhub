@@ -14,6 +14,18 @@ fi
 START='-d'
 FORCE='false'
 
+help() {
+  set +x
+  echo "Usage: $0 [--help|-h] [--clean] [--force|-f] [--full-dev|-F] [--no-start]"
+  echo
+  echo "Options:"
+  echo "  --clean          Remove all containers and volumes"
+  echo "  -f, --force      Force container rebuild"
+  echo "  -F, --full-dev   Create a system-independent development environment"
+  echo "  -h, --help       Show this message"
+  echo "  --no-start       Do not start containers"
+}
+
 main() {
   set -ex
 
@@ -123,18 +135,15 @@ clean() {
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
-    --build)
-      shift
-      ;;
     --clean)
       clean
       exit "$?"
       ;;
-    --force)
+    --force|-f)
       FORCE='true'
       shift
       ;;
-    --full-dev)
+    --full-dev|-F)
       CONTAINERS+=' osh-client'
       shift
       ;;
