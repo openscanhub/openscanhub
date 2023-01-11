@@ -2,21 +2,21 @@
 import os
 from glob import glob
 
-from kobo.hub.models import Task, TASK_STATES
-
-from covscanhub.other.shortcuts import add_link_field
-from covscanhub.scan.notify import send_scan_notification
-from covscanhub.errata.service import rescan
-from covscanhub.scan.models import Scan, ScanBinding, SCAN_STATES
-from covscanhub.other.autoregister import autoregister_admin
-from covscanhub.scan.xmlrpc_helper import finish_scan as h_finish_scan, \
-    fail_scan as h_fail_scan, cancel_scan as h_cancel_scan, cancel_scan_tasks
-
-from django.shortcuts import render
 from django.conf.urls import url
-from django.utils.safestring import mark_safe
 from django.contrib import admin
+from django.shortcuts import render
+from django.utils.safestring import mark_safe
+from kobo.hub.models import TASK_STATES, Task
 
+from covscanhub.errata.service import rescan
+from covscanhub.other.autoregister import autoregister_admin
+from covscanhub.other.shortcuts import add_link_field
+from covscanhub.scan.models import SCAN_STATES, Scan, ScanBinding
+from covscanhub.scan.notify import send_scan_notification
+from covscanhub.scan.xmlrpc_helper import cancel_scan as h_cancel_scan
+from covscanhub.scan.xmlrpc_helper import cancel_scan_tasks
+from covscanhub.scan.xmlrpc_helper import fail_scan as h_fail_scan
+from covscanhub.scan.xmlrpc_helper import finish_scan as h_finish_scan
 
 autoregister_admin('covscanhub.scan.models',
                    exclude_models=['Scan'],
@@ -42,7 +42,7 @@ class ScanAdmin(admin.ModelAdmin):
     list_display = ("id", "nvr", "state", "scan_type", 'link_base',
                     'link_parent', "link_tag",
                     'username', 'link_package', 'link_bind', 'enabled')
-    search_fields = ['package__name', 'nvr',]
+    search_fields = ['package__name', 'nvr']
     list_per_page = 15
     review_template = 'admin/my_test/myentry/review.html'
 
@@ -50,16 +50,16 @@ class ScanAdmin(admin.ModelAdmin):
         urls = super(ScanAdmin, self).get_urls()
         my_urls = [
             url(r'(?P<scan_id>\d+)/notify/$',
-             self.admin_site.admin_view(self.notify)),
+                self.admin_site.admin_view(self.notify)),
             url(r'(?P<scan_id>\d+)/fail/$',
-             self.admin_site.admin_view(self.fail_scan)),
+                self.admin_site.admin_view(self.fail_scan)),
             url(r'(?P<scan_id>\d+)/cancel/$',
-             self.admin_site.admin_view(self.cancel_scan)),
+                self.admin_site.admin_view(self.cancel_scan)),
             url(r'(?P<scan_id>\d+)/finish/$',
-             self.admin_site.admin_view(self.finish_scan)),
+                self.admin_site.admin_view(self.finish_scan)),
             url(r'(?P<scan_id>\d+)/rescan/$',
-             self.admin_site.admin_view(self.rescan)),
-            ]
+                self.admin_site.admin_view(self.rescan)),
+        ]
         return my_urls + urls
 
     def notify(self, request, scan_id):
@@ -114,7 +114,7 @@ class ScanAdmin(admin.ModelAdmin):
         scan = Scan.objects.get(id=scan_id)
         try:
             new_scan = rescan(scan, request.user)
-        except Exception as e:
+        except Exception as e: # noqa
             result = "Unable to rescan: %s" % e
         else:
             result = "New scan #%s submitted." % (new_scan.scan.id)
@@ -138,5 +138,6 @@ class ScanAdmin(admin.ModelAdmin):
             'app_label': self.model._meta.app_label,
         }
         return render(request, 'admin/scan/scan/state_change.html', context)
+
 
 admin.site.register(Scan, ScanAdmin)
