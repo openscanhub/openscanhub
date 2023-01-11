@@ -2,7 +2,7 @@
 import os
 from glob import glob
 
-from django.conf.urls import url
+from django import VERSION as django_version
 from django.contrib import admin
 from django.shortcuts import render
 from django.utils.safestring import mark_safe
@@ -17,6 +17,12 @@ from covscanhub.scan.xmlrpc_helper import cancel_scan as h_cancel_scan
 from covscanhub.scan.xmlrpc_helper import cancel_scan_tasks
 from covscanhub.scan.xmlrpc_helper import fail_scan as h_fail_scan
 from covscanhub.scan.xmlrpc_helper import finish_scan as h_finish_scan
+
+# django.conf.urls.url() was deprecated in Django 3.0 and removed in Django 4.0
+if django_version[0] >= 3:
+    from django.urls import re_path as url
+else:
+    from django.conf.urls import url
 
 autoregister_admin('covscanhub.scan.models',
                    exclude_models=['Scan'],
