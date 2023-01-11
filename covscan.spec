@@ -6,10 +6,19 @@ Summary:        Coverity scan scheduler
 Source:         %{name}-%{version}.tar.bz2
 BuildArch:      noarch
 
+BuildRequires:  koji
+BuildRequires:  python3-csdiff
 BuildRequires:  python3-devel
+BuildRequires:  python3-django
+BuildRequires:  python3-django-debug-toolbar
+BuildRequires:  python3-kobo-client
+BuildRequires:  python3-kobo-django
+BuildRequires:  python3-kobo-hub
+BuildRequires:  python3-kobo-rpmlib
+BuildRequires:  python3-psycopg2
+BuildRequires:  python3-qpid-proton
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-six
-BuildRequires:  python3-kobo-client
 BuildRequires:  systemd-rpm-macros
 
 %description
@@ -80,7 +89,7 @@ Requires: file
 Requires: python3-bugzilla
 Requires: python3-csdiff
 
-Requires: python3-django-debug-toolbar > 1.0
+Requires: python3-django-debug-toolbar
 
 Requires(post): /usr/bin/pg_isready
 
@@ -113,6 +122,10 @@ done;done)
 %setup -q
 
 %build
+
+# collect static files from Django itself
+PYTHONPATH=. covscanhub/manage.py collectstatic
+
 %py3_build
 
 

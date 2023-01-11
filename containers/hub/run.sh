@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+# collect static files from Django itself
+python3.6 covscanhub/manage.py collectstatic
+
 for _ in $(seq 100); do
     pg_isready -h db && break
     sleep 0.5
