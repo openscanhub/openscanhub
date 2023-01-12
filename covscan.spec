@@ -160,6 +160,7 @@ rm -rf %{buildroot}%{python3_sitelib}/scripts
 %files common
 %defattr(644,root,root,755)
 %{python3_sitelib}/covscancommon
+%dir %{python3_sitelib}/osh
 
 %files worker
 %defattr(644,root,root,755)
