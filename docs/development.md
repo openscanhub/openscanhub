@@ -267,23 +267,8 @@ Steps to set up GitLab CI runner for Copr:
 Because we need to run containers in our CI, we cannot use the standard shared Gitlab CI runners.
 Therefore, we have our own private Gitlab CI runner on OpenStack.
 
-### Details
-
-* Maintainer: Lumír Balhar (lbalhar@redhat.com)
-* Virtual machine runs on rhos-d.infra.prod.upshift.rdu2.redhat.com
-* OS: Fedora-Cloud-Base-35
-* IP address: 10.0.151.181
-* Main system user: `fedora`
-
-### Installation steps
-
-If we'd ever need to deploy a new runner, those are the steps to do that:
-
-1. You need a running server in Red Hat internal network so it can communicate with Gitlab.
-2. As first step, install Red Hat internal CA certificates.
-3. The installation instructions for Gitlab runner can be found in the project in Settings → CI/CD → Runners.
-4. Download, install, and start the runner.
-5. Use the registration token to register the runner with your project.
-6. Use `covscan-ci-runner` as a tag. Tags specify which runners take what jobs.
-7. Install additional packages for our CI jobs: podman, podman-compose, make, git-core
-8. Profit ;)
+Steps to set up Covscan CI runner for containers:
+- Follow same steps from `Gitlab CI for Copr` section. Set up instance name to `$USER-covscan-ci-runner`.
+- Run `dnf install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm`.
+- Run `dnf install -y podman podman-compose make git-core python3-pip`
+- Run `python3 -m pip install gitlab-job-guard`
