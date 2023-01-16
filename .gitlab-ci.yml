@@ -4,7 +4,7 @@ lint:
   needs: []
   tags:
     - shared
-  image: "quay.io/fedora/fedora:35"
+  image: "quay.io/fedora/fedora:37"
   before_script:
     - dnf install -y pre-commit make git-core
   script:
