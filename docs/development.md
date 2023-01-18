@@ -213,7 +213,7 @@ To run unit tests
 4. after you are done with unit testing, you can tear down the whole container
    stack by `podman-compose down`
 
-# Copr Builds
+# Gitlab CI
 
 GitLab CI is configured to trigger Copr builds on each update on [Copr](https://copr.devel.redhat.com/coprs/openscanhub-team/gitlab-ci-build-on-copr/builds/). If you want to use `rhcopr` locally, you can install it from [this repository](https://copr.devel.redhat.com/coprs/rhcopr-project/toolset/). If you are making merge requests from your own fork, you need to fork [this project](https://copr.devel.redhat.com/coprs/openscanhub-team/gitlab-ci-build-on-copr/) in your namespace. For example https://copr.devel.redhat.com/coprs/svashish/gitlab-ci-build-on-copr/
 
@@ -230,7 +230,13 @@ COPR_CLI_LOGIN
 COPR_CLI_COPR_URL
 ```
 
-  These variables are stored separately due to character limit imposed by GitLab and they are required to be stored in base64 form.
+Then, to set up the `gitlab-job-guard` required variable:
+
+- Go to Gitlab preferences, create an access token with `read_api` and `read_repository` permissions.
+
+- Add another masked variable named `GITLAB_CI_TOKEN` to the CI settings as above:
+
+These variables are stored separately due to character limit imposed by GitLab and they are required to be stored in base64 form.
 
 ## How does GitLab CI build on Copr:
 
