@@ -17,7 +17,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from kobo.hub.models import Arch, Channel
 from six.moves import range
 
-from covscancommon.constants import DEFAULT_CHECKER_GROUP
+from osh.common.constants import DEFAULT_CHECKER_GROUP
 from covscanhub.scan.models import (AppSettings, MockConfig, ReleaseMapping,
                                     SystemRelease, Tag)
 from covscanhub.stats.models import StatType

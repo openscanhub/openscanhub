@@ -29,7 +29,7 @@ from covscan.commands.common import (add_aggressive_option, add_all_option,
                                      add_task_id_file_option)
 from covscan.commands.shortcuts import (handle_perm_denied, upload_file,
                                         verify_brew_koji_build, verify_mock)
-from covscancommon.utils.conf import get_conf
+from osh.common.utils.conf import get_conf
 
 
 class Diff_Build(covscan.CovScanCommand):

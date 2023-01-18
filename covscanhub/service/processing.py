@@ -10,7 +10,7 @@ import pipes
 
 from kobo.shortcuts import run
 
-from covscancommon.constants import CSDIFF_ARGS
+from osh.common.constants import CSDIFF_ARGS
 from covscanhub.other.decorators import public
 from covscanhub.service.path import TaskResultPaths
 

@@ -17,7 +17,7 @@ from kobo.django.upload.models import FileUpload
 from kobo.hub.models import Task
 from kobo.shortcuts import run
 
-from covscancommon.constants import (ERROR_DIFF_FILE, ERROR_HTML_FILE,
+from osh.common.constants import (ERROR_DIFF_FILE, ERROR_HTML_FILE,
                                      ERROR_TXT_FILE, FIXED_DIFF_FILE,
                                      FIXED_HTML_FILE, FIXED_TXT_FILE)
 from covscanhub.other.decorators import public

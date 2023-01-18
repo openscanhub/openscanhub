@@ -9,7 +9,7 @@ from kobo.django.upload.models import FileUpload
 from kobo.hub.decorators import validate_worker
 from kobo.hub.models import Task
 
-from covscancommon.csmock_parser import unpack_and_return_api
+from osh.common.csmock_parser import unpack_and_return_api
 from covscanhub.errata.models import ScanningSession
 from covscanhub.errata.scanner import (BaseNotValidException, obtain_base2,
                                        prepare_base_scan)

@@ -8,7 +8,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from kobo.hub.models import Task
 from kobo.django.xmlrpc.decorators import login_required
 
-from covscancommon.constants import DEFAULT_SCAN_LIMIT
+from osh.common.constants import DEFAULT_SCAN_LIMIT
 from covscanhub.errata.scanner import create_diff_task2, ClientScanScheduler, ClientDiffPatchesScanScheduler
 from covscanhub.scan.models import ClientAnalyzer, Profile, Scan, SCAN_STATES
 from kobo.django.auth.models import User

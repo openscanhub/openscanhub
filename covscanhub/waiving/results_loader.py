@@ -5,8 +5,8 @@ import logging
 import datetime
 from django.core.exceptions import ObjectDoesNotExist
 from kobo.hub.models import Task
-from covscancommon.constants import ERROR_DIFF_FILE, FIXED_DIFF_FILE, SCAN_RESULTS_FILENAME, DEFAULT_CHECKER_GROUP
-from covscancommon.csmock_parser import CsmockAPI, ResultsExtractor
+from osh.common.constants import ERROR_DIFF_FILE, FIXED_DIFF_FILE, SCAN_RESULTS_FILENAME, DEFAULT_CHECKER_GROUP
+from osh.common.csmock_parser import CsmockAPI, ResultsExtractor
 from covscanhub.scan.models import AppSettings, AnalyzerVersion
 from covscanhub.service.path import TaskResultPaths
 from covscanhub.service.processing import task_has_results, TaskDiffer, \

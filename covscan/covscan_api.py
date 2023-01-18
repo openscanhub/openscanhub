@@ -38,8 +38,8 @@ import six
 
 from six.moves import xmlrpc_client
 
-from covscancommon.constants import DEFAULT_SCAN_LIMIT
-from covscancommon.utils.conf import get_config_dict
+from osh.common.constants import DEFAULT_SCAN_LIMIT
+from osh.common.utils.conf import get_config_dict
 
 
 class CovscanAPI(object):

@@ -13,7 +13,7 @@ from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 from django.views.generic.list import ListView
 
-from covscancommon.constants import (ERROR_DIFF_FILE, ERROR_HTML_FILE,
+from osh.common.constants import (ERROR_DIFF_FILE, ERROR_HTML_FILE,
                                      ERROR_TXT_FILE, FIXED_DIFF_FILE,
                                      FIXED_HTML_FILE, FIXED_TXT_FILE)
 from covscanhub.other import get_or_none

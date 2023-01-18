@@ -10,7 +10,7 @@ from urllib.parse import urljoin
 from six.moves import cPickle as pickle
 from six.moves import xmlrpc_client
 
-from covscancommon.utils.conf import get_conf
+from osh.common.utils.conf import get_conf
 
 
 def get_can_path():

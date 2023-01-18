@@ -6,7 +6,7 @@ import os
 import logging
 from glob import glob
 
-from covscancommon.constants import *
+from osh.common.constants import *
 
 from kobo.hub.models import Task
 

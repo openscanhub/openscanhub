@@ -10,7 +10,7 @@ from kobo.worker.taskmanager import TaskManager
 
 # assuming all tasks are in osh/worker/tasks/task_*.py modules
 import osh.worker.tasks
-from covscancommon.utils.conf import get_config_dict
+from osh.common.utils.conf import get_config_dict
 
 
 # override the `foreground` task attribute if RUN_TASKS_IN_FOREGROUND is set in covscand.conf

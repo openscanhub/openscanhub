@@ -1,7 +1,7 @@
 _covscan_configs()
 {
     local IFS=$'\n'
-    configs=$(python -c "from covscancommon.utils.completion import main ; \
+    configs=$(python -c "from osh.common.utils.completion import main ; \
         main()" 2>/dev/null)
 }
 

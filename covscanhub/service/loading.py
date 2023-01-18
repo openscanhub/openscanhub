@@ -8,7 +8,7 @@ import logging
 
 from kobo.hub.models import Task
 
-from covscancommon.csmock_parser import CsmockAPI
+from osh.common.csmock_parser import CsmockAPI
 from covscanhub.service.path import TaskResultPaths
 
 logger = logging.getLogger(__name__)

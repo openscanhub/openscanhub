@@ -7,7 +7,7 @@ from six.moves.xmlrpc_client import Fault
 
 import covscan
 from covscan.commands.analyzers import check_analyzers
-from covscancommon.utils.conf import get_conf
+from osh.common.utils.conf import get_conf
 
 from .common import (add_aggressive_option, add_all_option,
                      add_analyzers_option, add_clang_option,
