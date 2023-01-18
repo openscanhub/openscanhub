@@ -257,9 +257,9 @@ Steps to set up GitLab CI runner for Copr:
 - Run `curl -L "https://packages.gitlab.com/install/repositories/runner/gitlab-runner/script.rpm.sh" | sudo bash` to set up gitlab runner repository.
 - `dnf install -y gitlab-runner`.
 - Modify `/etc/systemd/system/gitlab-runner.service` to run `gitlab-runner` as `root`:
- ```ExecStart=/usr/bin/gitlab-runner "run" "--working-directory" "/home/gitlab-runner" "--config" "/etc/gitlab-runner/config.toml" "--service" "gitlab-runner" "--user" "gitlab-runner"```
+ `ExecStart=/usr/bin/gitlab-runner "run" "--working-directory" "/home/gitlab-runner" "--config" "/etc/gitlab-runner/config.toml" "--service" "gitlab-runner" "--user" "gitlab-runner"`
 - Run `cd /etc/pki/ca-trust/source/anchors/ && curl -O https://password.corp.redhat.com/RH-IT-Root-CA.crt && update-ca-trust`
-- Go to Project page -> `Settings` -> `CI/CD` and select 'Runners`. Note url and token for setting up new runner. `gitlab-ci-build-on-copr` is the tag for runner.
+- Go to Project page -> `Settings` -> `CI/CD` and select `Runners`. Note url and token for setting up new runner. `gitlab-ci-build-on-copr` is the tag for runner.
 - Execute `gitlab-runner register` and register a runner with details from previous step. Add `shell` as the executor.
 
 ## Custom Gitlab CI runner
