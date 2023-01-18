@@ -35,7 +35,6 @@ oldest. This limit is also configurable in config file as FILTER_SCAN_LIMIT cons
 from __future__ import absolute_import
 
 import six
-
 from six.moves import xmlrpc_client
 
 from osh.common.constants import DEFAULT_SCAN_LIMIT
@@ -53,7 +52,7 @@ class CovscanAPI(object):
 
         if 'FILTER_SCAN_LIMIT' in conf:
             self.filter_scan_limit = conf['FILTER_SCAN_LIMIT']
-        else :
+        else:
             self.filter_scan_limit = DEFAULT_SCAN_LIMIT
 
         self.hub_url = hub_url if hub_url is not None else conf['HUB_URL']
@@ -110,5 +109,5 @@ class CovscanAPI(object):
         """
 
         filters = dict(id=id, target=target, base=base, state=state, owner=owner, release=release)
-        filters = {k:v for k, v in six.iteritems(filters) if v is not None}  # removes None values from dictionary
+        filters = {k: v for k, v in six.iteritems(filters) if v is not None}  # removes None values from dictionary
         return self.hub.scan.get_filtered_scan_list(filters, self.filter_scan_limit)

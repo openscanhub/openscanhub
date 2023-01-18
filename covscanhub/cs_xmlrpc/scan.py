@@ -1,17 +1,17 @@
 # -*- coding: utf-8 -*-
 
-import re
 import logging
+import re
 
 from django.core.exceptions import ObjectDoesNotExist
-
-from kobo.hub.models import Task
-from kobo.django.xmlrpc.decorators import login_required
-
-from osh.common.constants import DEFAULT_SCAN_LIMIT
-from covscanhub.errata.scanner import create_diff_task2, ClientScanScheduler, ClientDiffPatchesScanScheduler
-from covscanhub.scan.models import ClientAnalyzer, Profile, Scan, SCAN_STATES
 from kobo.django.auth.models import User
+from kobo.django.xmlrpc.decorators import login_required
+from kobo.hub.models import Task
+
+from covscanhub.errata.scanner import (ClientDiffPatchesScanScheduler,
+                                       ClientScanScheduler, create_diff_task2)
+from covscanhub.scan.models import SCAN_STATES, ClientAnalyzer, Profile, Scan
+from osh.common.constants import DEFAULT_SCAN_LIMIT
 
 logger = logging.getLogger("covscanhub")
 
@@ -163,10 +163,10 @@ def __setup_kwargs(kwargs):
     """
 
     kwargs['nvr'] = kwargs.pop('target', None)
-    kwargs['scanbinding__id'] = kwargs.pop('id', None) # conversion to correct id
+    kwargs['scanbinding__id'] = kwargs.pop('id', None)  # conversion to correct id
     kwargs['base__nvr'] = kwargs.pop('base', None)
     kwargs['tag__release__tag'] = kwargs.pop('release', None)
-    kwargs = {k:v for k, v in kwargs.items() if v is not None}
+    kwargs = {k: v for k, v in kwargs.items() if v is not None}
     return kwargs
 
 
@@ -193,18 +193,18 @@ def __convert_names_to_numbers(kwargs):
 
 def __rename_keys(scans_list):
     # The best way would be to use SQL query with renamed values, but django doesn't support it very cleverly
-    translation_table = {'username__username'   : 'owner_name',
-                         'username__email'      : 'owner_email',
-                         'package__name'        : 'package_name',
-                         'package__blocked'     : 'package_is_blocked',
-                         'package__eligible'    : 'package_is_eligible',
-                         'last_access'          : 'date_last_accessed',
-                         'nvr'                  : 'target',
-                         'enabled'              : 'is_enabled',
-                         'base__nvr'            : 'base_target',
-                         'tag__release__tag'    : 'release',
-                         'tag__name'            : 'tag_name',
-                         'scanbinding__id'      : 'id',
+    translation_table = {'username__username': 'owner_name',
+                         'username__email': 'owner_email',
+                         'package__name': 'package_name',
+                         'package__blocked': 'package_is_blocked',
+                         'package__eligible': 'package_is_eligible',
+                         'last_access': 'date_last_accessed',
+                         'nvr': 'target',
+                         'enabled': 'is_enabled',
+                         'base__nvr': 'base_target',
+                         'tag__release__tag': 'release',
+                         'tag__name': 'tag_name',
+                         'scanbinding__id': 'id',
                          }
     for scan in scans_list:
         for old_name, new_name in translation_table.items():
@@ -254,7 +254,7 @@ def find_tasks(request, query):
     if nvr:
         tasks = Task.objects.filter(label=nvr)
     if package_name:
-        tasks = Task.objects.filter(label__regex=package_name + "-\d")
+        tasks = Task.objects.filter(label__regex=package_name + r"-\d")
     elif regex:
         tasks = Task.objects.filter(label__regex=regex)
     if tasks is not None:

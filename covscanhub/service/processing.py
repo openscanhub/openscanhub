@@ -10,9 +10,9 @@ import pipes
 
 from kobo.shortcuts import run
 
-from osh.common.constants import CSDIFF_ARGS
 from covscanhub.other.decorators import public
 from covscanhub.service.path import TaskResultPaths
+from osh.common.constants import CSDIFF_ARGS
 
 logger = logging.getLogger(__name__)
 

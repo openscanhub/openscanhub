@@ -5,8 +5,7 @@ from __future__ import print_function
 import os
 import pwd
 
-from osh.common.csmock_parser import (CsmockAPI, CsmockRunner,
-                                         ResultsExtractor)
+from osh.common.csmock_parser import CsmockAPI, CsmockRunner, ResultsExtractor
 
 DEFECTS_JSON = """
 {

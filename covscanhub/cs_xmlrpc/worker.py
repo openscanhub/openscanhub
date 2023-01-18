@@ -9,7 +9,6 @@ from kobo.django.upload.models import FileUpload
 from kobo.hub.decorators import validate_worker
 from kobo.hub.models import Task
 
-from osh.common.csmock_parser import unpack_and_return_api
 from covscanhub.errata.models import ScanningSession
 from covscanhub.errata.scanner import (BaseNotValidException, obtain_base2,
                                        prepare_base_scan)
@@ -22,6 +21,7 @@ from covscanhub.scan.xmlrpc_helper import finish_scan as h_finish_scan
 from covscanhub.scan.xmlrpc_helper import (prepare_version_retriever,
                                            scan_notification_email)
 from covscanhub.waiving.results_loader import TaskResultsProcessor
+from osh.common.csmock_parser import unpack_and_return_api
 
 logger = logging.getLogger(__name__)
 

@@ -13,9 +13,6 @@ from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 from django.views.generic.list import ListView
 
-from osh.common.constants import (ERROR_DIFF_FILE, ERROR_HTML_FILE,
-                                     ERROR_TXT_FILE, FIXED_DIFF_FILE,
-                                     FIXED_HTML_FILE, FIXED_TXT_FILE)
 from covscanhub.other import get_or_none
 from covscanhub.scan.compare import get_compare_title
 from covscanhub.scan.models import (SCAN_STATES, SCAN_TYPES_TARGET, ETMapping,
@@ -37,6 +34,9 @@ from covscanhub.waiving.service import (apply_waiver, display_in_result,
                                         get_defects_diff_display,
                                         get_last_waiver, get_unwaived_rgs,
                                         get_waivers_for_rg, waiver_condition)
+from osh.common.constants import (ERROR_DIFF_FILE, ERROR_HTML_FILE,
+                                  ERROR_TXT_FILE, FIXED_DIFF_FILE,
+                                  FIXED_HTML_FILE, FIXED_TXT_FILE)
 
 logger = logging.getLogger(__name__)
 

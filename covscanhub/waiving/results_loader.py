@@ -1,20 +1,21 @@
 # -*- coding: utf-8 -*-
 
-import os
-import logging
 import datetime
+import logging
+
 from django.core.exceptions import ObjectDoesNotExist
 from kobo.hub.models import Task
-from osh.common.constants import ERROR_DIFF_FILE, FIXED_DIFF_FILE, SCAN_RESULTS_FILENAME, DEFAULT_CHECKER_GROUP
-from osh.common.csmock_parser import CsmockAPI, ResultsExtractor
-from covscanhub.scan.models import AppSettings, AnalyzerVersion
-from covscanhub.service.path import TaskResultPaths
-from covscanhub.service.processing import task_has_results, TaskDiffer, \
-    task_is_diffed
-from covscanhub.waiving.models import DEFECT_STATES, Result, Defect, Checker, CheckerGroup, ResultGroup, \
-    RESULT_GROUP_STATES
-from covscanhub.waiving.service import find_processed_in_past
 
+from covscanhub.scan.models import AnalyzerVersion, AppSettings
+from covscanhub.service.path import TaskResultPaths
+from covscanhub.service.processing import (TaskDiffer, task_has_results,
+                                           task_is_diffed)
+from covscanhub.waiving.models import (DEFECT_STATES, RESULT_GROUP_STATES,
+                                       Checker, CheckerGroup, Defect, Result,
+                                       ResultGroup)
+from covscanhub.waiving.service import find_processed_in_past
+from osh.common.constants import DEFAULT_CHECKER_GROUP
+from osh.common.csmock_parser import CsmockAPI, ResultsExtractor
 
 logger = logging.getLogger(__name__)
 
@@ -75,7 +76,7 @@ class ScanResultsProcessor(object):
             self.base_sb = sb.scan.base.scanbinding
             self.base_task = self.base_sb.task
         self.rp = TaskResultsProcessor(self.task, self.base_task, exclude_dirs)
-        
+
     def unpack_results(self):
         self.rp.unpack_results()
 
@@ -135,7 +136,7 @@ class ResultsLoader(object):
                 if key_evt['event'] == 'internal warning':
                     # skip internal warnings
                     continue
-            except:
+            except:  # noqa: B901, E722
                 pass
             d = Defect()
             json_checker_name = defect['checker']
