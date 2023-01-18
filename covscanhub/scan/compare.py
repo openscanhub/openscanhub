@@ -1,9 +1,9 @@
 """Provides function for marking different parts of two NVRs."""
 
 import itertools
-import re
 
 from django.utils.safestring import mark_safe
+from kobo.rpmlib import parse_nvr
 
 __all__ = (
     'get_compare_title',
@@ -13,29 +13,39 @@ CSS_CLASS_OTHER = "light_green_font"
 CSS_CLASS_BASE = "red_font"
 
 
-def parse_nvr(nvr):
+def parse_nevr(nevr):
     """
-    Split NVR to name, version, and release.
+    Split NEVR to name, epoch, version, and release.
 
-    :param nvr: The NVR (name-version-release).
-    :type nvr:
+    :param nevr: The NEVR (name-epoch:version-release).
+    :type nevr: str
 
-    :return: the `tuple` containing name, version, and release string
+    :return: the `tuple` containing name, epoch, version, and release string
     :rtype: tuple
 
-    In case NVR is ill-formed:
-    * if it is in a form of ``X-Y``, return ``(X, Y, "")``;
-    * otherwise, return ``(nvr, "", "")``.
+    ``parse_nvr`` from ``kobo.rpmlib`` accepts three forms of NEVR:
+    * ``name-epoch:version-release``
+    * ``epoch:name-version-release``
+    * ``name-version-release:epoch``
+
+    ``epoch`` is optional (missing ``epoch`` is treated as 0 in many tools).
+    Since ``kobo.rpmlib.parse_nvr`` return a dictionary the information where
+    the ``epoch`` is placed is lost. As a convention, we stick with the
+    ``name-epoch:version-release`` form as this form is nowadays used in vast
+    majority of tools.
+
+    If NEVR is ill-formed, return ``(nevr, "", "", "")``.
     """
-    nvr_parts = re.match("(.*)-(.*)-(.*)", nvr)
-    if nvr_parts:
-        return nvr_parts.group(1), nvr_parts.group(2), nvr_parts.group(3)
-    # One of the NVR components is missing:
-    nvr_parts = re.match("(.*)-(.*)", nvr)
-    if nvr_parts:
-        return nvr_parts.group(1), nvr_parts.group(2), ""
-    # Two of the NVR components are missing:
-    return nvr, "", ""
+    try:
+        nevr_parts = parse_nvr(nevr)
+    except ValueError:
+        return nevr, "", "", ""
+    return (
+        nevr_parts["name"],
+        nevr_parts.get("epoch", ""),
+        nevr_parts["version"],
+        nevr_parts["release"],
+    )
 
 
 def mark(content, css_class):
@@ -79,17 +89,17 @@ def mark_base(content):
     return mark(content, CSS_CLASS_BASE)
 
 
-def compare_nvr_parts(other, base, prev_differ=False):
+def compare_nevr_parts(other, base, prev_differ=False):
     """
-    Compare two names, versions, or releases.
+    Compare two names, epochs, versions, or releases.
 
-    :param other: Name, version, or release as a list of its parts to be
+    :param other: Name, epoch, version, or release as a list of its parts to be
         compared against *base*
     :type other: list
-    :param base: Name, version, or release as a list of its parts
+    :param base: Name, epoch, version, or release as a list of its parts
     :type base: list
-    :param prev_differ: `True` if the previous comparison of name, version, or
-        release yielded a difference
+    :param prev_differ: `True` if the previous comparison of name, epoch,
+        version, or release yielded a difference
     :type prev_differ: bool
 
     :return: the `tuple` containing a `bool` flag signaling whether *other* and
@@ -118,41 +128,75 @@ def compare_nvr_parts(other, base, prev_differ=False):
     for elm1, elm2 in itertools.zip_longest(other, base, fillvalue=""):
         differ = differ or elm1 != elm2
         if elm1:
-            diff_other.append(differ and mark_other(elm1) or elm1)
+            diff_other.append(mark_other(elm1) if differ else elm1)
         if elm2:
-            diff_base.append(differ and mark_base(elm2) or elm2)
+            diff_base.append(mark_base(elm2) if differ else elm2)
     return differ, ".".join(diff_other), ".".join(diff_base)
 
 
-def get_compare_title(nvr, base_nvr):
+def make_nevr(name, epoch, version, release):
     """
-    Compare two NVRs, mark different parts with ``<span>``.
+    Assemble NEVR parts (possibly marked) back to NEVR string.
 
-    :param nvr: The name-version-release to be compared against base
-    :type nvr: str
-    :param base_nvr: The base name-version-release
-    :type base_nvr: str
+    :param name: The name
+    :type name: str
+    :param epoch: The epoch
+    :type epoch: str
+    :param version: The version
+    :type version: str
+    :param release: The release
+    :type release: str
+
+    :return: the assembled NEVR
+    :rtype: str
+
+    Assuming NEVR is of the form ``name-epoch:version-release``, this function
+    aims to be the inverse of :func:`parse_nevr`. That is, ``nevr ==
+    make_nevr(*parse_nevr(nevr))`` yields `True`, even if ``nevr`` is
+    ill-formed.
+    """
+    # Empty version/release means that NEVR is ill-formed and stored in name.
+    # Note that version and release are either both empty or both non-empty.
+    if not release:
+        return name
+    if epoch:
+        version = f"{epoch}:{version}"
+    return "-".join([name, version, release])
+
+
+def get_compare_title(nevr, base_nevr):
+    """
+    Compare two NEVRs, mark different parts with ``<span>``.
+
+    :param nevr: The name-epoch:version-release to be compared against base
+    :type nevr: str
+    :param base_nevr: The base name-epoch:version-release
+    :type base_nevr: str
 
     :return: the comparison summary
     :rtype: str
 
-    A name-version-release string, NVR for short, is a string matching the
-    following format::
+    A name-epoch:version-release string, NEVR for short, is a string matching
+    the following format::
 
-        <name> "-" <version> "-" <release>
+        <name> "-" <epoch> ":" <version> "-" <release>
 
     where ``<version>`` and ``<release>`` must not contain a dash (``-``),
     dashes in ``<name>`` are allowed. Additionally, ``<version>`` and
     ``<release>`` are composed from parts separated by a dot (``.``).
+    ``<epoch>`` is a non-negative number and it is optional. If missing, it is
+    treated as zero.
 
-    Two NVRs are compared part-wise from the left to the right as follows:
+    Two NEVRs are compared part-wise from the left to the right as follows:
 
-    #. If ``<name>``s differ, everything in NVR is marked as different.
-    #. Otherwise, if ``<version>``s differ in some part, the part and the
-       remaining parts are marked as different.
-    #. Otherwise, if ``<release>``s differ in some part, the part and the
-       remaining parts are marked as different.
-    #. Otherwise, NVRs are equal.
+    #. If ``<name>``s differ, everything in NEVR is marked as different.
+    #. Otherwise, if ``<epoch>``s differ, the epoch and the rest of NEVR is
+       marked as different.
+    #. Otherwise, if ``<version>``s differ in some part, that part, the
+       remaining parts and the rest of NEVR are marked as different.
+    #. Otherwise, if ``<release>``s differ in some part, that part, the
+       remaining parts and the rest of NEVR are marked as different.
+    #. Otherwise, NEVRs are equal.
 
     For more clarity, let demonstrate it on several examples. For simplicity,
     ``<span class="light_green_font">X</span>`` and
@@ -172,27 +216,29 @@ def get_compare_title(nvr, base_nvr):
        ``foo-1.2.3-4.(el8) compared to foo-1.2.3-4.[el8]``.
     #. A comparison of ``foo-1.2.3-4.el8`` and ``foo-1.2-4.el8`` yields
        ``foo-1.2.(3)-(4).(el8) compared to foo-1.2-[4].[el8]``.
+    #. A comparison of ``foo-1.2.3-4.el8`` and ``foo-1:1.2.3-4.el8`` yields
+       ``foo-(1).(2).(3)-(4).(el8) compared to foo-[1]:[1].[2].[3]-[4].[el8]``.
+    #. A comparison of ``foo-0:1.2.3-4.el8`` and ``foo-1:1.2.3-4.el8`` yields
+       ``foo-(0):(1).(2).(3)-(4).(el8) compared to foo-[1]:[1].[2].[3]-[4].[el8]``.
     """
-    name, version, release = parse_nvr(nvr)
-    base_name, base_version, base_release = parse_nvr(base_nvr)
+    name, epoch, version, release = parse_nevr(nevr)
+    base_name, base_epoch, base_version, base_release = parse_nevr(base_nevr)
 
-    differ, diff_name_other, diff_name_base = compare_nvr_parts(
+    differ, diff_name_other, diff_name_base = compare_nevr_parts(
         [name], [base_name]
     )
-    differ, diff_version_other, diff_version_base = compare_nvr_parts(
+    differ, diff_epoch_other, diff_epoch_base = compare_nevr_parts(
+        [epoch], [base_epoch], differ
+    )
+    differ, diff_version_other, diff_version_base = compare_nevr_parts(
         version.split("."), base_version.split("."), differ
     )
-    _, diff_release_other, diff_release_base = compare_nvr_parts(
+    _, diff_release_other, diff_release_base = compare_nevr_parts(
         release.split("."), base_release.split("."), differ
     )
 
-    # Remove empty strings that were produced where some of NVR components are
-    # missing:
-    diff_other = list(
-        filter(None, [diff_name_other, diff_version_other, diff_release_other])
+    return mark_safe(
+        f"{make_nevr(diff_name_other, diff_epoch_other, diff_version_other, diff_release_other)}"
+        " compared to "
+        f"{make_nevr(diff_name_base, diff_epoch_base, diff_version_base, diff_release_base)}"
     )
-    diff_base = list(
-        filter(None, [diff_name_base, diff_version_base, diff_release_base])
-    )
-
-    return mark_safe(f'{"-".join(diff_other)} compared to {"-".join(diff_base)}')

@@ -135,10 +135,10 @@ class CompareTestSuite(TestCase):
         self.assertEqual(
             result,
             (
-                "foo-1."
-                f'<span class="{CSS_CLASS_OTHER}">el8</span>'
+                f'<span class="{CSS_CLASS_OTHER}">foo-1.el8</span>'
                 " compared to "
-                "foo-1-"
+                f'<span class="{CSS_CLASS_BASE}">foo</span>-'
+                f'<span class="{CSS_CLASS_BASE}">1</span>-'
                 f'<span class="{CSS_CLASS_BASE}">1</span>.'
                 f'<span class="{CSS_CLASS_BASE}">el8</span>'
             )
@@ -154,6 +154,105 @@ class CompareTestSuite(TestCase):
                 "foo-"
                 f'<span class="{CSS_CLASS_BASE}">1</span>-'
                 f'<span class="{CSS_CLASS_BASE}">1</span>.'
+                f'<span class="{CSS_CLASS_BASE}">el8</span>'
+            )
+        )
+
+    def test10(self):
+        result = get_compare_title("foo-1:1.2-3.el8", "foo-1:1.2-3.el8")
+        self.assertEqual(result, "foo-1:1.2-3.el8 compared to foo-1:1.2-3.el8")
+
+    def test11(self):
+        result = get_compare_title("foo-1:1.2-3.el8", "foo-1:1.2-4.el8")
+        self.assertEqual(
+            result,
+            (
+                "foo-1:1.2-"
+                f'<span class="{CSS_CLASS_OTHER}">3</span>.'
+                f'<span class="{CSS_CLASS_OTHER}">el8</span>'
+                " compared to "
+                "foo-1:1.2-"
+                f'<span class="{CSS_CLASS_BASE}">4</span>.'
+                f'<span class="{CSS_CLASS_BASE}">el8</span>'
+            )
+        )
+
+    def test12(self):
+        result = get_compare_title("foo-1:1.2-3.el8", "foo-1:2.2-3.el8")
+        self.assertEqual(
+            result,
+            (
+                "foo-1:"
+                f'<span class="{CSS_CLASS_OTHER}">1</span>.'
+                f'<span class="{CSS_CLASS_OTHER}">2</span>-'
+                f'<span class="{CSS_CLASS_OTHER}">3</span>.'
+                f'<span class="{CSS_CLASS_OTHER}">el8</span>'
+                " compared to "
+                "foo-1:"
+                f'<span class="{CSS_CLASS_BASE}">2</span>.'
+                f'<span class="{CSS_CLASS_BASE}">2</span>-'
+                f'<span class="{CSS_CLASS_BASE}">3</span>.'
+                f'<span class="{CSS_CLASS_BASE}">el8</span>'
+            )
+        )
+
+    def test13(self):
+        result = get_compare_title("foo-1.2-3.el8", "foo-1:1.2-3.el8")
+        self.assertEqual(
+            result,
+            (
+                "foo-"
+                f'<span class="{CSS_CLASS_OTHER}">1</span>.'
+                f'<span class="{CSS_CLASS_OTHER}">2</span>-'
+                f'<span class="{CSS_CLASS_OTHER}">3</span>.'
+                f'<span class="{CSS_CLASS_OTHER}">el8</span>'
+                " compared to "
+                "foo-"
+                f'<span class="{CSS_CLASS_BASE}">1</span>:'
+                f'<span class="{CSS_CLASS_BASE}">1</span>.'
+                f'<span class="{CSS_CLASS_BASE}">2</span>-'
+                f'<span class="{CSS_CLASS_BASE}">3</span>.'
+                f'<span class="{CSS_CLASS_BASE}">el8</span>'
+            )
+        )
+
+    def test14(self):
+        result = get_compare_title("foo-1:1.2-3.el8", "foo-1.2-3.el8")
+        self.assertEqual(
+            result,
+            (
+                "foo-"
+                f'<span class="{CSS_CLASS_OTHER}">1</span>:'
+                f'<span class="{CSS_CLASS_OTHER}">1</span>.'
+                f'<span class="{CSS_CLASS_OTHER}">2</span>-'
+                f'<span class="{CSS_CLASS_OTHER}">3</span>.'
+                f'<span class="{CSS_CLASS_OTHER}">el8</span>'
+                " compared to "
+                "foo-"
+                f'<span class="{CSS_CLASS_BASE}">1</span>.'
+                f'<span class="{CSS_CLASS_BASE}">2</span>-'
+                f'<span class="{CSS_CLASS_BASE}">3</span>.'
+                f'<span class="{CSS_CLASS_BASE}">el8</span>'
+            )
+        )
+
+    def test15(self):
+        result = get_compare_title("foo-1:1.2-3.el8", "foo-2:1.2-3.el8")
+        self.assertEqual(
+            result,
+            (
+                "foo-"
+                f'<span class="{CSS_CLASS_OTHER}">1</span>:'
+                f'<span class="{CSS_CLASS_OTHER}">1</span>.'
+                f'<span class="{CSS_CLASS_OTHER}">2</span>-'
+                f'<span class="{CSS_CLASS_OTHER}">3</span>.'
+                f'<span class="{CSS_CLASS_OTHER}">el8</span>'
+                " compared to "
+                "foo-"
+                f'<span class="{CSS_CLASS_BASE}">2</span>:'
+                f'<span class="{CSS_CLASS_BASE}">1</span>.'
+                f'<span class="{CSS_CLASS_BASE}">2</span>-'
+                f'<span class="{CSS_CLASS_BASE}">3</span>.'
                 f'<span class="{CSS_CLASS_BASE}">el8</span>'
             )
         )
