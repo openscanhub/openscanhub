@@ -14,20 +14,7 @@ lint:
 
 ### Sequence 2 ###
 
-run-hub-and-minimal-db:
-  needs: []
-  tags:
-    - covscan-ci-runner
-  before_script:
-    - gitlab-job-guard --private-token="$GITLAB_API_TOKEN"
-    - git clone --depth 1 https://github.com/release-engineering/kobo.git
-  script:
-    - containers/scripts/init-db.sh --deploy --minimal
-
 django-unit-tests:
-  needs:
-    - job: run-hub-and-minimal-db
-      artifacts: true
   tags:
     - covscan-ci-runner
   artifacts:
@@ -35,7 +22,9 @@ django-unit-tests:
     paths:
       - htmlcov/
   before_script:
+    - gitlab-job-guard --private-token="$GITLAB_API_TOKEN"
     - git clone --depth 1 https://github.com/release-engineering/kobo.git
+    - containers/scripts/init-db.sh --deploy --force --minimal
     - podman exec -it db psql -c 'ALTER USER covscanhub CREATEDB;'
   script:
     - podman exec -it osh-hub /usr/bin/coverage-3.6 run --omit="*site-packages*,*kobo*," covscanhub/manage.py test -v 3 || exit 1
@@ -59,7 +48,7 @@ integration-tests:
     - git clone --depth 1 https://github.com/release-engineering/kobo.git
   script:
     - sed -i "s/RUN_TASKS_IN_FOREGROUND = 0/RUN_TASKS_IN_FOREGROUND = 1/g"  osh/worker/covscand-local.conf
-    - containers/scripts/generate_integration_test_coverage.sh
+    - containers/scripts/generate_integration_test_coverage.sh --force
   after_script:
     - podman-compose down
 
