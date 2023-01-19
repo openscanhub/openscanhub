@@ -94,17 +94,30 @@ prepare_deploy() {
         LABEL_PREFIX='com.docker'
     fi
 
-    if [[ "$(podman ps -a --filter label="$LABEL_PREFIX".compose.project=covscan --filter status=running -q 2>/dev/null | wc -l)" -gt 0 ]]; then
+    containers_count="$(podman ps -a --filter label="$LABEL_PREFIX".compose.project=covscan --filter status=running -q 2>/dev/null | wc -l)"
+
+    if [[ "$containers_count" -gt 0 ]]; then
         if [ "$FORCE" = true ]; then
             # when running the down command docker won't stop osh-client if not
             # specified causing errors when trying to remove the network
             # we also can't specify container names in down command
-            eval podman-compose "$PROFILE" down
+            containers=""
+            if [ "$IS_LINUX" = 1 ]; then
+                containers="db osh-hub osh-worker"
+                if [ "$containers_count" -gt 4 ]; then
+                    containers+=" osh-client"
+                fi
+            fi
+            podman-compose $PROFILE down $containers
+            return
         else
             # shellcheck disable=2016
             echo 'One or more containers are already running under `compose`. Please use `compose down` to kill them.'
             exit 1
         fi
+        # shellcheck disable=2016
+        echo 'One or more containers are already running under `compose`. Please use `compose down` to kill them.'
+        exit 4
     fi
 }
 
