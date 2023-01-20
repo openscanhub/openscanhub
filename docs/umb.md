@@ -33,7 +33,7 @@
 
 ## Debug UMB
 ```
-PN_TRACE_DRV=true ./covscanhub/scripts/umb-emit.py
+PN_TRACE_DRV=true ./osh/hub/scripts/umb-emit.py
 ```
 
 ## Watch messages on staging UMB

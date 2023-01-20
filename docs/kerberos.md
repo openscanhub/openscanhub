@@ -7,7 +7,7 @@
  * using `curl` to connect to kerberos-guarded endpoint
 
   ```
-  curl --negotiate -u: https://cov01.lab.eng.brq2.redhat.com/covscanhub/xmlrpc/kerbauth/
+  curl --negotiate -u: https://cov01.lab.eng.brq2.redhat.com/osh/hub/xmlrpc/kerbauth/
   ```
 
  * ensure that apache has permissions to read keytab
@@ -26,7 +26,7 @@
        --header "Content-Type:text/xml" \
        --data "<methodCall><methodName>auth.renew_session</methodName><params></params></methodCall>" \
        --negotiate -u : \
-       https://covscan-stage.lab.eng.brq2.redhat.com/covscanhub/xmlrpc/client/ >res.html
+       https://covscan-stage.lab.eng.brq2.redhat.com/osh/hub/xmlrpc/client/ >res.html
   ```
 
  * debug kerberos logs on standard output: `env KRB5_TRACE=/dev/stdout`

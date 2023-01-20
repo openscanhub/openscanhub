@@ -8,7 +8,7 @@
 
 * Errata scan says: _Unable to submit the scan, error: Packages in this release are not being scanned_.
     * System release is missing, they were probably not imported into the database.
-    Run covscanhub/scripts/db.py -h to see help and use --release to import them.
+    Run osh/hub/scripts/db.py -h to see help and use --release to import them.
 
 * Errata scan says: Package XY is not eligible for scanning.
     * Go to [http://localhost:8000/admin/scan/packagecapability/](http://localhost:8000/admin/scan/packagecapability/), open the package and tick the **Is Capable**.

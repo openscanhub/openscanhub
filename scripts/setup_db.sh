@@ -16,16 +16,16 @@ su - postgres -c 'psql covscanhub' <<EOF
     GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA "public" TO "covscanhub";
 EOF
 
-/usr/lib/python3.6/site-packages/covscanhub/manage.py migrate
+/usr/lib/python3.6/site-packages/osh/hub/manage.py migrate
 
-python3 /usr/lib/python3.6/site-packages/covscanhub/manage.py shell <<EOF
+python3 /usr/lib/python3.6/site-packages/osh/hub/manage.py shell <<EOF
 from django.contrib.auth import get_user_model
 User = get_user_model()
 User.objects.create_user('user', 'user@redhat.com', 'xxxxxx')
 User.objects.create_superuser('admin', 'user@redhat.com', 'velryba')
 EOF
 
-if [ "$(python3 /usr/lib/python3.6/site-packages/covscanhub/manage.py dumpdata scan.MockConfig)" = "[]" ]; then
-    python3 /usr/lib/python3.6/site-packages/covscanhub/manage.py loaddata \
-    /usr/lib/python3.6/site-packages/covscanhub/{errata,scan}/fixtures/initial_data.json
+if [ "$(python3 /usr/lib/python3.6/site-packages/osh/hub/manage.py dumpdata scan.MockConfig)" = "[]" ]; then
+    python3 /usr/lib/python3.6/site-packages/osh/hub/manage.py loaddata \
+    /usr/lib/python3.6/site-packages/osh/hub/{errata,scan}/fixtures/initial_data.json
 fi

@@ -1,0 +1,52 @@
+ServerName covscan.lab.eng.brq2.redhat.com
+WSGISocketPrefix /var/run/wsgi
+
+# LoadModule dumpio_module modules/mod_dumpio.so
+# DumpIOInput On
+# DumpIOOutput On
+# LogLevel dumpio:trace7
+
+<VirtualHost *:80>
+    RewriteEngine On
+    RewriteCond %{HTTPS} off
+    RewriteRule (.*) https://%{HTTP_HOST}%{REQUEST_URI}
+</VirtualHost>
+
+<VirtualHost *:443>
+    SSLEngine on
+    SSLCertificateFile      /etc/httpd/conf/covscan.lab.eng.brq2.redhat.com.crt
+    SSLCertificateKeyFile   /etc/httpd/conf/covscan.lab.eng.brq2.redhat.com.key
+    SSLCertificateChainFile /etc/httpd/conf/covscan.lab.eng.brq2.redhat.com-ca.crt
+
+    # WSGI handler
+    WSGIDaemonProcess covscan display-name=%{GROUP} locale='C.UTF-8'
+    WSGIProcessGroup covscan
+    WSGIScriptAlias /covscanhub /usr/lib/python3.6/site-packages/osh/hub/covscanhub.wsgi process-group=covscan
+
+
+    # needed for Apache 2.4
+    <Directory "/usr/lib/python3.6/site-packages/osh/hub">
+        Require all granted
+    </Directory>
+
+    # static stuff
+    Alias /covscanhub/static/ "/usr/lib/python3.6/site-packages/osh/hub/static/"
+    <Directory "/usr/lib/python3.6/site-packages/osh/hub/static/">
+        Options Indexes
+        IndexOptions FancyIndexing
+    </Directory>
+
+    <Location "/covscanhub/xmlrpc/kerbauth/">
+        AuthType GSSAPI
+        GssapiCredStore keytab:/etc/httpd/conf/HTTP-covscan.lab.eng.brq2.redhat.com.keytab
+        AuthName "Covscan XML-RPC Interface"
+        Require valid-user
+    </Location>
+
+    <Location "/covscanhub/auth/krb5login/">
+        AuthType GSSAPI
+        GssapiCredStore keytab:/etc/httpd/conf/HTTP-covscan.lab.eng.brq2.redhat.com.keytab
+        AuthName "Covscan WEB-UI Login"
+        Require valid-user
+    </Location>
+</VirtualHost>

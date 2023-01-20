@@ -61,7 +61,7 @@ Now, you can start the hub with: `podman start -a osh-hub`. The hub will try to 
 
 #### OSH hub users
 
-* Enter the interactive shell inside the running container: `podman exec -it osh-hub python3 covscanhub/manage.py shell`
+* Enter the interactive shell inside the running container: `podman exec -it osh-hub python3 osh/hub/manage.py shell`
 * Create user and admin:
 
 ```py
@@ -126,7 +126,7 @@ As pointed above, all of these dependencies are automatically set up in the clie
 
 * create Errata Scan using password authentication - new pkg:
 ```sh
-covsan/covscanhub/scripts/covscan-xmlrpc-client.py \
+covscan/osh/hub/scripts/covscan-xmlrpc-client.py \
     --hub http://covscanhub/xmlrpc/kerbauth/ \
     --username=kdudka --password=xxxxxx \
     create-scan -t curl-7.29.0-25.el7 \
@@ -137,7 +137,7 @@ covsan/covscanhub/scripts/covscan-xmlrpc-client.py \
 
 * create Errata Scan using password authentication - update:
 ```sh
-covscan/covscanhub/scripts/covscan-xmlrpc-client.py \
+covscan/osh/hub/scripts/covscan-xmlrpc-client.py \
     --hub http://covscanhub/xmlrpc/kerbauth/ \
     --username=kdudka --password=xxxxxx \
     create-scan -t curl-7.29.0-55.el7 \
@@ -148,7 +148,7 @@ covscan/covscanhub/scripts/covscan-xmlrpc-client.py \
 
 * create Errata Scan using Kerberos authentication:
 ```sh
-covscan/covscanhub/scripts/covscan-xmlrpc-client.py \
+covscan/osh/hub/scripts/covscan-xmlrpc-client.py \
     --hub https://covscan.lab.eng.brq2.redhat.com/covscanhub/xmlrpc/kerbauth/ \
     create-scan -t curl-7.29.0-55.el7 \
     --et-scan-id 1234 --advisory-id 4567 \
@@ -162,24 +162,24 @@ covscan/covscanhub/scripts/covscan-xmlrpc-client.py \
 
  1. Code execution starts in client, for a specific command, e.g. [diff-build](https://gitlab.cee.redhat.com/covscan/covscan/blob/master/covscan/commands/cmd_diff_build.py#L192).
    * Files are uploaded to server via [`upload_file` XML-RPC call](https://gitlab.cee.redhat.com/covscan/covscan/blob/master/covscan/commands/shortcuts.py#L88).
-   * The XML-RPC call itself [is defined](https://gitlab.cee.redhat.com/covscan/covscan/blob/master/covscanhub/settings.py#L161) [in kobo](https://github.com/release-engineering/kobo/blob/master/kobo/django/upload/xmlrpc.py#L19).
- 2. Server code path starts in XML-RPC API at specific method for particular scan type, e.g. for [mock builds](https://gitlab.cee.redhat.com/covscan/covscan/blob/master/covscanhub/xmlrpc/scan.py#L50).
- 3. There is a hierarchical structure for configuring data for scan in `hub/errata/scanner.py`, for client scans this is [ClientScanScheduler](https://gitlab.cee.redhat.com/covscan/covscan/blob/master/covscanhub/errata/scanner.py#L321).
+   * The XML-RPC call itself [is defined](https://gitlab.cee.redhat.com/covscan/covscan/blob/master/osh/hub/settings.py#L161) [in kobo](https://github.com/release-engineering/kobo/blob/master/kobo/django/upload/xmlrpc.py#L19).
+ 2. Server code path starts in XML-RPC API at specific method for particular scan type, e.g. for [mock builds](https://gitlab.cee.redhat.com/covscan/covscan/blob/master/osh/hub/xmlrpc/scan.py#L50).
+ 3. There is a hierarchical structure for configuring data for scan in `hub/errata/scanner.py`, for client scans this is [ClientScanScheduler](https://gitlab.cee.redhat.com/covscan/covscan/blob/master/osh/hub/errata/scanner.py#L321).
    * These classes have multiple methods:
      * `validate_options` — checks whether input data is valid.
      * `prepare_args` — initiates data for scan itself and for task.
      * `store` — saves data into database.
      * `spawn` — creates task(s).
-   * Uploads are being processed [via kobo's API](https://gitlab.cee.redhat.com/covscan/covscan/blob/master/covscanhub/errata/check.py#L98).
- 4. Once everything is set up, covscan creates task(s) and [puts files](https://gitlab.cee.redhat.com/covscan/covscan/blob/master/covscanhub/errata/scanner.py#L420) into task's directory.
- 5. Command arguments for `csmock` may be pretty complex. These are specified via [CsmockRunner class](https://gitlab.cee.redhat.com/covscan/covscan/blob/master/covscanhub/service/csmock_parser.py#L183).
+   * Uploads are being processed [via kobo's API](https://gitlab.cee.redhat.com/covscan/covscan/blob/master/osh/hub/errata/check.py#L98).
+ 4. Once everything is set up, covscan creates task(s) and [puts files](https://gitlab.cee.redhat.com/covscan/covscan/blob/master/osh/hub/errata/scanner.py#L420) into task's directory.
+ 5. Command arguments for `csmock` may be pretty complex. These are specified via [CsmockRunner class](https://gitlab.cee.redhat.com/covscan/covscan/blob/master/osh/hub/service/csmock_parser.py#L183).
 
 
 ## XML-RPC API client
 
 There is a client for connecting to hub's XML-RPC API located in
 
-covscanhub/scripts/covscan-xmlrpc-client.py
+osh/hub/scripts/covscan-xmlrpc-client.py
 
 For more info, please check docstring of the script.
 
@@ -208,7 +208,7 @@ To run unit tests
      (see [Writing and running tests](https://docs.djangoproject.com/en/2.2/topics/testing/overview/#module-django.test) for more info)
 2. ensure containers are running or create and run them by `podman-compose up -d db osh-hub`
    command
-3. run unit tests by `podman-compose exec osh-hub python3 covscanhub/manage.py test`
+3. run unit tests by `podman-compose exec osh-hub python3 osh/hub/manage.py test`
    command
 4. after you are done with unit testing, you can tear down the whole container
    stack by `podman-compose down`

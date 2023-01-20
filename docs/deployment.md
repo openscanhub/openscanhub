@@ -39,7 +39,7 @@ su - postgres -c 'psql covscanhub'
 
 - apply all migrations:
 ```sh
-/usr/lib/python3.6/site-packages/covscanhub/manage.py migrate
+/usr/lib/python3.6/site-packages/osh/hub/manage.py migrate
 ```
 
 - start web server:
@@ -65,7 +65,7 @@ firewall-cmd --reload
 
 - submit an ET task with:
 ```sh
-covscanhub/scripts/covscan-xmlrpc-client.py \
+osh/hub/scripts/covscan-xmlrpc-client.py \
     --hub https://covscan.lab.eng.brq2.redhat.com/covscanhub/xmlrpc/kerbauth/ \
     create-scan -t libidn2-2.3.0-7.el9 --base NEW_PACKAGE --release RHEL-9.0.0 \
     --et-scan-id 1234 --advisory-id 4567 --owner kdudka
@@ -73,7 +73,7 @@ covscanhub/scripts/covscan-xmlrpc-client.py \
 
 - check the waiving page: https://covscan.lab.eng.brq2.redhat.com/covscanhub/waiving/
 
-- check the log file: `/var/log/covscanhub/covscanhub.log`
+- check the log file: `/var/log/osh/hub/covscanhub.log`
 
 - try to click the `Create Bugzilla` button
 
@@ -112,7 +112,7 @@ ssh root@cov01.lab.eng.brq2.redhat.com \
 ssh root@cov01.lab.eng.brq2.redhat.com tar -C /etc -c covscanhub | tar -xvC /etc
 ```
 
-- set `BZ_API_KEY` in `/usr/lib/python3.6/site-packages/covscanhub/settings_local.py`
+- set `BZ_API_KEY` in `/usr/lib/python3.6/site-packages/osh/hub/settings_local.py`
 
 - make covscanhub logging work:
 ```sh

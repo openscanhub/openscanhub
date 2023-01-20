@@ -124,7 +124,7 @@ done;done)
 %build
 
 # collect static files from Django itself
-PYTHONPATH=. covscanhub/manage.py collectstatic --noinput
+PYTHONPATH=. osh/hub/manage.py collectstatic --noinput
 
 %py3_build
 
@@ -137,7 +137,7 @@ PYTHONPATH=. covscanhub/manage.py collectstatic --noinput
 
 # rename settings_local.{stage,prod}.* -> settings_local.*.{stage,prod}
 for i in stage prod; do (
-    cd %{buildroot}%{python3_sitelib}/covscanhub
+    cd %{buildroot}%{python3_sitelib}/osh/hub
     eval mv -v settings_local.{${i}.py,py.${i}}
 
     cd __pycache__
@@ -147,17 +147,17 @@ for i in stage prod; do (
 ) done
 
 # create /var/lib dirs
-mkdir -p %{buildroot}/var/lib/covscanhub/{tasks,upload,worker}
+mkdir -p %{buildroot}/var/lib/osh/hub/{tasks,upload,worker}
 
 # create log file
-mkdir -p %{buildroot}/var/log/covscanhub
-touch %{buildroot}/var/log/covscanhub/covscanhub.log
+mkdir -p %{buildroot}/var/log/osh/hub
+touch %{buildroot}/var/log/osh/hub/hub.log
 
 # copy checker_groups.txt
-cp -R covscanhub/scripts/checker_groups.txt %{buildroot}%{python3_sitelib}/covscanhub/scripts/
+cp -R osh/hub/scripts/checker_groups.txt %{buildroot}%{python3_sitelib}/osh/hub/scripts/
 
 # make manage.py executable
-chmod 0755 %{buildroot}%{python3_sitelib}/covscanhub/manage.py
+chmod 0755 %{buildroot}%{python3_sitelib}/osh/hub/manage.py
 
 # scripts are needed for setup.py, no longer needed
 rm -rf %{buildroot}%{python3_sitelib}/scripts
@@ -211,16 +211,16 @@ done)
 
 %files hub
 %defattr(-,root,apache,-)
-%{python3_sitelib}/covscanhub
-%exclude %{python3_sitelib}/covscanhub/settings_local.py*
-%exclude %{python3_sitelib}/covscanhub/__pycache__/settings_local.*
-%dir %attr(775,root,apache) /var/log/covscanhub
-%ghost %attr(640,apache,apache) /var/log/covscanhub/covscanhub.log
-%attr(775,root,apache) /var/lib/covscanhub
-%ghost %attr(640,root,apache) /var/lib/covscanhub/secret_key
+%{python3_sitelib}/osh/hub
+%exclude %{python3_sitelib}/osh/hub/settings_local.py*
+%exclude %{python3_sitelib}/osh/hub/__pycache__/settings_local.*
+%dir %attr(775,root,apache) /var/log/osh/hub
+%ghost %attr(640,apache,apache) /var/log/osh/hub/hub.log
+%attr(775,root,apache) /var/lib/osh/hub
+%ghost %attr(640,root,apache) /var/lib/osh/hub/secret_key
 
 %post hub
-exec &>> /var/log/covscanhub/post-install-%{name}-%{version}-%{release}.log
+exec &>> /var/log/osh/hub/post-install-%{name}-%{version}-%{release}.log
 
 # record timestamp
 echo -n '>>> '
@@ -229,29 +229,29 @@ date -R
 set -x
 umask 0026
 
-if ! test -e /var/lib/covscanhub/secret_key; then
+if ! test -e /var/lib/osh/hub/secret_key; then
     # generate Django secret key for a fresh installation
     %{__python3} -c "from django.core.management.utils import get_random_secret_key
-print(get_random_secret_key())" > /var/lib/covscanhub/secret_key
-    chgrp apache /var/lib/covscanhub/secret_key
+print(get_random_secret_key())" > /var/lib/osh/hub/secret_key
+    chgrp apache /var/lib/osh/hub/secret_key
 fi
 
 # this only takes an effect if PostgreSQL is running and the database exists
-pg_isready -h localhost && %{python3_sitelib}/covscanhub/manage.py migrate
+pg_isready -h localhost && %{python3_sitelib}/osh/hub/manage.py migrate
 
 
 %files hub-conf-devel
-%attr(640,root,apache) %config(noreplace) %{python3_sitelib}/covscanhub/settings_local.py
-%attr(640,root,apache) %config(noreplace) %{python3_sitelib}/covscanhub/__pycache__/settings_local*.pyc
+%attr(640,root,apache) %config(noreplace) %{python3_sitelib}/osh/hub/settings_local.py
+%attr(640,root,apache) %config(noreplace) %{python3_sitelib}/osh/hub/__pycache__/settings_local*.pyc
 
 %files hub-conf-stage
-%attr(640,root,apache) %config(noreplace) %{python3_sitelib}/covscanhub/settings_local.py.stage
-%attr(640,root,apache) %config(noreplace) %{python3_sitelib}/covscanhub/__pycache__/settings_local*.pyc.stage
+%attr(640,root,apache) %config(noreplace) %{python3_sitelib}/osh/hub/settings_local.py.stage
+%attr(640,root,apache) %config(noreplace) %{python3_sitelib}/osh/hub/__pycache__/settings_local*.pyc.stage
 %attr(640,root,root) %config(noreplace) /etc/httpd/conf.d/covscanhub-httpd.conf.stage
 
 %files hub-conf-prod
-%attr(640,root,apache) %config(noreplace) %{python3_sitelib}/covscanhub/settings_local.py.prod
-%attr(640,root,apache) %config(noreplace) %{python3_sitelib}/covscanhub/__pycache__/settings_local*.pyc.prod
+%attr(640,root,apache) %config(noreplace) %{python3_sitelib}/osh/hub/settings_local.py.prod
+%attr(640,root,apache) %config(noreplace) %{python3_sitelib}/osh/hub/__pycache__/settings_local*.pyc.prod
 %attr(640,root,root) %config(noreplace) /etc/httpd/conf.d/covscanhub-httpd.conf.prod
 
 

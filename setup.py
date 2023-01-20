@@ -25,8 +25,8 @@ data_files = {
         "osh/worker/worker.conf.stage",
     ],
     "/etc/httpd/conf.d": [
-        "covscanhub/covscanhub-httpd.conf.prod",
-        "covscanhub/covscanhub-httpd.conf.stage",
+        "osh/hub/covscanhub-httpd.conf.prod",
+        "osh/hub/covscanhub-httpd.conf.stage",
     ],
     "/usr/lib/systemd/system": [
         "files/etc/systemd/system/covscand.service",
@@ -42,13 +42,13 @@ data_files = {
     ],
 }
 package_data = {
-    "covscanhub": [
-        "covscanhub.wsgi",
-        "scripts/checker_groups.txt",
+    "osh": [
+        "hub/covscanhub.wsgi",
+        "hub/scripts/checker_groups.txt",
     ]
 }
 
-hub_path = Path("covscanhub")
+hub_path = Path("osh/hub")
 for folder in (
     "static",
     "templates",
@@ -57,10 +57,11 @@ for folder in (
     "errata/fixtures",
     "fixtures",
 ):
+
     for path in glob(str(hub_path / folder / "**"), recursive=True):
         path = Path(path)
         if path.is_file():
-            package_data["covscanhub"].append(str(path.relative_to(hub_path)))
+            package_data["osh"].append(str(path.relative_to("osh")))
 
 if os.path.isdir(".git"):
     if not git_check_tag_for_HEAD(THIS_FILE_PATH):

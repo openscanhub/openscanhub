@@ -43,7 +43,7 @@ minimal() {
     PASSWD=xxxxxx
 
     # create covscan users
-    podman exec -i osh-hub python3 covscanhub/manage.py shell << EOF
+    podman exec -i osh-hub python3 osh/hub/manage.py shell << EOF
 from django.contrib.auth import get_user_model
 User = get_user_model()
 print(User.objects.create_superuser('admin', 'kdudka@redhat.com', '${PASSWD}'))
@@ -81,7 +81,7 @@ restore() {
         gzip -cd covscanhub.db.gz | podman exec -i db psql -h localhost -U osh-hub
         # HACK: this should be turned into a function
         # ref: https://stackoverflow.com/a/16853755/9814181
-        podman exec -i osh-hub python3 covscanhub/manage.py shell << EOF
+        podman exec -i osh-hub python3 osh/hub/manage.py shell << EOF
 from django.contrib.auth import get_user_model
 User = get_user_model()
 User.objects.create_user('user', 'user@redhat.com', 'xxxxxx')
