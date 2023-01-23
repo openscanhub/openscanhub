@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-#from models import DEFECT_STATES
+# from models import DEFECT_STATES
 
 from osh.hub.other.autoregister import autoregister_admin
 

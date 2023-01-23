@@ -8,8 +8,8 @@ import logging
 
 from kobo.hub.models import Task
 
-from osh.hub.service.path import TaskResultPaths
 from osh.common.csmock_parser import CsmockAPI
+from osh.hub.service.path import TaskResultPaths
 
 logger = logging.getLogger(__name__)
 

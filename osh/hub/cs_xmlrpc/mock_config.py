@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
 
-from osh.hub.scan.models import MockConfig
 from django.core.exceptions import ObjectDoesNotExist
 
+from osh.hub.scan.models import MockConfig
 
 __all__ = (
     "get",

@@ -6,16 +6,16 @@ import logging
 from django.core.exceptions import ObjectDoesNotExist
 from kobo.hub.models import Task
 
+from osh.common.constants import DEFAULT_CHECKER_GROUP
+from osh.common.csmock_parser import CsmockAPI, ResultsExtractor
 from osh.hub.scan.models import AnalyzerVersion, AppSettings
 from osh.hub.service.path import TaskResultPaths
 from osh.hub.service.processing import (TaskDiffer, task_has_results,
-                                           task_is_diffed)
+                                        task_is_diffed)
 from osh.hub.waiving.models import (DEFECT_STATES, RESULT_GROUP_STATES,
-                                       Checker, CheckerGroup, Defect, Result,
-                                       ResultGroup)
+                                    Checker, CheckerGroup, Defect, Result,
+                                    ResultGroup)
 from osh.hub.waiving.service import find_processed_in_past
-from osh.common.constants import DEFAULT_CHECKER_GROUP
-from osh.common.csmock_parser import CsmockAPI, ResultsExtractor
 
 logger = logging.getLogger(__name__)
 

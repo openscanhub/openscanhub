@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 
-from osh.hub.scan.messaging import post_qpid_message
-from osh.hub.scan.models import SCAN_STATES
+import random
 
 from kobo.django.xmlrpc.decorators import login_required
 
-import random
+from osh.hub.scan.messaging import post_qpid_message
+from osh.hub.scan.models import SCAN_STATES
 
 __all__ = (
     'send_message',

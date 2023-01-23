@@ -3,15 +3,16 @@
 """these functions are exported via XML-RPC"""
 
 import logging
-from kobo.tback import get_traceback
 
 from kobo.client.constants import TASK_STATES
 from kobo.hub.models import Task
-from osh.hub.waiving.results_loader import process_scan
+from kobo.tback import get_traceback
 
-from osh.hub.waiving.service import get_unwaived_rgs
-from osh.hub.scan.models import SCAN_STATES, Scan, ScanBinding, SCAN_STATES_SEND_MAIL
+from osh.hub.scan.models import (SCAN_STATES, SCAN_STATES_SEND_MAIL, Scan,
+                                 ScanBinding)
 from osh.hub.scan.notify import send_scan_notification
+from osh.hub.waiving.results_loader import process_scan
+from osh.hub.waiving.service import get_unwaived_rgs
 
 logger = logging.getLogger(__name__)
 
@@ -33,7 +34,7 @@ def finish_scan(request, scan_id, filename):
 
     try:
         process_scan(sb)
-    except Exception as ex:
+    except Exception as ex:  # noqa: B902
         logger.error("got error while processing scan: %s", repr(ex))
         fail_scan(scan_id, get_traceback())
         return
@@ -66,7 +67,7 @@ def fail_scan(scan_id, reason=None):
     scan.set_state(SCAN_STATES['FAILED'])
     if scan.is_errata_scan():
         scan.enabled = False
-        #set last successfully finished scan as enabled
+        # set last successfully finished scan as enabled
         scan.enable_last_successfull()
     scan.save()
     if reason:

@@ -11,11 +11,10 @@ from osh.hub.errata.utils import _spawn_scan_task, spawn_scan_task
 from osh.hub.other.exceptions import ScanException
 from osh.hub.other.shortcuts import check_and_create_dirs, check_brew_build
 from osh.hub.scan.models import (SCAN_STATES, SCAN_STATES_IN_PROGRESS,
-                                    SCAN_TYPES, SCAN_TYPES_TARGET, AppSettings,
-                                    ETMapping, MockConfig, Package,
-                                    ReleaseMapping, Scan, ScanBinding)
-from osh.hub.scan.service import (get_latest_binding,
-                                     get_latest_sb_by_package)
+                                 SCAN_TYPES, SCAN_TYPES_TARGET, AppSettings,
+                                 ETMapping, MockConfig, Package,
+                                 ReleaseMapping, Scan, ScanBinding)
+from osh.hub.scan.service import get_latest_binding, get_latest_sb_by_package
 from osh.hub.scan.xmlrpc_helper import cancel_scan
 from osh.hub.service.processing import task_has_results
 

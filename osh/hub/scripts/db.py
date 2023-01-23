@@ -17,12 +17,12 @@ from django.core.exceptions import ObjectDoesNotExist
 from kobo.hub.models import Arch, Channel
 from six.moves import range
 
+from osh.common.constants import DEFAULT_CHECKER_GROUP
 from osh.hub.scan.models import (AppSettings, MockConfig, ReleaseMapping,
-                                    SystemRelease, Tag)
+                                 SystemRelease, Tag)
 from osh.hub.stats.models import StatType
 from osh.hub.stats.service import get_mapping
 from osh.hub.waiving.models import Checker, CheckerGroup
-from osh.common.constants import DEFAULT_CHECKER_GROUP
 
 PROJECT_DIR = Path(__file__).parents[2]
 

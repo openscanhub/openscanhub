@@ -2,8 +2,21 @@
 # -*- coding: utf-8 -*-
 
 from __future__ import print_function
+
 import os
+import shutil
 import sys
+from optparse import OptionParser
+
+from django.contrib.auth import get_user_model
+from kobo.client.constants import TASK_STATES
+from kobo.hub.models import Task
+
+from osh.hub.cs_xmlrpc.worker import (email_scan_notification, fail_scan,
+                                      finish_scan)
+from osh.hub.scan.models import (SCAN_STATES, SCAN_TYPES, SCAN_TYPES_TARGET,
+                                 Scan, ScanBinding)
+from osh.hub.scan.service import extract_logs_from_tarball
 
 PROJECT_DIR = '/var/'
 
@@ -21,23 +34,6 @@ if KOBO_DIR not in sys.path:
     sys.path.append(KOBO_DIR)
 
 os.environ['DJANGO_SETTINGS_MODULE'] = 'osh.hub.settings'
-
-
-from django.contrib.auth import get_user_model
-
-from osh.hub.cs_xmlrpc.worker import finish_scan, fail_scan, \
-    email_scan_notification
-from osh.hub.scan.models import Scan, ScanBinding, SCAN_TYPES, SCAN_STATES,\
-    SCAN_TYPES_TARGET
-from osh.hub.scan.service import extract_logs_from_tarball
-
-from kobo.client.constants import TASK_STATES
-from kobo.hub.models import Task
-
-import shutil
-
-
-from optparse import OptionParser
 
 
 def set_options():

@@ -1,14 +1,13 @@
 # -*- coding: utf-8 -*-
 
 import logging
+
 from django.core.exceptions import ObjectDoesNotExist
-from osh.hub.other.exceptions import PackageNotEligibleException
-
-from osh.hub.scan.models import PackageCapability, Analyzer, Profile
-
-from kobo.django.fields import JSONField
 from django.db import models
+from kobo.django.fields import JSONField
 
+from osh.hub.other.exceptions import PackageNotEligibleException
+from osh.hub.scan.models import Analyzer, PackageCapability, Profile
 
 logger = logging.getLogger(__name__)
 
@@ -44,7 +43,7 @@ class Capability(models.Model):
         func = getattr(module, func_name)
         try:
             is_capable = func(**kwargs)
-        except Exception as ex:
+        except Exception as ex:  # noqa: B902
             logger.error("Exception thrown during capability checking: %s", repr(ex))
             return False
         else:
@@ -117,4 +116,3 @@ class ScanningSession(models.Model):
             if not is_capable:
                 raise PackageNotEligibleException(
                     'Package %s is not eligible for scanning.' % (package.name))
-

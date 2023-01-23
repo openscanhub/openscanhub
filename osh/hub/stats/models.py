@@ -25,7 +25,7 @@ describes value of this stat.")
         if self.is_release_specific and release:
             try:
                 return results.filter(release=release).latest().value
-            except Exception:
+            except Exception:  # noqa: B902
                 return 0
         else:
             return results.latest().value

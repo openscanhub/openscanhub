@@ -17,4 +17,5 @@ def public(f):
         all.append(f.__name__)
     return f
 
+
 public(public)

@@ -2,17 +2,18 @@
 """
     TODO Once on 1.5, use filter from django.contrib.humanize
 """
-from __future__ import absolute_import
-from __future__ import print_function
-from .models import StatResults, StatType
-from osh.hub.scan.models import SystemRelease
+from __future__ import absolute_import, print_function
 
-from django.urls import reverse
-from django.shortcuts import render
-from django.http import HttpResponse
 import json
 from collections import OrderedDict
 
+from django.http import HttpResponse
+from django.shortcuts import render
+from django.urls import reverse
+
+from osh.hub.scan.models import SystemRelease
+
+from .models import StatResults, StatType
 from .service import display_values
 
 
@@ -25,7 +26,6 @@ def release_list(request, release_id):
             order_by('group', 'order'):
         context['results'][stattype] = stattype.display_value(
             context['release']), stattype.detail_url(context['release'])
-
 
     return render(request, "stats/list.html", context)
 
@@ -89,7 +89,8 @@ def release_stats_detail_graph(request, stat_id, release_id):
         data['data'].append(
             {'x': result.date.strftime(time_format), 'a': result.value}
         )
-        if len(data['data']) >= 12: break
+        if len(data['data']) >= 12:
+            break
     return HttpResponse(json.dumps(data),
                         content_type='application/javascript; charset=utf8')
 
@@ -114,10 +115,12 @@ def stats_detail_graph(request, stat_id):
         data['data'].append(
             {'x': result.date.strftime(time_format), 'a': result.value}
         )
-        if len(data['data']) >= 12: break
+        if len(data['data']) >= 12:
+            break
 
     return HttpResponse(json.dumps(data),
                         content_type='application/javascript; charset=utf8')
+
 
 """ stats from all releases added to graph
 tmp = {}

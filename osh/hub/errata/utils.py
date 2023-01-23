@@ -1,18 +1,14 @@
 # -*- coding: utf-8 -*-
 
-import re
-import koji
 import logging
 
-from kobo.rpmlib import parse_nvr
-from kobo.hub.models import Task, TASK_STATES
-
-from osh.hub.scan.models import SCAN_TYPES, Scan
-from osh.hub.other.shortcuts import check_and_create_dirs
-
+import koji
 from django.conf import settings
-from django.core.exceptions import ImproperlyConfigured
-import six
+from kobo.hub.models import TASK_STATES, Task
+from kobo.rpmlib import parse_nvr
+
+from osh.hub.other.shortcuts import check_and_create_dirs
+from osh.hub.scan.models import SCAN_TYPES, Scan
 
 __all__ = (
     "spawn_scan_task",

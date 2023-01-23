@@ -5,8 +5,11 @@ from datetime import date, datetime
 from django import template
 from django.template import defaultfilters
 from django.utils.safestring import mark_safe
-from django.utils.translation import pgettext, ungettext, ugettext as _
-#from django.utils.timezone import is_aware, utc
+from django.utils.translation import pgettext
+from django.utils.translation import ugettext as _
+from django.utils.translation import ungettext
+
+# from django.utils.timezone import is_aware, utc
 
 register = template.Library()
 

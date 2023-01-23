@@ -17,14 +17,14 @@ from kobo.django.upload.models import FileUpload
 from kobo.hub.models import Task
 from kobo.shortcuts import run
 
-from osh.hub.other.decorators import public
-from osh.hub.other.exceptions import ScanException
-from osh.hub.other.shortcuts import (check_and_create_dirs,
-                                        check_brew_build, get_mock_by_name)
-from osh.hub.service.processing import add_title_to_json
 from osh.common.constants import (ERROR_DIFF_FILE, ERROR_HTML_FILE,
                                   ERROR_TXT_FILE, FIXED_DIFF_FILE,
                                   FIXED_HTML_FILE, FIXED_TXT_FILE)
+from osh.hub.other.decorators import public
+from osh.hub.other.exceptions import ScanException
+from osh.hub.other.shortcuts import (check_and_create_dirs, check_brew_build,
+                                     get_mock_by_name)
+from osh.hub.service.processing import add_title_to_json
 
 from .models import (SCAN_STATES, SCAN_STATES_FINISHED_WELL, SCAN_TYPES_TARGET,
                      Analyzer, Scan, ScanBinding)

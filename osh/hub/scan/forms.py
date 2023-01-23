@@ -2,9 +2,9 @@
 
 from django import forms
 
-from osh.hub.scan.models import MockConfig
-from osh.hub.other.shortcuts import check_brew_build
 from osh.hub.other.exceptions import BrewException
+from osh.hub.other.shortcuts import check_brew_build
+from osh.hub.scan.models import MockConfig
 
 
 def validate_brew_build(value):
@@ -19,10 +19,7 @@ class ScanSubmissionForm(forms.Form):
     nvr = forms.CharField(validators=[validate_brew_build])
     base = forms.CharField(required=False, help_text="Required only when \
 VersionDiffBuild is selected")
-    scan_type = forms.ChoiceField(label="Type of scan",
-         choices=(('DiffBuild', 'DiffBuild'),
-                  ('MockBuild', 'MockBuild'),
-                  ('VersionDiffBuild', 'VersionDiffBuild')))
+    scan_type = forms.ChoiceField(label="Type of scan", choices=(('DiffBuild', 'DiffBuild'), ('MockBuild', 'MockBuild'), ('VersionDiffBuild', 'VersionDiffBuild')))
     mock = forms.ChoiceField(label="Mock profile",
                              choices=((m.name, m.name) for m in
                                       MockConfig.objects.filter(enabled=True)))

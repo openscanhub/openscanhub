@@ -1,11 +1,9 @@
 # -*- coding: utf-8 -*-
 """custom task urls"""
 
-from django.conf.urls import *
+from django.conf.urls import url
 from kobo.client.constants import TASK_STATES
-
-from kobo.hub.views import TaskListView, TaskDetail, task_log, task_log_json
-
+from kobo.hub.views import TaskDetail, TaskListView, task_log, task_log_json
 
 urlpatterns = [
     url(r"^et/$",
@@ -15,7 +13,7 @@ urlpatterns = [
 
     url(r"^$",
         TaskListView.as_view(),
-        #kwargs={'method__in': ['DiffBuild', 'MockBuild', 'VersionDiffBuild']},
+        # kwargs={'method__in': ['DiffBuild', 'MockBuild', 'VersionDiffBuild']},
         name="task/index"),
 
     url(r"^(?P<pk>\d+)/$",
@@ -39,4 +37,4 @@ urlpatterns = [
     url(r"^(?P<id>\d+)/log-json/(?P<log_name>.+)$",
         task_log_json,
         name="task/log-json"),
-    ]
+]

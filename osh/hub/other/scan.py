@@ -30,5 +30,6 @@ def test():
     assert remove_duplicities(['a-c', 'a-d', 'b']) == ['a-d', 'b']
     assert remove_duplicities(['a-c', 'a-d', 'b-a', 'b-d']) == ['a-d', 'b-d']
 
+
 if __name__ == '__main__':
     test()

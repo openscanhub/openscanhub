@@ -1,13 +1,13 @@
 from types import ModuleType
 
+import six
 from django.contrib import admin
 from django.contrib.admin.utils import quote
 from django.contrib.admin.views.main import ChangeList
-from django.urls import reverse, NoReverseMatch
-from django.db.models import ForeignKey, OneToOneField, Count
+from django.db.models import Count, ForeignKey, OneToOneField
 from django.db.models.base import ModelBase
+from django.urls import NoReverseMatch, reverse
 from django.utils.safestring import mark_safe
-import six
 
 
 def _get_admin_change_url(field):
@@ -25,7 +25,7 @@ def _get_admin_change_url(field):
             return u'(None)'
         # we could use field.name to output __str__() of the related object,
         # but that would require to prefetch related objects, which can be slow
-        #link_text = u'%s %s' % (related_model.__name__, getattr(obj, field.attname))
+        # link_text = u'%s %s' % (related_model.__name__, getattr(obj, field.attname))
         link_text = u'%s' % (getattr(obj, field.name))
 
         try:
@@ -50,8 +50,7 @@ def _get_admin_changelist_url(source_field_name, target_model, target_field_name
                                   getattr(obj, '%s__count' % source_field_name))
 
         try:
-            url = reverse('admin:%s_%s_changelist' %
-                            (target_model._meta.app_label, target_model._meta.model_name))
+            url = reverse('admin:%s_%s_changelist' % (target_model._meta.app_label, target_model._meta.model_name))
         except NoReverseMatch:
             return link_text
         return mark_safe('<a href="%s?%s">%s</a>' % (url, link_cond, link_text))
@@ -79,6 +78,7 @@ def _set_admin_queryset(admin_class, m2m_field_names, exclude_field_names):
     # That's why we are waiting with annotating until the last possible
     # moment, when the counts where already fetched.
     counts = [Count(c, distinct=True) for c in m2m_field_names]
+
     def get_changelist(self, *args, **kwargs):
         def get_results(self, request):
             super(self.__class__, self).get_results(request)
@@ -95,9 +95,9 @@ def _get_pk_func(field):
     return pk_func
 
 
-def autoregister_admin(module, exclude_models=None, model_fields=None,
-                       exclude_fields=None, admin_fields=None,
-                       reversed_relations=None):
+# https://gitlab.cee.redhat.com/covscan/covscan/-/issues/159
+def autoregister_admin(module, exclude_models=None, model_fields=None, exclude_fields=None,  # noqa: C901
+                       admin_fields=None, reversed_relations=None):
     '''
     @param module: module containing django.db.models classes
     @type module: str or __module__
@@ -138,10 +138,7 @@ def autoregister_admin(module, exclude_models=None, model_fields=None,
     # collect the models to register
     models = []
     for model in module.__dict__.values():
-        if (isinstance(model, ModelBase) and
-                model.__module__ == module.__name__ and
-                not model._meta.abstract and
-                model.__name__ not in exclude_models):
+        if (isinstance(model, ModelBase) and model.__module__ == module.__name__ and not model._meta.abstract and model.__name__ not in exclude_models):
             models.append(model)
 
     # for each model prepare an admin class `<model_name>Admin`
@@ -183,13 +180,12 @@ def autoregister_admin(module, exclude_models=None, model_fields=None,
             f for f in model._meta.get_fields()
             if (f.one_to_many or f.one_to_one)
             and f.auto_created and not f.concrete
-            ]
+        ]
         all_related_many_to_many_objects = [
             f for f in model._meta.get_fields(include_hidden=True)
             if f.many_to_many and f.auto_created
         ]
-        reversed_related_objs = (all_related_objects +
-                                    all_related_many_to_many_objects)
+        reversed_related_objs = (all_related_objects + all_related_many_to_many_objects)
 
         allowed_reversed_relations = reversed_relations.get(model_name, [])
         for related in reversed_related_objs:

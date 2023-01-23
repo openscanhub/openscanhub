@@ -2,25 +2,18 @@
 
 import os
 
-from django.core.exceptions import ObjectDoesNotExist
+import koji
+import six
 from django.conf import settings
+from django.core.exceptions import ObjectDoesNotExist
 from django.urls import reverse
 from django.utils.safestring import mark_safe
-import koji
 
-from osh.hub.scan.models import MockConfig, Tag
 from osh.hub.other.exceptions import BrewException
-import six
+from osh.hub.scan.models import MockConfig, Tag
 
-
-__all__ = (
-    'add_link_field',
-    'get_mock_by_name',
-    'check_brew_build',
-    'check_and_create_dirs',
-    'get_tag_by_name',
-    'get_or_none',
-)
+# https://gitlab.cee.redhat.com/covscan/covscan/-/issues/160
+__all__ = ('add_link_field', 'get_mock_by_name', 'check_brew_build', 'check_and_create_dirs', 'get_tag_by_name', 'get_or_none',)  # noqa: F822
 
 
 def add_link_field(target_model=None, field='', app='', field_name='link',
@@ -40,7 +33,7 @@ def add_link_field(target_model=None, field='', app='', field_name='link',
         link.allow_tags = True
         link.short_description = field_label or (reverse_name + ' link')
         setattr(cls, field_name, link)
-        #cls.link = link
+        # cls.link = link
         cls.readonly_fields = list(getattr(cls, 'readonly_fields', [])) + \
             [field_name]
         return cls
@@ -50,7 +43,7 @@ def add_link_field(target_model=None, field='', app='', field_name='link',
 def get_mock_by_name(name):
     try:
         conf = MockConfig.objects.get(name=name)
-    except:
+    except:  # noqa: B902, E722
         raise ObjectDoesNotExist("Unknown mock config: %s" % name)
     if not conf.enabled:
         raise RuntimeError("Mock config is disabled: %s" % conf)
@@ -60,7 +53,7 @@ def get_mock_by_name(name):
 def get_tag_by_name(name):
     try:
         tag = Tag.objects.get(name=name)
-    except:
+    except:  # noqa: B902, E722
         raise ObjectDoesNotExist("Unknown tag config: %s" % name)
     if not tag.mock.enabled:
         raise RuntimeError("Mock config is disabled: %s" % tag.mock)

@@ -22,10 +22,10 @@ from osh.hub.errata.models import ScanningSession
 from osh.hub.errata.service import return_or_raise
 from osh.hub.errata.utils import is_rebase
 from osh.hub.other.exceptions import (PackageBlacklistedException,
-                                         PackageNotEligibleException)
+                                      PackageNotEligibleException)
 from osh.hub.scan.models import (REQUEST_STATES, SCAN_TYPES, AppSettings,
-                                    ClientAnalyzer, ETMapping, MockConfig,
-                                    Package, Profile, Scan, ScanBinding, Tag)
+                                 ClientAnalyzer, ETMapping, MockConfig,
+                                 Package, Profile, Scan, ScanBinding, Tag)
 from osh.hub.scan.service import get_latest_binding
 from osh.hub.service.processing import task_has_results
 

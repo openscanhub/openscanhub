@@ -2,10 +2,13 @@
 
 
 from __future__ import absolute_import
+
 from django.conf.urls import url
 
-from osh.hub.waiving.views import *
-
+from osh.hub.waiving.views import (ResultsListView, et_latest,
+                                   etmapping_latest, fixed_defects, new_bz,
+                                   newest_result, previously_waived,
+                                   remove_waiver, result, update_bz, waiver)
 
 urlpatterns = [
     url(r"^$", ResultsListView.as_view(), name="waiving/list"),
@@ -35,11 +38,11 @@ urlpatterns = [
         etmapping_latest,
         name="waiving/etmapping_id"),
 
-    #BZ stuff
+    # BZ stuff
     url(r"^(?P<package_id>\d+)/(?P<release_id>\d+)/newbz/$",
         new_bz,
         name="waiving/new_bz"),
     url(r"^(?P<package_id>\d+)/(?P<release_id>\d+)/updatebz/$",
         update_bz,
         name="waiving/update_bz"),
-    ]
+]

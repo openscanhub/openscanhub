@@ -13,30 +13,30 @@ from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 from django.views.generic.list import ListView
 
+from osh.common.constants import (ERROR_DIFF_FILE, ERROR_HTML_FILE,
+                                  ERROR_TXT_FILE, FIXED_DIFF_FILE,
+                                  FIXED_HTML_FILE, FIXED_TXT_FILE)
 from osh.hub.other import get_or_none
 from osh.hub.scan.compare import get_compare_title
 from osh.hub.scan.models import (SCAN_STATES, SCAN_TYPES_TARGET, ETMapping,
-                                    Package, Scan, ScanBinding, SystemRelease)
+                                 Package, Scan, ScanBinding, SystemRelease)
 from osh.hub.scan.notify import send_notif_new_comment
 from osh.hub.scan.service import get_latest_sb_by_package
 from osh.hub.scan.xmlrpc_helper import scan_notification_email
 from osh.hub.service.processing import task_has_results
 from osh.hub.waiving.bugzilla_reporting import (create_bugzilla,
-                                                   get_unreported_bugs,
-                                                   update_bugzilla)
+                                                get_unreported_bugs,
+                                                update_bugzilla)
 from osh.hub.waiving.forms import ScanListSearchForm, WaiverForm
 from osh.hub.waiving.models import (DEFECT_STATES, RESULT_GROUP_STATES,
-                                       WAIVER_LOG_ACTIONS, WAIVER_TYPES,
-                                       WAIVER_TYPES_HELP_TEXTS, Bugzilla,
-                                       CheckerGroup, Defect, ResultGroup,
-                                       Waiver, WaivingLog)
+                                    WAIVER_LOG_ACTIONS, WAIVER_TYPES,
+                                    WAIVER_TYPES_HELP_TEXTS, Bugzilla,
+                                    CheckerGroup, Defect, ResultGroup, Waiver,
+                                    WaivingLog)
 from osh.hub.waiving.service import (apply_waiver, display_in_result,
-                                        get_defects_diff_display,
-                                        get_last_waiver, get_unwaived_rgs,
-                                        get_waivers_for_rg, waiver_condition)
-from osh.common.constants import (ERROR_DIFF_FILE, ERROR_HTML_FILE,
-                                  ERROR_TXT_FILE, FIXED_DIFF_FILE,
-                                  FIXED_HTML_FILE, FIXED_TXT_FILE)
+                                     get_defects_diff_display, get_last_waiver,
+                                     get_unwaived_rgs, get_waivers_for_rg,
+                                     waiver_condition)
 
 logger = logging.getLogger(__name__)
 

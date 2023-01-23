@@ -2,10 +2,12 @@
 # -*- coding: utf-8 -*-
 
 from __future__ import print_function
-from pprint import pprint
-from django.conf import settings
-import brew
+
 import sys
+from pprint import pprint
+
+import brew
+from django.conf import settings
 
 try:
     nvr = sys.argv[1]

@@ -3,7 +3,6 @@
 
 from kobo.django.menu import MenuItem, include
 
-
 # Create your menu here.
 
 # Example:
@@ -36,7 +35,7 @@ menu = (
         MenuItem("Mock configs", "mock_config/index"),
         MenuItem("Packages", "package/list"),
         # FIXME: add link to "New Scan" when it's ready
-        #MenuItem("New", "scan/new"),
+        # MenuItem("New", "scan/new"),
     )),
     MenuItem("Tasks", "task/index", menu=(
         MenuItem("All", "task/index"),

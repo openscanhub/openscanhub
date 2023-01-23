@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-from django.conf.urls import *
 import kobo.django.upload.views
 import kobo.django.xmlrpc.views
+from django.conf.urls import url
 
 urlpatterns = [
     # customize the index XML-RPC page if needed:
@@ -14,4 +14,4 @@ urlpatterns = [
         name="help/xmlrpc/worker"),
     url(r"^kerbauth/", kobo.django.xmlrpc.views.kerbauth_handler,
         name="help/xmlrpc/kerbauth"),
-    ]
+]

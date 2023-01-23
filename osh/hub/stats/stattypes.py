@@ -12,24 +12,22 @@
 
 import datetime
 
+from django.db.models import Sum
 from kobo.hub.models import Task
 
+from osh.hub.scan.models import Scan, ScanBinding, SystemRelease
+from osh.hub.scan.service import (diff_fixed_defects_between_releases,
+                                  diff_fixed_defects_in_package,
+                                  diff_new_defects_between_releases,
+                                  diff_new_defects_in_package)
 from osh.hub.stats.utils import stat_function
-from osh.hub.scan.models import Scan, SystemRelease,\
-    ScanBinding, SCAN_TYPES_TARGET
-from osh.hub.scan.service import diff_fixed_defects_in_package,\
-    diff_fixed_defects_between_releases, diff_new_defects_between_releases, \
-    diff_new_defects_in_package
-
-from osh.hub.waiving.models import Result, Defect, DEFECT_STATES, Waiver, \
-    WAIVER_TYPES, ResultGroup, RESULT_GROUP_STATES
-
-from django.db.models import Sum
-
+from osh.hub.waiving.models import (DEFECT_STATES, Defect, Result, ResultGroup,
+                                    Waiver)
 
 #######
 # SCANS
 #######
+
 
 @stat_function(1, "SCANS")
 def get_total_scans():
@@ -246,8 +244,7 @@ def get_total_new_defects():
 
         Number of newly introduced defects.
     """
-    return Defect.objects.filter(state=DEFECT_STATES['NEW'],
-        result_group__result__scanbinding__scan__enabled=True).count()
+    return Defect.objects.filter(state=DEFECT_STATES['NEW'], result_group__result__scanbinding__scan__enabled=True).count()
 
 
 @stat_function(4, "DEFECTS")
@@ -385,8 +382,9 @@ between first scan and final one.
     return result
 
 
+# https://gitlab.cee.redhat.com/covscan/covscan/-/issues/157
 @stat_function(11, "DEFECTS")
-def get_fixed_defects_in_release():
+def get_fixed_defects_in_release():  # noqa: F811
     """
         Fixed defects in one release
 

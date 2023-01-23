@@ -3,20 +3,19 @@
 Functions related to checking provided data
 """
 
-import os
-import re
 import logging
-from django.core.exceptions import ObjectDoesNotExist
-from kobo.django.upload.models import FileUpload
-
-from osh.hub.other.exceptions import PackageBlacklistedException, PackageNotEligibleException
-from osh.hub.scan.models import PackageAttribute, ScanBinding, ClientAnalyzer, Profile
-from osh.hub.scan.xmlrpc_helper import cancel_scan
+import os
 
 import koji
-from kobo.rpmlib import parse_nvr
 from django.conf import settings
+from django.core.exceptions import ObjectDoesNotExist
+from kobo.django.upload.models import FileUpload
+from kobo.rpmlib import parse_nvr
 
+from osh.hub.other.exceptions import (PackageBlacklistedException,
+                                      PackageNotEligibleException)
+from osh.hub.scan.models import ClientAnalyzer, PackageAttribute, ScanBinding
+from osh.hub.scan.xmlrpc_helper import cancel_scan
 
 logger = logging.getLogger(__name__)
 
@@ -100,7 +99,7 @@ def check_upload(upload_id, task_user, is_tarball=False):
     """
     try:
         upload = FileUpload.objects.get(id=upload_id)
-    except:
+    except:  # noqa: B901, E722
         raise ObjectDoesNotExist("Can't find uploaded file with id: %s" % upload_id)
 
     if upload.owner.username != task_user:

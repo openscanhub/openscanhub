@@ -1,17 +1,15 @@
 # -*- coding: utf-8 -*-
 
-import logging
 import datetime
+import logging
+
 from django.conf import settings
-
-from kobo.types import Enum, EnumItem
-from kobo.django.fields import JSONField
-
-from django.core.exceptions import ObjectDoesNotExist
 from django.db import models, transaction
+from kobo.django.fields import JSONField
+from kobo.types import Enum, EnumItem
 
-from osh.hub.scan.models import Package, SystemRelease, SCAN_TYPES, AnalyzerVersion
-
+from osh.hub.scan.models import (SCAN_TYPES, AnalyzerVersion, Package,
+                                 SystemRelease)
 
 logger = logging.getLogger(__name__)
 
@@ -79,8 +77,8 @@ RESULT_GROUP_PROCESSED = (
     RESULT_GROUP_STATES['CONTAINS_BUG'],
 )
 
-#DEFECT_PRIORITY = Enum(
-#)
+# DEFECT_PRIORITY = Enum(
+# )
 
 CHECKER_SEVERITIES = Enum(
     EnumItem("NO_EFFECT", help_text="this test does not affect program, could be style issue"),
@@ -103,7 +101,7 @@ class Result(models.Model):
                                        help_text="DEPRECATED, not used anymore")
     lines = models.IntegerField(help_text='Lines of code scanned', blank=True,
                                 null=True)
-    #time in seconds that scanner spent scanning
+    # time in seconds that scanner spent scanning
     scanning_time = models.IntegerField(verbose_name='Time spent scanning',
                                         blank=True, null=True)
     date_submitted = models.DateTimeField()
@@ -202,14 +200,12 @@ class DefectMixin(object):
     def updates(self):
         """ return all defects for regular updates """
         return self.filter(
-            result_group__result__scanbinding__scan__scan_type=
-            SCAN_TYPES['ERRATA'])
+            result_group__result__scanbinding__scan__scan_type=SCAN_TYPES['ERRATA'])
 
     def rebases(self):
         """ return all defects for rebases """
         return self.filter(
-            result_group__result__scanbinding__scan__scan_type=
-            SCAN_TYPES['REBASE'])
+            result_group__result__scanbinding__scan__scan_type=SCAN_TYPES['REBASE'])
 
 
 class DefectQuerySet(models.query.QuerySet, DefectMixin):
@@ -227,18 +223,18 @@ class Defect(models.Model):
     One Result is composed of several Defects, each Defect is defined by
     some Events where one is key event
     """
-    #ARRAY_VS_SINGLETON | BUFFER_SIZE_WARNING
+    # ARRAY_VS_SINGLETON | BUFFER_SIZE_WARNING
     checker = models.ForeignKey("Checker", verbose_name="Checker",
                                 blank=False, null=False, on_delete=models.CASCADE)
 
     order = models.IntegerField(null=True,
                                 help_text="Defects in view have fixed order.")
 
-    #priority = models.PositiveIntegerField(default=DEFECT_STATES["UNKNOWN"],
+    # priority = models.PositiveIntegerField(default=DEFECT_STATES["UNKNOWN"],
     #                                    choices=DEFECT_STATES.get_mapping(),
     #                                    help_text="Defect state")
 
-    #practically anything
+    # practically anything
     annotation = models.CharField("Annotation", max_length=32,
                                   blank=True, null=True)
 
@@ -432,8 +428,7 @@ associated with this group.")
         w = Waiver.objects.filter(
             result_group__checker_group=self.checker_group,
             date__lt=d,
-            result_group__result__scanbinding__scan__package=
-                self.result.scanbinding.scan.package
+            result_group__result__scanbinding__scan__package=self.result.scanbinding.scan.package
         )
         if w:
             return w.order_by('-date')
@@ -502,20 +497,17 @@ class WaiverOnlyMixin(object):
     def updates(self):
         """ return all waivers for regular updates """
         return self.filter(
-            result_group__result__scanbinding__scan__scan_type=
-            SCAN_TYPES['ERRATA'])
+            result_group__result__scanbinding__scan__scan_type=SCAN_TYPES['ERRATA'])
 
     def newpkgs(self):
         """ return all waivers for newpkgs """
         return self.filter(
-            result_group__result__scanbinding__scan__scan_type=
-            SCAN_TYPES['NEWPKG'])
+            result_group__result__scanbinding__scan__scan_type=SCAN_TYPES['NEWPKG'])
 
     def rebases(self):
         """ return all waivers for rebases """
         return self.filter(
-            result_group__result__scanbinding__scan__scan_type=
-            SCAN_TYPES['REBASE'])
+            result_group__result__scanbinding__scan__scan_type=SCAN_TYPES['REBASE'])
 
     def is_a_bugs(self):
         return self.filter(state=WAIVER_TYPES["IS_A_BUG"])

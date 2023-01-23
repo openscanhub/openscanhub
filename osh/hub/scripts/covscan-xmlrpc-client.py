@@ -51,18 +51,16 @@ File: "/usr/lib/python2.7/site-packages/kobo/xmlrpc.py"
 
 """
 
-import json
-import sys
-import logging
-import xmlrpc.client
-import datetime
-
 import argparse
+import datetime
+import json
+import logging
+import sys
+import xmlrpc.client
 
 import kobo
 from kobo.tback import set_except_hook
-from kobo.xmlrpc import SafeCookieTransport, CookieTransport
-
+from kobo.xmlrpc import CookieTransport, SafeCookieTransport
 
 logger = logging.getLogger('covscan_api_client')
 logger.setLevel(logging.DEBUG)
@@ -195,8 +193,7 @@ class Client(object):
         else:
             raise ValueError("URL to hub has to start with http(s): %r" % self.hub_url)
         logger.info("connecting to %s", self.hub_url)
-        client = xmlrpc.client.ServerProxy(self.hub_url, allow_none=True, transport=transport,
-                                       verbose=self.verbose)
+        client = xmlrpc.client.ServerProxy(self.hub_url, allow_none=True, transport=transport, verbose=self.verbose)
         return client
 
     def get_task_info(self, task_id):
@@ -220,7 +217,7 @@ class Client(object):
         Api has 'owner' parameter, but to be compatible with other functions 'username' is used.
         """
         filters = dict(id=id, target=target, base=base, state=state, owner=username, release=release)
-        filters = {k:v for k, v in filters.items() if v is not None} # removes None values from dictionary
+        filters = {k: v for k, v in filters.items() if v is not None}  # removes None values from dictionary
         return str(self.hub.scan.get_filtered_scan_list(filters))
 
     def login(self):

@@ -9,19 +9,18 @@ from kobo.django.upload.models import FileUpload
 from kobo.hub.decorators import validate_worker
 from kobo.hub.models import Task
 
+from osh.common.csmock_parser import unpack_and_return_api
 from osh.hub.errata.models import ScanningSession
 from osh.hub.errata.scanner import (BaseNotValidException, obtain_base2,
-                                       prepare_base_scan)
+                                    prepare_base_scan)
 from osh.hub.other.decorators import public
-from osh.hub.scan.models import (AnalyzerVersion, AppSettings, Scan,
-                                    ScanBinding)
+from osh.hub.scan.models import AnalyzerVersion, AppSettings, Scan, ScanBinding
 from osh.hub.scan.notify import send_task_notification
 from osh.hub.scan.xmlrpc_helper import fail_scan as h_fail_scan
 from osh.hub.scan.xmlrpc_helper import finish_scan as h_finish_scan
 from osh.hub.scan.xmlrpc_helper import (prepare_version_retriever,
-                                           scan_notification_email)
+                                        scan_notification_email)
 from osh.hub.waiving.results_loader import TaskResultsProcessor
-from osh.common.csmock_parser import unpack_and_return_api
 
 logger = logging.getLogger(__name__)
 

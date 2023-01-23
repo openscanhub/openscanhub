@@ -8,10 +8,10 @@ from kobo.django.auth.models import User
 from kobo.django.xmlrpc.decorators import login_required
 from kobo.hub.models import Task
 
-from osh.hub.errata.scanner import (ClientDiffPatchesScanScheduler,
-                                       ClientScanScheduler, create_diff_task2)
-from osh.hub.scan.models import SCAN_STATES, ClientAnalyzer, Profile, Scan
 from osh.common.constants import DEFAULT_SCAN_LIMIT
+from osh.hub.errata.scanner import (ClientDiffPatchesScanScheduler,
+                                    ClientScanScheduler, create_diff_task2)
+from osh.hub.scan.models import SCAN_STATES, ClientAnalyzer, Profile, Scan
 
 logger = logging.getLogger("covscanhub")
 

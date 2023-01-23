@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 
 from __future__ import absolute_import
+
 from django.views.generic.detail import DetailView
 from django.views.generic.list import ListView
+
 from .models import MockConfig, Package
 
 
@@ -39,7 +41,7 @@ class PackageDetailView(DetailView):
         return context
 
 
-#def scan_submission(request):
+# def scan_submission(request):
 #    context = {}
 #    if request.method == "POST":
 #        form = ScanSubmissionForm(request.POST)

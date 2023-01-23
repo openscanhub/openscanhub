@@ -1,12 +1,10 @@
 # -*- coding: utf-8 -*-
 
 
-from django.conf.urls import *
 from django.conf import settings
-
+from django.conf.urls import include, url
 from django.contrib import admin
 from django.views.generic.base import TemplateView
-
 
 admin.autodiscover()
 
@@ -20,7 +18,7 @@ urlpatterns = [
     # to INSTALLED_APPS to enable admin documentation:
     # (r'^admin/doc/', include('django.contrib.admindocs.urls')),
 
-    #url(r"^$", 'osh.hub.home.views.index_redirect', name="task/list"),
+    # url(r"^$", 'osh.hub.home.views.index_redirect', name="task/list"),
     url(r"^auth/", include("kobo.hub.urls.auth")),
     url(r"^task/", include("osh.hub.scan.task_urls")),
     url(r"^info/arch/", include("kobo.hub.urls.arch")),
@@ -37,18 +35,18 @@ urlpatterns = [
 
     # Include kobo hub xmlrpc module urls:
     url(r"^xmlrpc/", include("osh.hub.cs_xmlrpc.urls")),
-    ]
+]
 
 
 if settings.DEBUG:
     import debug_toolbar
     urlpatterns += [
         url(r'^__debug__/', include(debug_toolbar.urls)),
-        ]
+    ]
 
 
 # this is a hack to enable media (with correct prefix) while debugging
-#if settings.DEBUG:
+# if settings.DEBUG:
 #    import os
 #    import kobo
 #    import urlparse

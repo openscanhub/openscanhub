@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
-from django import template
-from django.utils.safestring import mark_safe
 from collections import OrderedDict
+
 import six
+from django import template
 
 register = template.Library()
 
@@ -17,4 +17,6 @@ def listsort(value):
         for key in key_list:
             new_dict[key] = value[key]
         return six.iteritems(new_dict)
+
+
 listsort.is_safe = True

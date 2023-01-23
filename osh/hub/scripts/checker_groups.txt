@@ -23,7 +23,7 @@ Buffer Overflow
 233     BAD_SIZEOF
 23      READLINK
 16      BAD_ALLOC_ARITHMETIC
-12      BAD_ALLOC_STRLEN                                                                                                              
+12      BAD_ALLOC_STRLEN
 
 Deadcode
 --------
@@ -52,7 +52,7 @@ Security Related
 714     STRING_NULL
 256     BUFFER_SIZE
 18      CHROOT
-4       OPEN_ARGS                                                                                                                     
+4       OPEN_ARGS
 
 Missing Initialization
 ----------------------
@@ -147,4 +147,3 @@ Parse Warnings
 0       PW.NOT_COMPATIBLE_WITH_PREVIOUS_DECL
 0       PW.POINTER_CONVERSION_LOSES_BITS
 0       PW.SET_BUT_NOT_USED
-

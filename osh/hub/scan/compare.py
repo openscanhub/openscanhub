@@ -1,3 +1,6 @@
+# flake8: noqa
+# https://gitlab.cee.redhat.com/covscan/covscan/-/merge_requests/137
+
 """Provides function for marking different parts of two NVRs."""
 
 import itertools

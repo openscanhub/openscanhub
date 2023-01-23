@@ -7,16 +7,13 @@ Created on Mon Aug 20 10:36:56 2012
 module for sending messages using UMB (Unified Message Bus)
 """
 
-import threading
-import os
-import copy
 import logging
+import threading
+
 import proton
 import proton.handlers
 import proton.reactor
-
 from django.conf import settings
-
 
 __all__ = (
     "send_message",
@@ -79,5 +76,5 @@ def send_message(message, key):
 def post_qpid_message(state, etm, key):
     """Separated this into scan_notice because of dependency deadlock"""
     logger.info('message bus: %s %s', etm, state)
-    message = {'scan_id': etm.id, 'scan_state': state }
+    message = {'scan_id': etm.id, 'scan_state': state}
     send_message(message, key)

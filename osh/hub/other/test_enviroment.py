@@ -1,14 +1,9 @@
 # -*- coding: utf-8 -*-
 
+from django.contrib.auth.models import Permission, User
 from kobo.hub.models import Arch, Channel
 
-from osh.hub.scan.models import *
-
-from django.contrib.auth.models import User
-from django.contrib.auth.models import Permission
-from django.test import Client
-from django.core.handlers.wsgi import WSGIRequest
-
+from osh.hub.scan.models import MockConfig, Package, SystemRelease, Tag
 
 __all__ = (
     'fill_db',

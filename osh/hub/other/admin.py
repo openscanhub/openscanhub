@@ -21,14 +21,17 @@ register_admin_module('project.app.models', new_fields={
 """
 
 from __future__ import absolute_import
-from django.urls import reverse
-from django.utils.safestring import mark_safe
+
+from types import ModuleType
+
+import six
 from django.contrib import admin
 from django.db import models as dmodels
 from django.db.models import Field, ForeignKey, OneToOneField
+from django.urls import reverse
+from django.utils.safestring import mark_safe
+
 from osh.hub.other.decorators import public
-from types import ModuleType
-import six
 
 
 def add_link_field(admin_class, field):
@@ -59,9 +62,9 @@ def add_link_field(admin_class, field):
     return admin_class, field_name
 
 
+# https://gitlab.cee.redhat.com/covscan/covscan/-/issues/158
 @public
-def register_admin_module(module, exclude=None, new_fields=None,
-                          search_fields=None):
+def register_admin_module(module, exclude=None, new_fields=None, search_fields=None):  # noqa: C901
     """
     @param module: module containing django.db.models classes
     @type module: str or __module__
@@ -88,7 +91,7 @@ def register_admin_module(module, exclude=None, new_fields=None,
         raise TypeError("invalid type of argument 'module', expected 'str' or \
 'ModuleType', got %s." % type(module))
 
-    #get models from current app
+    # get models from current app
     mods = []
     for x in models.__dict__.values():
         if issubclass(type(x), dmodels.base.ModelBase) and \
@@ -96,11 +99,11 @@ def register_admin_module(module, exclude=None, new_fields=None,
             mods.append(x)
 
     admins = []
-    #for each model prepare an admin class (Admin<model_name>, model)
+    # for each model prepare an admin class (Admin<model_name>, model)
     for c in mods:
         admins.append(("%sAdmin" % c.__name__, c))
 
-    #create the admin class and register it
+    # create the admin class and register it
     for (ac, c) in admins:
         admin_class = type(ac, (admin.ModelAdmin,), dict())
         admin_class.list_display = []
@@ -127,5 +130,5 @@ def register_admin_module(module, exclude=None, new_fields=None,
 
         try:  # pass gracefully on duplicate registration errors
             admin.site.register(c, admin_class)
-        except Exception:
+        except Exception:  # noqa: B902
             pass

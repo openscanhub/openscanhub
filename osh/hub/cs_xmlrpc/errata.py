@@ -2,15 +2,12 @@
 
 import logging
 
-from osh.hub.errata.scanner import handle_scan
-
-from osh.hub.scan.models import SCAN_STATES, ETMapping, \
-    AppSettings, REQUEST_STATES
-
+from django.core.exceptions import ObjectDoesNotExist
 from kobo.django.xmlrpc.decorators import login_required
 
-from django.core.exceptions import ObjectDoesNotExist
-
+from osh.hub.errata.scanner import handle_scan
+from osh.hub.scan.models import (REQUEST_STATES, SCAN_STATES, AppSettings,
+                                 ETMapping)
 
 __all__ = (
     "create_errata_diff_scan",
@@ -75,8 +72,6 @@ function.'
     return response
 
 
-
-
 def get_scan_state(request, etm_id):
     """
     get_scan_state(scan_id)
@@ -106,7 +101,7 @@ def get_scan_state(request, etm_id):
     except ObjectDoesNotExist:
         response['status'] = 'ERROR'
         response['message'] = "Scan %s does not exist." % etm_id
-    except Exception as ex:
+    except Exception as ex:  # noqa: B902
         response['status'] = 'ERROR'
         response['message'] = "Unable to retrieve scan's state, error: %s" % ex
     else:
