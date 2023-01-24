@@ -74,9 +74,7 @@ setup(
     author="Red Hat, Inc.",
     author_email="ttomecek@redhat.com",
     description="Coverity scan scheduler",
-    # This expects `kobo` directory does not exist under current directory
-    # TODO: How to exclude `kobo` directory?
-    packages=find_namespace_packages(),
+    packages=find_namespace_packages(exclude=["kobo*"]),
     package_data=package_data,
     data_files=data_files.items(),
 )
