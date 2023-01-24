@@ -1,21 +1,6 @@
 # -*- coding: utf-8 -*-
 
-
-import os
 import subprocess
-
-
-def get_files(module_name, top_dir):
-    """Return list of all files under top_dir."""
-    result = []
-
-    module = __import__(module_name)
-    module_dir = os.path.dirname(module.__file__)
-
-    for root, dirs, files in os.walk(os.path.join(module_dir, top_dir)):
-        for fn in files:
-            result.append(os.path.join(top_dir, root, fn)[len(module_dir) + 1:])
-    return result
 
 
 def get_git_date_and_time(git_repo_path):

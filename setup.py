@@ -2,10 +2,12 @@
 # -*- coding: utf-8 -*-
 
 import os
+from glob import glob
+from pathlib import Path
 
 from setuptools import PEP420PackageFinder, setup
 
-from scripts.include import (get_files, get_git_date_and_time, get_git_version,
+from scripts.include import (get_git_date_and_time, get_git_version,
                              git_check_tag_for_HEAD)
 
 find_namespace_packages = PEP420PackageFinder.find
@@ -44,6 +46,7 @@ package_data = {
     ]
 }
 
+hub_path = Path("covscanhub")
 for folder in (
     "static",
     "templates",
@@ -52,7 +55,10 @@ for folder in (
     "errata/fixtures",
     "fixtures",
 ):
-    package_data["covscanhub"].extend(get_files("covscanhub", folder))
+    for path in glob(str(hub_path / folder / "**"), recursive=True):
+        path = Path(path)
+        if path.is_file():
+            package_data["covscanhub"].append(str(path.relative_to(hub_path)))
 
 if os.path.isdir(".git"):
     if not git_check_tag_for_HEAD(THIS_FILE_PATH):
