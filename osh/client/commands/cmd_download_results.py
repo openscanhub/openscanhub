@@ -57,14 +57,15 @@ class Download_Results(osh.client.CovScanCommand):
                 failed = True
                 continue
 
-            task_url = self.hub.client.task_url(task_id)
-            try:
-                nvr = task_info['args']['srpm_name'].replace('.src.rpm', '')
-            # https://gitlab.cee.redhat.com/covscan/covscan/-/issues/164
-            except:  # noqa: E722
-                nvr = task_info['args']['build']
+            task_args = task_info["args"]
+            if "srpm_name" in task_args:
+                nvr = task_args['srpm_name'].replace('.src.rpm', '')
+            else:
+                nvr = task_args['build']
                 if isinstance(nvr, dict):
                     nvr = nvr['nvr']
+
+            task_url = self.hub.client.task_url(task_id)
             self.fetch_results(task_url, nvr)
 
         if failed:
