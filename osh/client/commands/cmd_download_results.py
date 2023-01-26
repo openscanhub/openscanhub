@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 import os
 import sys
 import urllib.request
@@ -39,8 +37,6 @@ class Download_Results(osh.client.CovScanCommand):
         urllib.request.urlretrieve(url, local_path)
 
     def run(self, *args, **kwargs):
-        # local_conf = get_conf(self.conf)
-
         username = kwargs.pop("username", None)
         password = kwargs.pop("password", None)
 
