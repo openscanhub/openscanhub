@@ -1,11 +1,8 @@
 # -*- coding: utf-8 -*-
 
-from __future__ import absolute_import, print_function
-
 import os
 import sys
-
-from six.moves import urllib
+import urllib.request
 
 import osh.client
 
