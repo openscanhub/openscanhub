@@ -31,6 +31,8 @@ class Download_Results(osh.client.CovScanCommand):
 
         # task_url is url to task with trailing '/'
         url = f"{task_url}log/{tarball}?format=raw"
+
+        print(f"Downloading {tarball}", file=sys.stderr)
         urllib.request.urlretrieve(url, local_path)
 
     def run(self, *tasks, **kwargs):
