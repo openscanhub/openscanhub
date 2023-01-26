@@ -33,13 +33,12 @@ class Download_Results(osh.client.CovScanCommand):
         url = f"{task_url}log/{tarball}?format=raw"
         urllib.request.urlretrieve(url, local_path)
 
-    def run(self, *args, **kwargs):
+    def run(self, *tasks, **kwargs):
         username = kwargs.pop("username", None)
         password = kwargs.pop("password", None)
 
-        if len(args) == 0:
+        if not tasks:
             self.parser.error("no task ID specified")
-        tasks = args
 
         self.dir = kwargs.pop("dir", None)
 
