@@ -51,19 +51,19 @@ class Download_Results(osh.client.CovScanCommand):
         failed = False
 
         for task_id in tasks:
-            try:
-                task_url = self.hub.client.task_url(task_id)
-                try:
-                    nvr = self.hub.client.task_info(task_id)['args']['srpm_name'].\
-                        replace('.src.rpm', '')
-                # https://gitlab.cee.redhat.com/covscan/covscan/-/issues/164
-                except:  # noqa: E722
-                    nvr = self.hub.client.task_info(task_id)['args']['build']['nvr']
-                self.fetch_results(task_url, nvr)
-            # https://gitlab.cee.redhat.com/covscan/covscan/-/issues/164
-            except Exception as ex:  # noqa: B902
+            task_info = self.hub.scan.get_task_info(task_id)
+            if not task_info:
+                print(f"Task {task_id} does not exist!", file=sys.stderr)
                 failed = True
-                print(ex)
+                continue
+
+            task_url = self.hub.client.task_url(task_id)
+            try:
+                nvr = task_info['args']['srpm_name'].replace('.src.rpm', '')
+            # https://gitlab.cee.redhat.com/covscan/covscan/-/issues/164
+            except:  # noqa: E722
+                nvr = task_info['args']['build']['nvr']
+            self.fetch_results(task_url, nvr)
 
         if failed:
             sys.exit(1)
