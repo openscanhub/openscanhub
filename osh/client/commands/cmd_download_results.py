@@ -25,13 +25,11 @@ class Download_Results(osh.client.CovScanCommand):
 
     def fetch_results(self, task_url, nvr):
         tarball = nvr + '.tar.xz'
+
         # get absolute path
-        if self.dir:
-            local_path = os.path.join(self.dir,
-                                      tarball)
-        else:
-            local_path = os.path.join(os.path.abspath(os.curdir),
-                                      tarball)
+        local_path = os.path.abspath(os.path.join(
+            self.dir if self.dir is not None else os.curdir, tarball))
+
         # task_url is url to task with trailing '/'
         url = "%slog/%s?format=raw" % (task_url, tarball)
         urllib.request.urlretrieve(url, local_path)
@@ -46,11 +44,8 @@ class Download_Results(osh.client.CovScanCommand):
 
         self.dir = kwargs.pop("dir", None)
 
-        if self.dir:
-            if not os.path.isdir(self.dir):
-                self.parser.error("provided directory does not exist")
-            else:
-                self.dir = os.path.abspath(self.dir)
+        if self.dir is not None and not os.path.isdir(self.dir):
+            self.parser.error("provided directory does not exist")
 
         # login to the hub
         self.set_hub(username, password)
