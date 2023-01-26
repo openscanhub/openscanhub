@@ -14,8 +14,7 @@ class Download_Results(osh.client.CovScanCommand):
         # specify command usage
         # normalized name contains a lower-case class name with underscores
         # converted to dashes
-        self.parser.usage = "%%prog %s [options] task_id [task_id...]" % \
-            self.normalized_name
+        self.parser.usage = f"%prog {self.normalized_name} [options] task_id [task_id...]"
 
         self.parser.add_option(
             "-d",
@@ -31,7 +30,7 @@ class Download_Results(osh.client.CovScanCommand):
             self.dir if self.dir is not None else os.curdir, tarball))
 
         # task_url is url to task with trailing '/'
-        url = "%slog/%s?format=raw" % (task_url, tarball)
+        url = f"{task_url}log/{tarball}?format=raw"
         urllib.request.urlretrieve(url, local_path)
 
     def run(self, *args, **kwargs):
