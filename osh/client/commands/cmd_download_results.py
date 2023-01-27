@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
 
-from __future__ import print_function
-from __future__ import absolute_import
+from __future__ import absolute_import, print_function
 
-import os, sys
+import os
+import sys
+
 from six.moves import urllib
+
 import osh.client
 
 
@@ -40,7 +42,7 @@ class Download_Results(osh.client.CovScanCommand):
         urllib.request.urlretrieve(url, local_path)
 
     def run(self, *args, **kwargs):
-        #local_conf = get_conf(self.conf)
+        # local_conf = get_conf(self.conf)
 
         username = kwargs.pop("username", None)
         password = kwargs.pop("password", None)
@@ -65,13 +67,15 @@ class Download_Results(osh.client.CovScanCommand):
         for task_id in tasks:
             try:
                 task_url = self.hub.client.task_url(task_id)
-                try: 
+                try:
                     nvr = self.hub.client.task_info(task_id)['args']['srpm_name'].\
                         replace('.src.rpm', '')
-                except:
+                # https://gitlab.cee.redhat.com/covscan/covscan/-/issues/164
+                except:  # noqa: E722
                     nvr = self.hub.client.task_info(task_id)['args']['build']['nvr']
                 self.fetch_results(task_url, nvr)
-            except Exception as ex:
+            # https://gitlab.cee.redhat.com/covscan/covscan/-/issues/164
+            except Exception as ex:  # noqa: B902
                 failed = True
                 print(ex)
 

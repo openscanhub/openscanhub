@@ -12,23 +12,24 @@ from six.moves.xmlrpc_client import Fault
 import osh.client
 from osh.client.commands.analyzers import check_analyzers
 from osh.client.commands.common import (add_aggressive_option, add_all_option,
-                                     add_analyzers_option,
-                                     add_brew_build_option, add_clang_option,
-                                     add_comment_option,
-                                     add_comp_warnings_option,
-                                     add_concurrency_option, add_config_option,
-                                     add_cppcheck_option,
-                                     add_csmock_args_option,
-                                     add_custom_model_option,
-                                     add_download_results_option,
-                                     add_email_to_option,
-                                     add_install_to_chroot_option,
-                                     add_keep_covdata_option,
-                                     add_nowait_option, add_priority_option,
-                                     add_profile_option, add_security_option,
-                                     add_task_id_file_option)
+                                        add_analyzers_option,
+                                        add_brew_build_option,
+                                        add_clang_option, add_comment_option,
+                                        add_comp_warnings_option,
+                                        add_concurrency_option,
+                                        add_config_option, add_cppcheck_option,
+                                        add_csmock_args_option,
+                                        add_custom_model_option,
+                                        add_download_results_option,
+                                        add_email_to_option,
+                                        add_install_to_chroot_option,
+                                        add_keep_covdata_option,
+                                        add_nowait_option, add_priority_option,
+                                        add_profile_option,
+                                        add_security_option,
+                                        add_task_id_file_option)
 from osh.client.commands.shortcuts import (handle_perm_denied, upload_file,
-                                        verify_brew_koji_build, verify_mock)
+                                           verify_brew_koji_build, verify_mock)
 from osh.common.utils.conf import get_conf
 
 
@@ -95,7 +96,8 @@ exist." % self.results_store_file)
         url = "%slog/%s?format=raw" % (task_url, tarball)
         urllib.request.urlretrieve(url, local_path)
 
-    def run(self, *args, **kwargs):
+    # https://gitlab.cee.redhat.com/covscan/covscan/-/issues/162
+    def run(self, *args, **kwargs):  # noqa: C901
         local_conf = get_conf(self.conf)
 
         # optparser output is passed via *args (args) and **kwargs (opts)

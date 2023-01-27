@@ -4,6 +4,7 @@ from __future__ import absolute_import
 
 import six
 
+
 def check_analyzers(proxy, analyzers_list):
     result = proxy.scan.check_analyzers(analyzers_list)
 

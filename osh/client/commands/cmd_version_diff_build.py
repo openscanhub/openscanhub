@@ -83,7 +83,8 @@ local file"
         add_all_option(self.parser)
         add_security_option(self.parser)
 
-    def run(self, *args, **kwargs):
+    # https://gitlab.cee.redhat.com/covscan/covscan/-/issues/163
+    def run(self, *args, **kwargs):  # noqa: C901
         # optparser output is passed via *args (args) and **kwargs (opts)
         local_conf = get_conf(self.conf)
 

@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 
-from __future__ import print_function
-from __future__ import absolute_import
+from __future__ import absolute_import, print_function
+
+import sys
 
 import six
 
-import sys
 import osh.client
 
 
@@ -24,7 +24,7 @@ class Task_Info(osh.client.CovScanCommand):
 found"
 
     def run(self, *args, **kwargs):
-        #local_conf = get_conf(self.conf)
+        # local_conf = get_conf(self.conf)
 
         username = kwargs.pop("username", None)
         password = kwargs.pop("password", None)

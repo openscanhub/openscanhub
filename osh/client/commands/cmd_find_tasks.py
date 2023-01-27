@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
-from __future__ import print_function
-from __future__ import absolute_import
+from __future__ import absolute_import, print_function
 
 import sys
+
 import osh.client
 
 
@@ -51,7 +51,7 @@ these options: --regex, --package, --nvr"
         )
 
     def run(self, *args, **kwargs):
-        #local_conf = get_conf(self.conf)
+        # local_conf = get_conf(self.conf)
 
         username = kwargs.pop("username", None)
         password = kwargs.pop("password", None)

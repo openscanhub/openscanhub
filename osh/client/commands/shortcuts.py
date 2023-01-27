@@ -1,14 +1,12 @@
 # -*- coding: utf-8 -*-
 
-from __future__ import print_function
-from __future__ import absolute_import
+from __future__ import absolute_import, print_function
 
-import koji
 import os
 import re
 
+import koji
 from six.moves.xmlrpc_client import Fault
-
 
 __all__ = (
     "verify_brew_koji_build",
@@ -90,7 +88,7 @@ obtain Kerberos ticket or specify username and password.')
 def upload_file(hub, srpm, target_dir, parser):
     """Upload file to hub, catch PermDenied exception"""
     try:
-        #returns (upload_id, err_code, err_msg)
+        # returns (upload_id, err_code, err_msg)
         return hub.upload_file(os.path.expanduser(srpm), target_dir)
     except Fault as e:
         handle_perm_denied(e, parser)

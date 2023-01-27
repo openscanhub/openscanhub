@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 
-from __future__ import print_function
-from __future__ import absolute_import
+from __future__ import absolute_import, print_function
 
-import sys
 import random
+import sys
+
+from kobo.client import HubProxy
 
 import osh.client
-from kobo.client import HubProxy
 
 
 class List_Analyzers(osh.client.CovScanCommand):
@@ -17,9 +17,7 @@ class List_Analyzers(osh.client.CovScanCommand):
 
     def options(self):
         self.parser.usage = "%%prog %s [options] <args>" % self.normalized_name
-        self.parser.epilog = "list all available static analyzers, some of them in various versions;" \
-        + " list contains command line arguments how to enable particular analyzer (short version," \
-        + " e.g. '-l' for clang and long version '--analyzer clang')"
+        self.parser.epilog = "list all available static analyzers, some of them in various versions;" + " list contains command line arguments how to enable particular analyzer (short version," + " e.g. '-l' for clang and long version '--analyzer clang')"
         self.parser.add_option(
             "--hub",
             help="URL of XML-RPC interface on hub; something like \
@@ -50,5 +48,4 @@ https://$hostname/covscan/xmlrpc"
         shuffled_list = available_analyzers[:]
         random.shuffle(shuffled_list)
         print("\nExample of using long option: \
-\"--analyzer=%s\"" \
-            % (','.join([x['cli_long_command'] for x in shuffled_list[:2]])), file=sys.stderr)
+\"--analyzer=%s\"" % (','.join([x['cli_long_command'] for x in shuffled_list[:2]])), file=sys.stderr)
