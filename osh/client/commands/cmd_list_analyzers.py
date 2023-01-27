@@ -6,11 +6,11 @@ from __future__ import absolute_import
 import sys
 import random
 
-import covscan
+import osh.client
 from kobo.client import HubProxy
 
 
-class List_Analyzers(covscan.CovScanCommand):
+class List_Analyzers(osh.client.CovScanCommand):
     """list available versions of static analyzers"""
     enabled = True
     admin = False  # admin type account required

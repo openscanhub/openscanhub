@@ -13,7 +13,7 @@ This class should provide basic methods to work with covscan easily.
 
 You just need to import API class:
 
-    from covscan.covscan_api import CovscanAPI
+    from osh.client.covscan_api import CovscanAPI
 
 And then create constructor with optional hub url argument, which must end with '/xmlrpc':
 

@@ -6,7 +6,7 @@ COPY containers/rhel-8-pulp.repo /etc/yum.repos.d/
 WORKDIR /src
 
 ENV PYTHONPATH=.:kobo
-ENV COVSCAN_CONFIG_FILE=covscan/covscan-local.conf
+ENV COVSCAN_CONFIG_FILE=osh/client/covscan-local.conf
 
 # Internal CA
 RUN cd /etc/pki/ca-trust/source/anchors/ && \

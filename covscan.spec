@@ -167,7 +167,7 @@ rm -rf %{buildroot}%{python3_sitelib}/scripts
 %attr(755,root,root) /usr/bin/covscan
 %attr(644,root,root) %config(noreplace) /etc/covscan/covscan.conf
 %{_sysconfdir}/bash_completion.d/
-%{python3_sitelib}/covscan
+%{python3_sitelib}/osh/client
 %{python3_sitelib}/covscan-*-py%{python3_version}.egg-info
 
 %files common

@@ -11,7 +11,7 @@ import kobo.client
 import kobo.client.commands
 
 # assuming all commands are in covscan/commands/cmd_*.py modules
-import covscan.commands
+import osh.client.commands
 from osh.common.utils.conf import get_config_dict
 
 
@@ -24,7 +24,7 @@ def main(args=None):
     # register generic kobo commands
     CovScanCommandContainer.register_module(kobo.client.commands, prefix="cmd_")
     # register project specific commands
-    CovScanCommandContainer.register_module(covscan.commands, prefix="cmd_")
+    CovScanCommandContainer.register_module(osh.client.commands, prefix="cmd_")
 
     conf = get_config_dict(config_env="COVSCAN_CONFIG_FILE", config_default="/etc/covscan/covscan.conf")
     if conf is None:

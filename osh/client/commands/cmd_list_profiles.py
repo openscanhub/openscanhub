@@ -6,11 +6,11 @@ from __future__ import absolute_import
 import sys
 import random
 
-import covscan
+import osh.client
 from kobo.client import HubProxy
 
 
-class List_Profiles(covscan.CovScanCommand):
+class List_Profiles(osh.client.CovScanCommand):
     """list available scanning profiles"""
     enabled = True
     admin = False # admin type account required

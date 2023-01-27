@@ -5,10 +5,10 @@ from __future__ import absolute_import
 
 import sys
 
-import covscan
+import osh.client
 from kobo.client import HubProxy
 
-class List_Mock_Configs(covscan.CovScanCommand):
+class List_Mock_Configs(osh.client.CovScanCommand):
     """list available mock configs present on hub"""
     enabled = True
     admin = False # admin type account required

@@ -6,10 +6,10 @@ from __future__ import absolute_import
 import six
 
 import sys
-import covscan
+import osh.client
 
 
-class Task_Info(covscan.CovScanCommand):
+class Task_Info(osh.client.CovScanCommand):
     """display info about provided task"""
     enabled = True
     admin = False  # admin type account required

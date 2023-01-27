@@ -5,8 +5,8 @@ from __future__ import absolute_import, print_function
 from kobo.shortcuts import random_string
 from six.moves.xmlrpc_client import Fault
 
-import covscan
-from covscan.commands.analyzers import check_analyzers
+import osh.client
+from osh.client.commands.analyzers import check_analyzers
 from osh.common.utils.conf import get_conf
 
 from .common import (add_aggressive_option, add_all_option,
@@ -22,7 +22,7 @@ from .shortcuts import (handle_perm_denied, upload_file,
                         verify_brew_koji_build, verify_mock)
 
 
-class Version_Diff_Build(covscan.CovScanCommand):
+class Version_Diff_Build(osh.client.CovScanCommand):
     """analyze 2 SRPMs (base and target) and diff results"""
     enabled = True
     admin = False  # admin type account required

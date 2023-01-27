@@ -99,7 +99,7 @@ You can use OSH client to submit builds, but a OSH worker must be started manual
 
 ## OSH client
 
-Update important settings in `covscan/covscan-local.conf` - namely HUB_URL, USERNAME, PASSWORD.
+Update important settings in `osh/client/covscan-local.conf` - namely HUB_URL, USERNAME, PASSWORD.
 
 OSH client depends on six and koji Python modules. You should install them system-wide `dnf install python3-six python3-koji`.  You can also install them into a virtual environment `pip install six koji` but in that case, the packages like requests and urllib3 will ignore system-wide certificate authorities. In that case, setting `REQUESTS_CA_BUNDLE` env variable to something like `/etc/ssl/certs/ca-bundle.crt` might help.
 
@@ -108,9 +108,9 @@ As pointed above, all of these dependencies are automatically set up in the clie
 * OSH client should now be able to connect to the hub and send it tasks. You can test it by these commands:
 
   ```bash
-  COVSCAN_CONFIG_FILE=covscan/covscan-local.conf PYTHONPATH=.:kobo python3 covscan/covscan list-mock-configs
-  COVSCAN_CONFIG_FILE=covscan/covscan-local.conf PYTHONPATH=.:kobo python3 covscan/covscan mock-build --config=fedora-36-x86_64 --brew-build units-2.21-4.fc36 --nowait
-  COVSCAN_CONFIG_FILE=covscan/covscan-local.conf PYTHONPATH=.:kobo python3 covscan/covscan watch-log 1 #Replace 1 with task id
+  COVSCAN_CONFIG_FILE=osh/client/covscan-local.conf PYTHONPATH=.:kobo python3 osh/client/covscan list-mock-configs
+  COVSCAN_CONFIG_FILE=osh/client/covscan-local.conf PYTHONPATH=.:kobo python3 osh/client/covscan mock-build --config=fedora-36-x86_64 --brew-build units-2.21-4.fc36 --nowait
+  COVSCAN_CONFIG_FILE=osh/client/covscan-local.conf PYTHONPATH=.:kobo python3 osh/client/covscan watch-log 1 #Replace 1 with task id
   ```
 
   Note: You can also set these variables permanently to your bashrc.
@@ -118,8 +118,8 @@ As pointed above, all of these dependencies are automatically set up in the clie
 * Or, in the container (which already has the needed variables exported):
 
   ```bash
-  podman exec -i osh-client python3 covscan/covscan list-mock-configs
-  podman exec -i osh-client python3 covscan/covscan mock-build --config=fedora-36-x86_64 --brew-build units-2.21-4.fc36
+  podman exec -i osh-client python3 osh/client/covscan list-mock-configs
+  podman exec -i osh-client python3 osh/client/covscan mock-build --config=fedora-36-x86_64 --brew-build units-2.21-4.fc36
   ```
 
 ## XML-RPC interface used by Errata Tool

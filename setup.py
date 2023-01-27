@@ -15,7 +15,7 @@ THIS_FILE_PATH = os.path.dirname(os.path.abspath(__file__))
 package_version = [0, 8, 2]
 data_files = {
     "/etc/covscan": [
-        "covscan/covscan.conf",
+        "osh/client/covscan.conf",
         "osh/worker/covscand.conf",
         "osh/worker/covscand.conf.prod",
         "osh/worker/covscand.conf.stage",
@@ -31,7 +31,7 @@ data_files = {
         "files/etc/bash_completion.d/covscan.bash",
     ],
     "/usr/bin": [
-        "covscan/covscan",
+        "osh/client/covscan",
     ],
     "/usr/sbin": [
         "osh/worker/covscand",

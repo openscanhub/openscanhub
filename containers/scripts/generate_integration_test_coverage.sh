@@ -7,10 +7,10 @@ FORCE=''
 
 CLI_CMD=(
     env
-    COVSCAN_CONFIG_FILE=covscan/covscan-local.conf
+    COVSCAN_CONFIG_FILE=osh/client/covscan-local.conf
     PYTHONPATH=.:kobo
     /usr/bin/coverage-3.6 run --parallel-mode '--omit=*site-packages*,*kobo*,'
-    covscan/covscan
+    osh/client/covscan
 )
 
 main() {

@@ -147,11 +147,11 @@ sample-package-build-on-covscan:
     # firewall-cmd --zone=public --add-port=80/tcp --permanent
     # firewall-cmd --zone=public --add-port=443/tcp --permanent
     # firewall-cmd --reload
-    - sed -i "s|http://osh-hub:8000|https://localhost/covscanhub|g" covscan/covscan-local.conf
+    - sed -i "s|http://osh-hub:8000|https://localhost/covscanhub|g" osh/client/covscan-local.conf
   script:
-    - COVSCAN_CONFIG_FILE=covscan/covscan-local.conf /usr/bin/covscan mock-build --config=fedora-36-x86_64 --brew-build units-2.21-4.fc36
+    - COVSCAN_CONFIG_FILE=osh/client/covscan-local.conf /usr/bin/covscan mock-build --config=fedora-36-x86_64 --brew-build units-2.21-4.fc36
   after_script:
-    - COVSCAN_CONFIG_FILE=covscan/covscan-local.conf /usr/bin/covscan task-info 1 | grep "is_failed = False"
+    - COVSCAN_CONFIG_FILE=osh/client/covscan-local.conf /usr/bin/covscan task-info 1 | grep "is_failed = False"
 
 ### Sequence 4.b ###
 

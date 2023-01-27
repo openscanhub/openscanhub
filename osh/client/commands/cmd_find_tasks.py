@@ -4,10 +4,10 @@ from __future__ import print_function
 from __future__ import absolute_import
 
 import sys
-import covscan
+import osh.client
 
 
-class Find_Tasks(covscan.CovScanCommand):
+class Find_Tasks(osh.client.CovScanCommand):
     """find tasks by provided query string"""
     enabled = True
     admin = False  # admin type account required

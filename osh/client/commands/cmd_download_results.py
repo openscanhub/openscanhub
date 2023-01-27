@@ -5,10 +5,10 @@ from __future__ import absolute_import
 
 import os, sys
 from six.moves import urllib
-import covscan
+import osh.client
 
 
-class Download_Results(covscan.CovScanCommand):
+class Download_Results(osh.client.CovScanCommand):
     """download tarball with results of specified task"""
     enabled = True
     admin = False  # admin type account required
