@@ -48,6 +48,7 @@ class ScanAdmin(admin.ModelAdmin):
     list_display = ("id", "nvr", "state", "scan_type", 'link_base',
                     'link_parent', "link_tag",
                     'username', 'link_package', 'link_bind', 'enabled')
+    raw_id_fields = ("base", "tag", "username", "package", "parent")
     search_fields = ['package__name', 'nvr']
     list_per_page = 15
     review_template = 'admin/my_test/myentry/review.html'
