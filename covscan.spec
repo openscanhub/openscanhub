@@ -124,7 +124,7 @@ done;done)
 %build
 
 # collect static files from Django itself
-PYTHONPATH=. covscanhub/manage.py collectstatic
+PYTHONPATH=. covscanhub/manage.py collectstatic --noinput
 
 %py3_build
 
