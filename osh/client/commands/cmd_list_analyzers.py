@@ -13,7 +13,7 @@ class List_Analyzers(osh.client.CovScanCommand):
 
     def options(self):
         self.parser.usage = f"%prog {self.normalized_name} [options] <args>"
-        self.parser.epilog = "list all available static analyzers, some of them in various versions;" + " list contains command line arguments how to enable particular analyzer (short version," + " e.g. '-l' for clang and long version '--analyzer clang')"
+        self.parser.epilog = "list all available static analyzers, some of them in various versions;" + " list contains command line arguments how to enable particular analyzer " + "(e.g. '--analyzer clang' for clang)"
         self.parser.add_option(
             "--hub",
             help="URL of XML-RPC interface on hub; something like \
@@ -33,15 +33,14 @@ https://$hostname/covscan/xmlrpc"
                                 AUTH_METHOD='krbv',
                                 HUB_URL=hub_url)
 
-        format = "%-20s %-20s %-15s %-25s"
-        columns = ("NAME", "VERSION", "SHORT OPTION", "LONG OPTION")
+        format = "%-20s %-20s %-25s"
+        columns = ("NAME", "VERSION", "ANALYZER_ID")
         print(format % columns)
         available_analyzers = self.hub.scan.list_analyzers()
         for i in available_analyzers:
-            print(format % (i["analyzer__name"], i['version'], i["cli_short_command"],
-                            i["cli_long_command"]))
+            print(format % (i["analyzer__name"], i['version'], i["cli_long_command"]))
 
         shuffled_list = available_analyzers[:]
         random.shuffle(shuffled_list)
-        print("\nExample of using long option: \
+        print("\nExample of usage: \
 \"--analyzer=%s\"" % (','.join([x['cli_long_command'] for x in shuffled_list[:2]])), file=sys.stderr)
