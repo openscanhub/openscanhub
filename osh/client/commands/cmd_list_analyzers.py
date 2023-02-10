@@ -12,7 +12,7 @@ class List_Analyzers(osh.client.CovScanCommand):
     admin = False  # admin type account required
 
     def options(self):
-        self.parser.usage = "%%prog %s [options] <args>" % self.normalized_name
+        self.parser.usage = f"%prog {self.normalized_name} [options] <args>"
         self.parser.epilog = "list all available static analyzers, some of them in various versions;" + " list contains command line arguments how to enable particular analyzer (short version," + " e.g. '-l' for clang and long version '--analyzer clang')"
         self.parser.add_option(
             "--hub",
