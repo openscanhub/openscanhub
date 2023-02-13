@@ -1,16 +1,6 @@
 # -*- coding: utf-8 -*-
 
 
-def add_cppcheck_option(parser):
-    parser.add_option(
-        "-c",
-        "--cppcheck",
-        default=False,
-        action="store_true",
-        help="enable Cppcheck analyzer (DEPRECATED in favour of -a cppcheck)",
-    )
-
-
 def add_aggressive_option(parser):
     parser.add_option(
         "--aggressive",
@@ -37,16 +27,6 @@ def add_download_results_option(parser):
         dest="results_dir",
         help="directory for storing results (leave blank for working \
 directory)"
-    )
-
-
-def add_clang_option(parser):
-    parser.add_option(
-        "-l",
-        "--clang",
-        default=False,
-        action="store_true",
-        help="enable Clang analyzer (DEPRECATED in favour of -a clang)"
     )
 
 
