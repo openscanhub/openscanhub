@@ -1,6 +1,3 @@
-import random
-import sys
-
 from kobo.client import HubProxy
 
 import osh.client
@@ -40,7 +37,4 @@ https://$hostname/covscan/xmlrpc"
         for i in available_analyzers:
             print(format % (i["analyzer__name"], i['version'], i["cli_long_command"]))
 
-        shuffled_list = available_analyzers[:]
-        random.shuffle(shuffled_list)
-        print("\nExample of usage: \
-\"--analyzer=%s\"" % (','.join([x['cli_long_command'] for x in shuffled_list[:2]])), file=sys.stderr)
+        print("\nExample of usage: '--analyzer=clang,cppcheck'")
