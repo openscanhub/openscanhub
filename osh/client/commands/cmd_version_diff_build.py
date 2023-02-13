@@ -1,9 +1,6 @@
-# -*- coding: utf-8 -*-
-
-from __future__ import absolute_import, print_function
+from xmlrpc.client import Fault
 
 from kobo.shortcuts import random_string
-from six.moves.xmlrpc_client import Fault
 
 import osh.client
 from osh.client.commands.analyzers import check_analyzers
