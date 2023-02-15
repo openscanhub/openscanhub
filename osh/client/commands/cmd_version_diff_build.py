@@ -186,9 +186,16 @@ is not even one in your user configuration file \
         # login to the hub
         self.set_hub(username, password)
 
-        verify_mock(base_config, self.hub)
+        result = verify_mock(base_config, self.hub)
+        if result is not None:
+            self.parser.error(result)
+
         options_consumed['base_mock'] = base_config
-        verify_mock(config, self.hub)
+
+        result = verify_mock(config, self.hub)
+        if result is not None:
+            self.parser.error(result)
+
         options_consumed['nvr_mock'] = config
 
         # end of CLI options handling
