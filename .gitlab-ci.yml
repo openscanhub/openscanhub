@@ -47,7 +47,7 @@ integration-tests:
   before_script:
     - git clone --depth 1 https://github.com/release-engineering/kobo.git
   script:
-    - sed -i "s/RUN_TASKS_IN_FOREGROUND = 0/RUN_TASKS_IN_FOREGROUND = 1/g"  osh/worker/covscand-local.conf
+    - sed -i "s/RUN_TASKS_IN_FOREGROUND = 0/RUN_TASKS_IN_FOREGROUND = 1/g"  osh/worker/worker-local.conf
     - containers/scripts/generate_integration_test_coverage.sh --force
   after_script:
     - podman-compose down

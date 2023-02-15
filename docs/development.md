@@ -22,7 +22,7 @@ Worker depends on some system packages not available from PyPI, needs to run und
 
 Build the container via: `podman build -f containers/worker.Dockerfile -t osh-worker .`.
 
-Update `HUB_URL` and possibly other values in `osh/worker/covscand-local.conf`.
+Update `HUB_URL` and possibly other values in `osh/worker/worker-local.conf`.
 
 ## OSH hub
 
