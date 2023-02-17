@@ -12,8 +12,7 @@ class Find_Tasks(osh.client.CovScanCommand):
         # specify command usage
         # normalized name contains a lower-case class name with underscores
         # converted to dashes
-        self.parser.usage = "%%prog %s [options] <query_string>" % \
-            self.normalized_name
+        self.parser.usage = f"%prog {self.normalized_name} [options] <query_string>"
         self.parser.epilog = "without '-l' option, newest task is at the \
 beginning of a list, unfinished tasks are at the end; you should pick one of \
 these options: --regex, --package, --nvr"
