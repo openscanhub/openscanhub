@@ -73,12 +73,13 @@ these options: --regex, --package, --nvr"
             query['nvr'] = query_string
         task_ids = self.hub.scan.find_tasks(query)
 
-        if task_ids:
-            if latest:
-                print(task_ids[0])
-            else:
-                for task_id in task_ids:
-                    print(task_id)
-        else:
+        if not task_ids:
+            print("No tasks found for the given query.", file=sys.stderr)
             sys.exit(1)
-        sys.exit(0)
+
+        if latest:
+            print(task_ids[0])
+            return
+
+        for task_id in task_ids:
+            print(task_id)
