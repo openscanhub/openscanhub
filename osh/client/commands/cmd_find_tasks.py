@@ -47,8 +47,6 @@ these options: --regex, --package, --nvr"
         )
 
     def run(self, *args, **kwargs):
-        # local_conf = get_conf(self.conf)
-
         username = kwargs.pop("username", None)
         password = kwargs.pop("password", None)
 
