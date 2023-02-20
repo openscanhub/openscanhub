@@ -15,6 +15,12 @@ __all__ = (
 )
 
 
+def check_analyzers(proxy, analyzers_list):
+    result = proxy.scan.check_analyzers(analyzers_list)
+    if isinstance(result, str):
+        raise RuntimeError(result)
+
+
 def verify_build_exists(build, url):
     """
     Verify if build exists

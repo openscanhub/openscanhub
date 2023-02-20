@@ -10,7 +10,6 @@ from six.moves import urllib
 from six.moves.xmlrpc_client import Fault
 
 import osh.client
-from osh.client.commands.analyzers import check_analyzers
 from osh.client.commands.common import (add_aggressive_option, add_all_option,
                                         add_analyzers_option,
                                         add_brew_build_option,
@@ -28,8 +27,9 @@ from osh.client.commands.common import (add_aggressive_option, add_all_option,
                                         add_profile_option,
                                         add_security_option,
                                         add_task_id_file_option)
-from osh.client.commands.shortcuts import (handle_perm_denied, upload_file,
-                                           verify_brew_koji_build, verify_mock)
+from osh.client.commands.shortcuts import (check_analyzers, handle_perm_denied,
+                                           upload_file, verify_brew_koji_build,
+                                           verify_mock)
 from osh.common.utils.conf import get_conf
 
 
