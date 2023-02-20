@@ -18,8 +18,6 @@ class Task_Info(osh.client.CovScanCommand):
 found"
 
     def run(self, *args, **kwargs):
-        # local_conf = get_conf(self.conf)
-
         username = kwargs.pop("username", None)
         password = kwargs.pop("password", None)
 
