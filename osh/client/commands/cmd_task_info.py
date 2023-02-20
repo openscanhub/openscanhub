@@ -29,17 +29,15 @@ found"
         self.set_hub(username, password)
 
         task_info = self.hub.scan.get_task_info(task_id)
-
-        if task_info:
-            for key, value in task_info.items():
-                if key == 'args':
-                    print('args:')
-                    for a_k, a_v in value.items():
-                        print("%s%s = %s" % (' ' * 4, a_k, a_v))
-                else:
-                    print("%s = %s" % (key, value))
-        else:
+        if not task_info:
             print("There is no info about the task. It doesn't exist most \
 likely.")
             sys.exit(1)
-        sys.exit(0)
+
+        for key, value in task_info.items():
+            if key == 'args':
+                print('args:')
+                for a_k, a_v in value.items():
+                    print("%s%s = %s" % (' ' * 4, a_k, a_v))
+            else:
+                print("%s = %s" % (key, value))
