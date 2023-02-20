@@ -7,12 +7,14 @@
     - https://source.redhat.com/groups/public/identity-access-management/identity__access_management_wiki/ldap_service_accounts__certificates_for_accessing_shared_services
 
 - client certificates
-    - stage: https://ca.corp.redhat.com:8443/ca/ee/ca/displayBySerial?serialNumber=268306926
-    - prod:  https://ca.corp.redhat.com:8443/ca/ee/ca/displayBySerial?serialNumber=268306930
+    - stage: https://ca.corp.redhat.com:8443/ca/ee/ca/displayBySerial?serialNumber=268308679
+    - prod:  https://ca.corp.redhat.com:8443/ca/ee/ca/displayBySerial?serialNumber=268308681
 
 - tickets requesting access to UMB:
     - RITM1174540 - LDAP service accounts
     - RITM1177833 - UMB access request
+    - RITM1411299 - creation of the osh-admins@redhat.com Google Group
+    - RH0165715 - plumbers team is spammed by rhcs-iam@redhat.com
 
 - obtaining a client certificate in file:
 ```
