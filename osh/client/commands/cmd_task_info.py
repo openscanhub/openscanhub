@@ -12,8 +12,7 @@ class Task_Info(osh.client.CovScanCommand):
         # specify command usage
         # normalized name contains a lower-case class name with underscores
         # converted to dashes
-        self.parser.usage = "%%prog %s <task_id>" % \
-            self.normalized_name
+        self.parser.usage = f"%prog {self.normalized_name} <task_id>"
         self.parser.epilog = "exit status is set to 1, if the task is not \
 found"
 
@@ -38,6 +37,6 @@ likely.")
             if key == 'args':
                 print('args:')
                 for a_k, a_v in value.items():
-                    print("%s%s = %s" % (' ' * 4, a_k, a_v))
+                    print(f"    {a_k} = {a_v}")
             else:
-                print("%s = %s" % (key, value))
+                print(f"{key} = {value}")
