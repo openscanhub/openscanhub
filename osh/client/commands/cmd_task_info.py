@@ -29,8 +29,7 @@ found"
 
         task_info = self.hub.scan.get_task_info(task_id)
         if not task_info:
-            print("There is no info about the task. It doesn't exist most \
-likely.")
+            print("There is no info about the task.", file=sys.stderr)
             sys.exit(1)
 
         for key, value in task_info.items():
