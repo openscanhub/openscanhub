@@ -13,7 +13,7 @@ class List_Mock_Configs(osh.client.CovScanCommand):
     def options(self):
         # specify command usage
         # normalized name contains a lower-case class name with underscores converted to dashes
-        self.parser.usage = "%%prog %s [options] <args>" % self.normalized_name
+        self.parser.usage = f"%prog {self.normalized_name} [options] <args>"
 
         self.parser.add_option(
             "--hub",
