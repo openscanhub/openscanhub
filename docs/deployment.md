@@ -117,8 +117,8 @@ ssh root@cov01.lab.eng.brq2.redhat.com tar -C /etc -c covscanhub | tar -xvC /etc
 - make covscanhub logging work:
 ```sh
 dnf install policycoreutils-python-utils
-semanage fcontext -a -t httpd_sys_rw_content_t '/var/log/covscanhub(/.*)?'
-restorecon -R /var/log/covscanhub
+semanage fcontext -a -t httpd_sys_rw_content_t '/var/log/osh/hub(/.*)?'
+restorecon -R /var/log/osh/hub
 ```
 
 - enable redirect to `/covscanhub` by setting `AllowOverride FileInfo`
@@ -131,3 +131,33 @@ systemctl reload httpd
 - check that e-mail notifications are sent
 
 - check that ET status is updated properly over UMB
+
+# Migration to `osh/hub` name (https://gitlab.cee.redhat.com/covscan/covscan/-/issues/154):
+
+Please follow below steps to handle migration of `covscanhub` to `osh/hub` name:
+
+- Stop `httpd` service.
+- Backup below configuration and log files:
+    - `/etc/covscanhub/msg-client-covscan.pem`
+    - `/usr/lib/python3.6/site-packages/covscanhub/settings_local.py`
+    - `/var/log/covscanhub/covscanhub.log`
+- Unmount `/var/lib/covscanhub/html`.
+- Unmount `/var/lib/covscanhub`.
+- Fix mount point entries in `/etc/fstab` to use `/var/lib/osh/hub` path.
+- Mount `/var/lib/covscanhub`.
+- Mount `/var/lib/covscanhub/html`.
+- Update packages through `dnf update`.
+- Check if migration to `/usr/lib/python3.6/site-packages/osh/hub/settings_local.py` was handled succesfully.
+- Change below paths in `/usr/lib/python3.6/site-packages/osh/hub/settings_local.py`:
+```
+'filename': '/var/log/osh/hub/hub.log'
+FILES_PATH = '/var/lib/osh/hub'
+UMB_CLIENT_CERT = '/etc/osh/hub/msg-client-covscan.pem'
+```
+- Set up SELinux context on the new log directory:
+```
+semanage fcontext -a -t httpd_sys_rw_content_t '/var/log/osh/hub(/.*)?'
+restorecon -R /var/log/osh/hub
+```
+- Move `/etc/covscanhub/msg-client-covscan.pem` to `/etc/osh/hub/msg-client-covscan.pem`.
+- Start `httpd` service.
