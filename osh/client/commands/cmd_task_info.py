@@ -22,7 +22,10 @@ found"
 
         if len(args) != 1:
             self.parser.error("please specify exactly one task ID")
+
         task_id = args[0]
+        if not task_id.isdigit():
+            self.parser.error(f"'{task_id}' is not a number")
 
         # login to the hub
         self.set_hub(username, password)
