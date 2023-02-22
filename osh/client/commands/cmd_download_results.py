@@ -63,6 +63,8 @@ class Download_Results(osh.client.OshCommand):
             task_args = task_info["args"]
             if "srpm_name" in task_args:
                 nvr = task_args['srpm_name'].replace('.src.rpm', '')
+            elif "brew_build" in task_args:
+                nvr = task_args["brew_build"]
             else:
                 nvr = task_args['build']
                 if isinstance(nvr, dict):
