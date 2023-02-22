@@ -7,7 +7,7 @@ class List_Profiles(osh.client.CovScanCommand):
     admin = False  # admin type account required
 
     def options(self):
-        self.parser.usage = "%%prog %s" % self.normalized_name
+        self.parser.usage = f"%prog {self.normalized_name}"
         self.parser.epilog = "List of predifned scanning profiles. " \
                              "These profiles serve as predefined scanning environments. " \
                              "One scanning profile could be for C, another for python, shell..."
