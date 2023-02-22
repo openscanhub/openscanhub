@@ -42,6 +42,10 @@ class Download_Results(osh.client.CovScanCommand):
         if not tasks:
             self.parser.error("no task ID specified")
 
+        for task_id in tasks:
+            if not task_id.isdigit():
+                self.parser.error(f"'{task_id}' is not a number")
+
         self.dir = kwargs.pop("dir", None)
 
         if self.dir is not None and not os.path.isdir(self.dir):
