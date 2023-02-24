@@ -18,9 +18,11 @@ package_version = [0, 8, 2]
 data_files = {
     "/etc/covscan": [
         "osh/client/covscan.conf",
-        "osh/worker/covscand.conf",
-        "osh/worker/covscand.conf.prod",
-        "osh/worker/covscand.conf.stage",
+    ],
+    "/etc/osh": [
+        "osh/worker/worker.conf",
+        "osh/worker/worker.conf.prod",
+        "osh/worker/worker.conf.stage",
     ],
     "/etc/httpd/conf.d": [
         "covscanhub/covscanhub-httpd.conf.prod",

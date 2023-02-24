@@ -58,7 +58,7 @@ firewall-cmd --reload
 
 - enable Covscan stage worker:
     - https://covscan.lab.eng.brq2.redhat.com/covscanhub/admin/hub/worker/add/
-    - enter worker key from `/etc/covscan/covscand.conf` on covscan.lab.eng.brq2.redhat.com
+    - enter worker key from `/etc/osh/worker.conf` on covscan.lab.eng.brq2.redhat.com
     - set name to `covscan.lab.eng.brq2.redhat.com`
     - pick `noarch` arch and `default` channel
     - set max load to 2 and save

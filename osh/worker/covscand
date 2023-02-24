@@ -13,7 +13,7 @@ import osh.worker.tasks
 from osh.common.utils.conf import get_config_dict
 
 
-# override the `foreground` task attribute if RUN_TASKS_IN_FOREGROUND is set in covscand.conf
+# override the `foreground` task attribute if RUN_TASKS_IN_FOREGROUND is set in worker.conf
 class OSHTaskManager(TaskManager):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -29,7 +29,7 @@ def main():
     kobo.worker.main.TaskContainer.register_module(osh.worker.tasks, prefix="task_")
 
     # configuration
-    conf = get_config_dict(config_env="COVSCAND_CONFIG_FILE", config_default="/etc/covscan/covscand.conf")
+    conf = get_config_dict(config_env="COVSCAND_CONFIG_FILE", config_default="/etc/osh/worker.conf")
     if conf is None:
         return 2
 

@@ -6,7 +6,7 @@ After=network.target
 [Service]
 Type=forking
 PIDFile=/run/covscand.pid
-ExecStartPre=test -r /etc/covscan/covscand.conf
+ExecStartPre=test -r /etc/osh/worker.conf
 ExecStart=/usr/sbin/covscand -p /run/covscand.pid
 ExecStop=/usr/sbin/covscand -k
 KillMode=process

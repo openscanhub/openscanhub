@@ -172,6 +172,7 @@ rm -rf %{buildroot}%{python3_sitelib}/scripts
 
 %files common
 %defattr(644,root,root,755)
+%dir %{_sysconfdir}/osh
 %{python3_sitelib}/osh/common
 %dir %{python3_sitelib}/osh
 
@@ -191,13 +192,22 @@ rm -rf %{buildroot}%{python3_sitelib}/scripts
 %systemd_postun_with_restart covscand.service
 
 %files worker-conf-devel
-%attr(640,root,root) %config(noreplace) /etc/covscan/covscand.conf
+%attr(640,root,root) %config(noreplace) /etc/osh/worker.conf
 
 %files worker-conf-stage
-%attr(640,root,root) %config(noreplace) /etc/covscan/covscand.conf.stage
+%attr(640,root,root) %config(noreplace) /etc/osh/worker.conf.stage
 
 %files worker-conf-prod
-%attr(640,root,root) %config(noreplace) /etc/covscan/covscand.conf.prod
+%attr(640,root,root) %config(noreplace) /etc/osh/worker.conf.prod
+
+%(for alt in devel stage prod; do
+cat << EOF
+%post worker-conf-${alt}
+if test -f /etc/covscan/covscand.conf; then
+    mv /etc/covscan/covscand.conf /etc/osh/worker.conf
+fi
+EOF
+done)
 
 %files hub
 %defattr(-,root,apache,-)
