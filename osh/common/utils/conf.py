@@ -114,6 +114,6 @@ def get_config_dict(config_env, config_default):
         sys.stderr.write("\n\nError: The config file '%s' was not found.\n"
                          "Create the config file or specify the '%s'\n"
                          "environment variable to override config file location.\n"
-                         % (config_default, config_env))
+                         % (config_file, config_env))
         return None
     return conf_dict
