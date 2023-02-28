@@ -35,6 +35,26 @@ class Download_Results(osh.client.OshCommand):
         print(f"Downloading {tarball}", file=sys.stderr)
         urllib.request.urlretrieve(url, local_path)
 
+    def get_nvr(self, task_args):
+        """
+        Obtains the NVR from the task arguments dictionary.
+
+        * MockBuild and VersionDiffBuild tasks use either the 'srpm_name' key
+          for an SRPM build or the 'build/nvr' key for Brew builds.
+        * ErrataDiffBuild uses the 'build' key and used 'brew_build' key in
+          the past.
+        """
+        if "srpm_name" in task_args:
+            return task_args['srpm_name'].replace('.src.rpm', '')
+
+        if "brew_build" in task_args:
+            return task_args["brew_build"]
+
+        nvr = task_args['build']
+        if isinstance(nvr, dict):
+            nvr = nvr['nvr']
+        return nvr
+
     def run(self, *tasks, **kwargs):
         if not tasks:
             self.parser.error("no task ID specified")
@@ -60,17 +80,8 @@ class Download_Results(osh.client.OshCommand):
                 failed = True
                 continue
 
-            task_args = task_info["args"]
-            if "srpm_name" in task_args:
-                nvr = task_args['srpm_name'].replace('.src.rpm', '')
-            elif "brew_build" in task_args:
-                nvr = task_args["brew_build"]
-            else:
-                nvr = task_args['build']
-                if isinstance(nvr, dict):
-                    nvr = nvr['nvr']
-
             task_url = self.hub.client.task_url(task_id)
+            nvr = self.get_nvr(task_info["args"])
             self.fetch_results(task_url, nvr)
 
         if failed:
