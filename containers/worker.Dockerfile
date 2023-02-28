@@ -6,7 +6,7 @@ COPY containers/rhel-8-pulp.repo containers/rcm-tools-for-rhel-8.repo /etc/yum.r
 WORKDIR /src
 
 ENV PYTHONPATH=.:kobo
-ENV COVSCAND_CONFIG_FILE=osh/worker/worker-local.conf
+ENV OSH_WORKER_CONFIG_FILE=osh/worker/worker-local.conf
 
 # Internal CA
 RUN cd /etc/pki/ca-trust/source/anchors/ && \

@@ -29,7 +29,7 @@ def main():
     kobo.worker.main.TaskContainer.register_module(osh.worker.tasks, prefix="task_")
 
     # configuration
-    conf = get_config_dict(config_env="COVSCAND_CONFIG_FILE", config_default="/etc/osh/worker.conf")
+    conf = get_config_dict(config_env="OSH_WORKER_CONFIG_FILE", config_default="/etc/osh/worker.conf")
     if conf is None:
         return 2
 
