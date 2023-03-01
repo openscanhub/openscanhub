@@ -7,7 +7,7 @@ FORCE=''
 
 CLI_COV=(
     env
-    COVSCAN_CONFIG_FILE=osh/client/covscan-local.conf
+    OSH_CLIENT_CONFIG_FILE=osh/client/covscan-local.conf
     PYTHONPATH=.:kobo
     /usr/bin/coverage-3.6 run --parallel-mode '--omit=*site-packages*,*kobo*,'
     osh/client/covscan
@@ -15,7 +15,7 @@ CLI_COV=(
 
 CLI_XML=(
     env
-    COVSCAN_CONFIG_FILE=osh/client/covscan-local.conf
+    OSH_CLIENT_CONFIG_FILE=osh/client/covscan-local.conf
     PYTHONPATH=.:kobo
     /usr/bin/coverage-3.6 run --parallel-mode '--omit=*site-packages*,*kobo*,'
     covscanhub/scripts/covscan-xmlrpc-client.py

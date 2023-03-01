@@ -102,7 +102,7 @@ def get_conf(system_conf=None):
 def get_config_dict(config_env, config_default):
     """
     Retrieves dictionary from chosen configuration file.
-    @param config_env: configuration file environment, f.e. COVSCAN_CONFIG_FILE
+    @param config_env: configuration file environment, f.e. OSH_CLIENT_CONFIG_FILE
     @param config_default: absolute file path to configuration file, usually /etc/covscan/covscan.conf
     @return: dictionary containing configuration data
     """

@@ -108,9 +108,9 @@ As pointed above, all of these dependencies are automatically set up in the clie
 * OSH client should now be able to connect to the hub and send it tasks. You can test it by these commands:
 
   ```bash
-  COVSCAN_CONFIG_FILE=osh/client/covscan-local.conf PYTHONPATH=.:kobo python3 osh/client/covscan list-mock-configs
-  COVSCAN_CONFIG_FILE=osh/client/covscan-local.conf PYTHONPATH=.:kobo python3 osh/client/covscan mock-build --config=fedora-36-x86_64 --brew-build units-2.21-4.fc36 --nowait
-  COVSCAN_CONFIG_FILE=osh/client/covscan-local.conf PYTHONPATH=.:kobo python3 osh/client/covscan watch-log 1 #Replace 1 with task id
+  OSH_CLIENT_CONFIG_FILE=osh/client/covscan-local.conf PYTHONPATH=.:kobo python3 osh/client/covscan list-mock-configs
+  OSH_CLIENT_CONFIG_FILE=osh/client/covscan-local.conf PYTHONPATH=.:kobo python3 osh/client/covscan mock-build --config=fedora-36-x86_64 --brew-build units-2.21-4.fc36 --nowait
+  OSH_CLIENT_CONFIG_FILE=osh/client/covscan-local.conf PYTHONPATH=.:kobo python3 osh/client/covscan watch-log 1 #Replace 1 with task id
   ```
 
   Note: You can also set these variables permanently to your bashrc.

@@ -26,7 +26,7 @@ def main(args=None):
     # register project specific commands
     CovScanCommandContainer.register_module(osh.client.commands, prefix="cmd_")
 
-    conf = get_config_dict(config_env="COVSCAN_CONFIG_FILE", config_default="/etc/covscan/covscan.conf")
+    conf = get_config_dict(config_env="OSH_CLIENT_CONFIG_FILE", config_default="/etc/covscan/covscan.conf")
     if conf is None:
         return 2
 

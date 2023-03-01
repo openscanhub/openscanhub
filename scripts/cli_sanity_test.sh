@@ -18,7 +18,7 @@ declare -g TEMPOUT
 # RETRY=false
 
 test_fixture() {
-    export COVSCAN_CONFIG_FILE=osh/client/covscan-local.conf
+    export OSH_CLIENT_CONFIG_FILE=osh/client/covscan-local.conf
     export PYTHONPATH=.:kobo
 }
 
