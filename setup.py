@@ -16,10 +16,8 @@ THIS_FILE_PATH = os.path.dirname(os.path.abspath(__file__))
 
 package_version = [0, 8, 2]
 data_files = {
-    "/etc/covscan": [
-        "osh/client/covscan.conf",
-    ],
     "/etc/osh": [
+        "osh/client/client.conf",
         "osh/worker/worker.conf",
         "osh/worker/worker.conf.prod",
         "osh/worker/worker.conf.stage",

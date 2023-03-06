@@ -44,7 +44,7 @@ class Diff_Build(osh.client.CovScanCommand):
         # converted to dashes
         self.parser.usage = "%%prog %s [options] <args>" % self.normalized_name
         self.parser.epilog = "User configuration file is located at: \
-~/.config/covscan/covscan.conf"
+~/.config/osh/client.conf"
 
         add_config_option(self.parser)
         add_aggressive_option(self.parser)
@@ -150,8 +150,8 @@ exist." % self.results_store_file)
             if not config:
                 self.parser.error("You haven't specified mock config, there \
 is not even one in your user configuration file \
-(~/.config/covscan/covscan.conf) nor in system configuration file \
-(/etc/covscan/covscan.conf)")
+(~/.config/osh/client.conf) nor in system configuration file \
+(/etc/osh/client.conf)")
 
         # login to the hub
         self.set_hub(username, password)

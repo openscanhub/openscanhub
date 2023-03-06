@@ -26,7 +26,7 @@ def main(args=None):
     # register project specific commands
     CovScanCommandContainer.register_module(osh.client.commands, prefix="cmd_")
 
-    conf = get_config_dict(config_env="OSH_CLIENT_CONFIG_FILE", config_default="/etc/covscan/covscan.conf")
+    conf = get_config_dict(config_env="OSH_CLIENT_CONFIG_FILE", config_default="/etc/osh/client.conf")
     if conf is None:
         return 2
 
@@ -34,7 +34,7 @@ def main(args=None):
     if conf["HUB_URL"] in ["http://cov01.lab.eng.brq.redhat.com/covscanhub/xmlrpc",
             "https://cov01.lab.eng.brq.redhat.com/covscanhub/xmlrpc"]:
         conf["HUB_URL"] = "https://cov01.lab.eng.brq2.redhat.com/covscanhub/xmlrpc"
-        sys.stderr.write("warning: forcing %s as HUB_URL, please update covscan configuration!\n" % conf["HUB_URL"])
+        sys.stderr.write("warning: forcing %s as HUB_URL, please update client configuration!\n" % conf["HUB_URL"])
 
     if sys.version_info[0] >= 3 and conf['AUTH_METHOD'] == 'krbv':
         # there is no 'krbv' for py3 --> use 'gssapi' instead

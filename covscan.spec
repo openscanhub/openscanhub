@@ -168,7 +168,7 @@ rm -rf %{buildroot}%{python3_sitelib}/scripts
 %files client
 %defattr(644,root,root,755)
 %attr(755,root,root) /usr/bin/covscan
-%attr(644,root,root) %config(noreplace) /etc/covscan/covscan.conf
+%attr(644,root,root) %config(noreplace) /etc/osh/client.conf
 %{_sysconfdir}/bash_completion.d/
 %{python3_sitelib}/osh/client
 %{python3_sitelib}/covscan-*-py%{python3_version}.egg-info
@@ -185,6 +185,11 @@ rm -rf %{buildroot}%{python3_sitelib}/scripts
 %{python3_sitelib}/osh/worker
 %{_unitdir}/covscand.service
 %attr(754,root,root) /usr/sbin/covscand
+
+%post client
+if test -f /etc/covscan/covscan.conf; then
+    mv /etc/covscan/covscan.conf /etc/osh/client.conf
+fi
 
 %post worker
 %systemd_post covscand.service

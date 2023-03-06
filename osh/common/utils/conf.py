@@ -11,8 +11,8 @@ import sys
 import kobo.conf
 from six.moves.configparser import SafeConfigParser
 
-CONFIG_FILE_NAME = 'covscan.conf'
-CONFIG_PATH_PREFIX = '.config/covscan'
+CONFIG_FILE_NAME = 'client.conf'
+CONFIG_PATH_PREFIX = '.config/osh'
 
 
 conf = None
@@ -44,7 +44,7 @@ class Conf(object):
     def get_conf_dir(self):
         """
         If conf dir does not exist, create it
-        return full path to conf dir ( ~/.config/covscan/ )
+        return full path to conf dir ( ~/.config/osh/ )
         """
         config_dir = os.path.join(get_home_dir(), CONFIG_PATH_PREFIX)
         if not os.path.exists(config_dir):
@@ -54,14 +54,14 @@ class Conf(object):
     def get_config_file(self):
         """
         Returns path where configuration file lives.
-        Path is <home_dir>/.config/covscan/config.conf
+        Path is <home_dir>/.config/osh/config.conf
         """
         config_path = os.path.join(self.get_conf_dir(), CONFIG_FILE_NAME)
 
         if not os.path.exists(config_path):
             config = SafeConfigParser()
             config.add_section('General')
-            # fedora-rawhide-x86_64 is set at /etc/covscan/covscan.conf
+            # fedora-rawhide-x86_64 is set at /etc/osh/client.conf
             # user should decide what does he want at his own conf file
             config.set('General', 'DefaultMockConfig', '')
 
@@ -103,7 +103,7 @@ def get_config_dict(config_env, config_default):
     """
     Retrieves dictionary from chosen configuration file.
     @param config_env: configuration file environment, f.e. OSH_CLIENT_CONFIG_FILE
-    @param config_default: absolute file path to configuration file, usually /etc/covscan/covscan.conf
+    @param config_default: absolute file path to configuration file, usually /etc/osh/client.conf
     @return: dictionary containing configuration data
     """
     config_file = os.environ.get(config_env, config_default)
