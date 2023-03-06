@@ -149,9 +149,9 @@ sample-package-build-on-covscan:
     # firewall-cmd --reload
     - sed -i "s|http://osh-hub:8000|https://localhost/covscanhub|g" osh/client/client-local.conf
   script:
-    - OSH_CLIENT_CONFIG_FILE=osh/client/client-local.conf /usr/bin/covscan mock-build --config=fedora-36-x86_64 --brew-build units-2.21-4.fc36
+    - OSH_CLIENT_CONFIG_FILE=osh/client/client-local.conf /usr/bin/osh-cli mock-build --config=fedora-36-x86_64 --brew-build units-2.21-4.fc36
   after_script:
-    - OSH_CLIENT_CONFIG_FILE=osh/client/client-local.conf /usr/bin/covscan task-info 1 | grep "is_failed = False"
+    - OSH_CLIENT_CONFIG_FILE=osh/client/client-local.conf /usr/bin/osh-cli task-info 1 | grep "is_failed = False"
 
 ### Sequence 4.b ###
 

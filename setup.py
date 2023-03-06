@@ -33,7 +33,7 @@ data_files = {
         "files/etc/bash_completion.d/covscan.bash",
     ],
     "/usr/bin": [
-        "osh/client/covscan",
+        "osh/client/osh-cli",
     ],
     "/usr/sbin": [
         "osh/worker/covscand",

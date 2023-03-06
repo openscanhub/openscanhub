@@ -30,11 +30,11 @@ get_task_num() {
 cov-list() (
     set -e
     set -x
-    python3 osh/client/covscan list-analyzers
-    python3 osh/client/covscan list-mock-configs
-    python3 osh/client/covscan list-profiles
-    python3 osh/client/covscan list-tasks --free --running
-    python3 osh/client/covscan list-workers
+    python3 osh/client/osh-cli list-analyzers
+    python3 osh/client/osh-cli list-mock-configs
+    python3 osh/client/osh-cli list-profiles
+    python3 osh/client/osh-cli list-tasks --free --running
+    python3 osh/client/osh-cli list-workers
 )
 
 cov-mock-build() {
@@ -44,7 +44,7 @@ cov-mock-build() {
 
 # RETRY=true
 
-    mock-task python3 osh/client/covscan mock-build --config="$config"\
+    mock-task python3 osh/client/osh-cli mock-build --config="$config"\
                                                  --brew-build "$build" "$args"
 }
 
@@ -56,7 +56,7 @@ cov-version-diff-build() {
 
 # RETRY=true
 
-    mock-task python3 osh/client/covscan version-diff-build\
+    mock-task python3 osh/client/osh-cli version-diff-build\
         --base-config="$config" --base-brew-build "$base_build"\
         --config="$config" --brew-build "$build" "$args"
 }
@@ -64,22 +64,22 @@ cov-version-diff-build() {
 mock-task() {
     cmd="$*"
 
-    grep -q covscan <<< "$cmd" || return 1
+    grep -q osh-cli <<< "$cmd" || return 1
 
     echo "+ $cmd --nowait"
     output="$(mktemp)"
     eval "$cmd --nowait" | tee > "$output"
     task_num="$(get_task_num "$(< "$output")")"
 
-    python3 osh/client/covscan watch-tasks "$task_num" &
-    python3 osh/client/covscan watch-log "$task_num" &
+    python3 osh/client/osh-cli watch-tasks "$task_num" &
+    python3 osh/client/osh-cli watch-log "$task_num" &
     info="$(mktemp)"
 
     cnt=32
     interval=20
     while ((--cnt)); do
         echo ">> task #$task_num: checking status... (every ${interval}s)"
-        python3 osh/client/covscan task-info "$task_num" > "$info"
+        python3 osh/client/osh-cli task-info "$task_num" > "$info"
 
         if grep -qi 'is_finished.*true' "$info"; then
             if grep -qi 'is_failed.*true' "$info"; then
@@ -88,7 +88,7 @@ mock-task() {
                 #   RETRY=false
                 #   for i in $(seq 3); do
                 #     echo ">> task #$task_num: failed... retrying ($i/3)"
-                #     mock-task python3 osh/client/covscan resubmit-tasks "$task_num"
+                #     mock-task python3 osh/client/osh-cli resubmit-tasks "$task_num"
                 #   done
                 # else
                 echo ">> task #$task_num: failed..."
@@ -110,7 +110,7 @@ mock-task() {
     echo ">> task #$task_num: finished!"
 
     echo ">> task #$task_num: fetching results..."
-    (set -x; python3 osh/client/covscan download-results --dir "$TEMPOUT" "$task_num")
+    (set -x; python3 osh/client/osh-cli download-results --dir "$TEMPOUT" "$task_num")
 
     # is it of any use in this test suite?
     #tar xvf "$TEMPOUT/$build.tar.xz" --dir "task-$task_num"

@@ -10,7 +10,7 @@ CLI_COV=(
     OSH_CLIENT_CONFIG_FILE=osh/client/client-local.conf
     PYTHONPATH=.:kobo
     /usr/bin/coverage-3.6 run --parallel-mode '--omit=*site-packages*,*kobo*,'
-    osh/client/covscan
+    osh/client/osh-cli
 )
 
 CLI_XML=(

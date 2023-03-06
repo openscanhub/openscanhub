@@ -133,7 +133,10 @@ PYTHONPATH=. osh/hub/manage.py collectstatic --noinput
 %py3_install
 
 # avoid transforming /usr/bin/env -S ... to /usr/bin/-S
-%global __brp_mangle_shebangs_exclude_from %{_bindir}/covscan
+%global __brp_mangle_shebangs_exclude_from %{_bindir}/osh-cli
+
+# Temporarily provide /usr/bin/covscan for backward compatibility
+ln -s osh-cli %{buildroot}%{_bindir}/covscan
 
 # rename settings_local.{stage,prod}.* -> settings_local.*.{stage,prod}
 for i in stage prod; do (
@@ -167,7 +170,8 @@ rm -rf %{buildroot}%{python3_sitelib}/scripts
 
 %files client
 %defattr(644,root,root,755)
-%attr(755,root,root) /usr/bin/covscan
+%attr(755,root,root) %{_bindir}/osh-cli
+%{_bindir}/covscan
 %attr(644,root,root) %config(noreplace) /etc/osh/client.conf
 %{_sysconfdir}/bash_completion.d/
 %{python3_sitelib}/osh/client
