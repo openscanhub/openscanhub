@@ -16,15 +16,15 @@ from osh.common.utils.conf import get_config_dict
 
 
 # inherit container to make sure nobody will change plugins I registered
-class CovScanCommandContainer(kobo.client.ClientCommandContainer):
+class OshCommandContainer(kobo.client.ClientCommandContainer):
     pass
 
 
 def main(args=None):
     # register generic kobo commands
-    CovScanCommandContainer.register_module(kobo.client.commands, prefix="cmd_")
+    OshCommandContainer.register_module(kobo.client.commands, prefix="cmd_")
     # register project specific commands
-    CovScanCommandContainer.register_module(osh.client.commands, prefix="cmd_")
+    OshCommandContainer.register_module(osh.client.commands, prefix="cmd_")
 
     conf = get_config_dict(config_env="OSH_CLIENT_CONFIG_FILE", config_default="/etc/osh/client.conf")
     if conf is None:
@@ -41,7 +41,7 @@ def main(args=None):
         conf['AUTH_METHOD'] = 'gssapi'
 
     # initialize command container
-    command_container = CovScanCommandContainer(conf)
+    command_container = OshCommandContainer(conf)
     parser = kobo.cli.CommandOptionParser(
         command_container=command_container, # plugin container with registered commands
         add_username_password_options=True,  # include auth options to each command

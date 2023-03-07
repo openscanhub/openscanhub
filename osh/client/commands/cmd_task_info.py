@@ -3,7 +3,7 @@ import sys
 import osh.client
 
 
-class Task_Info(osh.client.CovScanCommand):
+class Task_Info(osh.client.OshCommand):
     """display info about provided task"""
     enabled = True
     admin = False  # admin type account required

@@ -3,7 +3,7 @@ from kobo.client import HubProxy
 import osh.client
 
 
-class List_Analyzers(osh.client.CovScanCommand):
+class List_Analyzers(osh.client.OshCommand):
     """list available versions of static analyzers"""
     enabled = True
     admin = False  # admin type account required

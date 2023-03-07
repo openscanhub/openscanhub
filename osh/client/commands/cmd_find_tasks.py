@@ -3,7 +3,7 @@ import sys
 import osh.client
 
 
-class Find_Tasks(osh.client.CovScanCommand):
+class Find_Tasks(osh.client.OshCommand):
     """find tasks by provided query string"""
     enabled = True
     admin = False  # admin type account required

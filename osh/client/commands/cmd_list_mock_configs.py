@@ -5,7 +5,7 @@ from kobo.client import HubProxy
 import osh.client
 
 
-class List_Mock_Configs(osh.client.CovScanCommand):
+class List_Mock_Configs(osh.client.OshCommand):
     """list available mock configs present on hub"""
     enabled = True
     admin = False  # admin type account required

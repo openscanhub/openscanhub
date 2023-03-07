@@ -17,7 +17,7 @@ from .shortcuts import (check_analyzers, handle_perm_denied, upload_file,
                         verify_brew_koji_build, verify_mock)
 
 
-class Version_Diff_Build(osh.client.CovScanCommand):
+class Version_Diff_Build(osh.client.OshCommand):
     """analyze 2 SRPMs (base and target) and diff results"""
     enabled = True
     admin = False  # admin type account required

@@ -33,7 +33,7 @@ from osh.client.commands.shortcuts import (check_analyzers, handle_perm_denied,
 from osh.common.utils.conf import get_conf
 
 
-class Diff_Build(osh.client.CovScanCommand):
+class Diff_Build(osh.client.OshCommand):
     """analyze a SRPM without and with patches, return diff"""
     enabled = True
     admin = False  # admin type account required

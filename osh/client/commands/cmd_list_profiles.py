@@ -1,7 +1,7 @@
 import osh.client
 
 
-class List_Profiles(osh.client.CovScanCommand):
+class List_Profiles(osh.client.OshCommand):
     """list available scanning profiles"""
     enabled = True
     admin = False  # admin type account required

@@ -5,7 +5,7 @@ import urllib.request
 import osh.client
 
 
-class Download_Results(osh.client.CovScanCommand):
+class Download_Results(osh.client.OshCommand):
     """download tarball with results of specified task"""
     enabled = True
     admin = False  # admin type account required
