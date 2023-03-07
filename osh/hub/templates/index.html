@@ -1,27 +1,28 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h2>Covscan web user interface</h2>
+<h2>OpenScanHub (formerly Covscan) web user interface</h2>
 
 <p>
-Covscan is our internal Red Hat service that runs various static analyzers on RPM packages.  Covscan tasks are automatically triggered by <a href="https://errata.devel.redhat.com/">Errata Tool</a> and <a href="https://dashboard.osci.redhat.com/">OSCI</a>.  The tasks can also be triggered by Red Hat employees using the command-line interface provided by the covscan-client RPM package.  The client can be invoked interactively as well as from CI environments and other automation.
+OpenScanHub is our internal Red Hat service that runs various static analyzers on RPM packages.  OpenScanHub tasks are automatically triggered by <a href="https://errata.devel.redhat.com/">Errata Tool</a> and <a href="https://dashboard.osci.redhat.com/">OSCI</a>.  The tasks can also be triggered by Red Hat employees using the command-line interface provided by the covscan-client RPM package.  The client can be invoked interactively as well as from CI environments and other automation.
 </p>
 
 <p>
-Covscan is <b>not</b> <a href="https://www.synopsys.com/software-integrity/security-testing/static-analysis-sast.html">Coverity</a>.  Coverity is just one of the static analysis tools that Covscan uses internally.  Besides Coverity, Covscan by default uses also <a href="https://github.com/danmar/cppcheck">Cppcheck</a>, <a href="https://www.shellcheck.net/">ShellCheck</a>, the static analyzers embedded in <a href="https://developers.redhat.com/blog/2020/03/26/static-analysis-in-gcc-10">GCC</a> and <a href="https://clang-analyzer.llvm.org/">Clang</a>, and the <a href="https://github.com/siddhesh/find-unicode-control">find-unicode-control</a> tool.  Other tools for static (and dynamic) analysis can be enabled on demand while submitting a Covscan task.  Coverity is currently the only proprietary tool used by Covscan while all the other tools are open source.  On the other hand, Coverity usually provides the most useful results from all the tools currently supported by Covscan.
+OpenScanHub is <b>not</b> <a href="https://www.synopsys.com/software-integrity/security-testing/static-analysis-sast.html">Coverity</a>.  Coverity is just one of the static analysis tools that OpenScanHub uses internally.  Besides Coverity, OpenScanHub by default uses also <a href="https://github.com/danmar/cppcheck">Cppcheck</a>, <a href="https://www.shellcheck.net/">ShellCheck</a>, the static analyzers embedded in <a href="https://developers.redhat.com/blog/2020/03/26/static-analysis-in-gcc-10">GCC</a> and <a href="https://clang-analyzer.llvm.org/">Clang</a>, and the <a href="https://github.com/siddhesh/find-unicode-control">find-unicode-control</a> tool.  Other tools for static (and dynamic) analysis can be enabled on demand while submitting a OpenScanHub task.  Coverity is currently the only proprietary tool used by OpenScanHub while all the other tools are open source.  On the other hand, Coverity usually provides the most useful results from all the tools currently supported by OpenScanHub.
 </p>
 
 <p>
-Covscan is not limited to RPM packages.  It can also statically analyze upstream tarballs and OpenShift containers.
+OpenScanHub is not limited to RPM packages.  It can also statically analyze upstream tarballs and OpenShift containers.
 </p>
 
 <h3>Quick Links</h3>
 <ul>
-    <li><a href="https://gitlab.cee.redhat.com/covscan/covscan/-/wikis/home#covscan-client">Covscan client</a></li>
+    <li><a href="https://gitlab.cee.redhat.com/covscan/covscan/-/wikis/home#covscan-client">OpenScanHub client</a></li>
     <li><a href="https://gitlab.cee.redhat.com/covscan/covscan/-/wikis/home#coverity">Coverity</a></li>
     <li><a href="https://gitlab.cee.redhat.com/covscan/covscan/-/wikis/home#contacts">Contacts</a></li>
     <li><a href="https://gitlab.cee.redhat.com/covscan/covscan/-/wikis/home#useful-links">Other useful links</a></li>
     <li><a href="https://gitlab.cee.redhat.com/covscan/covscan/issues/new">Report an issue</a></li>
 </ul>
 
+<u><b>NOTE</b>: This project is currently in process of being renamed to OpenScanHub.</u>
 {% endblock %}
