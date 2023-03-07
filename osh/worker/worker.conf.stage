@@ -1,4 +1,4 @@
-# worker config file for covscand
+# config file for osh-worker
 
 # Hub XML-RPC address.
 HUB_URL = "https://covscan-stage.lab.eng.brq2.redhat.com/covscanhub/xmlrpc"
@@ -50,5 +50,5 @@ SLEEP_TIME = 20
 # Enables XML-RPC verbose flag
 DEBUG_XMLRPC = 0
 
-# Enable when you measure test coverage of covscand
+# Enable when you measure test coverage of osh-worker
 RUN_TASKS_IN_FOREGROUND = 0

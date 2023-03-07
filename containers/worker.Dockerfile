@@ -44,4 +44,4 @@ RUN sed -e 's|print_main_output=True"|&, "--no-bootstrap-chroot"|' -i /usr/bin/c
 
 RUN touch /WORKER_IS_READY
 
-CMD coverage-3.6 run --parallel-mode --omit="*site-packages*,*kobo*," osh/worker/covscand -f
+CMD coverage-3.6 run --parallel-mode --omit="*site-packages*,*kobo*," osh/worker/osh-worker -f

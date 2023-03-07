@@ -36,7 +36,7 @@ data_files = {
         "osh/client/osh-cli",
     ],
     "/usr/sbin": [
-        "osh/worker/covscand",
+        "osh/worker/osh-worker",
     ],
 }
 package_data = {

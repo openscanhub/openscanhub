@@ -7,8 +7,8 @@ After=network.target
 Type=forking
 PIDFile=/run/covscand.pid
 ExecStartPre=test -r /etc/osh/worker.conf
-ExecStart=/usr/sbin/covscand -p /run/covscand.pid
-ExecStop=/usr/sbin/covscand -k
+ExecStart=/usr/sbin/osh-worker -p /run/covscand.pid
+ExecStop=/usr/sbin/osh-worker -k
 KillMode=process
 Restart=on-failure
 

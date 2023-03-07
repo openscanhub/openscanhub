@@ -138,6 +138,10 @@ PYTHONPATH=. osh/hub/manage.py collectstatic --noinput
 # Temporarily provide /usr/bin/covscan for backward compatibility
 ln -s osh-cli %{buildroot}%{_bindir}/covscan
 
+# https://gitlab.cee.redhat.com/covscan/covscan/-/merge_requests/200#note_5989136
+# Temporarily provide /usr/sbin/covscand to work around systemd bug
+ln -s osh-worker %{buildroot}/usr/sbin/covscand
+
 # rename settings_local.{stage,prod}.* -> settings_local.*.{stage,prod}
 for i in stage prod; do (
     cd %{buildroot}%{python3_sitelib}/osh/hub
@@ -188,7 +192,8 @@ rm -rf %{buildroot}%{python3_sitelib}/scripts
 %defattr(644,root,root,755)
 %{python3_sitelib}/osh/worker
 %{_unitdir}/covscand.service
-%attr(754,root,root) /usr/sbin/covscand
+%attr(754,root,root) /usr/sbin/osh-worker
+/usr/sbin/covscand
 
 %post client
 if test -f /etc/covscan/covscan.conf; then
