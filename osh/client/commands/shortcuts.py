@@ -40,10 +40,10 @@ def verify_brew_koji_build(build, brew_url, koji_url):
     try:
         dist_tag = re.search('.*-.*-(.*)', srpm).group(1)
     except AttributeError:
-        return 'Invalid N-V-R: %s' % srpm
+        return f'Invalid N-V-R: {srpm}'
 
-    error_template = "Build %s does not exist in koji nor in brew, or has its \
-files deleted, or did not finish successfully." % build
+    error_template = f"Build {build} does not exist in koji nor in brew, or \
+has its files deleted, or did not finish successfully."
 
     koji_build_exists = True
     if 'fc' in dist_tag:
@@ -66,9 +66,9 @@ files deleted, or did not finish successfully." % build
 def verify_mock(mock, hub):
     mock_conf = hub.mock_config.get(mock)
     if not mock_conf:
-        return "Mock config %s does not exist." % mock
+        return f"Mock config {mock} does not exist."
     if not mock_conf["enabled"]:
-        return "Mock config %s is not enabled." % mock
+        return f"Mock config {mock} is not enabled."
     return None
 
 
