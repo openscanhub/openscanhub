@@ -54,10 +54,10 @@ EOF
 
     # dump the database to a file
     podman exec -i db pg_dump -h localhost -U covscanhub \
-        | gzip -c > covscanhub-minimal.db.gz
+        | gzip -c > openscanhub-minimal.db.gz
 
     # print summary on success
-    file covscanhub-minimal.db.gz
+    file openscanhub-minimal.db.gz
 }
 
 restore() {
