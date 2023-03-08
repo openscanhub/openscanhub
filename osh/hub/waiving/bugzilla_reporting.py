@@ -119,7 +119,6 @@ If you have any questions, feel free to ask at Red Hat IRC channel \
         'rep_platform': 'All',
         'op_sys': 'Linux',
         'groups': ['private'],  # others are devel, qa
-        'cf_devel_whiteboard': 'CoverityScan',
     }
 
     if waivers[0].result_group.result.scanbinding.scan.username != \
