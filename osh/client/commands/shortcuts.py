@@ -21,12 +21,9 @@ def verify_build_exists(build, url):
         returned_build = proxy_object.getBuild(build)
     except koji.GenericError:
         return False
-    if returned_build is None:
-        return False
-    if 'state' in returned_build and \
-            returned_build['state'] != koji.BUILD_STATES['COMPLETE']:
-        return False
-    return True
+
+    return returned_build is not None and \
+        returned_build.get('state', None) == koji.BUILD_STATES['COMPLETE']
 
 
 def verify_brew_koji_build(build, brew_url, koji_url):
