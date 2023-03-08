@@ -92,7 +92,7 @@ TIME_ZONE = 'Europe/Prague'
 ###############################################################################
 
 # Path to task logs and other files
-FILES_PATH = './covscanhub'
+FILES_PATH = './osh/hub'
 
 # Files for kobo tasks with predefined structure
 TASK_DIR = os.path.join(FILES_PATH, 'tasks')
