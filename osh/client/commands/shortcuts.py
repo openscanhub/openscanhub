@@ -74,8 +74,7 @@ def handle_perm_denied(e, parser):
     if 'PermissionDenied: Login required.' in e.faultString:
         parser.error('You are not authenticated. Please \
 obtain Kerberos ticket or specify username and password.')
-    else:
-        raise
+    raise
 
 
 def upload_file(hub, srpm, target_dir, parser):
