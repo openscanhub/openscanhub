@@ -4,12 +4,6 @@ from xmlrpc.client import Fault
 
 import koji
 
-__all__ = (
-    "verify_brew_koji_build",
-    "verify_mock",
-    "handle_perm_denied",
-)
-
 
 def check_analyzers(proxy, analyzers_list):
     result = proxy.scan.check_analyzers(analyzers_list)
