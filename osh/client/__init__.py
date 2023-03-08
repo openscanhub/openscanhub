@@ -1,9 +1,5 @@
 from kobo.client import ClientCommand
 
-__all__ = (
-    "OshCommand",
-)
-
 
 class OshCommand(ClientCommand):
     def write_task_id_file(self, task_id, filename=None):
