@@ -1,4 +1,4 @@
-_covscan_configs()
+_osh_cli_configs()
 {
     local IFS=$'\n'
     configs=$(python -c "from osh.common.utils.completion import main ; \
@@ -28,7 +28,7 @@ _covscan_configs()
 #    return 1
 #}
 
-_covscan()
+_osh_cli()
 {
     local cur prev prev2 opts
     COMPREPLY=()
@@ -43,8 +43,8 @@ _covscan()
 
     # complete for --config=<mock_config>
     if [ "${prev2}" == "--config" -a "${prev}" == "=" ] ; then
-        #local configs=$(for x in `covscan list-mock-configs 2>&1 | egrep "^[_[:alnum:]\-\.]+.+True" | awk '{ print $1 }'` ; do echo "$x" ; done )
-        _covscan_configs
+        #local configs=$(for x in `osh-cli list-mock-configs 2>&1 | egrep "^[_[:alnum:]\-\.]+.+True" | awk '{ print $1 }'` ; do echo "$x" ; done )
+        _osh_cli_configs
         COMPREPLY=( $(compgen -W "${configs}" -- ${cur}) )
         return 0
     elif [ "${prev}" == "mock-build" -o "${prev}" == "diff-build" ] ; then
@@ -60,4 +60,6 @@ _covscan()
     compopt -o filenames
     return 0
 }
-complete -F _covscan covscan
+complete -F _osh_cli osh-cli
+# This is kept here for backward compatibility reasons
+complete -F _osh_cli covscan
