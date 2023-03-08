@@ -230,12 +230,6 @@ COPR_CLI_LOGIN
 COPR_CLI_COPR_URL
 ```
 
-Then, to set up the `gitlab-job-guard` required variable:
-
-- Go to Gitlab preferences, create an access token with `read_api` and `read_repository` permissions.
-
-- Add another masked variable named `GITLAB_CI_TOKEN` to the CI settings as above:
-
 These variables are stored separately due to character limit imposed by GitLab and they are required to be stored in base64 form.
 
 ## How does GitLab CI build on Copr:
@@ -277,4 +271,4 @@ Steps to set up Covscan CI runner for containers:
 - Follow same steps from `Gitlab CI for Copr` section. Set up instance name to `$USER-covscan-ci-runner`.
 - Run `dnf install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm`.
 - Run `dnf install -y podman podman-compose make git-core python3-pip`
-- Run `python3 -m pip install gitlab-job-guard`
+- Run `python3 -m pip install`

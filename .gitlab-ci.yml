@@ -22,7 +22,6 @@ django-unit-tests:
     paths:
       - htmlcov/
   before_script:
-    - gitlab-job-guard --access-token="$(echo $GITLAB_API_TOKEN | base64 --decode)"
     - git clone --depth 1 https://github.com/release-engineering/kobo.git
     - containers/scripts/init-db.sh --deploy --force --minimal
     - podman exec -it db psql -c 'ALTER USER covscanhub CREATEDB;'
@@ -54,15 +53,14 @@ integration-tests:
 
 ### Sequence 4 ###
 
-copr-setup:
+build-rpms-on-copr-and-test:
   needs: []
   tags:
     - gitlab-ci-build-on-copr
   before_script:
     # guard job sequence
     - dnf install -y python3-pip
-    - python3 -m pip install gitlab-job-guard setuptools
-    - gitlab-job-guard --access-token="$(echo $GITLAB_API_TOKEN | base64 --decode)"
+    - python3 -m pip install setuptools
     # actual job starts
     - mkdir -p ~/.config
     - echo "[copr-cli]" > ~/.config/rhcopr
@@ -89,31 +87,13 @@ copr-setup:
     - dnf copr enable copr.devel.redhat.com/rhcopr-project/toolset -y
     - dnf copr enable redhat/kdudka/covscan-testing -y
     - dnf install -y rhcopr
-
-covscan-build-on-copr:
-  needs:
-    - job: copr-setup
-      artifacts: true
-  tags:
-    - gitlab-ci-build-on-copr
-  script:
     - make srpm
     - (set -o pipefail; rhcopr build gitlab-ci-build-on-copr *.src.rpm | tee rhcopr-build.log)
-  after_script:
     - copr_url=$(grep "https://copr.*coprs/build/" rhcopr-build.log)
     - build_id=$(basename $copr_url)
     - rhcopr download-build $build_id -r epel-8-x86_64
     - dnf install -y $(ls epel-8-x86_64/*.rpm | grep -v "stage\|prod\|src")
-
-install-from-copr-and-setup:
-  needs:
-    - job: covscan-build-on-copr
-      artifacts: true
-  tags:
-    - gitlab-ci-build-on-copr
-  before_script:
     - systemctl stop httpd postgresql
-  script:
     # setup covscanhub settings
     - cp osh/hub/settings_local.stage.py /usr/lib/python3.6/site-packages/osh/hub/settings_local.py
     - sed -i "s/\['covscan.lab.eng.brq2.redhat.com'\]/\['*'\]/" /usr/lib/python3.6/site-packages/osh/hub/settings_local.py
@@ -133,33 +113,11 @@ install-from-copr-and-setup:
     - cp osh/hub/covscanhub-httpd.conf /etc/httpd/conf.d/covscanhub-httpd.conf
     - touch /var/log/osh/hub/hub.log && chown apache:apache /var/log/osh/hub/hub.log
     - systemctl start httpd covscand
-
-### Sequence 4.a ###
-
-sample-package-build-on-covscan:
-  needs:
-    - job: install-from-copr-and-setup
-      artifacts: true
-  tags:
-    - gitlab-ci-build-on-copr
-  before_script:
     # Enable below lines if firewall is enabled
     # firewall-cmd --zone=public --add-port=80/tcp --permanent
     # firewall-cmd --zone=public --add-port=443/tcp --permanent
     # firewall-cmd --reload
     - sed -i "s|http://osh-hub:8000|https://localhost/covscanhub|g" osh/client/client-local.conf
-  script:
     - OSH_CLIENT_CONFIG_FILE=osh/client/client-local.conf /usr/bin/osh-cli mock-build --config=fedora-36-x86_64 --brew-build units-2.21-4.fc36
-  after_script:
     - OSH_CLIENT_CONFIG_FILE=osh/client/client-local.conf /usr/bin/osh-cli task-info 1 | grep "is_failed = False"
-
-### Sequence 4.b ###
-
-errata-test:
-  needs:
-    - job: install-from-copr-and-setup
-      artifacts: true
-  tags:
-    - gitlab-ci-build-on-copr
-  script:
     - osh/hub/scripts/covscan-xmlrpc-client.py --hub "https://localhost/covscanhub/xmlrpc/kerbauth/" --username=user --password=xxxxxx create-scan -b python-six-1.3.0-4.el7 -t python-six-1.9.0-2.el7 --et-scan-id=1 --release=RHEL-7.2.0 --owner=admin --advisory-id=1
