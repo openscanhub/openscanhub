@@ -1,12 +1,8 @@
-# -*- coding: utf-8 -*-
-
-from __future__ import absolute_import, print_function
-
 import os
 import re
+from xmlrpc.client import Fault
 
 import koji
-from six.moves.xmlrpc_client import Fault
 
 __all__ = (
     "verify_brew_koji_build",
