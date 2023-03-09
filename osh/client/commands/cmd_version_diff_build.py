@@ -87,8 +87,6 @@ local file"
         # them on hub
         options_forwarded = {}
 
-        username = kwargs.pop("username", None)
-        password = kwargs.pop("password", None)
         config = kwargs.pop("config", None)
         base_config = kwargs.pop("base_config", None)
         aggressive = kwargs.pop("aggressive", None)
@@ -183,7 +181,7 @@ is not even one in your user configuration file \
                   config)
 
         # login to the hub
-        self.set_hub(username, password)
+        self.connect_to_hub(kwargs)
 
         result = verify_mock(base_config, self.hub)
         if result is not None:

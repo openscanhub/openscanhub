@@ -36,9 +36,6 @@ class Download_Results(osh.client.OshCommand):
         urllib.request.urlretrieve(url, local_path)
 
     def run(self, *tasks, **kwargs):
-        username = kwargs.pop("username", None)
-        password = kwargs.pop("password", None)
-
         if not tasks:
             self.parser.error("no task ID specified")
 
@@ -52,7 +49,7 @@ class Download_Results(osh.client.OshCommand):
             self.parser.error("provided directory does not exist")
 
         # login to the hub
-        self.set_hub(username, password)
+        self.connect_to_hub(kwargs)
 
         failed = False
 

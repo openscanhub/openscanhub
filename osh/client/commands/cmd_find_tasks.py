@@ -46,9 +46,6 @@ these options: --regex, --package, --nvr"
         )
 
     def run(self, *args, **kwargs):
-        username = kwargs.pop("username", None)
-        password = kwargs.pop("password", None)
-
         regex = kwargs.pop("regex")
         package_name = kwargs.pop("package")
 
@@ -61,7 +58,7 @@ these options: --regex, --package, --nvr"
         query_string = args[0]
 
         # login to the hub
-        self.set_hub(username, password)
+        self.connect_to_hub(kwargs)
 
         query = {}
         if regex:

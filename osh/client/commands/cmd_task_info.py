@@ -17,9 +17,6 @@ class Task_Info(osh.client.OshCommand):
 found"
 
     def run(self, *args, **kwargs):
-        username = kwargs.pop("username", None)
-        password = kwargs.pop("password", None)
-
         if len(args) != 1:
             self.parser.error("please specify exactly one task ID")
 
@@ -28,7 +25,7 @@ found"
             self.parser.error(f"'{task_id}' is not a number")
 
         # login to the hub
-        self.set_hub(username, password)
+        self.connect_to_hub(kwargs)
 
         task_info = self.hub.scan.get_task_info(task_id)
         if not task_info:

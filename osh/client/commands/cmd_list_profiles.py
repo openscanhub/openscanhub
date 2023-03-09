@@ -13,11 +13,8 @@ class List_Profiles(osh.client.OshCommand):
                              "One scanning profile could be for C, another for python, shell..."
 
     def run(self, *args, **kwargs):
-        username = kwargs.pop("username", None)
-        password = kwargs.pop("password", None)
-
         # login to the hub
-        self.set_hub(username, password)
+        self.connect_to_hub(kwargs)
 
         format = "%-20s %s"
         columns = ("NAME", "DESCRIPTION")

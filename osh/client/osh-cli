@@ -3,10 +3,12 @@
 
 from __future__ import absolute_import
 
+import inspect
 import sys
 import os
 
 import kobo.exceptions
+import kobo.cli
 import kobo.client
 import kobo.client.commands
 
@@ -42,10 +44,17 @@ def main(args=None):
 
     # initialize command container
     command_container = OshCommandContainer(conf)
-    parser = kobo.cli.CommandOptionParser(
-        command_container=command_container, # plugin container with registered commands
-        add_username_password_options=True,  # include auth options to each command
-    )
+    parser_args = {
+        'command_container': command_container,  # plugin container with registered commands
+        'add_username_password_options': True,   # include auth options to each command
+    }
+
+    # check that kobo.cli.CommandOptionParser understands the add_hub_option
+    sig = inspect.signature(kobo.cli.CommandOptionParser.__init__)
+    if 'add_hub_option' in sig.parameters:
+        parser_args['add_hub_option'] = True  # include hub option to each command
+
+    parser = kobo.cli.CommandOptionParser(**parser_args)
 
     try:
         parser.run(args)

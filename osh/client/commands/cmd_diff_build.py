@@ -99,8 +99,6 @@ exist." % self.results_store_file)
         local_conf = get_conf(self.conf)
 
         # optparser output is passed via *args (args) and **kwargs (opts)
-        username = kwargs.pop("username", None)
-        password = kwargs.pop("password", None)
         config = kwargs.pop("config", None)
         aggressive = kwargs.pop("aggressive", None)
         cppcheck = kwargs.pop("cppcheck", None)
@@ -154,7 +152,7 @@ is not even one in your user configuration file \
 (/etc/osh/client.conf)")
 
         # login to the hub
-        self.set_hub(username, password)
+        self.connect_to_hub(kwargs)
 
         result = verify_mock(config, self.hub)
         if result is not None:
