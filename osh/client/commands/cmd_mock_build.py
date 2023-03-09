@@ -1,8 +1,8 @@
 from xmlrpc.client import Fault
 
-from .cmd_diff_build import Diff_Build
-from .common import add_tarball_option
-from .shortcuts import handle_perm_denied
+from osh.client.commands.cmd_diff_build import Diff_Build
+from osh.client.commands.common import add_tarball_option
+from osh.client.commands.shortcuts import handle_perm_denied
 
 
 class Mock_Build(Diff_Build):
