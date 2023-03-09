@@ -11,7 +11,7 @@ class Mock_Build(Diff_Build):
     admin = False  # admin type account required
 
     def options(self):
-        Diff_Build.options(self)
+        super().options()
 
         # this option cannot be used for diff-build tasks
         add_tarball_option(self.parser)
