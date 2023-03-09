@@ -1,8 +1,4 @@
-# -*- coding: utf-8 -*-
-
-from __future__ import absolute_import
-
-from six.moves.xmlrpc_client import Fault
+from xmlrpc.client import Fault
 
 from .cmd_diff_build import Diff_Build
 from .common import add_tarball_option
