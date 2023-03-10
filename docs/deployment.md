@@ -65,7 +65,7 @@ firewall-cmd --reload
 
 - submit an ET task with:
 ```sh
-osh/hub/scripts/covscan-xmlrpc-client.py \
+osh/hub/scripts/osh-xmlrpc-client.py \
     --hub https://covscan.lab.eng.brq2.redhat.com/covscanhub/xmlrpc/kerbauth/ \
     create-scan -t libidn2-2.3.0-7.el9 --base NEW_PACKAGE --release RHEL-9.0.0 \
     --et-scan-id 1234 --advisory-id 4567 --owner kdudka

@@ -120,4 +120,4 @@ build-rpms-on-copr-and-test:
     - sed -i "s|http://osh-hub:8000|https://localhost/covscanhub|g" osh/client/client-local.conf
     - OSH_CLIENT_CONFIG_FILE=osh/client/client-local.conf /usr/bin/osh-cli mock-build --config=fedora-36-x86_64 --brew-build units-2.21-4.fc36
     - OSH_CLIENT_CONFIG_FILE=osh/client/client-local.conf /usr/bin/osh-cli task-info 1 | grep "is_failed = False"
-    - osh/hub/scripts/covscan-xmlrpc-client.py --hub "https://localhost/covscanhub/xmlrpc/kerbauth/" --username=user --password=xxxxxx create-scan -b python-six-1.3.0-4.el7 -t python-six-1.9.0-2.el7 --et-scan-id=1 --release=RHEL-7.2.0 --owner=admin --advisory-id=1
+    - osh/hub/scripts/osh-xmlrpc-client.py --hub "https://localhost/covscanhub/xmlrpc/kerbauth/" --username=user --password=xxxxxx create-scan -b python-six-1.3.0-4.el7 -t python-six-1.9.0-2.el7 --et-scan-id=1 --release=RHEL-7.2.0 --owner=admin --advisory-id=1

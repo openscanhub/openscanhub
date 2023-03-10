@@ -126,7 +126,7 @@ As pointed above, all of these dependencies are automatically set up in the clie
 
 * create Errata Scan using password authentication - new pkg:
 ```sh
-covscan/osh/hub/scripts/covscan-xmlrpc-client.py \
+covscan/osh/hub/scripts/osh-xmlrpc-client.py \
     --hub http://covscanhub/xmlrpc/kerbauth/ \
     --username=kdudka --password=xxxxxx \
     create-scan -t curl-7.29.0-25.el7 \
@@ -137,7 +137,7 @@ covscan/osh/hub/scripts/covscan-xmlrpc-client.py \
 
 * create Errata Scan using password authentication - update:
 ```sh
-covscan/osh/hub/scripts/covscan-xmlrpc-client.py \
+covscan/osh/hub/scripts/osh-xmlrpc-client.py \
     --hub http://covscanhub/xmlrpc/kerbauth/ \
     --username=kdudka --password=xxxxxx \
     create-scan -t curl-7.29.0-55.el7 \
@@ -148,7 +148,7 @@ covscan/osh/hub/scripts/covscan-xmlrpc-client.py \
 
 * create Errata Scan using Kerberos authentication:
 ```sh
-covscan/osh/hub/scripts/covscan-xmlrpc-client.py \
+covscan/osh/hub/scripts/osh-xmlrpc-client.py \
     --hub https://covscan.lab.eng.brq2.redhat.com/covscanhub/xmlrpc/kerbauth/ \
     create-scan -t curl-7.29.0-55.el7 \
     --et-scan-id 1234 --advisory-id 4567 \
@@ -179,7 +179,7 @@ covscan/osh/hub/scripts/covscan-xmlrpc-client.py \
 
 There is a client for connecting to hub's XML-RPC API located in
 
-osh/hub/scripts/covscan-xmlrpc-client.py
+osh/hub/scripts/osh-xmlrpc-client.py
 
 For more info, please check docstring of the script.
 

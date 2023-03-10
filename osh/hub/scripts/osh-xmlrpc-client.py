@@ -14,7 +14,7 @@ This is an XML-RPC client for covscan hub
 
 ### CREATE SCAN
 
- ./osh/hub/scripts/covscan-xmlrpc-client.py --username=admin --password=admin
+ ./osh/hub/scripts/osh-xmlrpc-client.py --username=admin --password=admin
     --hub http://127.0.0.1:8000/xmlrpc/kerbauth/  # has to end with '/'
     create-scan
     -b python-six-1.3.0-4.el7 -t python-six-1.9.0-2.el7
@@ -26,14 +26,14 @@ This is an XML-RPC client for covscan hub
 bear in mind that you need to use ID which is returned by "create-scan" -- that's what errata is
 using
 
-./osh/hub/scripts/covscan-xmlrpc-client.py --hub http://127.0.0.1:8000/xmlrpc/kerbauth/ get-scan-state 13
+./osh/hub/scripts/osh-xmlrpc-client.py --hub http://127.0.0.1:8000/xmlrpc/kerbauth/ get-scan-state 13
 
 
 ### GET FILTERED SCAN
 
 filter scans according to optional filters, hub url is slightly changed!
 
-./osh/hub/scripts/covscan-xmlrpc-client.py --hub http://127.0.0.1:8000/xmlrpc/client/ get-filtered-scan-list \
+./osh/hub/scripts/osh-xmlrpc-client.py --hub http://127.0.0.1:8000/xmlrpc/client/ get-filtered-scan-list \
    --target 'python-six-1.9.0-2.el7' --base 'python-six-1.3.0-4.el7' --username='admin' \
    --state-type "BASE_SCANNING" --release='rhel-7.2'
 

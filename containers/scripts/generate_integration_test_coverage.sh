@@ -18,7 +18,7 @@ CLI_XML=(
     OSH_CLIENT_CONFIG_FILE=osh/client/client-local.conf
     PYTHONPATH=.:kobo
     /usr/bin/coverage-3.6 run --parallel-mode '--omit=*site-packages*,*kobo*,'
-    osh/hub/scripts/covscan-xmlrpc-client.py
+    osh/hub/scripts/osh-xmlrpc-client.py
 )
 
 main() {
@@ -110,7 +110,7 @@ main() {
     curl http://localhost:8000/task/11/ | grep -Pzo "<th>Priority</th>\n    <td>11</td>"
 
     # priority offset feature testing end
-    podman exec osh-client /usr/bin/coverage-3.6 run --parallel-mode '--omit=*site-packages*,*kobo*,' osh/hub/scripts/covscan-xmlrpc-client.py --hub http://osh-hub:8000/xmlrpc/kerbauth/ --username=user --password=xxxxxx create-scan -b python-six-1.3.0-4.el7 -t python-six-1.9.0-2.el7 --et-scan-id=1 --release=RHEL-7.2.0 --owner=admin --advisory-id=1
+    podman exec osh-client /usr/bin/coverage-3.6 run --parallel-mode '--omit=*site-packages*,*kobo*,' osh/hub/scripts/osh-xmlrpc-client.py --hub http://osh-hub:8000/xmlrpc/kerbauth/ --username=user --password=xxxxxx create-scan -b python-six-1.3.0-4.el7 -t python-six-1.9.0-2.el7 --et-scan-id=1 --release=RHEL-7.2.0 --owner=admin --advisory-id=1
 
     set +e; set +o pipefail
 
