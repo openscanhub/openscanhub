@@ -272,12 +272,12 @@ done)
 %files hub-conf-stage
 %attr(640,root,apache) %config(noreplace) %{python3_sitelib}/osh/hub/settings_local.py.stage
 %attr(640,root,apache) %config(noreplace) %{python3_sitelib}/osh/hub/__pycache__/settings_local*.pyc.stage
-%attr(640,root,root) %config(noreplace) /etc/httpd/conf.d/covscanhub-httpd.conf.stage
+%attr(640,root,root) %config(noreplace) /etc/httpd/conf.d/osh-hub-httpd.conf.stage
 
 %files hub-conf-prod
 %attr(640,root,apache) %config(noreplace) %{python3_sitelib}/osh/hub/settings_local.py.prod
 %attr(640,root,apache) %config(noreplace) %{python3_sitelib}/osh/hub/__pycache__/settings_local*.pyc.prod
-%attr(640,root,root) %config(noreplace) /etc/httpd/conf.d/covscanhub-httpd.conf.prod
+%attr(640,root,root) %config(noreplace) /etc/httpd/conf.d/osh-hub-httpd.conf.prod
 
 
 %changelog

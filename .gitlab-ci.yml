@@ -110,7 +110,7 @@ build-rpms-on-copr-and-test:
     # Set up self signed certificate before starting httpd
     - (cd /etc/httpd/conf && openssl req -newkey rsa:4096 -nodes -keyout localhost.key -x509 -sha256 -days 365 -addext "subjectAltName = DNS:localhost, DNS:localhost, DNS:127.0.0.1" -subj "/C=CZ/ST=/L=/O=Red Hat/OU=Plumbers/CN=localhost" -out localhost.crt)
     - cp /etc/httpd/conf/localhost.crt /etc/pki/ca-trust/source/anchors/ && update-ca-trust
-    - cp osh/hub/covscanhub-httpd.conf /etc/httpd/conf.d/covscanhub-httpd.conf
+    - cp osh/hub/osh-hub-httpd.conf /etc/httpd/conf.d/osh-hub-httpd.conf
     - touch /var/log/osh/hub/hub.log && chown apache:apache /var/log/osh/hub/hub.log
     - systemctl start httpd covscand
     # Enable below lines if firewall is enabled

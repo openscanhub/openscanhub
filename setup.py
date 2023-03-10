@@ -23,8 +23,8 @@ data_files = {
         "osh/worker/worker.conf.stage",
     ],
     "/etc/httpd/conf.d": [
-        "osh/hub/covscanhub-httpd.conf.prod",
-        "osh/hub/covscanhub-httpd.conf.stage",
+        "osh/hub/osh-hub-httpd.conf.prod",
+        "osh/hub/osh-hub-httpd.conf.stage",
     ],
     "/usr/lib/systemd/system": [
         "files/etc/systemd/system/covscand.service",
