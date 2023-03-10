@@ -41,7 +41,7 @@ data_files = {
 }
 package_data = {
     "osh": [
-        "hub/covscanhub.wsgi",
+        "hub/osh-hub.wsgi",
         "hub/scripts/checker_groups.txt",
     ]
 }

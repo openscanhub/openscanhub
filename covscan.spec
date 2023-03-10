@@ -142,6 +142,10 @@ ln -s osh-cli %{buildroot}%{_bindir}/covscan
 # Temporarily provide /usr/sbin/covscand to work around systemd bug
 ln -s osh-worker %{buildroot}/usr/sbin/covscand
 
+# Temporarily provide /usr/lib/python3.6/site-packages/osh/hub/covscanhub.wsgi for backward compatibility
+# https://gitlab.cee.redhat.com/covscan/covscan/-/merge_requests/217#note_6042264
+ln -s osh-hub.wsgi %{buildroot}%{python3_sitelib}/osh/hub/covscanhub.wsgi
+
 # rename settings_local.{stage,prod}.* -> settings_local.*.{stage,prod}
 for i in stage prod; do (
     cd %{buildroot}%{python3_sitelib}/osh/hub

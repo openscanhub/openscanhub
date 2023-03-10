@@ -11,7 +11,7 @@ WSGISocketPrefix /var/run/wsgi
     # WSGI handler
     WSGIDaemonProcess covscan display-name=%{GROUP} locale='C.UTF-8'
     WSGIProcessGroup covscan
-    WSGIScriptAlias /covscanhub /usr/lib/python3.6/site-packages/osh/hub/covscanhub.wsgi process-group=covscan
+    WSGIScriptAlias /covscanhub /usr/lib/python3.6/site-packages/osh/hub/osh-hub.wsgi process-group=covscan
 
     SSLEngine on
     SSLCertificateFile      /etc/httpd/conf/cov01.lab.eng.brq2.redhat.com.crt
