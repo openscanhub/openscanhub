@@ -43,7 +43,7 @@ def main():
 
     conf = get_config_dict(config_env="OSH_CLIENT_CONFIG_FILE", config_default="/etc/osh/client.conf")
     if conf is None:
-        return 2
+        sys.exit(2)
     handle_deprecated_options(conf)
 
     # initialize command container
@@ -64,9 +64,8 @@ def main():
         parser.run()
     except kobo.exceptions.ImproperlyConfigured as ex:
         print(f"\n\nError: Improperly configured: {ex}", file=sys.stderr)
-        return 3
-    return 0
+        sys.exit(3)
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    main()
