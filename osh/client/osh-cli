@@ -1,8 +1,4 @@
-#!/usr/bin/env -S PYTHONNOUSERSITE=1 /usr/bin/python3 -tt
-# -*- coding: utf-8 -*-
-
-from __future__ import absolute_import
-
+#!/usr/bin/env -S PYTHONNOUSERSITE=1 /usr/bin/python3
 import inspect
 import sys
 import os
@@ -38,7 +34,7 @@ def main(args=None):
         conf["HUB_URL"] = "https://cov01.lab.eng.brq2.redhat.com/covscanhub/xmlrpc"
         sys.stderr.write("warning: forcing %s as HUB_URL, please update client configuration!\n" % conf["HUB_URL"])
 
-    if sys.version_info[0] >= 3 and conf['AUTH_METHOD'] == 'krbv':
+    if conf['AUTH_METHOD'] == 'krbv':
         # there is no 'krbv' for py3 --> use 'gssapi' instead
         conf['AUTH_METHOD'] = 'gssapi'
 
