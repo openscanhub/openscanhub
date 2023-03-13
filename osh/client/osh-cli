@@ -41,7 +41,8 @@ def main():
     # register project specific commands
     OshCommandContainer.register_module(osh.client.commands, prefix="cmd_")
 
-    conf = get_config_dict(config_env="OSH_CLIENT_CONFIG_FILE", config_default="/etc/osh/client.conf")
+    conf = get_config_dict(config_env="OSH_CLIENT_CONFIG_FILE",
+                           config_default="/etc/osh/client.conf")
     if conf is None:
         sys.exit(2)
     handle_deprecated_options(conf)
