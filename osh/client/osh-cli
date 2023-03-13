@@ -17,6 +17,24 @@ class OshCommandContainer(kobo.client.ClientCommandContainer):
     pass
 
 
+def handle_deprecated_options(conf):
+    def print_warning(opt):
+        print(f"warning: forcing {conf[opt]} as {opt}, please update client configuration!",
+              file=sys.stderr)
+
+    # xmlrpclib/httplib do not follow HTTP redirect
+    if "cov01.lab.eng.brq.redhat.com" in conf["HUB_URL"]:
+        conf["HUB_URL"] = "https://cov01.lab.eng.brq2.redhat.com/covscanhub/xmlrpc"
+        print_warning("HUB_URL")
+
+    # there is no 'krbv' for py3 --> use 'gssapi' instead
+    if conf["AUTH_METHOD"] == "krbv":
+        conf["AUTH_METHOD"] = 'gssapi'
+        # TODO: Uncomment in the future.  For now, we should give users some
+        # time to settle with the new config files.
+        # print_warning("AUTH_METHOD")
+
+
 def main():
     # register generic kobo commands
     OshCommandContainer.register_module(kobo.client.commands, prefix="cmd_")
@@ -26,16 +44,7 @@ def main():
     conf = get_config_dict(config_env="OSH_CLIENT_CONFIG_FILE", config_default="/etc/osh/client.conf")
     if conf is None:
         return 2
-
-    # xmlrpclib/httplib do not follow HTTP redirect
-    if conf["HUB_URL"] in ["http://cov01.lab.eng.brq.redhat.com/covscanhub/xmlrpc",
-            "https://cov01.lab.eng.brq.redhat.com/covscanhub/xmlrpc"]:
-        conf["HUB_URL"] = "https://cov01.lab.eng.brq2.redhat.com/covscanhub/xmlrpc"
-        sys.stderr.write("warning: forcing %s as HUB_URL, please update client configuration!\n" % conf["HUB_URL"])
-
-    if conf['AUTH_METHOD'] == 'krbv':
-        # there is no 'krbv' for py3 --> use 'gssapi' instead
-        conf['AUTH_METHOD'] = 'gssapi'
+    handle_deprecated_options(conf)
 
     # initialize command container
     command_container = OshCommandContainer(conf)
