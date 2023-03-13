@@ -1,7 +1,6 @@
 #!/usr/bin/env -S PYTHONNOUSERSITE=1 /usr/bin/python3
 import inspect
 import sys
-import os
 
 import kobo.exceptions
 import kobo.cli
@@ -18,7 +17,7 @@ class OshCommandContainer(kobo.client.ClientCommandContainer):
     pass
 
 
-def main(args=None):
+def main():
     # register generic kobo commands
     OshCommandContainer.register_module(kobo.client.commands, prefix="cmd_")
     # register project specific commands
@@ -53,7 +52,7 @@ def main(args=None):
     parser = kobo.cli.CommandOptionParser(**parser_args)
 
     try:
-        parser.run(args)
+        parser.run()
     except kobo.exceptions.ImproperlyConfigured as ex:
         sys.stderr.write("\n\nError: Improperly configured: %s\n" % ex)
         return 3
