@@ -2,7 +2,7 @@ Name:           covscan
 Version:        %{version}
 Release:        2%{?dist}
 License:        Commercial
-Summary:        Coverity scan scheduler
+Summary:        Static and Dynamic Analysis as a Service
 Source:         %{name}-%{version}.tar.bz2
 BuildArch:      noarch
 
@@ -22,7 +22,7 @@ BuildRequires:  python3-six
 BuildRequires:  systemd-rpm-macros
 
 %description
-CovScan is a Coverity scan scheduler.
+OpenScanHub is a service for static and dynamic analysis.
 It consists of central hub, workers and cli client.
 
 
