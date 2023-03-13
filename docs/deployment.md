@@ -141,11 +141,12 @@ Please follow below steps to handle migration of `covscanhub` to `osh/hub` name:
     - `/etc/covscanhub/msg-client-covscan.pem`
     - `/usr/lib/python3.6/site-packages/covscanhub/settings_local.py`
     - `/var/log/covscanhub/covscanhub.log`
-- Unmount `/var/lib/covscanhub/html`.
+- Unmount `/var/www/html`.
 - Unmount `/var/lib/covscanhub`.
 - Fix mount point entries in `/etc/fstab` to use `/var/lib/osh/hub` path.
-- Mount `/var/lib/covscanhub`.
-- Mount `/var/lib/covscanhub/html`.
+- Create the new mount point: `mkdir -p /var/lib/osh/hub`.
+- Mount `/var/lib/osh/hub`.
+- Mount `/var/www/html`.
 - Update packages through `dnf update`.
 - Check if migration to `/usr/lib/python3.6/site-packages/osh/hub/settings_local.py` was handled succesfully.
 - Change below paths in `/usr/lib/python3.6/site-packages/osh/hub/settings_local.py`:
