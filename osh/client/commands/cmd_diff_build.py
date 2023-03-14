@@ -1,13 +1,8 @@
-# -*- coding: utf-8 -*-
-
-from __future__ import absolute_import, print_function
-
 import os
+import urllib.request
+from xmlrpc.client import Fault
 
-import six
 from kobo.shortcuts import random_string
-from six.moves import urllib
-from six.moves.xmlrpc_client import Fault
 
 import osh.client
 from osh.client.commands.common import (add_aggressive_option, add_all_option,
@@ -70,7 +65,7 @@ class Diff_Build(osh.client.OshCommand):
 
     def validate_results_store_file(self):
         if self.results_store_file:
-            if isinstance(self.results_store_file, six.string_types):
+            if isinstance(self.results_store_file, str):
                 if not os.path.isdir(self.results_store_file):
                     self.parser.error("Path (%s) for storing results doesn't \
 exist." % self.results_store_file)

@@ -1,6 +1,3 @@
-# -*- coding: utf-8 -*-
-
-
 def add_aggressive_option(parser):
     parser.add_option(
         "--aggressive",
