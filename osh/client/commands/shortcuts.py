@@ -40,25 +40,17 @@ def verify_brew_koji_build(build, brew_url, koji_url):
         return f'Invalid N-V-R: {srpm}'
     dist_tag = match[1]
 
-    error_template = f"Build {build} does not exist in koji nor in brew, or \
-has its files deleted, or did not finish successfully."
-
-    koji_build_exists = True
+    # Use brew first unless fc is in the dist tag.
+    # In that case, start with Koji.
+    urls = [brew_url, koji_url]
     if 'fc' in dist_tag:
-        koji_build_exists = verify_build_exists(srpm, koji_url)
-        if koji_build_exists:
-            return None
-    brew_build_exists = verify_build_exists(srpm, brew_url)
-    if not brew_build_exists and not koji_build_exists:
-        return error_template
-    elif not brew_build_exists:
-        koji_build_exists = verify_build_exists(srpm, koji_url)
-        if not brew_build_exists and not koji_build_exists:
-            return error_template
-        else:
-            return None
-    else:
+        urls.reverse()
+
+    if any(verify_build_exists(build, url) for url in urls):
         return None
+
+    return f"Build {build} does not exist in koji nor in brew, or has its \
+files deleted, or did not finish successfully."
 
 
 def verify_mock(mock, hub):
