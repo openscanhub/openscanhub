@@ -1,7 +1,7 @@
 _osh_cli_configs()
 {
     local IFS=$'\n'
-    configs=$(python -m "osh.client.completion.main" 2>/dev/null)
+    configs=$(python3 -m "osh.client.completion.main")
 }
 
 #function contains() {
