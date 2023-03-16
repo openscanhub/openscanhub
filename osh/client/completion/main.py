@@ -4,9 +4,8 @@ import datetime
 import os
 import pickle
 import xmlrpc.client
-from urllib.parse import urljoin
 
-from osh.common.utils.conf import get_conf
+from osh.common.utils.conf import get_conf, get_config_dict
 
 
 def get_can_path():
@@ -20,8 +19,12 @@ def get_configs_from_hub():
     """
     Return enabled mockconfigs from hub
     """
-    rpc_url = urljoin(get_conf()['HUB_URL'], '/client/')
-    client = xmlrpc.client.ServerProxy(rpc_url, allow_none=True)
+    conf = get_config_dict(config_env="OSH_CLIENT_CONFIG_FILE",
+                           config_default="/etc/osh/client.conf")
+    if not conf:
+        return []
+
+    client = xmlrpc.client.ServerProxy(conf['HUB_URL'], allow_none=True)
     return [x for x in client.mock_config.all() if x['enabled']]
 
 
