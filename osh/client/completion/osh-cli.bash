@@ -41,10 +41,9 @@ _osh_cli()
     opts="cancel-tasks diff-build download-results find-tasks list-mock-configs mock-build task-info version-diff-build"
 
     # complete for --config=<mock_config>
-    if [ "${prev2}" == "--config" -a "${prev}" == "=" ] ; then
-        #local configs=$(for x in `osh-cli list-mock-configs 2>&1 | egrep "^[_[:alnum:]\-\.]+.+True" | awk '{ print $1 }'` ; do echo "$x" ; done )
+    if [ "${prev}" == "--config" -o "${prev2}" == "--config" ] ; then
         _osh_cli_configs
-        COMPREPLY=( $(compgen -W "${configs}" -- ${cur}) )
+        COMPREPLY=( $(compgen -W "${configs}" -- ${cur#=}) )
         return 0
     elif [ "${prev}" == "mock-build" -o "${prev}" == "diff-build" ] ; then
         COMPREPLY=( $(compgen -W "--config=" -- ${cur}) )
