@@ -29,7 +29,7 @@ data_files = {
     "/usr/lib/systemd/system": [
         "files/etc/systemd/system/covscand.service",
     ],
-    "/etc/bash_completion.d": [
+    "/usr/share/bash-completion/completions": [
         "osh/client/completion/osh-cli.bash",
     ],
     "/usr/bin": [
