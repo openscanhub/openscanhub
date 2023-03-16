@@ -3,7 +3,8 @@
 import datetime
 import os
 import pickle
-import xmlrpc.client
+
+from kobo.client import HubProxy
 
 from osh.common.utils.conf import get_conf, get_config_dict
 
@@ -24,8 +25,8 @@ def get_configs_from_hub():
     if not conf:
         return []
 
-    client = xmlrpc.client.ServerProxy(conf['HUB_URL'], allow_none=True)
-    return [x for x in client.mock_config.all() if x['enabled']]
+    hub = HubProxy(conf)
+    return [x for x in hub.mock_config.all() if x['enabled']]
 
 
 def write_configs():
