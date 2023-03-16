@@ -33,8 +33,8 @@ def write_configs():
     write configs which were retieved from hub to pickle can
     """
     can_path = get_can_path()
+    configs = get_configs_from_hub()
     with open(can_path, 'wb') as fd:
-        configs = get_configs_from_hub()
         pickle.dump(configs, fd)
     return configs
 
