@@ -49,7 +49,7 @@ def list_enabled_mock_configs():
                 enabled_configs = pickle.load(can)
             else:
                 enabled_configs = write_configs()
-    except IOError:
+    except OSError:
         enabled_configs = write_configs()
     for emc in enabled_configs:
         print(emc['name'])
