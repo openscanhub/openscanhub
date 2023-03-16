@@ -30,7 +30,7 @@ data_files = {
         "files/etc/systemd/system/covscand.service",
     ],
     "/etc/bash_completion.d": [
-        "osh/client/bash_completion.d/osh-cli.bash",
+        "osh/client/completion/osh-cli.bash",
     ],
     "/usr/bin": [
         "osh/client/osh-cli",
