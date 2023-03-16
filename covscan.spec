@@ -1,6 +1,6 @@
 Name:           covscan
 Version:        %{version}
-Release:        2%{?dist}
+Release:        1%{?dist}
 License:        Commercial
 Summary:        Static and Dynamic Analysis as a Service
 Source:         %{name}-%{version}.tar.bz2
@@ -290,6 +290,9 @@ done)
 
 
 %changelog
+* Thu Mar 16 2023 Kamil Dudka <kdudka@redhat.com> - 0.9.0-1
+- stabilize the refactored version of covscan-client
+
 * Thu Sep 01 2022 Siteshwar Vashisht <svashisht@redhat.com> - 0.8.2-2
 - Add mod_ssl as runtime dependency
 
