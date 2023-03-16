@@ -38,7 +38,7 @@ PID_FILE = "/var/run/covscand.pid"
 LOG_LEVEL = "info"
 
 # Log file.
-LOG_FILE = "/var/log/covscand.log"
+LOG_FILE = "/var/log/osh/worker.log"
 
 # The maximum number of jobs that a worker will handle at a time.
 MAX_JOBS = 10
