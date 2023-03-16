@@ -5,9 +5,9 @@ After=network.target
 
 [Service]
 Type=forking
-PIDFile=/run/covscand.pid
+PIDFile=/run/osh-worker.pid
 ExecStartPre=test -r /etc/osh/worker.conf
-ExecStart=/usr/sbin/osh-worker -p /run/covscand.pid
+ExecStart=/usr/sbin/osh-worker
 ExecStop=/usr/sbin/osh-worker -k
 KillMode=process
 Restart=on-failure
