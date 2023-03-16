@@ -3,7 +3,7 @@
 # Hub XML-RPC address.
 HUB_URL = "https://cov01.lab.eng.brq2.redhat.com/covscanhub/xmlrpc"
 
-# Hub authentication method. Example: krbv, password, worker_key
+# Hub authentication method. Example: gssapi, password, worker_key
 AUTH_METHOD = "worker_key"
 
 # Username and password
@@ -11,7 +11,7 @@ AUTH_METHOD = "worker_key"
 #PASSWORD = ""
 
 # A unique worker key used for authentication.
-# I't recommended to use krbv auth in production environment instead.
+# I't recommended to use gssapi auth in production environment instead.
 WORKER_KEY = "JjHIQ5rgBsvvOHgft1rxf8n46fFVytQY8icVCiuCSvKjV9IVzzlXd8YVGlNA0RcY"
 
 # Kerberos principal. If commented, default principal obtained by kinit is used.
