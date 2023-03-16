@@ -12,7 +12,7 @@ import kobo.cli
 import kobo.client
 import kobo.client.commands
 
-# assuming all commands are in covscan/commands/cmd_*.py modules
+# assuming all commands are in osh/client/commands/cmd_*.py modules
 import osh.client.commands
 from osh.common.utils.conf import get_config_dict
 
