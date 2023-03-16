@@ -27,25 +27,25 @@ It consists of central hub, workers and cli client.
 
 
 %package client
-Summary: CovScan CLI client
+Summary: OpenScanHub CLI client
 Requires: koji
 Requires: python3-kobo-client >= 0.15.1-100
 Requires: %{name}-common = %{version}-%{release}
 Obsoletes: python3-%{name}-client < %{version}-%{release}
 
 %description client
-CovScan CLI client
+OpenScanHub CLI client
 
 
 %package common
-Summary: CovScan shared files for client, hub and worker
+Summary: OpenScanHub shared files for client, hub and worker
 
 %description common
-CovScan shared files for client, hub and worker.
+OpenScanHub shared files for client, hub and worker.
 
 
 %package worker
-Summary: CovScan worker
+Summary: OpenScanHub worker
 Requires: csmock
 Requires: koji
 Requires: python3-kobo-client
@@ -60,10 +60,10 @@ Obsoletes: python3-covscan-worker-prod < %{version}-%{release}
 Obsoletes: python3-covscan-worker-stage < %{version}-%{release}
 
 %description worker
-CovScan worker
+OpenScanHub worker
 
 %package hub
-Summary: CovScan xml-rpc interface and web application
+Summary: OpenScanHub xml-rpc interface and web application
 Requires: boost-python3
 Requires: httpd
 Requires: mod_auth_gssapi
@@ -102,19 +102,19 @@ Obsoletes: python3-covscan-hub-stage < %{version}-%{release}
 Obsoletes: python3-%{name}-hub < %{version}-%{release}
 
 %description hub
-CovScan xml-rpc interface and web application
+OpenScanHub xml-rpc interface and web application
 
 # define covscan-{worker,hub}-conf-{devel,stage,prod} subpackages
 %(for sub in worker hub; do
 for alt in devel stage prod; do
 cat << EOF
 %package ${sub}-conf-${alt}
-Summary: Covscan ${sub} ${alt} configuration
+Summary: OpenScanHub ${sub} ${alt} configuration
 Provides: covscan-${sub}-conf = %{version}-%{release}
 Conflicts: covscan-${sub}-conf
 RemovePathPostfixes: .${alt}
 %description ${sub}-conf-${alt}
-Covscan ${sub} ${alt} configuration
+OpenScanHub ${sub} ${alt} configuration
 EOF
 done;done)
 
