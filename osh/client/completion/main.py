@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import argparse
 import datetime
 import os
 import pickle
@@ -59,9 +60,14 @@ def list_enabled_mock_configs():
         print(emc['name'])
 
 
-def main():
-    list_enabled_mock_configs()
+def main(args):
+    if 'mock-configs' == args.action:
+        list_enabled_mock_configs()
 
 
 if __name__ == "__main__":
-    main()
+    parser = argparse.ArgumentParser()
+    parser.add_argument('action', choices=['mock-configs'],
+                        help='select what should be completed')
+
+    main(parser.parse_args())
