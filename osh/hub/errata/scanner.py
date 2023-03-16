@@ -10,7 +10,6 @@ from __future__ import absolute_import
 
 import logging
 import os
-import pipes
 import shutil
 
 import six
@@ -300,21 +299,13 @@ class AbstractClientScanScheduler(object):
         def add_if(x, collection):
             if x:
                 collection.append(x)
-        cov_args = {
-            'all': '--all',
-            'security': '--security',
-            'concurrency': '--concurrency',
-            'aggressive': '--aggressiveness-level high',
-        }
         csmock_args = {
-            'keep_covdata': '--cov-keep-int-dir',
             'warning_level': '-w%s',
             # --cov-custom-model='%s' is not here because we need to upload file
             'install_to_chroot': "--install='%s'",
             'tarball_build_script': "--shell-cmd='%s'",
         }
         # client args
-        cov_opts = self.options.get('args', [])
         csmock_opts = []
         add_args = []
         # profile, analuzer args
@@ -322,10 +313,6 @@ class AbstractClientScanScheduler(object):
             add_if(a, add_args)
         # args supplied to scheduler class
         add_if(self.additional_csmock_args, add_args)
-        # client args via opts like -a, --security
-        for opt in self.options:
-            if opt in cov_args:
-                cov_opts.append(cov_args[opt])
         for opt in self.options:
             if opt in csmock_args:
                 try:
@@ -336,8 +323,6 @@ class AbstractClientScanScheduler(object):
         # client overrides via --csmock-args
         if self.client_csmock_args:
             csmock_opts.append(self.client_csmock_args)
-        if cov_opts:
-            add_args.append("--cov-analyze-opts=%s" % (pipes.quote(" ".join(cov_opts))))
         if csmock_opts:
             add_args.append(' '.join(csmock_opts))
         opts = " ".join(add_args)

@@ -5,22 +5,18 @@ from xmlrpc.client import Fault
 from kobo.shortcuts import random_string
 
 import osh.client
-from osh.client.commands.common import (add_aggressive_option, add_all_option,
-                                        add_analyzers_option,
+from osh.client.commands.common import (add_analyzers_option,
                                         add_brew_build_option,
                                         add_comment_option,
                                         add_comp_warnings_option,
-                                        add_concurrency_option,
                                         add_config_option,
                                         add_csmock_args_option,
                                         add_custom_model_option,
                                         add_download_results_option,
                                         add_email_to_option,
                                         add_install_to_chroot_option,
-                                        add_keep_covdata_option,
                                         add_nowait_option, add_priority_option,
                                         add_profile_option,
-                                        add_security_option,
                                         add_task_id_file_option)
 from osh.client.commands.shortcuts import (check_analyzers, handle_perm_denied,
                                            upload_file, verify_brew_koji_build,
@@ -42,23 +38,18 @@ class Diff_Build(osh.client.OshCommand):
 ~/.config/osh/client.conf"
 
         add_config_option(self.parser)
-        add_aggressive_option(self.parser)
-        add_concurrency_option(self.parser)
         add_download_results_option(self.parser)
         add_comp_warnings_option(self.parser)
         add_analyzers_option(self.parser)
         add_profile_option(self.parser)
         add_csmock_args_option(self.parser)
 
-        add_keep_covdata_option(self.parser)
         add_comment_option(self.parser)
         add_task_id_file_option(self.parser)
         add_nowait_option(self.parser)
         add_email_to_option(self.parser)
         add_priority_option(self.parser)
         add_brew_build_option(self.parser)
-        add_all_option(self.parser)
-        add_security_option(self.parser)
         add_custom_model_option(self.parser)
 
         add_install_to_chroot_option(self.parser)
@@ -95,18 +86,13 @@ exist." % self.results_store_file)
 
         # optparser output is passed via *args (args) and **kwargs (opts)
         config = kwargs.pop("config", None)
-        aggressive = kwargs.pop("aggressive", None)
         cppcheck = kwargs.pop("cppcheck", None)
-        keep_covdata = kwargs.pop("keep_covdata", False)
         email_to = kwargs.pop("email_to", [])
         comment = kwargs.pop("comment")
         nowait = kwargs.pop("nowait")
         task_id_file = kwargs.pop("task_id_file")
         priority = kwargs.pop("priority")
         brew_build = kwargs.pop("brew_build")
-        all_option = kwargs.pop("all")
-        security = kwargs.pop("security")
-        concurrency = kwargs.pop("concurrency")
         self.results_store_file = kwargs.pop("results_dir", None)
         clang = kwargs.pop('clang', False)
         warn_level = kwargs.pop('warn_level', '0')
@@ -161,10 +147,6 @@ is not even one in your user configuration file \
         if priority is not None:
             options["priority"] = priority
 
-        if keep_covdata:
-            options["keep_covdata"] = keep_covdata
-        if aggressive:
-            options["aggressive"] = aggressive
         if cppcheck:
             options["cppcheck"] = cppcheck
         if clang:
@@ -179,12 +161,6 @@ is not even one in your user configuration file \
             options['analyzers'] = analyzers
         if profile:
             options['profile'] = profile
-        if all_option:
-            options["all"] = all_option
-        if security:
-            options["security"] = security
-        if concurrency:
-            options["concurrency"] = concurrency
 
         if brew_build:
             options["brew_build"] = self.srpm

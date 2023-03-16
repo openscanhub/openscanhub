@@ -1,22 +1,3 @@
-def add_aggressive_option(parser):
-    parser.add_option(
-        "--aggressive",
-        default=False,
-        action="store_true",
-        help="make Coverity to make more aggressive assumptions during \
-analysis; it reports more defects"
-    )
-
-
-def add_concurrency_option(parser):
-    parser.add_option(
-        "--concurrency",
-        default=False,
-        action="store_true",
-        help="turn on concurrency checkers of Coverity"
-    )
-
-
 def add_download_results_option(parser):
     parser.add_option(
         "-d",
@@ -76,16 +57,6 @@ if not specified)"
     )
 
 
-def add_keep_covdata_option(parser):
-    parser.add_option(
-        "-i",
-        "--keep-covdata",
-        default=False,
-        action="store_true",
-        help="keep Coverity data in final archive",
-    )
-
-
 def add_comment_option(parser):
     parser.add_option(
         "--comment",
@@ -131,24 +102,6 @@ def add_brew_build_option(parser):
         action="store_true",
         default=False,
         help="use a brew build (specified by NVR) instead of a local file"
-    )
-
-
-def add_all_option(parser):
-    parser.add_option(
-        "--all",
-        action="store_true",
-        default=False,
-        help="enable all checkers of Coverity (expect high FP ratio)"
-    )
-
-
-def add_security_option(parser):
-    parser.add_option(
-        "--security",
-        action="store_true",
-        default=False,
-        help="enable security checkers of Coverity"
     )
 
 

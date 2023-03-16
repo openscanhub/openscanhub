@@ -5,14 +5,12 @@ from kobo.shortcuts import random_string
 import osh.client
 from osh.common.utils.conf import get_conf
 
-from .common import (add_aggressive_option, add_all_option,
-                     add_analyzers_option, add_comment_option,
-                     add_comp_warnings_option, add_concurrency_option,
-                     add_config_option, add_csmock_args_option,
-                     add_custom_model_option, add_email_to_option,
-                     add_keep_covdata_option, add_nowait_option,
+from .common import (add_analyzers_option, add_comment_option,
+                     add_comp_warnings_option, add_config_option,
+                     add_csmock_args_option, add_custom_model_option,
+                     add_email_to_option, add_nowait_option,
                      add_priority_option, add_profile_option,
-                     add_security_option, add_task_id_file_option)
+                     add_task_id_file_option)
 from .shortcuts import (check_analyzers, handle_perm_denied, upload_file,
                         verify_brew_koji_build, verify_mock)
 
@@ -30,8 +28,6 @@ class Version_Diff_Build(osh.client.OshCommand):
         self.parser.epilog = "User configuration file is located at: \
 ~/.config/osh/client.conf"
 
-        add_aggressive_option(self.parser)
-        add_concurrency_option(self.parser)
         add_comp_warnings_option(self.parser)
         add_analyzers_option(self.parser)
         add_profile_option(self.parser)
@@ -44,7 +40,6 @@ class Version_Diff_Build(osh.client.OshCommand):
         )
 
         add_config_option(self.parser)
-        add_keep_covdata_option(self.parser)
         add_comment_option(self.parser)
         add_task_id_file_option(self.parser)
         add_nowait_option(self.parser)
@@ -73,9 +68,6 @@ local file"
             help="path to SRPM used as target"
         )
 
-        add_all_option(self.parser)
-        add_security_option(self.parser)
-
     # https://gitlab.cee.redhat.com/covscan/covscan/-/issues/163
     def run(self, *args, **kwargs):  # noqa: C901
         # optparser output is passed via *args (args) and **kwargs (opts)
@@ -89,9 +81,7 @@ local file"
 
         config = kwargs.pop("config", None)
         base_config = kwargs.pop("base_config", None)
-        aggressive = kwargs.pop("aggressive", None)
         cppcheck = kwargs.pop("cppcheck", None)
-        keep_covdata = kwargs.pop("keep_covdata", False)
         email_to = kwargs.pop("email_to", [])
         comment = kwargs.pop("comment")
         nowait = kwargs.pop("nowait")
@@ -101,9 +91,6 @@ local file"
         brew_build = kwargs.pop("brew_build", None)
         base_srpm = kwargs.pop("base_srpm", None)
         srpm = kwargs.pop("srpm", None)
-        all_checker = kwargs.pop("all")
-        security = kwargs.pop("security")
-        concurrency = kwargs.pop("concurrency")
         clang = kwargs.pop('clang', False)
         warn_level = kwargs.pop('warn_level', '0')
         analyzers = kwargs.pop('analyzers', '')
@@ -197,16 +184,11 @@ is not even one in your user configuration file \
 
         # end of CLI options handling
 
-        if keep_covdata:
-            options_forwarded["keep_covdata"] = keep_covdata
-
         if email_to:
             options_forwarded["email_to"] = email_to
         if priority is not None:
             options_consumed["priority"] = priority
 
-        if aggressive:
-            options_forwarded["aggressive"] = aggressive
         if cppcheck:
             options_forwarded["cppcheck"] = cppcheck
         if clang:
@@ -221,12 +203,6 @@ is not even one in your user configuration file \
             options_consumed['analyzers'] = analyzers
         if profile:
             options_consumed['profile'] = profile
-        if all_checker:
-            options_forwarded["all"] = all_checker
-        if security:
-            options_forwarded["security"] = security
-        if concurrency:
-            options_forwarded["concurrency"] = concurrency
 
         if brew_build:
             options_consumed["nvr_brew_build"] = brew_build
