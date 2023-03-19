@@ -179,7 +179,7 @@ def add_tarball_option(parser):
         "--tarball-build-script",
         dest="tarball_build_script",
         action="store",
-        help="With this option covscan accepts path to tarball specified via first argument and "
+        help="With this option osh-cli accepts path to tarball specified via first argument and "
              "then the tarball will be scanned. "
              "This option sets command which should build the package, usually this should be just "
              "\"make\", in case of packages which doesn't need to be built, just pass \"true\".",
