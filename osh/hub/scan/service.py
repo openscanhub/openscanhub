@@ -180,7 +180,6 @@ def extract_logs_from_tarball(task_id, name=None):
                            (tar_archive, task_id))
     try:
         run(command, can_fail=False, stdout=False)
-#            logfile='/tmp/covscanhub_extract_tarball.log')
     except RuntimeError:
         raise RuntimeError('[%s] Unable to extract tarball archive %s \
 I have used this command: %s' % (task_id, tar_archive, command))
