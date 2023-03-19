@@ -13,7 +13,7 @@ from osh.hub.errata.scanner import (ClientDiffPatchesScanScheduler,
                                     ClientScanScheduler, create_diff_task2)
 from osh.hub.scan.models import SCAN_STATES, ClientAnalyzer, Profile, Scan
 
-logger = logging.getLogger("covscanhub")
+logger = logging.getLogger("openscanhub")
 
 __all__ = (
     "diff_build",

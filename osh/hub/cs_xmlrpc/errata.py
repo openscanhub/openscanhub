@@ -14,7 +14,7 @@ __all__ = (
     "get_scan_state",
 )
 
-logger = logging.getLogger("covscanhub")
+logger = logging.getLogger("openscanhub")
 
 
 @login_required

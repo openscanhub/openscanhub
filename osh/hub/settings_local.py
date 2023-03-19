@@ -57,7 +57,7 @@ LOGGING = {
         }
     },
     'loggers': {
-        'covscanhub': {
+        'opencanhub': {
             'handlers': ['file', 'console'],
             'level': 'DEBUG',
             'propagate': True,
