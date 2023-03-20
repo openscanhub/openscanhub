@@ -7,15 +7,18 @@ import pickle
 
 from kobo.client import HubProxy
 
-from osh.client.conf import get_conf
 from osh.common.conf import get_config_dict
+
+CACHE_PATH_PREFIX = '.cache/osh'
 
 
 def get_can_path():
     """
     Return path to can with pickles
     """
-    return os.path.join(get_conf().get_conf_dir(), 'bash_compl.pickle')
+    cache_path = os.path.join(os.path.expanduser('~'), CACHE_PATH_PREFIX)
+    os.makedirs(cache_path, exist_ok=True)
+    return os.path.join(cache_path, 'bash_compl.pickle')
 
 
 def get_configs_from_hub():
