@@ -33,6 +33,13 @@ def connect_to_hub():
     return HubProxy(conf)
 
 
+def fetch_analyzers(hub):
+    """
+    Return available analyzers from hub
+    """
+    return [x['cli_long_command'] for x in hub.scan.list_analyzers()]
+
+
 def fetch_mock_configs(hub):
     """
     Return enabled mock configs from hub
@@ -82,7 +89,8 @@ def main(args):
 
 
 ACTIONS = {
-    'mock-configs': fetch_mock_configs,
+    'analyzers': fetch_analyzers,
+    'mock-configs': fetch_mock_configs
 }
 
 
