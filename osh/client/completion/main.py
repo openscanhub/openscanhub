@@ -31,7 +31,7 @@ def get_configs_from_hub():
         return []
 
     hub = HubProxy(conf)
-    return [x for x in hub.mock_config.all() if x['enabled']]
+    return [x['name'] for x in hub.mock_config.all() if x['enabled']]
 
 
 def write_configs():
@@ -60,8 +60,8 @@ def list_enabled_mock_configs():
                 enabled_configs = write_configs()
     except OSError:
         enabled_configs = write_configs()
-    for emc in enabled_configs:
-        print(emc['name'])
+
+    print(*enabled_configs)
 
 
 def main(args):

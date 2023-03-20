@@ -1,6 +1,5 @@
 _osh_cli_configs()
 {
-    local IFS=$'\n'
     configs="$(python3 -m "osh.client.completion.main" mock-configs)"
 }
 
