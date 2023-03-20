@@ -40,6 +40,13 @@ def fetch_analyzers(hub):
     return [x['cli_long_command'] for x in hub.scan.list_analyzers()]
 
 
+def fetch_profiles(hub):
+    """
+    Return available profiles from hub
+    """
+    return [x['name'] for x in hub.scan.list_profiles()]
+
+
 def fetch_mock_configs(hub):
     """
     Return enabled mock configs from hub
@@ -90,7 +97,8 @@ def main(args):
 
 ACTIONS = {
     'analyzers': fetch_analyzers,
-    'mock-configs': fetch_mock_configs
+    'mock-configs': fetch_mock_configs,
+    'profiles': fetch_profiles
 }
 
 
