@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """functions related to sending e-mail notifications"""
 
 import logging
@@ -33,7 +32,7 @@ def send_mail(message, recipient, subject, recipients, headers, bcc=None):
 
     from_addr = "<covscan-auto@redhat.com>"
 
-    headers["X-Application-ID"] = "covscan"
+    headers["X-Application-ID"] = "OpenScanHub"
     headers["X-Hostname"] = socket.gethostname()
 
     return EmailMessage(subject, message, from_addr, recipients, bcc=bcc,
@@ -157,7 +156,7 @@ def send_task_notification(request, task_id):
     return send_mail(message, recipient, subject, recipients, headers, bcc)
 
 
-class MailGenerator(object):
+class MailGenerator:
     def __init__(self, request, scan):
         self.request = request
         self.scan = scan
@@ -194,7 +193,7 @@ next build)
     Not a bug -- issue is false positive, so you are waiving it
             """
         message += """
-You can find documentation of covscan's workflow at \
+You can find documentation of OpenScanHub's workflow at \
 https://cov01.lab.eng.brq2.redhat.com/covscan_documentation.html .
 """
         return message
@@ -234,9 +233,9 @@ and waive it. Here is a description of states:"
         return self.generate_general_text() % {
             'firstline': "Automatic static analysis scan of build %s \
 submitted from Errata Tool has finished." % (self.scan.nvr),
-            'guide_message': "This is a scan of newly added package. covscan \
+            'guide_message': "This is a scan of newly added package. OpenScanHub \
 therefore has no base to diff against. This means that final report is a list \
-of all defects found by covscan. The list may be really big. Please fix most \
+of all defects found by OpenScanHub. The list may be really big. Please fix most \
 serious ones and/or discuss the results with upstream. Here is a description \
 of states:"
         }
@@ -277,10 +276,9 @@ def send_scan_notification(request, scan_id):
 
     # subject setting
     if scan.is_disputed():
-        subject = "[covscan] Scan of %s has been disputed" % (scan.nvr)
+        subject = "[OpenScanHub] Scan of %s has been disputed" % (scan.nvr)
     else:
-        subject = "[covscan] Scan of %s finished, state: %s" % (scan.nvr,
-                                                                mg.scan_state)
+        subject = "[OpenScanHub] Scan of %s finished, state: %s" % (scan.nvr, mg.scan_state)
 
     headers = {
         "X-Scan-ID": scan.scanbinding.id,
@@ -300,7 +298,7 @@ def send_notif_new_comment(request, scan, wl):
 
     message = mg.generate_new_comment_text(wl.user, wl.date, wl.waiver.message)
 
-    subject = "[covscan] New comment has been added to scan of %s" % (scan.nvr)
+    subject = "[OpenScanHub] New comment has been added to scan of %s" % (scan.nvr)
 
     headers = {
         "X-Scan-ID": scan.scanbinding.id,
