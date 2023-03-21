@@ -16,7 +16,7 @@ class UMBSender(proton.handlers.MessagingHandler):
                      'amqps://umb-broker04.stage.api.redhat.com:5671',
                      'amqps://umb-broker05.stage.api.redhat.com:5671',
                      'amqps://umb-broker06.stage.api.redhat.com:5671']
-        self.cert = '/etc/osh/hub/msg-client-covscan.pem'
+        self.cert = '/etc/osh/hub/msg-client-osh.pem'
         self.topic = 'topic://VirtualTopic.eng.covscan.scan.unfinished'
         self.scan_id = msg['scan_id']
         self.scan_state = msg['scan_state']
