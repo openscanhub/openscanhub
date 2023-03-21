@@ -30,7 +30,7 @@ SCAN_STATES = Enum(
     "WAIVED",            # user appropriately waived each defect
     "PASSED",            # scan didn't discover new defects; everything is fine
     "FINISHED",          # scan finished -- USER/ERRATA_BASE scans only
-    "FAILED",            # scan has failed, need an attention by covscan admins
+    "FAILED",            # scan has failed, need an attention by OpenScanHub admins
                          #  (something went wrong during build process or
                          #  analyser had some problems)
     "BASE_SCANNING",     # child scan is in scanning process right now
@@ -986,7 +986,6 @@ class ReleaseMapping(models.Model):
 class ETMapping(models.Model):
     advisory_id = models.CharField(max_length=16, blank=False, null=False)
     et_scan_id = models.CharField(max_length=16, blank=False, null=False)
-    # self.id is covscan_internal_target_run_id (formerly scanbinding.id)
     latest_run = models.ForeignKey(ScanBinding, null=True, blank=True, on_delete=models.CASCADE)
     comment = models.CharField(max_length=256, default="", blank=True)
     state = models.PositiveIntegerField(
@@ -1014,7 +1013,7 @@ def decode_pickle(val):
 
 class AppSettings(models.Model):
     """
-    Settings for covscan stored in DB so they can be easily changed.
+    Settings for OpenScanHub stored in DB so they can be easily changed.
 
     SEND_EMAIL { Y, N }
     SEND_BUS_MESSAGE { Y, N }
@@ -1194,7 +1193,7 @@ class ClientAnalyzer(models.Model):
     analyzer = models.ForeignKey("Analyzer", blank=True, null=True, on_delete=models.CASCADE)
     version = models.CharField(max_length=32, blank=True, null=True)
     enabled = models.BooleanField(default=True)
-    # what covscan-client option enables analyzer
+    # what osh-cli option enables analyzer
     cli_short_command = models.CharField(max_length=32, blank=True, null=True)
     cli_long_command = models.CharField(max_length=32, blank=False, null=False)
     # enable this analyzer with csmock -t <build_append>[,<build_append>...]
