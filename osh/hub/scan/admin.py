@@ -1,10 +1,9 @@
-# -*- coding: utf-8 -*-
 import os
 from glob import glob
 
-from django import VERSION as django_version
 from django.contrib import admin
 from django.shortcuts import render
+from django.urls import path
 from django.utils.safestring import mark_safe
 from kobo.hub.models import TASK_STATES, Task
 
@@ -17,12 +16,6 @@ from osh.hub.scan.xmlrpc_helper import cancel_scan as h_cancel_scan
 from osh.hub.scan.xmlrpc_helper import cancel_scan_tasks
 from osh.hub.scan.xmlrpc_helper import fail_scan as h_fail_scan
 from osh.hub.scan.xmlrpc_helper import finish_scan as h_finish_scan
-
-# django.conf.urls.url() was deprecated in Django 3.0 and removed in Django 4.0
-if django_version[0] >= 3:
-    from django.urls import re_path as url
-else:
-    from django.conf.urls import url
 
 autoregister_admin('osh.hub.scan.models',
                    exclude_models=['Scan'],
@@ -54,18 +47,14 @@ class ScanAdmin(admin.ModelAdmin):
     review_template = 'admin/my_test/myentry/review.html'
 
     def get_urls(self):
-        urls = super(ScanAdmin, self).get_urls()
+        urls = super().get_urls()
+        slug = '<int:scan_id>/change'
         my_urls = [
-            url(r'(?P<scan_id>\d+)/notify/$',
-                self.admin_site.admin_view(self.notify)),
-            url(r'(?P<scan_id>\d+)/fail/$',
-                self.admin_site.admin_view(self.fail_scan)),
-            url(r'(?P<scan_id>\d+)/cancel/$',
-                self.admin_site.admin_view(self.cancel_scan)),
-            url(r'(?P<scan_id>\d+)/finish/$',
-                self.admin_site.admin_view(self.finish_scan)),
-            url(r'(?P<scan_id>\d+)/rescan/$',
-                self.admin_site.admin_view(self.rescan)),
+            path(f'{slug}/notify/', self.admin_site.admin_view(self.notify)),
+            path(f'{slug}/fail/', self.admin_site.admin_view(self.fail_scan)),
+            path(f'{slug}/cancel/', self.admin_site.admin_view(self.cancel_scan)),
+            path(f'{slug}/finish/', self.admin_site.admin_view(self.finish_scan)),
+            path(f'{slug}/rescan/', self.admin_site.admin_view(self.rescan)),
         ]
         return my_urls + urls
 
