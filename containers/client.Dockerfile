@@ -26,7 +26,6 @@ RUN dnf -y --setopt=tsflags=nodocs install \
     gzip \
     python3-coverage \
     python3-koji \
-    python3-six \
     python36 \
     xz
 
