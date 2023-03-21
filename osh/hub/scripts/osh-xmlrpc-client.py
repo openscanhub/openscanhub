@@ -1,7 +1,7 @@
 #!/usr/bin/python3 -tt
 """
 
-This is an XML-RPC client for covscan hub
+This is an XML-RPC client for OSH hub
 
 
 ## DEPENDENCIES
@@ -62,7 +62,7 @@ import kobo
 from kobo.tback import set_except_hook
 from kobo.xmlrpc import CookieTransport, SafeCookieTransport
 
-logger = logging.getLogger('covscan_api_client')
+logger = logging.getLogger('osh_api_client')
 logger.setLevel(logging.DEBUG)
 # create console handler and set level to debug
 ch = logging.StreamHandler()
@@ -109,7 +109,7 @@ def get_scan_state_cmd(options, hub):
 
 
 def set_options():
-    parser = argparse.ArgumentParser(description="CLI client for covscan XMLRPC API")
+    parser = argparse.ArgumentParser(description="CLI client for OpenScanHub XMLRPC API")
 
     parser.add_argument("-v", "--verbose", help="enable debug logs and verbose traceback",
                         action="store_true")
