@@ -9,17 +9,22 @@ BuildArch:      noarch
 BuildRequires:  koji
 BuildRequires:  python3-csdiff
 BuildRequires:  python3-devel
-BuildRequires:  python3-django
-BuildRequires:  python3-django-debug-toolbar
 BuildRequires:  python3-kobo-client
-BuildRequires:  python3-kobo-django
-BuildRequires:  python3-kobo-hub
 BuildRequires:  python3-kobo-rpmlib
 BuildRequires:  python3-psycopg2
-BuildRequires:  python3-qpid-proton
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-six
 BuildRequires:  systemd-rpm-macros
+
+# The following dependencies are not yet available in EPEL-9.  Make it
+# possible to build at least functional up2date covscan-client for EPEL-9.
+%if 0%{?rhel} != 9
+BuildRequires:  python3-django
+BuildRequires:  python3-django-debug-toolbar
+BuildRequires:  python3-kobo-django
+BuildRequires:  python3-kobo-hub
+BuildRequires:  python3-qpid-proton
+%endif
 
 %description
 OpenScanHub is a service for static and dynamic analysis.
@@ -123,8 +128,10 @@ done;done)
 
 %build
 
+%if 0%{?rhel} != 9
 # collect static files from Django itself
 PYTHONPATH=. osh/hub/manage.py collectstatic --noinput
+%endif
 
 %py3_build
 
