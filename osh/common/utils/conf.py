@@ -87,9 +87,9 @@ def get_config_dict(config_env, config_default):
     try:
         conf_dict.load_from_file(config_file)
     except (OSError, TypeError):
-        print("Error: The config file '%s' was not found.\n"
-              "Create the config file or specify the '%s'\n"
-              "environment variable to override config file location."
-              % (config_file, config_env), file=sys.stderr)
+        print(f"Error: The config file '{config_file}' was not found.\n"
+              f"Create the config file or specify the '{config_env}'\n"
+              "environment variable to override config file location.",
+              file=sys.stderr)
         return None
     return conf_dict
