@@ -71,10 +71,7 @@ class Conf:
 def get_conf(system_conf=None):
     global conf
     if conf is None:
-        if system_conf is None:
-            conf = Conf()
-        else:
-            conf = Conf(system_conf)
+        conf = Conf(system_conf)
     return conf
 
 
