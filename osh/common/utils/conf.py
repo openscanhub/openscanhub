@@ -15,17 +15,6 @@ CONFIG_PATH_PREFIX = '.config/osh'
 conf = None
 
 
-def get_home_dir():
-    """
-    Return user home directory
-    """
-    path = os.path.expanduser('~')
-    if os.path.isdir(path):
-        return path
-    else:
-        raise RuntimeError('Please define a valid environment variable $HOME')
-
-
 class Conf:
     def __init__(self, system_conf=None):
         self.conf = self.load_config()
@@ -36,7 +25,7 @@ class Conf:
         If conf dir does not exist, create it
         return full path to conf dir ( ~/.config/osh/ )
         """
-        config_dir = os.path.join(get_home_dir(), CONFIG_PATH_PREFIX)
+        config_dir = os.path.join(os.path.expanduser('~'), CONFIG_PATH_PREFIX)
         if not os.path.exists(config_dir):
             os.makedirs(config_dir)
         return config_dir
