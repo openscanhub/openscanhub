@@ -15,13 +15,6 @@ CONFIG_PATH_PREFIX = '.config/osh'
 conf = None
 
 
-__all__ = (
-    'get_home_dir',
-    'get_conf',
-    'get_config_dict',
-)
-
-
 def get_home_dir():
     """
     Return user home directory
