@@ -1,15 +1,12 @@
-# -*- coding: utf-8 -*-
 """
 User specific configuration
 """
 
-from __future__ import absolute_import
-
 import os
 import sys
+from configparser import SafeConfigParser
 
 import kobo.conf
-from six.moves.configparser import SafeConfigParser
 
 CONFIG_FILE_NAME = 'client.conf'
 CONFIG_PATH_PREFIX = '.config/osh'
@@ -36,7 +33,7 @@ def get_home_dir():
         raise RuntimeError('Please define a valid environment variable $HOME')
 
 
-class Conf(object):
+class Conf:
     def __init__(self, system_conf=None):
         self.conf = self.load_config()
         self.system_conf = system_conf
@@ -110,7 +107,7 @@ def get_config_dict(config_env, config_default):
     conf_dict = kobo.conf.PyConfigParser()
     try:
         conf_dict.load_from_file(config_file)
-    except (IOError, TypeError):
+    except (OSError, TypeError):
         sys.stderr.write("\n\nError: The config file '%s' was not found.\n"
                          "Create the config file or specify the '%s'\n"
                          "environment variable to override config file location.\n"
