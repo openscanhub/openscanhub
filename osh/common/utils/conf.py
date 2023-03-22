@@ -41,7 +41,7 @@ class Conf:
             config = SafeConfigParser()
             config.add_section('General')
             # fedora-rawhide-x86_64 is set at /etc/osh/client.conf
-            # user should decide what does he want at his own conf file
+            # user should decide what they want in their own conf file
             config.set('General', 'DefaultMockConfig', '')
 
             with open(config_path, 'w') as f:
