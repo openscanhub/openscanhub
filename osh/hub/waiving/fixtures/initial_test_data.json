@@ -2667,14 +2667,6 @@
   },
   {
     "model": "scan.appsettings",
-    "pk": 5,
-    "fields": {
-      "key": "ACTUAL_SCANNER",
-      "value": "[\"csmock\", \"3.3.4\"]"
-    }
-  },
-  {
-    "model": "scan.appsettings",
     "pk": 11,
     "fields": {
       "key": "ANALYZERS_VERSIONS_LAST_CHECKED",

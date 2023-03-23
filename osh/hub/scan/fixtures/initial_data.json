@@ -95,14 +95,6 @@
   }
 },
 {
-  "pk": 5,
-  "model": "scan.appsettings",
-  "fields": {
-    "value": "[\"csmock\", \"3.3.4\"]",
-    "key": "ACTUAL_SCANNER"
-  }
-},
-{
   "pk": 11,
   "model": "scan.appsettings",
   "fields": {

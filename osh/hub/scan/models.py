@@ -1015,8 +1015,6 @@ class AppSettings(models.Model):
 
     WAIVER_IS_OVERDUE int
 
-    ACTUAL_SCANNER tuple('csmock', '3.3.4')
-
     SCANNING_COMMAND_RELSPEC -- override of default
     """
     key = models.CharField(max_length=128, blank=False, null=False)
