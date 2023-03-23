@@ -103,14 +103,6 @@
   }
 },
 {
-  "pk": 6,
-  "model": "scan.appsettings",
-  "fields": {
-    "value": "(S'rhel-6.4'\np1\ncdatetime\ntimedelta\np2\n(I-13\nI0\nI0\ntRp3\ntp4\n.",
-    "key": "WAIVER_IS_OVERDUE_RELSPEC"
-  }
-},
-{
   "pk": 11,
   "model": "scan.appsettings",
   "fields": {

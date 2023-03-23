@@ -678,7 +678,7 @@ counted in statistics.")
     def waived_on_time(self):
         """
         either scan is processed (passed/waived) or user still has time to
-        process it; use release specific setting if exist, fallback to default
+        process it
 
         Return:
             - None -- scan does not need to be waived
@@ -686,15 +686,7 @@ counted in statistics.")
             - False -- do not processed on time
         """
         if self.state not in SCAN_STATES_FINISHED_BAD:
-            try:
-                d = AppSettings.settings_waiver_overdue_by_release(
-                    self.tag.release.tag)
-            except KeyError:
-                d = AppSettings.setting_waiver_is_overdue()
-            except Exception as e:  # noqa: B902
-                logger.error('Failed to get release specific waiver overdue \
-setting: %s', e)
-                return None
+            d = AppSettings.setting_waiver_is_overdue()
             return self.state in SCAN_STATES_PROCESSED or \
                 self.last_access > datetime.datetime.now() + d
         else:
@@ -1021,7 +1013,6 @@ class AppSettings(models.Model):
     CHECK_USER_CAN_SUBMIT_SCAN { Y, N }
 
     WAIVER_IS_OVERDUE pickled datetime.delta
-    WAIVER_IS_OVERDUE_RELSPEC release specific ^
 
     ACTUAL_SCANNER tuple('csmock', '3.3.4')
 
@@ -1070,23 +1061,6 @@ class AppSettings(models.Model):
     def setting_waiver_is_overdue(cls):
         """Time period when run is marked as not processed -- default value"""
         return decode_pickle(cls.objects.get(key="WAIVER_IS_OVERDUE").value)
-
-    @classmethod
-    def settings_waiver_is_overdue_relspec(cls):
-        """
-        Release specific overdue values
-        The are stored in DB like this:
-            pickle.dumps('release__tag', 'timedelta')
-        """
-        q = cls.objects.filter(key="WAIVER_IS_OVERDUE_RELSPEC")
-        return dict(decode_pickle(o.value) for o in q)
-
-    @classmethod
-    def settings_waiver_overdue_by_release(cls, short_tag):
-        """
-        Return release specific overdue value for provided release shorttag
-        """
-        return cls.settings_waiver_is_overdue_relspec()[short_tag]
 
     @classmethod
     def settings_get_analyzers_versions_cache_duration(cls):

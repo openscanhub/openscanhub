@@ -2675,14 +2675,6 @@
   },
   {
     "model": "scan.appsettings",
-    "pk": 6,
-    "fields": {
-      "key": "WAIVER_IS_OVERDUE_RELSPEC",
-      "value": "(S'rhel-6.4'\np1\ncdatetime\ntimedelta\np2\n(I-13\nI0\nI0\ntRp3\ntp4\n."
-    }
-  },
-  {
-    "model": "scan.appsettings",
     "pk": 11,
     "fields": {
       "key": "ANALYZERS_VERSIONS_LAST_CHECKED",
