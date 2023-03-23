@@ -688,7 +688,8 @@ counted in statistics.")
         if self.state not in SCAN_STATES_FINISHED_BAD:
             d = AppSettings.setting_waiver_is_overdue()
             return self.state in SCAN_STATES_PROCESSED or \
-                self.last_access > datetime.datetime.now() + d
+                self.last_access > datetime.datetime.now() - \
+                datetime.timedelta(days=d)
         else:
             return None
 
@@ -1012,7 +1013,7 @@ class AppSettings(models.Model):
 
     CHECK_USER_CAN_SUBMIT_SCAN { Y, N }
 
-    WAIVER_IS_OVERDUE pickled datetime.delta
+    WAIVER_IS_OVERDUE int
 
     ACTUAL_SCANNER tuple('csmock', '3.3.4')
 
@@ -1059,8 +1060,12 @@ class AppSettings(models.Model):
 
     @classmethod
     def setting_waiver_is_overdue(cls):
-        """Time period when run is marked as not processed -- default value"""
-        return decode_pickle(cls.objects.get(key="WAIVER_IS_OVERDUE").value)
+        """Number of days when run is marked as not processed -- default value"""
+        try:
+            return int(cls.objects.get(key="WAIVER_IS_OVERDUE").value)
+        # TODO: remove this when we migrate the db to use ints
+        except ValueError:
+            return 7
 
     @classmethod
     def settings_get_analyzers_versions_cache_duration(cls):
