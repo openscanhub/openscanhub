@@ -329,8 +329,9 @@ href="%s">%s</a> (%s) New defects: %d, fixed defects: %d</div>\n' % (
         if indent_level == 0:  # BASE
             if response.endswith('</div>\n'):
                 response = response[:-7]
+            base = sb.scan.base
             response += '<span style="position:absolute; left: 45em">\
-Base: %s</span></div>\n' % (sb.scan.base.nvr)
+Base: %s</span></div>\n' % (base.nvr if base is not None else 'NEW_PACKAGE')
         return self.display_graph(scan.parent,
                                   response, indent_level + 1)
 
