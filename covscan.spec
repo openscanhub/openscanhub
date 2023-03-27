@@ -202,7 +202,7 @@ rm -rf %{buildroot}%{python3_sitelib}/scripts
 %files worker
 %defattr(644,root,root,755)
 %{python3_sitelib}/osh/worker
-%{_unitdir}/covscand.service
+%{_unitdir}/osh-worker.service
 %attr(754,root,root) /usr/sbin/osh-worker
 /usr/sbin/covscand
 
@@ -212,13 +212,13 @@ if test -f /etc/covscan/covscan.conf; then
 fi
 
 %post worker
-%systemd_post covscand.service
+%systemd_post osh-worker.service
 
 %preun worker
-%systemd_preun covscand.service
+%systemd_preun osh-worker.service
 
 %postun worker
-%systemd_postun_with_restart covscand.service
+%systemd_postun_with_restart osh-worker.service
 
 %files worker-conf-devel
 %attr(640,root,root) %config(noreplace) /etc/osh/worker.conf
