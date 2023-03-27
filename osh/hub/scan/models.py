@@ -1,7 +1,6 @@
 import datetime
 import json
 import logging
-import pickle
 import re
 
 from django.conf import settings
@@ -995,13 +994,6 @@ class ETMapping(models.Model):
         self.latest_run = sb
         if save:
             self.save()
-
-
-def decode_pickle(val):
-    """Decode pickle loaded from database"""
-    text = val.replace('\r\n', '\n')
-    data = bytes(text, encoding='utf-8')
-    return pickle.loads(data)
 
 
 class AppSettings(models.Model):
