@@ -1,10 +1,9 @@
-# -*- coding: utf-8 -*-
 import datetime
 import json
 import logging
+import pickle
 import re
 
-import six.moves.cPickle as pickle
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
@@ -115,7 +114,7 @@ class Permissions(models.Model):
         )
 
 
-class MockConfigMixin(object):
+class MockConfigMixin:
     def verify_by_name(self, name):
         try:
             model = self.get(name=name)
@@ -157,7 +156,7 @@ class MockConfig(models.Model):
         return result
 
 
-class SystemReleaseMixin(object):
+class SystemReleaseMixin:
     def active(self):
         return self.filter(active=True)
 
@@ -192,7 +191,7 @@ statistical data will be harvested for this system release.")
     objects = SystemReleaseManager()
 
     def __str__(self):
-        return u"%s -- %s.%d" % (self.tag, self.product, self.release)
+        return "%s -- %s.%d" % (self.tag, self.product, self.release)
 
     def get_child(self):
         try:
@@ -210,7 +209,7 @@ statistical data will be harvested for this system release.")
                           self.release)
 
 
-class TagMixin(object):
+class TagMixin:
     def for_release_str(self, release_str):
         for rm in ReleaseMapping.objects.all():
             tag = rm.get_tag(release_str)
@@ -247,7 +246,7 @@ class Tag(models.Model):
             (self.name, self.mock, self.release)
 
 
-class PackageMixin(object):
+class PackageMixin:
     def get_or_create_by_name(self, name):
         model, created = self.get_or_create(name=name)
         return model
@@ -312,10 +311,10 @@ of this packages scan")
             return response
         sb = ScanBinding.objects.get(scan=scan)
         if sb.result is not None:
-            response += u'<div style="margin-left: %dem">%s<a \
+            response += '<div style="margin-left: %dem">%s<a \
 href="%s">%s</a> (%s) New defects: %d, fixed defects: %d</div>\n' % (
                 indent_level if indent_level <= 1 else indent_level * 2,
-                u'\u2570\u2500\u2500' if indent_level > 0 else u'',
+                '\u2570\u2500\u2500' if indent_level > 0 else '',
                 reverse("waiving/result", args=(sb.result.id,)),  # url
                 sb.scan.nvr,
                 sb.scan.get_state_display(),
@@ -323,14 +322,14 @@ href="%s">%s</a> (%s) New defects: %d, fixed defects: %d</div>\n' % (
                 sb.result.fixed_defects_count(),
             )
         else:
-            response += u"%s%s<br/ >\n" % (
-                u"&nbsp;" * indent_level * 4,
+            response += "%s%s<br/ >\n" % (
+                "&nbsp;" * indent_level * 4,
                 sb.scan.nvr,
             )
         if indent_level == 0:  # BASE
             if response.endswith('</div>\n'):
                 response = response[:-7]
-            response += u'<span style="position:absolute; left: 45em">\
+            response += '<span style="position:absolute; left: 45em">\
 Base: %s</span></div>\n' % (sb.scan.base.nvr)
         return self.display_graph(scan.parent,
                                   response, indent_level + 1)
@@ -348,15 +347,15 @@ package')
                 tag__release__id=release['tag__release'],
                 scan_type__in=SCAN_TYPES_TARGET)
             if not scans_package:
-                response += u"No scans in this release.<hr/ >\n"
+                response += "No scans in this release.<hr/ >\n"
                 continue
             first_scan = scans_package.order_by('date_submitted')[0]
-            response += u"<div>\n<h3>%s release %d</h3>\n" % (
+            response += "<div>\n<h3>%s release %d</h3>\n" % (
                 first_scan.tag.release.product,
                 first_scan.tag.release.release
             )
             response = self.display_graph(first_scan, response)
-            response += u"<hr/ ></div>\n"
+            response += "<hr/ ></div>\n"
         return mark_safe(response)
 
     def is_blocked(self, release):
@@ -379,7 +378,7 @@ package')
         return int(self.priority_offset)
 
 
-class PackageAttributeMixin(object):
+class PackageAttributeMixin:
     def by_package(self, package):
         return self.filter(package=package)
 
@@ -428,7 +427,7 @@ class PackageAttribute(models.Model):
     objects = PackageAttributeManager()
 
     def __str__(self):
-        return u"%s = %s (%s %s)" % (self.key, self.value, self.package, self.release)
+        return "%s = %s (%s %s)" % (self.key, self.value, self.package, self.release)
 
     @classmethod
     def create(cls, package, release):
@@ -497,7 +496,7 @@ class PackageAttribute(models.Model):
             return atr
 
 
-class PackageCapabilityMixin(object):
+class PackageCapabilityMixin:
     def get_or_create_(self, package, is_capable, release=None):
         model, created = self.get_or_create(package=package, is_capable=is_capable,
                                             release=release)
@@ -521,10 +520,10 @@ class PackageCapability(models.Model):
     objects = PackageCapabilityManager()
 
     def __str__(self):
-        return u"%s: %s" % (self.package, self.capability_set.all())
+        return "%s: %s" % (self.package, self.capability_set.all())
 
 
-class ScanMixin(object):
+class ScanMixin:
     def by_release(self, release):
         return self.filter(tag__release=release)
 
@@ -553,7 +552,7 @@ class ScanManager(models.Manager, ScanMixin):
         return ScanQuerySet(self.model, using=self._db)
 
 
-class ScanTargetMixin(object):
+class ScanTargetMixin:
     pass
 
 
@@ -619,11 +618,11 @@ counted in statistics.")
         get_latest_by = "date_submitted"
 
     def __str__(self):
-        prefix = u"#%s %s %s" % (self.id,
-                                 self.nvr,
-                                 self.get_state_display())
+        prefix = "#%s %s %s" % (self.id,
+                                self.nvr,
+                                self.get_state_display())
         if self.base:
-            return u"%s Base: %s" % (prefix, self.base.nvr)
+            return "%s Base: %s" % (prefix, self.base.nvr)
         else:
             return prefix
 
@@ -671,9 +670,9 @@ counted in statistics.")
         Return CSS class name if scan's overdue state -- not waived on time
         """
         if self.waived_on_time() is False:
-            return u"red_font"
+            return "red_font"
         else:
-            return u""
+            return ""
 
     def waived_on_time(self):
         """
@@ -820,7 +819,7 @@ setting: %s', e)
         self.save()
 
 
-class ScanBindingMixin(object):
+class ScanBindingMixin:
     def latest_packages_scans(self):
         ids = []
         q = self.finished_well()
@@ -905,7 +904,7 @@ class ScanBinding(models.Model):
         get_latest_by = "result__date_submitted"
 
     def __str__(self):
-        return u"#%d: Scan: %s | %s" % (self.id, self.scan, self.task)
+        return "#%d: Scan: %s | %s" % (self.id, self.scan, self.task)
 
     @classmethod
     def create_sb(cls, **kwargs):
@@ -966,8 +965,8 @@ class ReleaseMapping(models.Model):
         ordering = ['priority']
 
     def __str__(self):
-        return u"#%d (%d) %s %s" % (self.id, self.priority,
-                                    self.release_tag, self.template)
+        return "#%d (%d) %s %s" % (self.id, self.priority,
+                                   self.release_tag, self.template)
 
     def get_tag(self, rhel_version):
         logger.debug("Getting tag for %s" % rhel_version)
@@ -995,8 +994,8 @@ class ETMapping(models.Model):
     )
 
     def __str__(self):
-        return u"#%d Advisory: %s %s" % (self.id, self.advisory_id,
-                                         self.latest_run)
+        return "#%d Advisory: %s %s" % (self.id, self.advisory_id,
+                                        self.latest_run)
 
     def set_latest_run(self, sb, save=True):
         self.latest_run = sb
@@ -1034,7 +1033,7 @@ class AppSettings(models.Model):
         verbose_name_plural = "AppSettings"
 
     def __str__(self):
-        return u"%s = %s" % (self.key, self.value)
+        return "%s = %s" % (self.key, self.value)
 
     @classmethod
     def setting_send_mail(cls):
@@ -1132,10 +1131,10 @@ class TaskExtension(models.Model):
     secret_args = JSONField(default={})
 
     def __str__(self):
-        return u"%s %s" % (self.task, self.secret_args)
+        return "%s %s" % (self.task, self.secret_args)
 
 
-class ClientAnalyzerMixin(object):
+class ClientAnalyzerMixin:
     def verify_by_name(self, name):
         try:
             model = self.get(cli_long_command=name)
@@ -1208,7 +1207,7 @@ class ClientAnalyzer(models.Model):
         ordering = ['analyzer', 'version']
 
     def __str__(self):
-        return u"%s %s" % (self.analyzer, self.version)
+        return "%s %s" % (self.analyzer, self.version)
 
     @classmethod
     def chain_to_list(cls, chain):
@@ -1219,7 +1218,7 @@ class Analyzer(models.Model):
     name = models.CharField(max_length=64)
 
     def __str__(self):
-        return u"%s" % (self.name)
+        return "%s" % (self.name)
 
 
 class AnalyzerVersionManager(models.Manager):
@@ -1276,7 +1275,7 @@ class AnalyzerVersion(models.Model):
         get_latest_by = 'date_created'
 
     def __str__(self):
-        return u"%s-%s" % (self.analyzer, self.version)
+        return "%s-%s" % (self.analyzer, self.version)
 
 
 class ProfileManager(models.Manager):
@@ -1315,7 +1314,7 @@ class Profile(models.Model):
         ordering = ['name']
 
     def __str__(self):
-        return u"%s: %s" % (self.name, self.command_arguments)
+        return "%s: %s" % (self.name, self.command_arguments)
 
     @property
     def analyzers(self):
