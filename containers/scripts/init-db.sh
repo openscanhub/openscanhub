@@ -78,7 +78,7 @@ restore() {
 
     (
         set -x
-        gzip -cd covscanhub.db.gz | podman exec -i db psql -h localhost -U osh-hub
+        gzip -cd covscanhub.db.gz | podman exec -i db psql -h localhost -U covscanhub
         # HACK: this should be turned into a function
         # ref: https://stackoverflow.com/a/16853755/9814181
         podman exec -i osh-hub python3 osh/hub/manage.py shell << EOF
