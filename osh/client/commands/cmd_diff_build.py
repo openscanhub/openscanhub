@@ -68,7 +68,8 @@ exist." % self.results_store_file)
         if not self.srpm.endswith('.src.rpm'):
             tarball = self.srpm + '.tar.xz'
         else:
-            tarball = self.srpm.replace('.src.rpm', '.tar.xz')
+            tarball = os.path.basename(self.srpm.replace('.src.rpm', '.tar.xz'))
+
         # get absolute path
         if self.results_store_file:
             local_path = os.path.join(os.path.abspath(self.results_store_file),
