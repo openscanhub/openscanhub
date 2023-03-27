@@ -1,7 +1,3 @@
-# -*- coding: utf-8 -*-
-
-from __future__ import print_function
-
 import os
 import sys
 
@@ -59,7 +55,7 @@ class ErrataDiffBuild(TaskBase):
                 self.wait()
             except ValueError:
                 # there is a race condition here:
-                #   File "/usr/lib/python2.6/site-packages/covscand/tasks/task_errata_diff_build.py", line 60, in run
+                #   File "/usr/lib/python2.6/site-packages/osh/worker/tasks/task_errata_diff_build.py", line 60, in run
                 #     self.wait()
                 #   File "/usr/lib/python2.6/site-packages/kobo/worker/task.py", line 153, in wait
                 #     self._subtask_list.remove(i)
