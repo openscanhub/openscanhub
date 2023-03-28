@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 import datetime
 import logging
 
@@ -112,7 +110,7 @@ class Result(models.Model):
         ''' On save, update timestamps '''
         if not self.id:
             self.date_submitted = datetime.datetime.now()
-        super(Result, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
     class Meta:
         get_latest_by = "date_submitted"
@@ -141,7 +139,7 @@ class Result(models.Model):
                 RESULT_GROUP_STATES.get_value(state['state']),
                 state['count'],
             ))
-        return u"\n".join(result)
+        return "\n".join(result)
 
     @property
     def bugs_count(self):
@@ -179,10 +177,10 @@ class Result(models.Model):
         logger.debug("used analyzers = %s", self.analyzers.all())
 
     def __str__(self):
-        return u"#%d" % self.id
+        return "#%d" % self.id
 
 
-class DefectMixin(object):
+class DefectMixin:
     def by_release(self, release):
         return self.filter(
             result_group__result__scanbinding__scan__tag__release=release)
@@ -276,7 +274,7 @@ only ResultGroups which belong to enabled CheckerGroups")
         return "#%d %s" % (self.id, self.name)
 
 
-class ResultGroupMixin(object):
+class ResultGroupMixin:
     def needs_insp(self):
         return self.filter(state=RESULT_GROUP_STATES['NEEDS_INSPECTION'])
 
@@ -477,7 +475,7 @@ class Bugzilla(models.Model):
     release = models.ForeignKey(SystemRelease, on_delete=models.CASCADE)
 
     def __str__(self):
-        return u"#%d BZ#%d (%s, %s.%d)" % (
+        return "#%d BZ#%d (%s, %s.%d)" % (
             self.id,
             self.number,
             self.package.name,
@@ -486,7 +484,7 @@ class Bugzilla(models.Model):
         )
 
 
-class WaiverOnlyMixin(object):
+class WaiverOnlyMixin:
     def by_release(self, release):
         return self.filter(
             result_group__result__scanbinding__scan__tag__release=release)
@@ -559,7 +557,7 @@ waived for specific Result", on_delete=models.CASCADE)
         ordering = ("-date", )
 
     def __str__(self):
-        return u"#%d %s - %s, ResultGroup: (%s) BZ: %s" % (
+        return "#%d %s - %s, ResultGroup: (%s) BZ: %s" % (
             self.id,
             self.message,
             self.get_state_display(),
@@ -606,7 +604,7 @@ waived for specific Result", on_delete=models.CASCADE)
                    user=user, state=WAIVER_TYPES['COMMENT'])
 
 
-class WaivingLogMixin(object):
+class WaivingLogMixin:
     def not_deleted(self):
         return self.exclude(state=WAIVER_LOG_ACTIONS['DELETE'])
 
@@ -649,7 +647,7 @@ class WaivingLog(models.Model):
         ordering = ['date']
 
     def __str__(self):
-        return u"#%d %s (%s)" % (
+        return "#%d %s (%s)" % (
             self.id,
             WAIVER_LOG_ACTIONS.get_value(self.state),
             self.waiver,
