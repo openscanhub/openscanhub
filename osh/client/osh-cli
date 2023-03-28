@@ -25,7 +25,7 @@ def handle_deprecated_options(conf):
 
     # xmlrpclib/httplib do not follow HTTP redirect
     if "cov01.lab.eng.brq.redhat.com" in conf["HUB_URL"]:
-        conf["HUB_URL"] = "https://cov01.lab.eng.brq2.redhat.com/covscanhub/xmlrpc"
+        conf["HUB_URL"] = "https://cov01.lab.eng.brq2.redhat.com/osh/xmlrpc"
         print_warning("HUB_URL")
 
     # there is no 'krbv' for py3 --> use 'gssapi' instead

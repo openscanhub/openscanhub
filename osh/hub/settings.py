@@ -11,7 +11,7 @@ import kobo
 # you can use it instead of specifying the full path
 PROJECT_DIR = os.path.dirname(__file__)
 
-URL_PREFIX = "/covscanhub"
+URL_PREFIX = "/osh"
 
 # file to read the real SECRET_KEY from
 SECRET_KEY_FILE = "/var/lib/osh/hub/secret_key"
@@ -37,7 +37,7 @@ MEDIA_ROOT = os.path.join(PROJECT_DIR, "media/")
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash if there is a path component (optional in other cases).
 # Examples: "http://media.lawrence.com", "http://example.com/media/"
-MEDIA_URL = '/covscanhub/media/'
+MEDIA_URL = '/osh/media/'
 
 STATIC_URL = URL_PREFIX + '/static/'
 
@@ -50,7 +50,7 @@ STATICFILES_DIRS = (
 # URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
 # trailing slash.
 # Examples: "http://foo.com/media/", "/media/".
-ADMIN_MEDIA_PREFIX = '/covscanhub/admin/media/'
+ADMIN_MEDIA_PREFIX = '/osh/admin/media/'
 
 TEMPLATES = [
     {
