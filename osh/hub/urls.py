@@ -1,4 +1,3 @@
-from django.conf import settings
 from django.conf.urls import include, url
 from django.contrib import admin
 from django.views.generic.base import TemplateView
@@ -33,13 +32,6 @@ urlpatterns = [
     # Include kobo hub xmlrpc module urls:
     url(r"^xmlrpc/", include("osh.hub.cs_xmlrpc.urls")),
 ]
-
-
-if settings.DEBUG:
-    import debug_toolbar
-    urlpatterns += [
-        url(r'^__debug__/', include(debug_toolbar.urls)),
-    ]
 
 
 # this is a hack to enable media (with correct prefix) while debugging

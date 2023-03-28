@@ -41,7 +41,7 @@ RUN dnf -y --setopt=tsflags=nodocs install \
     python3-coverage \
     python3-csdiff \
     python3-devel \
-    python3-django{,-debug-toolbar} \
+    python3-django \
     python3-gssapi \
     python3-koji \
     python3-psycopg2 \

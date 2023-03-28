@@ -20,7 +20,6 @@ BuildRequires:  systemd-rpm-macros
 # possible to build at least functional up2date covscan-client for EPEL-9.
 %if 0%{?rhel} != 9
 BuildRequires:  python3-django
-BuildRequires:  python3-django-debug-toolbar
 BuildRequires:  python3-kobo-django
 BuildRequires:  python3-kobo-hub
 BuildRequires:  python3-qpid-proton
@@ -93,8 +92,6 @@ Requires: csdiff
 Requires: file
 Requires: python3-bugzilla
 Requires: python3-csdiff
-
-Requires: python3-django-debug-toolbar
 
 Requires(post): /usr/bin/pg_isready
 
