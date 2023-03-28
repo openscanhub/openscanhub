@@ -92,11 +92,6 @@ class Result(models.Model):
     """
     Result of submited scan is held by this method.
     """
-    scanner = models.CharField("Analyser", max_length=32,
-                               blank=True, null=True, help_text="DEPRECATED, not used anymore")
-    scanner_version = models.CharField("Analyser's Version",
-                                       max_length=32, blank=True, null=True,
-                                       help_text="DEPRECATED, not used anymore")
     lines = models.IntegerField(help_text='Lines of code scanned', blank=True,
                                 null=True)
     # time in seconds that scanner spent scanning
