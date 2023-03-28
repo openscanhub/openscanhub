@@ -1,9 +1,7 @@
-# -*- coding: utf-8 -*-
 # Django global settings for covscanhub
 
 # DEBUG = True
 
-from __future__ import absolute_import
 
 import os
 
@@ -223,7 +221,7 @@ except ImportError:
 
 # read the real SECRET_KEY from SECRET_KEY_FILE if availble
 try:
-    with open(SECRET_KEY_FILE, 'r') as f:
+    with open(SECRET_KEY_FILE) as f:
         key = f.readline()
         SECRET_KEY = key.strip()
 except OSError:
