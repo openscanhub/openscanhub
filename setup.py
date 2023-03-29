@@ -24,7 +24,7 @@ data_files = {
         "osh/hub/osh-hub-httpd.conf.stage",
     ],
     "/usr/lib/systemd/system": [
-        "files/etc/systemd/system/covscand.service",
+        "osh/worker/osh-worker.service",
     ],
     "/usr/share/bash-completion/completions": [
         "osh/client/completion/osh-cli.bash",
