@@ -4,7 +4,7 @@ User specific configuration
 
 import os
 import sys
-from configparser import SafeConfigParser
+from configparser import ConfigParser
 
 import kobo.conf
 
@@ -38,7 +38,7 @@ class Conf:
         config_path = os.path.join(self.get_conf_dir(), CONFIG_FILE_NAME)
 
         if not os.path.exists(config_path):
-            config = SafeConfigParser()
+            config = ConfigParser()
             config.add_section('General')
             # fedora-rawhide-x86_64 is set at /etc/osh/client.conf
             # user should decide what they want in their own conf file
@@ -51,10 +51,10 @@ class Conf:
 
     def load_config(self):
         """
-        load configuration and return SafeConfigParser object
+        load configuration and return ConfigParser object
         """
         cf = self.get_config_file()
-        config = SafeConfigParser()
+        config = ConfigParser()
         config.read(cf)
         return config
 
