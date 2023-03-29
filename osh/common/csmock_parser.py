@@ -44,18 +44,6 @@ RESULT_FILE_HTML = 'scan-results.html'
 logger = logging.getLogger(__name__)
 
 
-class Results:
-    """
-    output from run
-
-    it is represented as tarball -- needs to be extracted and data from
-    json file has to be imported
-    """
-
-    def __init__(self, json_results_path):
-        self.json_results_path = json_results_path
-
-
 class ResultsExtractor:
     """
 
