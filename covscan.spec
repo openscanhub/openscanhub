@@ -56,7 +56,7 @@ Requires: python3-kobo-client
 Requires: python3-kobo-rpmlib
 Requires: python3-kobo-worker
 Requires: %{name}-common = %{version}-%{release}
-Requires: %{name}-worker-conf = %{version}-%{release}
+Requires: osh-worker-conf
 
 %description worker
 OpenScanHub worker
@@ -91,7 +91,7 @@ Requires: python3-csdiff
 Requires(post): /usr/bin/pg_isready
 
 Requires: %{name}-common = %{version}-%{release}
-Requires: %{name}-hub-conf = %{version}-%{release}
+Requires: osh-hub-conf
 
 %description hub
 OpenScanHub xml-rpc interface and web application
@@ -102,8 +102,8 @@ for alt in devel stage prod; do
 cat << EOF
 %package ${sub}-conf-${alt}
 Summary: OpenScanHub ${sub} ${alt} configuration
-Provides: covscan-${sub}-conf = %{version}-%{release}
-Conflicts: covscan-${sub}-conf
+Provides: osh-${sub}-conf = %{version}-%{release}
+Conflicts: osh-${sub}-conf
 RemovePathPostfixes: .${alt}
 %description ${sub}-conf-${alt}
 OpenScanHub ${sub} ${alt} configuration
