@@ -139,9 +139,6 @@ PYTHONPATH=. osh/hub/manage.py collectstatic --noinput
 %install
 %py3_install
 
-# avoid transforming /usr/bin/env -S ... to /usr/bin/-S
-%global __brp_mangle_shebangs_exclude_from %{_bindir}/osh-cli
-
 # Temporarily provide /usr/bin/covscan for backward compatibility
 ln -s osh-cli %{buildroot}%{_bindir}/covscan
 

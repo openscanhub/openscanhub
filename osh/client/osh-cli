@@ -1,4 +1,4 @@
-#!/usr/bin/env -S PYTHONNOUSERSITE=1 /usr/bin/python3
+#!/usr/bin/python3 -s
 import inspect
 import sys
 
