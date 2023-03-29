@@ -26,7 +26,6 @@ import glob
 import json
 import logging
 import os
-import pipes
 import re
 import shlex
 import shutil
@@ -225,7 +224,7 @@ class CsmockRunner:
             if not os.path.isdir(self.tmpdir):
                 logger.error('temp dir does not exists!')
                 raise RuntimeError('temp dir does not exists!')
-            command = 'cd %s && ' % pipes.quote(self.tmpdir) + command
+            command = 'cd %s && ' % shlex.quote(self.tmpdir) + command
 
         if su_user:
             if self.our_temp_dir:
@@ -233,13 +232,13 @@ class CsmockRunner:
                 try:
                     subprocess.check_call(inner_cmd)
                 except subprocess.CalledProcessError:
-                    subprocess.check_call(['su', '-', '-c', "%s" % pipes.quote(' '.join(inner_cmd))])
+                    subprocess.check_call(['su', '-', '-c', "%s" % shlex.quote(' '.join(inner_cmd))])
                 inner_cmd2 = ['chmod', 'go+rx', self.tmpdir]
                 try:
                     subprocess.check_call(inner_cmd2)
                 except subprocess.CalledProcessError:
-                    subprocess.check_call(['su', '-', su_user, '-c', "%s" % pipes.quote(' '.join(inner_cmd2))])
-            command = 'su - %s --session-command %s' % (pipes.quote(su_user), pipes.quote(command))
+                    subprocess.check_call(['su', '-', su_user, '-c', "%s" % shlex.quote(' '.join(inner_cmd2))])
+            command = 'su - %s --session-command %s' % (shlex.quote(su_user), shlex.quote(command))
 
         retcode, _ = run(command, stdout=True, can_fail=True, return_stdout=False, buffer_size=2, show_cmd=True, universal_newlines=True, errors="backslashreplace")
         if output_path:
@@ -283,12 +282,12 @@ class CsmockRunner:
         else:
             cmd = "csmock"
             if analyzers:
-                cmd += ' -t %s' % (pipes.quote(analyzers))
+                cmd += ' -t %s' % (shlex.quote(analyzers))
             if profile:
-                cmd += ' -r %s' % pipes.quote(profile)
+                cmd += ' -r %s' % shlex.quote(profile)
 
         if output_path:
-            cmd += ' -o %s' % (pipes.quote(output_path))
+            cmd += ' -o %s' % (shlex.quote(output_path))
 
         if additional_arguments:
             # split/quote/rejoin to avoid shell injection
@@ -370,9 +369,9 @@ class CsmockRunner:
             cmd = "cspodman"
         else:
             cmd = "csmock"
-            cmd += ' -t ' + pipes.quote(analyzers)
+            cmd += ' -t ' + shlex.quote(analyzers)
             if profile:
-                cmd += ' -r %s' % pipes.quote(profile)
+                cmd += ' -r %s' % shlex.quote(profile)
 
         cmd += ' --no-scan'
         if additional_arguments:
