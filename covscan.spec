@@ -57,11 +57,6 @@ Requires: python3-kobo-rpmlib
 Requires: python3-kobo-worker
 Requires: %{name}-common = %{version}-%{release}
 Requires: %{name}-worker-conf = %{version}-%{release}
-Obsoletes: covscan-worker-prod < %{version}-%{release}
-Obsoletes: covscan-worker-stage < %{version}-%{release}
-Obsoletes: python3-%{name}-worker < %{version}-%{release}
-Obsoletes: python3-covscan-worker-prod < %{version}-%{release}
-Obsoletes: python3-covscan-worker-stage < %{version}-%{release}
 
 %description worker
 OpenScanHub worker
@@ -97,11 +92,6 @@ Requires(post): /usr/bin/pg_isready
 
 Requires: %{name}-common = %{version}-%{release}
 Requires: %{name}-hub-conf = %{version}-%{release}
-Obsoletes: covscan-hub-prod < %{version}-%{release}
-Obsoletes: covscan-hub-stage < %{version}-%{release}
-Obsoletes: python3-covscan-hub-prod < %{version}-%{release}
-Obsoletes: python3-covscan-hub-stage < %{version}-%{release}
-Obsoletes: python3-%{name}-hub < %{version}-%{release}
 
 %description hub
 OpenScanHub xml-rpc interface and web application
