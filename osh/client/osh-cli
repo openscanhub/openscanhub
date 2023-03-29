@@ -2,10 +2,10 @@
 import inspect
 import sys
 
-import kobo.exceptions
 import kobo.cli
 import kobo.client
 import kobo.client.commands
+import kobo.exceptions
 
 # assuming all commands are in osh/client/commands/cmd_*.py modules
 import osh.client.commands
