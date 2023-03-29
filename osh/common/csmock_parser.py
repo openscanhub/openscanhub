@@ -23,7 +23,6 @@ csmock python api
     "defects": ""
 }
 """
-from __future__ import print_function
 
 import glob
 import json
@@ -36,9 +35,8 @@ import shutil
 import subprocess
 import sys
 import tempfile
+import urllib.request
 
-import six
-import six.moves.urllib.request
 from kobo.shortcuts import run
 
 __all__ = ('CsmockAPI', 'CsmockRunner', 'ResultsExtractor')
@@ -52,7 +50,7 @@ RESULT_FILE_HTML = 'scan-results.html'
 logger = logging.getLogger(__name__)
 
 
-class Results(object):
+class Results:
     """
     output from run
 
@@ -64,7 +62,7 @@ class Results(object):
         self.json_results_path = json_results_path
 
 
-class ResultsExtractor(object):
+class ResultsExtractor:
     """
 
     """
@@ -125,7 +123,7 @@ class ResultsExtractor(object):
                 self._json_path = ''
 
 
-class CsmockAPI(object):
+class CsmockAPI:
     """
 
     """
@@ -140,7 +138,7 @@ class CsmockAPI(object):
     @property
     def json_result(self):
         if self._json_result is None:
-            with open(self.json_results_path, 'r') as fp:
+            with open(self.json_results_path) as fp:
                 self._json_result = json.load(fp)
         return self._json_result
 
@@ -173,7 +171,7 @@ class CsmockAPI(object):
         """
         scan = self.get_scan_metadata()
         analyzers = []
-        for key, value in six.iteritems(scan):
+        for key, value in scan.items():
             if key.startswith('analyzer-version-'):
                 analyzer = {}
                 # analyzer-version-[gcc]
@@ -183,7 +181,7 @@ class CsmockAPI(object):
         return analyzers
 
 
-class CsmockRunner(object):
+class CsmockRunner:
     """
     context manager class which executes csmock in current process
     """
@@ -216,7 +214,7 @@ class CsmockRunner(object):
         else:
             model_path = os.path.join(os.getcwd(), model_name)
 
-        six.moves.urllib.request.urlretrieve(model_url, model_path)
+        urllib.request.urlretrieve(model_url, model_path)
         return model_path
 
     def do(self, command, output_path=None, su_user=None, **kwargs):
@@ -319,7 +317,7 @@ class CsmockRunner(object):
             srpm_path = os.path.join(self.tmpdir, srpm_name)
         else:
             srpm_path = os.path.join(os.getcwd(), srpm_name)
-        six.moves.urllib.request.urlretrieve(srpm_url, srpm_path)
+        urllib.request.urlretrieve(srpm_url, srpm_path)
         return self.analyze(analyzers, srpm_path, profile, su_user, additional_arguments, **kwargs)
 
     def koji_analyze(self, analyzers, nvr, profile=None, su_user=None,
