@@ -1,4 +1,4 @@
-#!/usr/bin/python3 -s
+#!/usr/bin/env python3 -s
 import inspect
 import sys
 
