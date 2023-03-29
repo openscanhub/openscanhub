@@ -1,5 +1,5 @@
 [Unit]
-Description=OpenScanHub worker daemon
+Description=Covscan worker daemon
 Requires=network.target
 After=network.target
 
@@ -14,4 +14,3 @@ Restart=on-failure
 
 [Install]
 WantedBy=multi-user.target
-Alias=covscand.service

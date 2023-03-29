@@ -1,4 +1,5 @@
 #!/usr/bin/python
+# -*- coding: utf-8 -*-
 
 import os
 from glob import glob
@@ -26,7 +27,7 @@ data_files = {
         "osh/hub/osh-hub-httpd.conf.stage",
     ],
     "/usr/lib/systemd/system": [
-        "osh/worker/osh-worker.service",
+        "files/etc/systemd/system/covscand.service",
     ],
     "/usr/share/bash-completion/completions": [
         "osh/client/completion/osh-cli.bash",

@@ -116,7 +116,7 @@ build-rpms-on-copr-and-test:
     # https://gitlab.cee.redhat.com/covscan/covscan/-/merge_requests/216
     - rm -f /etc/httpd/conf.d/covscanhub-httpd.conf
     - touch /var/log/osh/hub/hub.log && chown apache:apache /var/log/osh/hub/hub.log
-    - systemctl start httpd osh-worker
+    - systemctl start httpd covscand
     # Enable below lines if firewall is enabled
     # firewall-cmd --zone=public --add-port=80/tcp --permanent
     # firewall-cmd --zone=public --add-port=443/tcp --permanent
