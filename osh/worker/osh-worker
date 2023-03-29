@@ -41,7 +41,7 @@ def main():
     except kobo.exceptions.ImproperlyConfigured as ex:
         sys.stderr.write("\n\nImproperly configured: %s\n" % ex)
         return 3
-    except IOError as ex:
+    except OSError as ex:
         sys.stderr.write("\n\nIO Error: %s\n" % ex)
         return 4
 
