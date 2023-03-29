@@ -37,9 +37,6 @@ import urllib.request
 
 from kobo.shortcuts import run
 
-__all__ = ('CsmockAPI', 'CsmockRunner', 'ResultsExtractor')
-
-
 RESULT_FILE_JSON = 'scan-results.js'
 RESULT_FILE_ERR = 'scan-results.err'
 RESULT_FILE_HTML = 'scan-results.html'
