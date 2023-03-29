@@ -266,11 +266,11 @@ class Package(models.Model):
     """
     name = models.CharField("Package name", max_length=64,
                             blank=False, null=False)
-    blocked = models.NullBooleanField(default=False, help_text="If this is set to \
+    blocked = models.BooleanField(default=False, help_text="If this is set to \
 True, the package is blacklisted -- not accepted for scanning.", blank=True, null=True)
-    eligible = models.NullBooleanField(default=True,
-                                       help_text="DEPRECATED, do not use; use package attribute instead.",
-                                       blank=True, null=True)
+    eligible = models.BooleanField(default=True,
+                                   help_text="DEPRECATED, do not use; use package attribute instead.",
+                                   blank=True, null=True)
     priority_offset = models.SmallIntegerField(default=0, help_text="Set this to alter priority \
 of this packages scan")
 
