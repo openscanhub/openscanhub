@@ -17,7 +17,11 @@ os.environ['DJANGO_SETTINGS_MODULE'] = 'osh.hub.settings'
 
 
 def main():
+    import django
+    django.setup()
+
     from osh.hub.stats.service import update
+
     update()
 
 
