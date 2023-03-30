@@ -1,8 +1,8 @@
 import os
 import sys
-import urllib.request
 
 import osh.client
+from osh.client.commands.shortcuts import fetch_results
 
 
 class Download_Results(osh.client.OshCommand):
@@ -21,19 +21,6 @@ class Download_Results(osh.client.OshCommand):
             "--dir",
             help="path to store results",
         )
-
-    def fetch_results(self, task_url, nvr):
-        tarball = nvr + '.tar.xz'
-
-        # get absolute path
-        local_path = os.path.abspath(os.path.join(
-            self.dir if self.dir is not None else os.curdir, tarball))
-
-        # task_url is url to task with trailing '/'
-        url = f"{task_url}log/{tarball}?format=raw"
-
-        print(f"Downloading {tarball}", file=sys.stderr)
-        urllib.request.urlretrieve(url, local_path)
 
     def get_nvr(self, task_args):
         """
@@ -63,9 +50,8 @@ class Download_Results(osh.client.OshCommand):
             if not task_id.isdigit():
                 self.parser.error(f"'{task_id}' is not a number")
 
-        self.dir = kwargs.pop("dir", None)
-
-        if self.dir is not None and not os.path.isdir(self.dir):
+        results_dir = kwargs.pop("dir", None)
+        if results_dir is not None and not os.path.isdir(results_dir):
             self.parser.error("provided directory does not exist")
 
         # login to the hub
@@ -82,7 +68,7 @@ class Download_Results(osh.client.OshCommand):
 
             task_url = self.hub.client.task_url(task_id)
             nvr = self.get_nvr(task_info["args"])
-            self.fetch_results(task_url, nvr)
+            fetch_results(results_dir, task_url, nvr)
 
         if failed:
             sys.exit(1)

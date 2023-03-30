@@ -1,5 +1,4 @@
 import os
-import urllib.request
 from xmlrpc.client import Fault
 
 from kobo.shortcuts import random_string
@@ -18,9 +17,9 @@ from osh.client.commands.common import (add_analyzers_option,
                                         add_nowait_option, add_priority_option,
                                         add_profile_option,
                                         add_task_id_file_option)
-from osh.client.commands.shortcuts import (check_analyzers, handle_perm_denied,
-                                           upload_file, verify_brew_koji_build,
-                                           verify_mock)
+from osh.client.commands.shortcuts import (check_analyzers, fetch_results,
+                                           handle_perm_denied, upload_file,
+                                           verify_brew_koji_build, verify_mock)
 from osh.common.utils.conf import get_conf
 
 
@@ -62,24 +61,6 @@ class Diff_Build(osh.client.OshCommand):
 exist." % self.results_store_file)
             else:
                 self.parser.error("Invalid path to store results.")
-
-    def fetch_results(self, task_url):
-        # we need nvr + '.tar.xz'
-        if not self.srpm.endswith('.src.rpm'):
-            tarball = self.srpm + '.tar.xz'
-        else:
-            tarball = os.path.basename(self.srpm.replace('.src.rpm', '.tar.xz'))
-
-        # get absolute path
-        if self.results_store_file:
-            local_path = os.path.join(os.path.abspath(self.results_store_file),
-                                      tarball)
-        else:
-            local_path = os.path.join(os.path.abspath(os.curdir),
-                                      tarball)
-        # task_url is url to task with trailing '/'
-        url = "%slog/%s?format=raw" % (task_url, tarball)
-        urllib.request.urlretrieve(url, local_path)
 
     # https://gitlab.cee.redhat.com/covscan/covscan/-/issues/162
     def run(self, *args, **kwargs):  # noqa: C901
@@ -199,7 +180,7 @@ is not even one in your user configuration file \
 
             # store results if user requested this
             if self.results_store_file is not None:
-                self.fetch_results(task_url)
+                fetch_results(self.results_store_file, task_url, self.srpm)
 
     def submit_task(self, config, comment, options):
         try:

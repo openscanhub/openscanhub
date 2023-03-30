@@ -1,5 +1,7 @@
 import os
 import re
+import sys
+from urllib.request import urlretrieve
 from xmlrpc.client import Fault
 
 import koji
@@ -68,6 +70,25 @@ def handle_perm_denied(e, parser):
         parser.error('You are not authenticated. Please \
 obtain Kerberos ticket or specify username and password.')
     raise
+
+
+def fetch_results(dest, task_url, nvr):
+    """Downloads results for the given task URL"""
+    # we need nvr + '.tar.xz'
+    if nvr.endswith('.src.rpm'):
+        tarball = os.path.basename(nvr).replace('.src.rpm', '.tar.xz')
+    else:
+        tarball = nvr + '.tar.xz'
+
+    # get absolute path
+    dest_dir = os.path.abspath(dest if dest is not None else os.curdir)
+    local_path = os.path.join(dest_dir, tarball)
+
+    # task_url is url to task with trailing '/'
+    url = f"{task_url}log/{tarball}?format=raw"
+
+    print(f"Downloading {tarball}", file=sys.stderr)
+    urlretrieve(url, local_path)
 
 
 def upload_file(hub, srpm, target_dir, parser):
