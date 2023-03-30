@@ -8,8 +8,6 @@ import os
 import sys
 from pathlib import Path
 
-from osh.hub.stats.service import update
-
 PROJECT_DIR = Path(__file__).parents[2]
 
 if PROJECT_DIR not in sys.path:
@@ -19,6 +17,7 @@ os.environ['DJANGO_SETTINGS_MODULE'] = 'osh.hub.settings'
 
 
 def main():
+    from osh.hub.stats.service import update
     update()
 
 
