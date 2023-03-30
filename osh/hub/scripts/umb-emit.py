@@ -1,6 +1,4 @@
-#!/usr/bin/python2
-
-from __future__ import print_function
+#!/usr/bin/env python3
 
 import proton
 import proton.handlers
@@ -9,7 +7,7 @@ import proton.reactor
 
 class UMBSender(proton.handlers.MessagingHandler):
     def __init__(self, key, msg):
-        super(UMBSender, self).__init__()
+        super().__init__()
         self.urls = ['amqps://umb-broker01.stage.api.redhat.com:5671',
                      'amqps://umb-broker02.stage.api.redhat.com:5671',
                      'amqps://umb-broker03.stage.api.redhat.com:5671',
@@ -51,4 +49,5 @@ def main():
     cont.run()
 
 
-main()
+if __name__ == "__main__":
+    main()
