@@ -22,6 +22,9 @@ RUN dnf install -y https://kojipkgs.fedoraproject.org//packages/epel-release/8/1
 # internal copr kdudka/mock needed for csmock-core-configs (mock configs are required by unit tests)
 RUN cd /etc/yum.repos.d/ && curl -O https://copr.devel.redhat.com/coprs/kdudka/mock/repo/epel-8/kdudka-mock-epel-8.repo
 
+# enable installation of gettext message objects
+RUN rm /etc/rpm/macros.image-language-conf
+
 RUN dnf -y --setopt=tsflags=nodocs install \
     /usr/bin/krb5-config \
     boost-program-options \
@@ -32,6 +35,7 @@ RUN dnf -y --setopt=tsflags=nodocs install \
     csdiff \
     csmock \
     gcc \
+    glibc-langpack-en \
     gzip \
     python3-bugzilla \
     python3-coverage \
