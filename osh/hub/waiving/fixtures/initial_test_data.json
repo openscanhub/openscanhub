@@ -105,14 +105,6 @@
   },
   {
     "model": "contenttypes.contenttype",
-    "pk": 14,
-    "fields": {
-      "app_label": "errata",
-      "model": "capability"
-    }
-  },
-  {
-    "model": "contenttypes.contenttype",
     "pk": 15,
     "fields": {
       "app_label": "errata",
@@ -181,14 +173,6 @@
     "fields": {
       "app_label": "scan",
       "model": "packageattribute"
-    }
-  },
-  {
-    "model": "contenttypes.contenttype",
-    "pk": 24,
-    "fields": {
-      "app_label": "scan",
-      "model": "packagecapability"
     }
   },
   {
@@ -418,8 +402,7 @@
       "name": "ERRATA",
       "description": "Periodic scans of packages released by Errata Tool",
       "options": "\"{\\\"comment_template\\\": \\\"errata process scan of %(target)s\\\", \\\"task_priority\\\": 20, \\\"method\\\": \\\"ErrataDiffBuild\\\"}\"",
-      "profile": 1,
-      "caps": []
+      "profile": 1
     }
   },
   {
@@ -3523,42 +3506,6 @@
   },
   {
     "model": "auth.permission",
-    "pk": 54,
-    "fields": {
-      "name": "Can add capability",
-      "content_type": 14,
-      "codename": "add_capability"
-    }
-  },
-  {
-    "model": "auth.permission",
-    "pk": 55,
-    "fields": {
-      "name": "Can change capability",
-      "content_type": 14,
-      "codename": "change_capability"
-    }
-  },
-  {
-    "model": "auth.permission",
-    "pk": 56,
-    "fields": {
-      "name": "Can delete capability",
-      "content_type": 14,
-      "codename": "delete_capability"
-    }
-  },
-  {
-    "model": "auth.permission",
-    "pk": 57,
-    "fields": {
-      "name": "Can view capability",
-      "content_type": 14,
-      "codename": "view_capability"
-    }
-  },
-  {
-    "model": "auth.permission",
     "pk": 58,
     "fields": {
       "name": "Can add scanning session",
@@ -3879,42 +3826,6 @@
       "name": "Can view package attribute",
       "content_type": 23,
       "codename": "view_packageattribute"
-    }
-  },
-  {
-    "model": "auth.permission",
-    "pk": 94,
-    "fields": {
-      "name": "Can add package capability",
-      "content_type": 24,
-      "codename": "add_packagecapability"
-    }
-  },
-  {
-    "model": "auth.permission",
-    "pk": 95,
-    "fields": {
-      "name": "Can change package capability",
-      "content_type": 24,
-      "codename": "change_packagecapability"
-    }
-  },
-  {
-    "model": "auth.permission",
-    "pk": 96,
-    "fields": {
-      "name": "Can delete package capability",
-      "content_type": 24,
-      "codename": "delete_packagecapability"
-    }
-  },
-  {
-    "model": "auth.permission",
-    "pk": 97,
-    "fields": {
-      "name": "Can view package capability",
-      "content_type": 24,
-      "codename": "view_packagecapability"
     }
   },
   {

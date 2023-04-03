@@ -228,9 +228,6 @@ class AbstractTargetScheduler(AbstractScheduler):
         check_package_is_blocked(self.package, self.tag.release)
         check_obsolete_scan(self.package, self.tag.release)
 
-        self.scanning_session.check_capabilities(self.nvr, self.tag.mock.name,
-                                                 self.package, self.tag.release)
-
         super().store()
 
         self.is_stored = True

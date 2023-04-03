@@ -1,62 +1,11 @@
 import logging
 
-from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from kobo.django.fields import JSONField
 
-from osh.hub.other.exceptions import PackageNotEligibleException
-from osh.hub.scan.models import Analyzer, PackageCapability, Profile
+from osh.hub.scan.models import Profile
 
 logger = logging.getLogger(__name__)
-
-
-class Capability(models.Model):
-    """
-    what is analyser capable of scanning
-    """
-    name = models.CharField(max_length=64)
-
-    # 'module.function' which performs the check
-    function = models.CharField(max_length=128)
-
-    options = JSONField(default={}, blank=True)
-
-    caps = models.ManyToManyField(PackageCapability)
-    analyzers = models.ManyToManyField(Analyzer)
-
-    def __str__(self):
-        return "%s (%s)" % (self.name, self.function)
-
-    def check_capability(self, nvr, mock_profile, package, release):
-        """ check if provided package is capable """
-        module_name, func_name = self.function.rsplit(".", 1)
-        try:
-            module = __import__(module_name, fromlist=['rock', 'n', 'roll'])
-        except ImportError:
-            logger.error("Cannot import function '%s' for capability check '%s'", self.function, self.name)
-            return False
-        kwargs = dict(self.options)
-        kwargs['nvr'] = nvr
-        kwargs['mock_profile'] = mock_profile
-        func = getattr(module, func_name)
-        try:
-            is_capable = func(**kwargs)
-        except Exception as ex:  # noqa: B902
-            logger.error("Exception thrown during capability checking: %s", repr(ex))
-            return False
-        else:
-            pc = PackageCapability.objects.get_or_create_(package, is_capable, release)
-            self.caps.add(pc)
-        return is_capable
-
-    def package_has_capability(self, package, release):
-        return PackageCapability.objects.filter(package=package, release=release, capability=self).exists()
-
-    def package_is_capable(self, package, release):
-        try:
-            return PackageCapability.objects.get(package=package, release=release, capability=self).is_capable
-        except ObjectDoesNotExist:
-            return False
 
 
 class ScanningSessionBindingMixin:
@@ -88,8 +37,6 @@ class ScanningSession(models.Model):
 
     options = JSONField(default={}, blank=True)
 
-    caps = models.ManyToManyField(Capability)
-
     profile = models.ForeignKey(Profile, blank=True, null=True, on_delete=models.CASCADE)
 
     objects = ScanningSessionBindingManager()
@@ -103,14 +50,3 @@ class ScanningSession(models.Model):
         except KeyError:
             logger.error("No option '%s' in %s", name, self)
             return
-
-    def check_capabilities(self, nvr, mock_profile, package, release):
-        caps = self.caps.all()
-        for cap in caps:
-            if cap.package_has_capability(package, release):
-                is_capable = cap.package_is_capable(package, release)
-            else:
-                is_capable = cap.check_capability(nvr, mock_profile, package, release)
-            if not is_capable:
-                raise PackageNotEligibleException(
-                    'Package %s is not eligible for scanning.' % (package.name))

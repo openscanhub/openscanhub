@@ -411,10 +411,6 @@ class PackageAttribute(models.Model):
     ELIGIBLE: {Y | N}
      * Is package scannable? You may have package written in different language
     that is supported by your scanner.
-
-    TODO: eligible should be more flexible:
-        it should be M2M relation with table capability (C, Java, Python)
-        capability should be linked with table Analyzers
     """
     BLOCKED = 'BLOCKED'
     ELIGIBLE = 'ELIGIBLE'
@@ -494,33 +490,6 @@ class PackageAttribute(models.Model):
             atr.value = eligible
             atr.save()
             return atr
-
-
-class PackageCapabilityMixin:
-    def get_or_create_(self, package, is_capable, release=None):
-        model, created = self.get_or_create(package=package, is_capable=is_capable,
-                                            release=release)
-        return model
-
-
-class PackageCapabilityQuerySet(models.query.QuerySet, PackageCapabilityMixin):
-    pass
-
-
-class PackageCapabilityManager(models.Manager, PackageCapabilityMixin):
-    def get_queryset(self):
-        return PackageCapabilityQuerySet(self.model, using=self._db)
-
-
-class PackageCapability(models.Model):
-    release = models.ForeignKey(SystemRelease, blank=True, null=True, on_delete=models.CASCADE)
-    package = models.ForeignKey(Package, on_delete=models.CASCADE)
-    is_capable = models.BooleanField()
-
-    objects = PackageCapabilityManager()
-
-    def __str__(self):
-        return "%s: %s" % (self.package, self.capability_set.all())
 
 
 class ScanMixin:

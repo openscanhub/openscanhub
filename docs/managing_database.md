@@ -48,7 +48,6 @@ covscanhub=# \dt
  public | django_content_type         | table | covscanhub
  public | django_session              | table | covscanhub
  public | django_site                 | table | covscanhub
- public | errata_capability           | table | covscanhub
 ...
 ```
 
