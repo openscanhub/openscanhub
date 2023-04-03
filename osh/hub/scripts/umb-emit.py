@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+import json
+
 import proton
 import proton.handlers
 import proton.reactor
@@ -16,8 +18,7 @@ class UMBSender(proton.handlers.MessagingHandler):
                      'amqps://umb-broker06.stage.api.redhat.com:5671']
         self.cert = '/etc/osh/hub/msg-client-osh.pem'
         self.topic = 'topic://VirtualTopic.eng.covscan.scan.unfinished'
-        self.scan_id = msg['scan_id']
-        self.scan_state = msg['scan_state']
+        self.msg = msg
 
     def on_start(self, event):
         print('on_start')
@@ -31,7 +32,7 @@ class UMBSender(proton.handlers.MessagingHandler):
 
     def on_sendable(self, event):
         print('on_sendable')
-        json_msg = '{ "scan_id": %d, "scan_state": "%s" }' % (self.scan_id, self.scan_state)
+        json_msg = json.dumps(self.msg)
         msg = proton.Message(body=json_msg)
         event.sender.send(msg)
         event.sender.close()
