@@ -240,7 +240,7 @@ class CsmockRunner:
         glob_pattern = os.path.join(path, '*.tar.xz')
         glob_results = glob.glob(glob_pattern)
 
-        if 0 == len(glob_results):
+        if not glob_results:
             # no .tar.xz found
             logger.info("No tarballs in '%s'", glob_pattern)
             return None, retcode
