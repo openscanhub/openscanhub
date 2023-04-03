@@ -319,7 +319,7 @@ class CsmockRunner:
         except (OSError, subprocess.CalledProcessError) as ex:
             print(f"command '{download_cmd}' failed to execute: {ex}",
                   file=sys.stderr)
-            return (None, 2)
+            return None, 2
 
         if not os.path.exists(srpm_path):
             print("downloaded SRPM not found:", srpm_path, file=sys.stderr)
@@ -330,7 +330,7 @@ class CsmockRunner:
 
         if not os.path.exists(srpm_path):
             print("downloaded SRPM not found:", srpm_path, file=sys.stderr)
-            return (None, 2)
+            return None, 2
 
         # check that we downloaded an RPM because koji/brew silently download
         # an HTML 404 page instead in case the build has been already deleted
@@ -339,7 +339,7 @@ class CsmockRunner:
         mime_type, _ = p.communicate()
         if not re.match(b'^.*application/x-rpm$', mime_type):
             print("unexpected MIME type:", mime_type, file=sys.stderr)
-            return (None, 2)
+            return None, 2
 
         return self.analyze(analyzers, srpm_path, profile, su_user, additional_arguments, result_filename=nvr, **kwargs)
 
