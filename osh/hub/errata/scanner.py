@@ -1,18 +1,14 @@
-# -*- coding: utf-8 -*-
-
 """
 logic for spawning tasks
 
 * common options are encapsulated in classes
 
 """
-from __future__ import absolute_import
 
 import logging
 import os
 import shutil
 
-import six
 from kobo.django.upload.models import FileUpload
 from kobo.hub.models import TASK_STATES, Task
 
@@ -35,7 +31,7 @@ from .utils import get_or_fail
 logger = logging.getLogger(__name__)
 
 
-class AbstractScheduler(object):
+class AbstractScheduler:
     """
 
     """
@@ -109,14 +105,14 @@ class BaseScheduler(AbstractScheduler):
             'mock_config': '',
         }
         """
-        super(BaseScheduler, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.mock_config = ''
         self.method = ''
         self.parent_scan = None
         self.validate_options()
 
     def validate_options(self):
-        super(BaseScheduler, self).validate_options()
+        super().validate_options()
         self.mock_config = get_or_fail('mock_config', self.options)
         self.package = get_or_fail('package', self.options)
         self.parent_scan = get_or_fail('parent_scan', self.options)
@@ -125,7 +121,7 @@ class BaseScheduler(AbstractScheduler):
 
     def prepare_args(self):
         """ add scan type specific arguments to args dicts """
-        super(BaseScheduler, self).prepare_args()
+        super().prepare_args()
         self.scan_args['scan_type'] = SCAN_TYPES['ERRATA_BASE']
         self.scan_args['package'] = self.package
         self.scan_args['tag'] = self.tag
@@ -142,7 +138,7 @@ class BaseScheduler(AbstractScheduler):
         if self.is_stored:
             logger.warning("Trying to call store() second time.")
             return
-        super(BaseScheduler, self).store()
+        super().store()
         # update scan.models.Scan.base
         self.parent_scan.set_base(self.scan)
         self.is_stored = True
@@ -168,7 +164,7 @@ class AbstractTargetScheduler(AbstractScheduler):
     def __init__(self, *args, **kwargs):
         """
         """
-        super(AbstractTargetScheduler, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         # required for target only
         self.base_nvr = None
@@ -182,7 +178,7 @@ class AbstractTargetScheduler(AbstractScheduler):
 
     def validate_options(self):
         """ Check if provided options are sane """
-        super(AbstractTargetScheduler, self).validate_options()
+        super().validate_options()
 
         self.base_nvr = get_or_fail('base', self.options)
         get_or_fail('release', self.options)
@@ -190,7 +186,7 @@ class AbstractTargetScheduler(AbstractScheduler):
 
     def prepare_args(self):
         """ prepare dicts -- arguments for task and scan """
-        super(AbstractTargetScheduler, self).prepare_args()
+        super().prepare_args()
         self.task_args['args']['base_nvr'] = self.base_nvr
         self.task_args['owner_name'] = self.options['task_user']
         self.task_args['label'] = self.options['target']
@@ -235,7 +231,7 @@ class AbstractTargetScheduler(AbstractScheduler):
         self.scanning_session.check_capabilities(self.nvr, self.tag.mock.name,
                                                  self.package, self.tag.release)
 
-        super(AbstractTargetScheduler, self).store()
+        super().store()
 
         self.is_stored = True
 
@@ -269,7 +265,7 @@ class NewPkgScheduler(AbstractTargetScheduler):
     """
     def prepare_args(self):
         """ add scan type specific arguments to args dicts """
-        super(NewPkgScheduler, self).prepare_args()
+        super().prepare_args()
         self.scan_args['scan_type'] = SCAN_TYPES['NEWPKG']
 
 
@@ -279,7 +275,7 @@ class RebaseScheduler(AbstractTargetScheduler):
     """
     def prepare_args(self):
         """ add scan type specific arguments to args dicts """
-        super(RebaseScheduler, self).prepare_args()
+        super().prepare_args()
         self.scan_args['scan_type'] = SCAN_TYPES['REBASE']
 
 
@@ -289,11 +285,11 @@ class ClassicScheduler(AbstractTargetScheduler):
     """
     def prepare_args(self):
         """ add scan type specific arguments to args dicts """
-        super(ClassicScheduler, self).prepare_args()
+        super().prepare_args()
         self.scan_args['scan_type'] = SCAN_TYPES['ERRATA']
 
 
-class AbstractClientScanScheduler(object):
+class AbstractClientScanScheduler:
     def prepare_csmock_args(self, *additional_csmock_args):
         """ additional_csmock_args are additional arguments as string """
         def add_if(x, collection):
@@ -498,7 +494,7 @@ class ClientDiffPatchesScanScheduler(ClientScanScheduler):
     task for diff of patches
     """
     def __init__(self, options, method='DiffBuild', additional_csmock_args="--diff-patches", **kwargs):
-        super(ClientDiffPatchesScanScheduler, self).__init__(
+        super().__init__(
             options, method=method,
             additional_csmock_args=additional_csmock_args,
             **kwargs
@@ -744,13 +740,13 @@ def handle_scan(kwargs):
         create_errata_scan2(kwargs, etm)
     except (PackageBlacklistedException, PackageNotEligibleException) as ex:
         status = 'INELIGIBLE'
-        message = six.text_type(ex)
+        message = str(ex)
     except RuntimeError as ex:
         status = 'ERROR'
-        message = u'Unable to submit the scan, error: %s' % ex
+        message = 'Unable to submit the scan, error: %s' % ex
     except Exception as ex:  # noqa: B902
         status = 'ERROR'
-        message = six.text_type(ex)
+        message = str(ex)
     else:
         status = 'OK'
 

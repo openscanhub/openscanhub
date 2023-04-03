@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 import logging
 
 from django.core.exceptions import ObjectDoesNotExist
@@ -27,7 +25,7 @@ class Capability(models.Model):
     analyzers = models.ManyToManyField(Analyzer)
 
     def __str__(self):
-        return u"%s (%s)" % (self.name, self.function)
+        return "%s (%s)" % (self.name, self.function)
 
     def check_capability(self, nvr, mock_profile, package, release):
         """ check if provided package is capable """
@@ -61,7 +59,7 @@ class Capability(models.Model):
             return False
 
 
-class ScanningSessionBindingMixin(object):
+class ScanningSessionBindingMixin:
 
     def get_by_name(self, name):
         return self.get(name=name)
@@ -97,7 +95,7 @@ class ScanningSession(models.Model):
     objects = ScanningSessionBindingManager()
 
     def __str__(self):
-        return u"[%s %s]" % (self.name, self.options)
+        return "[%s %s]" % (self.name, self.options)
 
     def get_option(self, name):
         try:
