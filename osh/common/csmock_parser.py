@@ -67,7 +67,7 @@ class ResultsExtractor:
         if self._json_path is None:
             self.process()
         if not os.path.exists(self._json_path):
-            raise RuntimeError('json results do not exist: %s' % self._json_path)
+            raise RuntimeError('json results do not exist: ' + self._json_path)
         return self._json_path
 
     def extract_tarball(self, exclude_patterns=None):
@@ -85,8 +85,8 @@ class ResultsExtractor:
         ]
         if exclude_patterns:
             # do NOT quote pattern! it won't work
-            command += ['--exclude=%s' % p for p in exclude_patterns]
-        logger.debug('Running command %s' % command)
+            command += ['--exclude=' + p for p in exclude_patterns]
+        logger.debug('Running command %s', command)
         subprocess.check_call(command)
 
     def get_json_result_path(self):
@@ -220,12 +220,12 @@ class CsmockRunner:
                 try:
                     subprocess.check_call(inner_cmd)
                 except subprocess.CalledProcessError:
-                    subprocess.check_call(['su', '-', '-c', "%s" % shlex.quote(' '.join(inner_cmd))])
+                    subprocess.check_call(['su', '-', '-c', shlex.quote(' '.join(inner_cmd))])
                 inner_cmd2 = ['chmod', 'go+rx', self.tmpdir]
                 try:
                     subprocess.check_call(inner_cmd2)
                 except subprocess.CalledProcessError:
-                    subprocess.check_call(['su', '-', su_user, '-c', "%s" % shlex.quote(' '.join(inner_cmd2))])
+                    subprocess.check_call(['su', '-', su_user, '-c', shlex.quote(' '.join(inner_cmd2))])
             command = f'su - {shlex.quote(su_user)} --session-command {shlex.quote(command)}'
 
         retcode, _ = run(command, stdout=True, can_fail=True, return_stdout=False, buffer_size=2, show_cmd=True, universal_newlines=True, errors="backslashreplace")
@@ -270,12 +270,12 @@ class CsmockRunner:
         else:
             cmd = "csmock"
             if analyzers:
-                cmd += ' -t %s' % (shlex.quote(analyzers))
+                cmd += ' -t ' + shlex.quote(analyzers)
             if profile:
-                cmd += ' -r %s' % shlex.quote(profile)
+                cmd += ' -r ' + shlex.quote(profile)
 
         if output_path:
-            cmd += ' -o %s' % (shlex.quote(output_path))
+            cmd += ' -o ' + shlex.quote(output_path)
 
         if additional_arguments:
             # split/quote/rejoin to avoid shell injection
@@ -285,7 +285,7 @@ class CsmockRunner:
                 # starting with Python 3.8, one can use + shlex.join(split_args)
                 cmd += ' ' + ' '.join(shlex.quote(arg) for arg in split_args)
             except ValueError as e:
-                logger.error("failed to parse csmock arguments: %s" % e)
+                logger.error("failed to parse csmock arguments: %s", e)
                 return None, 2
 
         cmd += ' ' + srpm_path
@@ -311,10 +311,10 @@ class CsmockRunner:
         try:
             if self.tmpdir:
                 subprocess.check_call(download_cmd, cwd=self.tmpdir)
-                srpm_path = os.path.join(self.tmpdir, '%s.src.rpm' % nvr)
+                srpm_path = os.path.join(self.tmpdir, nvr + '.src.rpm')
             else:
                 subprocess.check_call(download_cmd)
-                srpm_path = os.path.join(os.getcwd(), '%s.src.rpm' % nvr)
+                srpm_path = os.path.join(os.getcwd(), nvr + '.src.rpm')
 
         except (OSError, subprocess.CalledProcessError) as ex:
             print(f"command '{download_cmd}' failed to execute: {ex}",
@@ -322,14 +322,14 @@ class CsmockRunner:
             return (None, 2)
 
         if not os.path.exists(srpm_path):
-            print("downloaded SRPM not found: %s" % srpm_path, file=sys.stderr)
+            print("downloaded SRPM not found:", srpm_path, file=sys.stderr)
             # `brew win-build` creates build ID without .el8 but SRPM with .el8
             srpm_files = glob.glob(os.path.join(self.tmpdir, '*.src.rpm'))
             if len(srpm_files) == 1:
                 srpm_path = srpm_files[0]
 
         if not os.path.exists(srpm_path):
-            print("downloaded SRPM not found: %s" % srpm_path, file=sys.stderr)
+            print("downloaded SRPM not found:", srpm_path, file=sys.stderr)
             return (None, 2)
 
         # check that we downloaded an RPM because koji/brew silently download
@@ -338,7 +338,7 @@ class CsmockRunner:
         p = subprocess.Popen(check_cmd, stdout=subprocess.PIPE)
         mime_type, _ = p.communicate()
         if not re.match(b'^.*application/x-rpm$', mime_type):
-            print("unexpected MIME type: %s" % mime_type, file=sys.stderr)
+            print("unexpected MIME type:", mime_type, file=sys.stderr)
             return (None, 2)
 
         return self.analyze(analyzers, srpm_path, profile, su_user, additional_arguments, result_filename=nvr, **kwargs)
@@ -360,7 +360,7 @@ class CsmockRunner:
             cmd = "csmock"
             cmd += ' -t ' + shlex.quote(analyzers)
             if profile:
-                cmd += ' -r %s' % shlex.quote(profile)
+                cmd += ' -r ' + shlex.quote(profile)
 
         cmd += ' --no-scan'
         if additional_arguments:
