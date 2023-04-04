@@ -79,7 +79,7 @@ main() {
     curl http://localhost:8000/task/5/ | grep -Pzo "<th>Priority</th>\n    <td>20</td>"
 
     # insert priority offset setting into the database
-    podman exec -it db psql -d covscanhub -c "INSERT INTO scan_package (name, blocked, eligible, priority_offset) VALUES ('expat', false, true, 1);"
+    podman exec -it db psql -d covscanhub -c "INSERT INTO scan_package (name, blocked, priority_offset) VALUES ('expat', false, 1);"
 
     # submit errata scan and check its tasks priorities
     podman exec osh-client "${CLI_XML[@]}" --hub http://osh-hub:8000/xmlrpc/kerbauth/ --username=user --password=xxxxxx create-scan -b expat-2.2.5-4.el8 -t expat-2.2.5-10.el8_7.1 --et-scan-id=1 --release=RHEL-8.5.0 --owner=admin --advisory-id=1

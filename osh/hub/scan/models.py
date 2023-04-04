@@ -268,9 +268,6 @@ class Package(models.Model):
                             blank=False, null=False)
     blocked = models.BooleanField(default=False, help_text="If this is set to \
 True, the package is blacklisted -- not accepted for scanning.", blank=True, null=True)
-    eligible = models.BooleanField(default=True,
-                                   help_text="DEPRECATED, do not use; use package attribute instead.",
-                                   blank=True, null=True)
     priority_offset = models.SmallIntegerField(default=0, help_text="Set this to alter priority \
 of this packages scan")
 
@@ -366,14 +363,6 @@ package')
         else:
             return atr.is_blocked()
 
-    def is_eligible(self, release):
-        try:
-            atr = PackageAttribute.eligible(self, release)
-        except ObjectDoesNotExist:
-            return self.eligible
-        else:
-            return atr.is_eligible()
-
     def get_priority_offset(self):
         return int(self.priority_offset)
 
@@ -384,12 +373,6 @@ class PackageAttributeMixin:
 
     def by_release(self, release):
         return self.filter(release=release)
-
-    def eligible(self):
-        return self.filter(key=PackageAttribute.ELIGIBLE)
-
-    def eligible_package_in_release(self, package, release):
-        return self.get(package=package, release=release, key=PackageAttribute.ELIGIBLE)
 
 
 class PackageAttributeQuerySet(models.query.QuerySet, PackageAttributeMixin):
@@ -407,13 +390,8 @@ class PackageAttribute(models.Model):
     BLOCKED: {Y | N}
      * If this is set to True, the package is blacklisted -- not accepted
     for scanning.
-
-    ELIGIBLE: {Y | N}
-     * Is package scannable? You may have package written in different language
-    that is supported by your scanner.
     """
     BLOCKED = 'BLOCKED'
-    ELIGIBLE = 'ELIGIBLE'
 
     key = models.CharField(max_length=64, null=True, blank=True)
     value = models.CharField(max_length=128, null=True, blank=True)
@@ -446,14 +424,6 @@ class PackageAttribute(models.Model):
     def blocked(cls, package, release):
         return cls._get_for_package_in_release(package, release, PackageAttribute.BLOCKED)
 
-    @classmethod
-    def eligible(cls, package, release):
-        try:
-            return cls._get_for_package_in_release(package, release, PackageAttribute.ELIGIBLE)
-        except ObjectDoesNotExist:
-            logger.error("Package eligibility attribute not found: %s %s", package, release)
-            raise
-
     def _is(self, key, exc_type):
         if self.key == key:
             return self.value == 'Y'
@@ -463,9 +433,6 @@ class PackageAttribute(models.Model):
 
     def is_blocked(self):
         return self._is(PackageAttribute.BLOCKED, 'blocked')
-
-    def is_eligible(self):
-        return self._is(PackageAttribute.ELIGIBLE, 'eligible')
 
     @classmethod
     def create_new_bool(cls, package, release, key, value):
@@ -479,17 +446,6 @@ class PackageAttribute(models.Model):
     @classmethod
     def create_blocked(cls, package, release, blocked):
         return cls.create_new_bool(package, release, PackageAttribute.BLOCKED, blocked)
-
-    @classmethod
-    def create_eligible(cls, package, release, eligible):
-        try:
-            atr = cls.objects.eligible_package_in_release(package, release)
-        except ObjectDoesNotExist:
-            return cls.create_new_bool(package, release, PackageAttribute.ELIGIBLE, eligible)
-        else:
-            atr.value = eligible
-            atr.save()
-            return atr
 
 
 class ScanMixin:

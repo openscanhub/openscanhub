@@ -11,9 +11,8 @@ from django.core.exceptions import ObjectDoesNotExist
 from kobo.django.upload.models import FileUpload
 from kobo.rpmlib import parse_nvr
 
-from osh.hub.other.exceptions import (PackageBlacklistedException,
-                                      PackageNotEligibleException)
-from osh.hub.scan.models import ClientAnalyzer, PackageAttribute, ScanBinding
+from osh.hub.other.exceptions import PackageBlacklistedException
+from osh.hub.scan.models import ClientAnalyzer, ScanBinding
 from osh.hub.scan.xmlrpc_helper import cancel_scan
 
 logger = logging.getLogger(__name__)
@@ -28,23 +27,14 @@ def check_nvr(nvr):
 
 
 def check_package_eligibility(package, nvr, mock_profile, release, created):
-    """
-    check if package is eligible for scanning (it is not blacklisted)
-    """
     if created:
         logger.info('Package %s for %s was created', package, release)
         # all freshly scanned packages are now eligible by default
-        atr = PackageAttribute.create_eligible(package, release, True)
-        is_eligible = atr.is_eligible()
     else:
         is_blocked = package.is_blocked(release)
         if is_blocked:
             raise PackageBlacklistedException('Package %s is blacklisted.' %
                                               (package.name))
-        is_eligible = package.is_eligible(release)
-    if not is_eligible:
-        raise PackageNotEligibleException(
-            'Package %s is not eligible for scanning.' % (package.name))
 
 
 def check_package_is_blocked(package, release):

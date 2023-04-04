@@ -2457,8 +2457,7 @@
     "pk": 1,
     "fields": {
       "name": "python-six",
-      "blocked": false,
-      "eligible": true
+      "blocked": false
     }
   },
   {
