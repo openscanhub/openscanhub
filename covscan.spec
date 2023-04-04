@@ -221,15 +221,6 @@ fi
 %files worker-conf-prod
 %attr(640,root,root) %config(noreplace) /etc/osh/worker.conf.prod
 
-%(for alt in devel stage prod; do
-cat << EOF
-%post worker-conf-${alt}
-if test -f /etc/covscan/covscand.conf; then
-    mv /etc/covscan/covscand.conf /etc/osh/worker.conf
-fi
-EOF
-done)
-
 %files hub
 %defattr(-,root,apache,-)
 %{_sysconfdir}/osh/hub
