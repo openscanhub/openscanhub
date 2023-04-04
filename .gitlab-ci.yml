@@ -95,8 +95,7 @@ build-rpms-on-copr-and-test:
     - dnf install -y $(ls epel-8-x86_64/*.rpm | grep -v "stage\|prod\|src")
     - systemctl stop httpd postgresql
     # setup covscanhub settings
-    - cp osh/hub/settings_local.stage.py /usr/lib/python3.6/site-packages/osh/hub/settings_local.py
-    - sed -i "s/\['covscan.lab.eng.brq2.redhat.com'\]/\['*'\]/" /usr/lib/python3.6/site-packages/osh/hub/settings_local.py
+    - cp osh/hub/settings_local.ci.py /usr/lib/python3.6/site-packages/osh/hub/settings_local.py
     # setup postgresql
     - mv -fvT --backup=numbered /var/lib/pgsql/data/ /root/pgsql-data
     - postgresql-setup --initdb
