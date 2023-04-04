@@ -76,12 +76,12 @@ log:
 source: clean
 	@python3 setup.py sdist --formats=bztar
 
-VERSION = $(shell echo dist/*.tar.bz2 | sed "s/.*covscan-\(.*\).tar.bz2/\1/g")
+VERSION = $(shell echo dist/*.tar.bz2 | sed "s/.*osh-\(.*\).tar.bz2/\1/g")
 
 srpm: source
-	echo "%global version $(VERSION)" > dist/covscan.spec
-	cat covscan.spec >> dist/covscan.spec
-	rpmbuild -bs "dist/covscan.spec"	\
+	echo "%global version $(VERSION)" > dist/osh.spec
+	cat osh.spec >> dist/osh.spec
+	rpmbuild -bs "dist/osh.spec"	\
 		--define "_sourcedir ./dist"	\
 		--define "_specdir ."		\
 		--define "_srcrpmdir ."

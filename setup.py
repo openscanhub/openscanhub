@@ -63,7 +63,7 @@ if os.path.isdir(".git"):
         package_version += [git_date, git_time, git_version]
 
 setup(
-    name="covscan",
+    name="osh",
     version=".".join(map(str, package_version)),
     url="https://gitlab.cee.redhat.com/covscan/covscan",
     author="Red Hat, Inc.",

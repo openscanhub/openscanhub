@@ -1,4 +1,4 @@
-Name:           covscan
+Name:           osh
 Version:        %{version}
 Release:        1%{?dist}
 License:        Commercial
@@ -16,7 +16,7 @@ BuildRequires:  python3-setuptools
 BuildRequires:  systemd-rpm-macros
 
 # The following dependencies are not yet available in EPEL-9.  Make it
-# possible to build at least functional up2date covscan-client for EPEL-9.
+# possible to build at least functional up2date osh-client for EPEL-9.
 %if 0%{?rhel} != 9
 BuildRequires:  python3-django
 BuildRequires:  python3-kobo-django
@@ -35,6 +35,10 @@ Requires: koji
 Requires: python3-kobo-client >= 0.15.1-100
 Requires: %{name}-common = %{version}-%{release}
 Obsoletes: python3-%{name}-client < %{version}-%{release}
+# This is kept here for backward compatibility with old package name
+Provides: covscan-client = %{version}
+Obsoletes: covscan-client < %{version}
+Conflicts: covscan-client < %{version}
 
 %description client
 OpenScanHub CLI client
@@ -42,6 +46,7 @@ OpenScanHub CLI client
 
 %package common
 Summary: OpenScanHub shared files for client, hub and worker
+Obsoletes: covscan-common < %{version}
 
 %description common
 OpenScanHub shared files for client, hub and worker.
@@ -56,6 +61,8 @@ Requires: python3-kobo-rpmlib
 Requires: python3-kobo-worker
 Requires: %{name}-common = %{version}-%{release}
 Requires: osh-worker-conf
+
+Obsoletes: covscan-worker < %{version}
 
 %description worker
 OpenScanHub worker
@@ -93,10 +100,12 @@ Requires(post): /usr/bin/pg_isready
 Requires: %{name}-common = %{version}-%{release}
 Requires: osh-hub-conf
 
+Obsoletes: covscan-hub < %{version}
+
 %description hub
 OpenScanHub xml-rpc interface and web application
 
-# define covscan-{worker,hub}-conf-devel subpackages
+# define osh-{worker,hub}-conf-devel subpackages
 %(for sub in worker hub; do
 cat << EOF
 %package ${sub}-conf-devel
@@ -171,7 +180,7 @@ rm -rf %{buildroot}%{python3_sitelib}/scripts
 %attr(644,root,root) %config(noreplace) /etc/osh/client.conf
 %{bash_completions_dir}/osh-cli.bash
 %{python3_sitelib}/osh/client
-%{python3_sitelib}/covscan-*-py%{python3_version}.egg-info
+%{python3_sitelib}/osh-*-py%{python3_version}.egg-info
 
 %files common
 %defattr(644,root,root,755)
