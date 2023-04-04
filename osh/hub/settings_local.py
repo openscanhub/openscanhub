@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Instance-specific settings.
 
@@ -19,13 +18,13 @@ MANAGERS = ADMINS
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'covscanhub',
-        'USER': 'covscanhub',
+        'NAME': 'openscanhub',
+        'USER': 'openscanhub',
         'PASSWORD': 'velryba',
         'HOST': 'db',
         'PORT': '5432',
         'TEST': {
-                'NAME': 'covscanhub-test',
+                'NAME': 'openscanhub-test',
         },
     },
 }

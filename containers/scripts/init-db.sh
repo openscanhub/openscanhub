@@ -42,7 +42,7 @@ minimal() {
     # weak password used for testing purposes only
     PASSWD=xxxxxx
 
-    # create covscan users
+    # create OpenScanHub users
     podman exec -i osh-hub python3 osh/hub/manage.py shell << EOF
 from django.contrib.auth import get_user_model
 User = get_user_model()
@@ -53,7 +53,7 @@ for login in ['idoamara', 'kdudka', 'lbalhar']:
 EOF
 
     # dump the database to a file
-    podman exec -i db pg_dump -h localhost -U covscanhub \
+    podman exec -i db pg_dump -h localhost -U openscanhub \
         | gzip -c > openscanhub-minimal.db.gz
 
     # print summary on success
@@ -61,11 +61,11 @@ EOF
 }
 
 restore() {
-    FILEPATH='https://covscan-stage.lab.eng.brq2.redhat.com/covscanhub.db.gz'
+    FILEPATH='https://covscan-stage.lab.eng.brq2.redhat.com/openscanhub.db.gz'
     DOWNLOAD=true
 
-    if [ -e covscanhub.db.gz ]; then
-        if [ "$(echo "$(curl "${FILEPATH}.SHA512SUM" | cut -d'=' -f2)" covscanhub.db.gz | sha512sum --check)" ]; then
+    if [ -e openscanhub.db.gz ]; then
+        if [ "$(echo "$(curl "${FILEPATH}.SHA512SUM" | cut -d'=' -f2)" openscanhub.db.gz | sha512sum --check)" ]; then
             DOWNLOAD=false
         fi
     fi
@@ -78,7 +78,7 @@ restore() {
 
     (
         set -x
-        gzip -cd covscanhub.db.gz | podman exec -i db psql -h localhost -U covscanhub
+        gzip -cd openscanhub.db.gz | podman exec -i db psql -h localhost -U openscanhub
         # HACK: this should be turned into a function
         # ref: https://stackoverflow.com/a/16853755/9814181
         podman exec -i osh-hub python3 osh/hub/manage.py shell << EOF

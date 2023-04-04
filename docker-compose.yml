@@ -7,8 +7,8 @@ services:
     hostname: db
     environment:
       POSTGRESQL_PASSWORD: velryba
-      POSTGRESQL_USER: covscanhub
-      POSTGRESQL_DATABASE: covscanhub
+      POSTGRESQL_USER: openscanhub
+      POSTGRESQL_DATABASE: openscanhub
     ports:
       - "5432:5432"
     networks:

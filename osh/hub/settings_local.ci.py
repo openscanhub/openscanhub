@@ -18,8 +18,8 @@ MANAGERS = ADMINS
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'covscanhub',
-        'USER': 'covscanhub',
+        'NAME': 'openscanhub',
+        'USER': 'openscanhub',
         'PASSWORD': 'velryba',
         'HOST': 'localhost',
         'PORT': '5432',

@@ -1,19 +1,19 @@
 #!/bin/sh -ex
 su - postgres -c psql <<EOF
-    CREATE USER "covscanhub" WITH PASSWORD 'velryba';
-    CREATE DATABASE "covscanhub";
-    GRANT ALL PRIVILEGES ON DATABASE "covscanhub" TO "covscanhub";
+    CREATE USER "openscanhub" WITH PASSWORD 'velryba';
+    CREATE DATABASE "openscanhub";
+    GRANT ALL PRIVILEGES ON DATABASE "openscanhub" TO "openscanhub";
 EOF
 
-# wget https://covscan-stage.lab.eng.brq2.redhat.com/covscanhub-limited.db.gz
+# wget https://covscan-stage.lab.eng.brq2.redhat.com/openscanhub-limited.db.gz
 
-# gzip -cd covscanhub-limited.db.gz | su - postgres -c 'psql covscanhub'
+# gzip -cd openscanhub-limited.db.gz | su - postgres -c 'psql openscanhub'
 
-# rm -f covscanhub-limited.db.gz
+# rm -f openscanhub-limited.db.gz
 
-su - postgres -c 'psql covscanhub' <<EOF
-    GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA "public" TO "covscanhub";
-    GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA "public" TO "covscanhub";
+su - postgres -c 'psql openscanhub' <<EOF
+    GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA "public" TO "openscanhub";
+    GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA "public" TO "openscanhub";
 EOF
 
 /usr/lib/python3.6/site-packages/osh/hub/manage.py migrate

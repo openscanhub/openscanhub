@@ -51,8 +51,8 @@ Run the following command in the separated terminal window so you can follow its
 
 If you want to, you can restore a database backup from the production server. If not, you can skip these steps and osh-hub will create an empty database for you.
 
-* Download database backup from https://covscan-stage.lab.eng.brq2.redhat.com/covscanhub.db.gz
-* Import the database into the running container: `gzip -cd covscanhub.db.gz | podman exec -i db psql -h localhost -U covscanhub`
+* Download database backup from https://covscan-stage.lab.eng.brq2.redhat.com/openscanhub.db.gz
+* Import the database into the running container: `gzip -cd openscanhub.db.gz | podman exec -i db psql -h localhost -U openscanhub`
 
 ### Start the OSH hub
 

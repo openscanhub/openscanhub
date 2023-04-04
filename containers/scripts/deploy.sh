@@ -140,9 +140,9 @@ clean() {
     set -e
 
     eval podman-compose "$PROFILE" down -v
-    CONTAINERS=$(podman ps -a | grep 'covscan\|osh' | sed -e "s/[[:space:]]\{2,\}/,/g" | cut -d, -f1)
+    CONTAINERS=$(podman ps -a | grep 'osh' | sed -e "s/[[:space:]]\{2,\}/,/g" | cut -d, -f1)
     echo "$CONTAINERS" | xargs podman rm -f
-    IMAGES=$(shell podman images | grep 'covscan\|osh' | sed -e "s/[[:space:]]\{2,\}/,/g" | cut -d, -f3)
+    IMAGES=$(shell podman images | grep 'osh' | sed -e "s/[[:space:]]\{2,\}/,/g" | cut -d, -f3)
     echo "$IMAGES" | xargs podman rmi -f
 }
 

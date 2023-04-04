@@ -24,7 +24,7 @@ django-unit-tests:
   before_script:
     - git clone --depth 1 https://github.com/release-engineering/kobo.git
     - containers/scripts/init-db.sh --deploy --force --minimal
-    - podman exec -it db psql -c 'ALTER USER covscanhub CREATEDB;'
+    - podman exec -it db psql -c 'ALTER USER openscanhub CREATEDB;'
   script:
     - podman exec -it osh-hub /usr/bin/coverage-3.6 run --omit="*site-packages*,*kobo*," osh/hub/manage.py test -v 3 || exit 1
     - podman exec -it osh-hub /usr/bin/coverage-3.6 html
@@ -94,7 +94,7 @@ build-rpms-on-copr-and-test:
     - rhcopr download-build $build_id -r epel-8-x86_64
     - dnf install -y $(ls epel-8-x86_64/*.rpm | grep -v "stage\|prod\|src")
     - systemctl stop httpd postgresql
-    # setup covscanhub settings
+    # setup openscanhub settings
     - cp osh/hub/settings_local.ci.py /usr/lib/python3.6/site-packages/osh/hub/settings_local.py
     # setup postgresql
     - mv -fvT --backup=numbered /var/lib/pgsql/data/ /root/pgsql-data

@@ -23,7 +23,7 @@ if [ "$ret" -gt 0 ]; then
 fi
 
 # If the table of mock configs is empty, we most likely have an empty database.
-# In this case, we load the initial data into the database to make the Covscan
+# In this case, we load the initial data into the database to make the OSH
 # hub work.
 if [ "$(python3.6 osh/hub/manage.py dumpdata scan.MockConfig)" = "[]" ]; then
     python3.6 osh/hub/manage.py loaddata \
