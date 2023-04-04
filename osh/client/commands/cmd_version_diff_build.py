@@ -3,7 +3,7 @@ from xmlrpc.client import Fault
 from kobo.shortcuts import random_string
 
 import osh.client
-from osh.common.utils.conf import get_conf
+from osh.client.conf import get_conf
 
 from .common import (add_analyzers_option, add_comment_option,
                      add_comp_warnings_option, add_config_option,

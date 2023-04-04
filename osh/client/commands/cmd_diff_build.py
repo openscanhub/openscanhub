@@ -20,7 +20,7 @@ from osh.client.commands.common import (add_analyzers_option,
 from osh.client.commands.shortcuts import (check_analyzers, fetch_results,
                                            handle_perm_denied, upload_file,
                                            verify_brew_koji_build, verify_mock)
-from osh.common.utils.conf import get_conf
+from osh.client.conf import get_conf
 
 
 class Diff_Build(osh.client.OshCommand):
