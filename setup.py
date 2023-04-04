@@ -16,12 +16,6 @@ data_files = {
     "/etc/osh": [
         "osh/client/client.conf",
         "osh/worker/worker.conf",
-        "osh/worker/worker.conf.prod",
-        "osh/worker/worker.conf.stage",
-    ],
-    "/etc/httpd/conf.d": [
-        "osh/hub/osh-hub-httpd.conf.prod",
-        "osh/hub/osh-hub-httpd.conf.stage",
     ],
     "/usr/lib/systemd/system": [
         "osh/worker/osh-worker.service",

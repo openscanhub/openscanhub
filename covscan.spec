@@ -96,19 +96,17 @@ Requires: osh-hub-conf
 %description hub
 OpenScanHub xml-rpc interface and web application
 
-# define covscan-{worker,hub}-conf-{devel,stage,prod} subpackages
+# define covscan-{worker,hub}-conf-devel subpackages
 %(for sub in worker hub; do
-for alt in devel stage prod; do
 cat << EOF
-%package ${sub}-conf-${alt}
-Summary: OpenScanHub ${sub} ${alt} configuration
+%package ${sub}-conf-devel
+Summary: OpenScanHub ${sub} devel configuration
 Provides: osh-${sub}-conf = %{version}-%{release}
 Conflicts: osh-${sub}-conf
-RemovePathPostfixes: .${alt}
-%description ${sub}-conf-${alt}
-OpenScanHub ${sub} ${alt} configuration
+%description ${sub}-conf-devel
+OpenScanHub ${sub} devel configuration
 EOF
-done;done)
+done)
 
 %prep
 %setup -q
@@ -143,17 +141,6 @@ ln -s osh-worker.service %{buildroot}%{_unitdir}/covscand.service
 # Temporarily provide /usr/lib/python3.6/site-packages/osh/hub/covscanhub.wsgi for backward compatibility
 # https://gitlab.cee.redhat.com/covscan/covscan/-/merge_requests/217#note_6042264
 ln -s osh-hub.wsgi %{buildroot}%{python3_sitelib}/osh/hub/covscanhub.wsgi
-
-# rename settings_local.{stage,prod}.* -> settings_local.*.{stage,prod}
-for i in stage prod; do (
-    cd %{buildroot}%{python3_sitelib}/osh/hub
-    eval mv -v settings_local.{${i}.py,py.${i}}
-
-    cd __pycache__
-    for j in settings_local.${i}.*; do
-        eval mv -v $j "settings_local\\${j#settings_local.${i}}.${i}"
-    done
-) done
 
 # create /etc/osh/hub directory
 mkdir -p %{buildroot}%{_sysconfdir}/osh/hub
@@ -215,12 +202,6 @@ fi
 %files worker-conf-devel
 %attr(640,root,root) %config(noreplace) /etc/osh/worker.conf
 
-%files worker-conf-stage
-%attr(640,root,root) %config(noreplace) /etc/osh/worker.conf.stage
-
-%files worker-conf-prod
-%attr(640,root,root) %config(noreplace) /etc/osh/worker.conf.prod
-
 %files hub
 %defattr(-,root,apache,-)
 %{_sysconfdir}/osh/hub
@@ -255,16 +236,6 @@ pg_isready -h localhost && %{python3_sitelib}/osh/hub/manage.py migrate
 %files hub-conf-devel
 %attr(640,root,apache) %config(noreplace) %{python3_sitelib}/osh/hub/settings_local.py
 %attr(640,root,apache) %config(noreplace) %{python3_sitelib}/osh/hub/__pycache__/settings_local*.pyc
-
-%files hub-conf-stage
-%attr(640,root,apache) %config(noreplace) %{python3_sitelib}/osh/hub/settings_local.py.stage
-%attr(640,root,apache) %config(noreplace) %{python3_sitelib}/osh/hub/__pycache__/settings_local*.pyc.stage
-%attr(640,root,root) %config(noreplace) /etc/httpd/conf.d/osh-hub-httpd.conf.stage
-
-%files hub-conf-prod
-%attr(640,root,apache) %config(noreplace) %{python3_sitelib}/osh/hub/settings_local.py.prod
-%attr(640,root,apache) %config(noreplace) %{python3_sitelib}/osh/hub/__pycache__/settings_local*.pyc.prod
-%attr(640,root,root) %config(noreplace) /etc/httpd/conf.d/osh-hub-httpd.conf.prod
 
 
 %changelog
