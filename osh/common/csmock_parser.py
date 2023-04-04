@@ -212,11 +212,11 @@ class CsmockRunner:
             if not os.path.isdir(self.tmpdir):
                 logger.error('temp dir does not exists!')
                 raise RuntimeError('temp dir does not exists!')
-            command = 'cd %s && ' % shlex.quote(self.tmpdir) + command
+            command = f'cd {shlex.quote(self.tmpdir)} && ' + command
 
         if su_user:
             if self.our_temp_dir:
-                inner_cmd = ['chown', '%s:%s' % (su_user, su_user), self.tmpdir]
+                inner_cmd = ['chown', f'{su_user}:{su_user}', self.tmpdir]
                 try:
                     subprocess.check_call(inner_cmd)
                 except subprocess.CalledProcessError:
@@ -226,7 +226,7 @@ class CsmockRunner:
                     subprocess.check_call(inner_cmd2)
                 except subprocess.CalledProcessError:
                     subprocess.check_call(['su', '-', su_user, '-c', "%s" % shlex.quote(' '.join(inner_cmd2))])
-            command = 'su - %s --session-command %s' % (shlex.quote(su_user), shlex.quote(command))
+            command = f'su - {shlex.quote(su_user)} --session-command {shlex.quote(command)}'
 
         retcode, _ = run(command, stdout=True, can_fail=True, return_stdout=False, buffer_size=2, show_cmd=True, universal_newlines=True, errors="backslashreplace")
         if output_path:
@@ -317,7 +317,8 @@ class CsmockRunner:
                 srpm_path = os.path.join(os.getcwd(), '%s.src.rpm' % nvr)
 
         except (OSError, subprocess.CalledProcessError) as ex:
-            print("command '%s' failed to execute: %s" % (download_cmd, ex), file=sys.stderr)
+            print(f"command '{download_cmd}' failed to execute: {ex}",
+                  file=sys.stderr)
             return (None, 2)
 
         if not os.path.exists(srpm_path):
