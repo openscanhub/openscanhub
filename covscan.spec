@@ -261,18 +261,6 @@ fi
 # this only takes an effect if PostgreSQL is running and the database exists
 pg_isready -h localhost && %{python3_sitelib}/osh/hub/manage.py migrate
 
-# define covscan-hub-conf-{devel,stage,prod} `post` tasks
-%(for alt in devel stage prod; do
-cat << EOF
-%post hub-conf-${alt}
-# Handle 'covscanhub' to 'osh/hub' transition
-# https://gitlab.cee.redhat.com/covscan/covscan/-/issues/154
-if test -f %{python3_sitelib}/covscanhub/settings_local.py; then
-    mv %{python3_sitelib}/{covscanhub,osh/hub}/settings_local.py
-fi
-EOF
-done)
-
 %files hub-conf-devel
 %attr(640,root,apache) %config(noreplace) %{python3_sitelib}/osh/hub/settings_local.py
 %attr(640,root,apache) %config(noreplace) %{python3_sitelib}/osh/hub/__pycache__/settings_local*.pyc
