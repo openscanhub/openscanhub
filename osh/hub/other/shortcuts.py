@@ -2,13 +2,11 @@ import os
 
 import koji
 from django.conf import settings
-from django.core.exceptions import ObjectDoesNotExist
 from django.urls import reverse
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe
 
 from osh.hub.other.exceptions import BrewException
-from osh.hub.scan.models import MockConfig
 
 
 def add_link_field(target_model=None, field='', field_label=''):
@@ -34,16 +32,6 @@ def add_link_field(target_model=None, field='', field_label=''):
             [field_name]
         return cls
     return add_link
-
-
-def get_mock_by_name(name):
-    try:
-        conf = MockConfig.objects.get(name=name)
-    except:  # noqa: B902, E722
-        raise ObjectDoesNotExist("Unknown mock config: %s" % name)
-    if not conf.enabled:
-        raise RuntimeError("Mock config is disabled: %s" % conf)
-    return conf
 
 
 def check_brew_build(name):

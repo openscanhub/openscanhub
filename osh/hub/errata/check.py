@@ -26,17 +26,6 @@ def check_nvr(nvr):
         raise RuntimeError('%s is not a correct N-V-R' % nvr)
 
 
-def check_package_eligibility(package, nvr, mock_profile, release, created):
-    if created:
-        logger.info('Package %s for %s was created', package, release)
-        # all freshly scanned packages are now eligible by default
-    else:
-        is_blocked = package.is_blocked(release)
-        if is_blocked:
-            raise PackageBlockedException('Package %s is blocked.' %
-                                          (package.name))
-
-
 def check_package_is_blocked(package, release):
     is_blocked = package.is_blocked(release)
     if is_blocked:

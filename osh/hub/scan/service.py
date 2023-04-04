@@ -3,7 +3,6 @@
 """
 
 
-import copy
 import logging
 import os
 import shlex
@@ -19,12 +18,11 @@ from osh.common.constants import (ERROR_DIFF_FILE, ERROR_HTML_FILE,
                                   ERROR_TXT_FILE, FIXED_DIFF_FILE,
                                   FIXED_HTML_FILE, FIXED_TXT_FILE)
 from osh.hub.other.exceptions import ScanException
-from osh.hub.other.shortcuts import (check_and_create_dirs, check_brew_build,
-                                     get_mock_by_name)
+from osh.hub.other.shortcuts import check_and_create_dirs, check_brew_build
 from osh.hub.service.processing import add_title_to_json
 
 from .models import (SCAN_STATES, SCAN_STATES_FINISHED_WELL, SCAN_TYPES_TARGET,
-                     Analyzer, Scan, ScanBinding)
+                     Scan, ScanBinding)
 
 logger = logging.getLogger(__name__)
 
@@ -251,105 +249,6 @@ def create_base_diff_task(hub_opts, task_opts, parent_id):
         # move file to task dir, remove upload record and make the task available
         shutil.move(srpm_path, os.path.join(task_dir, os.path.basename(srpm_path)))
         upload.delete()
-
-
-def create_diff_task(hub_opts, task_opts):
-    """
-        create scan of a package and perform diff on results against specified
-        version
-        Options for task are stored in 'task_opts'
-        options of this scan are in dict 'hub_opts':
-
-        hub_opts
-         - task_user - username from request.user.username
-         - nvr_srpm - name, version, release of scanned package
-         - nvr_upload_id - upload id for target, so worker is able to download it
-         - nvr_brew_build - NVR of package to be downloaded from brew
-         - base_srpm - name, version, release of base package
-         - base_upload_id - upload id for base, so worker is able to download it
-         - base_brew_build - NVR of base package to be downloaded from brew
-         - nvr_mock - mock config
-         - base_mock - mock config
-    """
-    options = task_opts or {}
-
-    task_user = hub_opts['task_user']
-
-    nvr_srpm = hub_opts.get('nvr_srpm', None)
-    nvr_brew_build = hub_opts.get('nvr_brew_build', None)
-    base_brew_build = hub_opts.get('base_brew_build', None)
-    nvr_upload_id = hub_opts.get('nvr_upload_id', None)
-    analyzers = hub_opts.pop("analyzers", None)
-
-    # Label, description or any reason for this task.
-    task_label = nvr_srpm or nvr_brew_build
-
-    nvr_mock = hub_opts['nvr_mock']
-    base_mock = hub_opts['base_mock']
-    priority = hub_opts.get('priority', 10)
-    comment = hub_opts.get('comment', '')
-
-    # does mock config exist?
-    get_mock_by_name(nvr_mock)
-    options["mock_config"] = nvr_mock
-    # if base config is invalid target task isn't submited, is this alright?
-    get_mock_by_name(base_mock)
-
-    # Test if SRPM exists
-    if base_brew_build:
-        check_brew_build(base_brew_build)
-    if nvr_brew_build:
-        options['brew_build'] = check_brew_build(nvr_brew_build)
-    elif nvr_upload_id:
-        try:
-            upload = FileUpload.objects.get(id=nvr_upload_id)
-        except FileUpload.DoesNotExist:
-            raise ObjectDoesNotExist("Can't find uploaded file with id: %s" % nvr_upload_id)
-
-        if upload.owner.username != task_user:
-            raise RuntimeError("Can't process a file uploaded by a different user")
-
-        srpm_path = os.path.join(upload.target_dir, upload.name)
-        options["srpm_name"] = upload.name
-        # cut .src.rpm suffix, because run_diff and extractTarball rely on this
-        task_label = options["srpm_name"][:-8]
-    else:
-        raise RuntimeError('Target build is not specified!')
-
-    if analyzers:
-        an_conf = Analyzer.objects.get_opts(analyzers)
-        options.update(an_conf)
-        task_opts.update(an_conf)
-
-    task_id = Task.create_task(
-        owner_name=task_user,
-        label=task_label,
-        method='VersionDiffBuild',
-        args=options,
-        comment=comment,
-        state=TASK_STATES["FREE"],
-        priority=priority
-    )
-    task_dir = Task.get_task_dir(task_id)
-
-    check_and_create_dirs(task_dir)
-
-    if nvr_upload_id:
-        # move file to task dir, remove upload record and make the task
-        # available
-        shutil.move(srpm_path, os.path.join(task_dir,
-                                            os.path.basename(srpm_path)))
-        upload.delete()
-
-    parent_task = Task.objects.get(id=task_id)
-    create_base_diff_task(copy.deepcopy(hub_opts), task_opts, task_id)
-
-    # wait has to be after creation of new subtask
-    # TODO wait should be executed in one transaction with creation of
-    # child
-    parent_task.wait()
-
-    return task_id
 
 
 def get_latest_sb_by_package(release, package):
