@@ -76,7 +76,7 @@ build-rpms-on-copr-and-test:
     # issues with SELinux. Keep SELinux in permissive mode and fix any SELinux warnings before
     # enabling it in future.
     - setenforce 0
-    - dnf remove -y $(rpm -qa | grep -i covscan)
+    - dnf remove -y $(rpm -qa | grep -i "covscan\|osh")
     - systemctl status
   script:
     - cp containers/rhel-8-pulp.repo containers/rcm-tools-for-rhel-8.repo /etc/yum.repos.d/
