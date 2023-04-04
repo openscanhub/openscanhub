@@ -20,16 +20,6 @@ def get_tag(release):
     raise RuntimeError("Packages in this release are not being scanned.")
 
 
-def return_or_raise(key, data):
-    """Custom function for retrieving data from dict (mainly for logging)"""
-    try:
-        return data[key]
-    except KeyError:
-        logger.error("Key '%s' is missing from dict '%s'", key, data)
-        raise RuntimeError("Key '%s' is missing from %s, invalid scan \
-submission!" % (key, data))
-
-
 def rescan(scan, user):
     """
         Rescan supplied scan.

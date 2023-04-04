@@ -14,8 +14,7 @@ from kobo.hub.models import TASK_STATES, Task
 
 from osh.hub.errata.check import check_analyzers, check_srpm, check_upload
 from osh.hub.errata.models import ScanningSession
-from osh.hub.errata.service import return_or_raise
-from osh.hub.errata.utils import is_rebase
+from osh.hub.errata.utils import get_or_fail, is_rebase
 from osh.hub.other.exceptions import PackageBlockedException
 from osh.hub.scan.models import (REQUEST_STATES, SCAN_TYPES, AppSettings,
                                  ClientAnalyzer, ETMapping, MockConfig,
@@ -25,7 +24,6 @@ from osh.hub.service.processing import task_has_results
 
 from .check import (check_build, check_nvr, check_obsolete_scan,
                     check_package_is_blocked)
-from .utils import get_or_fail
 
 logger = logging.getLogger(__name__)
 
@@ -728,9 +726,9 @@ def handle_scan(kwargs):
 
     try:
         # ET internal id for the scan record in ET
-        etm.et_scan_id = return_or_raise('id', kwargs)
+        etm.et_scan_id = get_or_fail('id', kwargs)
         # ET internal id of the advisory that the build is part of
-        etm.advisory_id = return_or_raise('errata_id', kwargs)
+        etm.advisory_id = get_or_fail('errata_id', kwargs)
         etm.save()
 
         create_errata_scan2(kwargs, etm)
