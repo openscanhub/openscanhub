@@ -8,7 +8,7 @@ import pickle
 from kobo.client import HubProxy
 
 from osh.client.conf import get_conf
-from osh.common.utils.conf import get_config_dict
+from osh.common.conf import get_config_dict
 
 
 def get_can_path():

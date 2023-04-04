@@ -10,7 +10,7 @@ import kobo.exceptions
 
 # assuming all commands are in osh/client/commands/cmd_*.py modules
 import osh.client.commands
-from osh.common.utils.conf import get_config_dict
+from osh.common.conf import get_config_dict
 
 
 # inherit container to make sure nobody will change plugins I registered
