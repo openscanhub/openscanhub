@@ -32,22 +32,3 @@ urlpatterns = [
     # Include kobo hub xmlrpc module urls:
     url(r"^xmlrpc/", include("osh.hub.cs_xmlrpc.urls")),
 ]
-
-
-# this is a hack to enable media (with correct prefix) while debugging
-# if settings.DEBUG:
-#    import os
-#    import kobo
-#    import urlparse
-#
-#    scheme, netloc, path, params, query, fragment = urlparse.urlparse(settings.MEDIA_URL)
-#    if not netloc:
-#        pass
-#        netloc is empty -> media is not on remote server
-#        print path
-#        print path[1:-1]
-#        print os.path.join(os.path.dirname(kobo.__file__), "hub", "static", "kobo")
-#        urlpatterns.extend([
-#            url(r"^kobo/(?P<path>.*)$", "django.views.static.serve", kwargs={"document_root": os.path.join(os.path.dirname(kobo.__file__), "hub", "static", "kobo")}),
-#            url(r"^%s/(?P<path>.*)$" % path[1:-1], "django.views.static.serve", kwargs={"document_root": settings.MEDIA_ROOT}),
-#        ])
