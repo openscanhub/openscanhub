@@ -6,6 +6,8 @@ import proton
 import proton.handlers
 import proton.reactor
 
+UMB_TOPIC_PREFIX = 'topic://VirtualTopic.eng.OpenScanHub.scan'
+
 
 class UMBSender(proton.handlers.MessagingHandler):
     def __init__(self, key, msg):
@@ -17,7 +19,7 @@ class UMBSender(proton.handlers.MessagingHandler):
                      'amqps://umb-broker05.stage.api.redhat.com:5671',
                      'amqps://umb-broker06.stage.api.redhat.com:5671']
         self.cert = '/etc/osh/hub/msg-client-osh.pem'
-        self.topic = 'topic://VirtualTopic.eng.covscan.scan.unfinished'
+        self.topic = f"{UMB_TOPIC_PREFIX}.{key}"
         self.msg = msg
 
     def on_start(self, event):
@@ -43,7 +45,7 @@ class UMBSender(proton.handlers.MessagingHandler):
 
 
 def main():
-    key = 'covscan.scan.unfinished'
+    key = 'unfinished'
     msg = {'scan_id': 37113, 'scan_state': 'SCANNING'}
     sender = UMBSender(key, msg)
     cont = proton.reactor.Container(sender)

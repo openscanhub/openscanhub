@@ -114,6 +114,6 @@ UMB_BROKER_URLS = [
     'amqps://umb-broker06.stage.api.redhat.com:5671']
 
 UMB_CLIENT_CERT = '/etc/osh/hub/msg-client-osh.pem'
-UMB_TOPIC_PREFIX = 'topic://VirtualTopic.eng.covscan.scan'
+UMB_TOPIC_PREFIX = 'topic://VirtualTopic.eng.OpenScanHub.scan'
 
 ALLOWED_HOSTS = ['*']
