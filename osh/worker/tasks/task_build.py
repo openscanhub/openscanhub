@@ -32,7 +32,7 @@ class Build:
 
         # scan base
         if base_task_args:
-            subtask_id = self.spawn_subtask(*tuple(base_task_args))
+            subtask_id = self.spawn_subtask(*base_task_args)
             self.hub.worker.assign_task(subtask_id)
             self.wait()
 

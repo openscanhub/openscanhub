@@ -40,7 +40,7 @@ class ErrataDiffBuild(TaskBase):
         # update analyzers version cache if needed
         cache_task_args = self.hub.worker.ensure_cache(mock_config, scanning_session_id)
         if cache_task_args is not None:
-            cache_subtask_id = self.spawn_subtask(*tuple(cache_task_args))
+            cache_subtask_id = self.spawn_subtask(*cache_task_args)
             self.hub.worker.assign_task(cache_subtask_id)
             self.wait()
 
