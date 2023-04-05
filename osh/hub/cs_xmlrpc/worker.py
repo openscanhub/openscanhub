@@ -8,7 +8,7 @@ from kobo.hub.models import Task
 
 from osh.common.csmock_parser import unpack_and_return_api
 from osh.hub.errata.models import ScanningSession
-from osh.hub.errata.scanner import (BaseNotValidException, obtain_base2,
+from osh.hub.errata.scanner import (BaseNotValidException, obtain_base,
                                     prepare_base_scan)
 from osh.hub.scan.models import AnalyzerVersion, AppSettings, Scan, ScanBinding
 from osh.hub.scan.notify import send_task_notification
@@ -155,7 +155,7 @@ def ensure_base_is_scanned_properly(request, scan_id, task_id):
             mock_config = 'rhel-9-alpha-x86_64'
         logger.debug("Looking for base scan '%s', mock_config: %s", base_nvr, mock_config)
         try:
-            base_scan = obtain_base2(base_nvr, mock_config)
+            base_scan = obtain_base(base_nvr, mock_config)
         except BaseNotValidException:
             logger.info("Preparing base scan")
             options = {

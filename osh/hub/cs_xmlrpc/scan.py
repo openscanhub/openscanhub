@@ -8,7 +8,7 @@ from kobo.hub.models import Task
 
 from osh.common.constants import DEFAULT_SCAN_LIMIT
 from osh.hub.errata.scanner import (ClientDiffPatchesScanScheduler,
-                                    ClientScanScheduler, create_diff_task2)
+                                    ClientScanScheduler, create_diff_task)
 from osh.hub.scan.models import SCAN_STATES, ClientAnalyzer, Profile, Scan
 
 logger = logging.getLogger("openscanhub")
@@ -83,7 +83,7 @@ def create_user_diff_task(request, hub_opts, task_opts):
     hub_opts['task_user'] = request.user.username
     hub_opts['user'] = request.user
     logger.debug("Client diff task: %s, %s", hub_opts, task_opts)
-    return create_diff_task2(hub_opts, task_opts)
+    return create_diff_task(hub_opts, task_opts)
 
 
 def get_filtered_scan_list(request, kwargs, filter_scan_limit=DEFAULT_SCAN_LIMIT):

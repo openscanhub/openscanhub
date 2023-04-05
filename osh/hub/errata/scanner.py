@@ -653,7 +653,7 @@ class ClientDiffScanScheduler(AbstractClientScanScheduler):
         return task_id
 
 
-def create_diff_task2(consume_opts, forward_opts):
+def create_diff_task(consume_opts, forward_opts):
     cs = ClientDiffScanScheduler(consume_opts, forward_opts)
     cs.prepare_args()
     return cs.spawn()
@@ -673,7 +673,7 @@ class BaseNotValidException(Exception):
     pass
 
 
-def obtain_base2(base_nvr, mock_config):
+def obtain_base(base_nvr, mock_config):
     """
     @param base_nvr - nvr of base to fetch
     @param mock_config - name of mock config to check analyzer versions against
@@ -701,7 +701,7 @@ def obtain_base2(base_nvr, mock_config):
     return binding.scan
 
 
-def create_errata_scan2(options, etm):
+def create_errata_scan(options, etm):
     scanning_session = ScanningSession.objects.get_by_name("ERRATA")
     if options['base'].lower() == 'new_package':
         sb = NewPkgScheduler(options, scanning_session).spawn()
@@ -731,7 +731,7 @@ def handle_scan(kwargs):
         etm.advisory_id = get_or_fail('errata_id', kwargs)
         etm.save()
 
-        create_errata_scan2(kwargs, etm)
+        create_errata_scan(kwargs, etm)
     except PackageBlockedException as ex:
         status = 'INELIGIBLE'
         message = str(ex)
