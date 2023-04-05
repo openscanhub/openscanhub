@@ -5,7 +5,7 @@ from django import template
 register = template.Library()
 
 
-@register.filter(name='sort')
+@register.filter(name='sort', is_safe=True)
 def listsort(value):
     if isinstance(value, dict):
         new_dict = OrderedDict()
@@ -14,6 +14,3 @@ def listsort(value):
         for key in key_list:
             new_dict[key] = value[key]
         return new_dict.items()
-
-
-listsort.is_safe = True
