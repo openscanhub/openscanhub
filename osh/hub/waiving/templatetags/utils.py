@@ -1,5 +1,4 @@
 from django import template
-from django.utils.safestring import mark_safe
 
 register = template.Library()
 
@@ -25,16 +24,6 @@ class CaptureasNode(template.Node):
         output = self.nodelist.render(context)
         context[self.varname] = output
         return ''
-
-
-@register.filter
-def result_group_display_new(obj):
-    return mark_safe(obj.display_in_result('NEW', 'waiving/waiver'))
-
-
-@register.filter
-def result_group_display_fixed(obj):
-    return mark_safe(obj.display_in_result('FIXED', 'waiving/fixed_defects'))
 
 
 @register.filter
