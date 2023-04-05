@@ -78,7 +78,7 @@ class ErrataDiffBuild(TaskBase):
                                                    additional_arguments=add_args,
                                                    koji_bin=koji_bin,
                                                    su_user=su_user)
-            print('Retcode: %d' % retcode)
+            print('Retcode:', retcode)
             if results is not None:
                 base_results = os.path.basename(results)
                 with open(results, 'rb') as f:

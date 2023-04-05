@@ -41,7 +41,7 @@ class AnalyzerVersionRetriever(TaskBase):
 
             # upload results back to hub
             if not os.path.exists(path):
-                print("Tarball with results does not exist: %s" % path, file=sys.stderr)
+                print("Tarball with results does not exist:", path, file=sys.stderr)
             base_path = os.path.basename(path)
             with open(path, "rb") as f:
                 self.hub.upload_task_log(f, self.task_id, base_path)

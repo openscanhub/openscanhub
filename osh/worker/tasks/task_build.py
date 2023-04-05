@@ -43,7 +43,7 @@ class Build:
             if custom_model_name:
                 model_url = urljoin(task_url, f'log/{custom_model_name}?format=raw')
                 model_path = runner.download_csmock_model(model_url, custom_model_name)
-                csmock_args += " --cov-custom-model %s" % model_path
+                csmock_args += " --cov-custom-model " + model_path
 
             if build:
                 results, retcode = runner.koji_analyze(
