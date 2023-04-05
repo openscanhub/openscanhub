@@ -7,21 +7,13 @@ from kobo.worker import TaskBase
 from osh.common.csmock_parser import CsmockRunner
 
 
-class VersionDiffBuild(TaskBase):
-    """
-        Execute diff scan between two versions/releases of a package
-    """
+class Build:
     enabled = True
 
-    # list of supported architectures
-    arches = ["noarch"]
-    # list of channels
-    channels = ["default"]
-    # leave False here unless you really know what you're doing
-    exclusive = False
-    # if True the task is not forked and runs in the worker process
-    # (no matter you run worker without -f)
-    foreground = False
+    arches = ["noarch"]     # list of supported architectures
+    channels = ["default"]  # list of channels
+    exclusive = False       # leave False here unless you really know what you're doing
+    foreground = False      # if True the task is not forked and runs in the worker process (no matter you run worker without -f)
     priority = 10
     weight = 1.0
 
@@ -36,6 +28,7 @@ class VersionDiffBuild(TaskBase):
         su_user = self.args.pop('su_user', None)
         custom_model_name = self.args.pop("custom_model_name", None)
         task_url = self.hub.client.task_url(self.task_id)
+        result_filename = self.args.pop("result_filename", None)
 
         # scan base
         if base_task_args:
@@ -68,6 +61,7 @@ class VersionDiffBuild(TaskBase):
                     url,
                     profile=mock_config,
                     additional_arguments=csmock_args,
+                    result_filename=result_filename,
                     su_user=su_user)
             else:
                 print("No srpm specified", file=sys.stderr)
@@ -78,16 +72,31 @@ class VersionDiffBuild(TaskBase):
             base_results = os.path.basename(results)
             with open(results, "rb") as f:
                 self.hub.upload_task_log(f, self.task_id, base_results)
+
+        # first finish task, then fail if needed, so tarball gets unpacked
         self.hub.worker.finish_task(self.task_id)
         if retcode > 0:
             print("Scanning have not completed successfully (%d)" % retcode, file=sys.stderr)
             self.fail()
 
     @classmethod
-    def cleanup(cls, hub, conf, task_info):
-        pass
-        # remove temp files, etc.
-
-    @classmethod
     def notification(cls, hub, conf, task_info):
         hub.worker.email_task_notification(task_info["id"])
+
+
+class DiffBuild(Build, TaskBase):
+    def __init__(self, *args, **kwargs):
+        Build.__init__(self)
+        TaskBase.__init__(self, *args, **kwargs)
+
+
+class MockBuild(Build, TaskBase):
+    def __init__(self, *args, **kwargs):
+        Build.__init__(self)
+        TaskBase.__init__(self, *args, **kwargs)
+
+
+class VersionDiffBuild(Build, TaskBase):
+    def __init__(self, *args, **kwargs):
+        Build.__init__(self)
+        TaskBase.__init__(self, *args, **kwargs)
