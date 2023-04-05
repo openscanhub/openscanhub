@@ -36,13 +36,13 @@ def main():
     try:
         kobo.worker.main.main(conf, None, OSHTaskManager)
     except KeyboardInterrupt:
-        sys.stderr.write("\n\nExiting on user cancel.\n")
+        print("\n\nExiting on user cancel.", file=sys.stderr)
         sys.exit(1)
     except kobo.exceptions.ImproperlyConfigured as ex:
-        sys.stderr.write("\n\nImproperly configured: %s\n" % ex)
+        print("\n\nImproperly configured:", ex, file=sys.stderr)
         sys.exit(3)
     except OSError as ex:
-        sys.stderr.write("\n\nIO Error: %s\n" % ex)
+        print("\n\nIO Error:", ex, file=sys.stderr)
         sys.exit(4)
 
 
