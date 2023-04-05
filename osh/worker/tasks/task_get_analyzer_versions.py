@@ -1,12 +1,9 @@
 import os
 import sys
 
-import kobo.tback
 from kobo.worker import TaskBase
 
 from osh.common.csmock_parser import CsmockRunner
-
-kobo.tback.set_except_hook()
 
 
 class AnalyzerVersionRetriever(TaskBase):
