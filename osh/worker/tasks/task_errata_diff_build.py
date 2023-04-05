@@ -84,8 +84,9 @@ class ErrataDiffBuild(TaskBase):
                 with open(results, 'rb') as f:
                     self.hub.upload_task_log(f, self.task_id, base_results)
             if retcode > 0:
-                print("Scanning have not completed successfully (%d)" % retcode, file=sys.stderr)
-                self.hub.worker.fail_scan(scan_id, 'csmock return code: %d' % retcode)
+                print(f"Scanning have not completed successfully ({retcode})",
+                      file=sys.stderr)
+                self.hub.worker.fail_scan(scan_id, f'csmock return code: {retcode}')
 
         if retcode > 0:
             self.fail()

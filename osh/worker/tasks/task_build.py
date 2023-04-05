@@ -41,7 +41,7 @@ class Build:
 
         with CsmockRunner() as runner:
             if custom_model_name:
-                model_url = urljoin(task_url, 'log/%s?format=raw' % custom_model_name)
+                model_url = urljoin(task_url, f'log/{custom_model_name}?format=raw')
                 model_path = runner.download_csmock_model(model_url, custom_model_name)
                 csmock_args += " --cov-custom-model %s" % model_path
 
@@ -54,7 +54,7 @@ class Build:
                     koji_bin=build['koji_bin'],
                     su_user=su_user)
             elif srpm_name:
-                url = urljoin(task_url, 'log/%s?format=raw' % srpm_name)
+                url = urljoin(task_url, f'log/{srpm_name}?format=raw')
                 results, retcode = runner.srpm_download_analyze(
                     analyzers,
                     srpm_name,
@@ -76,7 +76,8 @@ class Build:
         # first finish task, then fail if needed, so tarball gets unpacked
         self.hub.worker.finish_task(self.task_id)
         if retcode > 0:
-            print("Scanning have not completed successfully (%d)" % retcode, file=sys.stderr)
+            print(f"Scanning has not completed successfully ({retcode})",
+                  file=sys.stderr)
             self.fail()
 
     @classmethod
