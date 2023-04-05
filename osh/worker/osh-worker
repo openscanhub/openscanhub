@@ -31,20 +31,20 @@ def main():
     # configuration
     conf = get_config_dict(config_env="OSH_WORKER_CONFIG_FILE", config_default="/etc/osh/worker.conf")
     if conf is None:
-        return 2
+        sys.exit(2)
 
     try:
         kobo.worker.main.main(conf, None, OSHTaskManager)
     except KeyboardInterrupt:
         sys.stderr.write("\n\nExiting on user cancel.\n")
-        return 1
+        sys.exit(1)
     except kobo.exceptions.ImproperlyConfigured as ex:
         sys.stderr.write("\n\nImproperly configured: %s\n" % ex)
-        return 3
+        sys.exit(3)
     except OSError as ex:
         sys.stderr.write("\n\nIO Error: %s\n" % ex)
-        return 4
+        sys.exit(4)
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    main()
