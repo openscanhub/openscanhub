@@ -1,8 +1,3 @@
-# -*- coding: utf-8 -*-
-
-
-from __future__ import absolute_import
-
 from .task_mock_build import MockBuild
 
 

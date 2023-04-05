@@ -33,7 +33,6 @@ RUN dnf -y --setopt=tsflags=nodocs install \
     koji \
     python3-coverage \
     python3-gssapi \
-    python3-six \
     python36 \
     xz
 

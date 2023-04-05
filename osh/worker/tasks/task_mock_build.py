@@ -1,11 +1,7 @@
-# -*- coding: utf-8 -*-
-
-from __future__ import print_function
-
 import os
 import sys
+from urllib.parse import urljoin
 
-import six.moves.urllib.parse
 from kobo.worker import TaskBase
 
 from osh.common.csmock_parser import CsmockRunner
@@ -34,7 +30,7 @@ class MockBuild(TaskBase):
 
         with CsmockRunner() as runner:
             if custom_model_name:
-                model_url = six.moves.urllib.parse.urljoin(task_url, 'log/%s?format=raw' % custom_model_name)
+                model_url = urljoin(task_url, 'log/%s?format=raw' % custom_model_name)
                 model_path = runner.download_csmock_model(model_url, custom_model_name)
                 csmock_args += " --cov-custom-model %s" % model_path
 
@@ -47,7 +43,7 @@ class MockBuild(TaskBase):
                     koji_bin=build['koji_bin'],
                     su_user=su_user)
             elif srpm_name:
-                url = six.moves.urllib.parse.urljoin(task_url, 'log/%s?format=raw' % srpm_name)
+                url = urljoin(task_url, 'log/%s?format=raw' % srpm_name)
                 results, retcode = runner.srpm_download_analyze(
                     analyzers,
                     srpm_name,
