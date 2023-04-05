@@ -1,7 +1,3 @@
-# -*- coding: utf-8 -*-
-
-from __future__ import absolute_import
-
 from django.views.generic.detail import DetailView
 from django.views.generic.list import ListView
 
@@ -36,7 +32,7 @@ class PackageDetailView(DetailView):
     context_object_name = "package"
 
     def get_context_data(self, **kwargs):
-        context = super(PackageDetailView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         context['title'] = "Detail of package %s" % kwargs['object'].name
         return context
 
