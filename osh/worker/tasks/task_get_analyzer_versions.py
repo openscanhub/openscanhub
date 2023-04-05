@@ -47,12 +47,3 @@ class AnalyzerVersionRetriever(TaskBase):
                 self.hub.upload_task_log(f, self.task_id, base_path)
 
         self.hub.worker.finish_analyzers_version_retrieval(self.task_id, base_path)
-
-    @classmethod
-    def cleanup(cls, hub, conf, task_info):
-        pass
-        # remove temp files, etc.
-
-    @classmethod
-    def notification(cls, hub, conf, task_info):
-        pass

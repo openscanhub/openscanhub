@@ -93,10 +93,5 @@ class ErrataDiffBuild(TaskBase):
             self.hub.worker.finish_scan(scan_id, base_results)
 
     @classmethod
-    def cleanup(cls, hub, conf, task_info):
-        pass
-        # remove temp files, etc.
-
-    @classmethod
     def notification(cls, hub, conf, task_info):
         hub.worker.email_scan_notification(task_info['args']['scan_id'])
