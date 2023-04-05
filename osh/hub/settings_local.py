@@ -7,7 +7,6 @@ Devel instance
 import os
 
 DEBUG = True
-TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
     ('Kamil Dudka', 'kdudka@redhat.com'),
@@ -17,7 +16,7 @@ MANAGERS = ADMINS
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'openscanhub',
         'USER': 'openscanhub',
         'PASSWORD': 'velryba',

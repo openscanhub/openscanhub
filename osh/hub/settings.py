@@ -52,17 +52,13 @@ STATICFILES_DIRS = (
 # Examples: "http://foo.com/media/", "/media/".
 ADMIN_MEDIA_PREFIX = '/covscanhub/admin/media/'
 
-TEMPLATE_DIRS = (
-    # directories with templates
-    os.path.join(PROJECT_DIR, "templates"),
-    os.path.join(os.path.dirname(kobo.__file__), "hub", "templates"),
-)
-
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': TEMPLATE_DIRS,
-        'APP_DIRS': True,
+        'DIRS': [
+            os.path.join(PROJECT_DIR, "templates"),
+            os.path.join(os.path.dirname(kobo.__file__), "hub", "templates"),
+        ],
         'OPTIONS': {
             'context_processors': [
                 "django.contrib.auth.context_processors.auth",
@@ -71,6 +67,12 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "kobo.django.menu.context_processors.menu_context_processor",
                 "django.template.context_processors.static",
+            ],
+            'loaders': [
+                ('django.template.loaders.cached.Loader', [
+                    'django.template.loaders.filesystem.Loader',
+                    'django.template.loaders.app_directories.Loader',
+                ]),
             ],
         },
     },
@@ -82,15 +84,6 @@ ROOT_MENUCONF = 'osh.hub.menu'
 # dummy secret key
 # (will be overridden by the content of SECRET_KEY_FILE if available)
 SECRET_KEY = 'x' * 50
-
-# List of callables that know how to import templates from various sources.
-TEMPLATE_LOADERS = (
-    ('django.template.loaders.cached.Loader', (
-        'django.template.loaders.filesystem.Loader',
-        'django.template.loaders.app_directories.Loader',
-        # 'django.template.loaders.eggs.Loader',
-    )),
-)
 
 AUTHENTICATION_BACKENDS = (
     'kobo.django.auth.krb5.Krb5RemoteUserBackend',
