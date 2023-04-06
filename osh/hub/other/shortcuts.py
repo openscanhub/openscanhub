@@ -10,9 +10,6 @@ from django.utils.safestring import mark_safe
 from osh.hub.other.exceptions import BrewException
 from osh.hub.scan.models import MockConfig, Tag
 
-# https://gitlab.cee.redhat.com/covscan/covscan/-/issues/160
-__all__ = ('add_link_field', 'get_mock_by_name', 'check_brew_build', 'check_and_create_dirs', 'get_tag_by_name', 'get_or_none',)  # noqa: F822
-
 
 def add_link_field(target_model=None, field='', app='', field_name='link',
                    link_text=str, field_label=''):
