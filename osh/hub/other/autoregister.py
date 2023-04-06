@@ -1,6 +1,5 @@
 from types import ModuleType
 
-import six
 from django.contrib import admin
 from django.contrib.admin.utils import quote
 from django.contrib.admin.views.main import ChangeList
@@ -22,11 +21,11 @@ def _get_admin_change_url(field):
     def f(obj):
         link_args = getattr(obj, field.attname)
         if link_args is None:
-            return u'(None)'
+            return '(None)'
         # we could use field.name to output __str__() of the related object,
         # but that would require to prefetch related objects, which can be slow
         # link_text = u'%s %s' % (related_model.__name__, getattr(obj, field.attname))
-        link_text = u'%s' % (getattr(obj, field.name))
+        link_text = str(getattr(obj, field.name))
 
         try:
             url = reverse('admin:%s_%s_change' %
@@ -45,15 +44,15 @@ def _get_admin_changelist_url(source_field_name, target_model, target_field_name
     '''
 
     def f(obj):
-        link_cond = '%s=%s' % (target_field_name, quote(obj.pk))
-        link_text = u'%s (%s)' % (target_model._meta.verbose_name_plural.title(),
-                                  getattr(obj, '%s__count' % source_field_name))
+        link_cond = f'{target_field_name}={quote(obj.pk)}'
+        link_text = '%s (%s)' % (target_model._meta.verbose_name_plural.title(),
+                                 getattr(obj, f'{source_field_name}__count'))
 
         try:
             url = reverse('admin:%s_%s_changelist' % (target_model._meta.app_label, target_model._meta.model_name))
         except NoReverseMatch:
             return link_text
-        return mark_safe('<a href="%s?%s">%s</a>' % (url, link_cond, link_text))
+        return mark_safe(f'<a href="{url}?{link_cond}">{link_text}</a>')
     f.allow_tags = True
     f.short_description = target_model.__name__
     return f
@@ -129,7 +128,7 @@ def autoregister_admin(module, exclude_models=None, model_fields=None, exclude_f
     exclude_fields = exclude_fields or {}
     admin_fields = admin_fields or {}
     reversed_relations = reversed_relations or {}
-    if isinstance(module, six.string_types):
+    if isinstance(module, str):
         module = __import__(module, fromlist=[module.split('.')[-1]])
     elif not isinstance(module, ModuleType):
         raise TypeError('invalid type of argument `module`, expected `str` or '
@@ -202,7 +201,7 @@ def autoregister_admin(module, exclude_models=None, model_fields=None, exclude_f
             admin_class.list_display.append(name)
 
         # add custom admin fields
-        for (name, value) in six.iteritems(admin_fields.get(model_name, {})):
+        for (name, value) in admin_fields.get(model_name, {}).items():
             setattr(admin_class, name, value)
 
         _set_admin_queryset(admin_class, m2m_field_names, exclude_field_names)

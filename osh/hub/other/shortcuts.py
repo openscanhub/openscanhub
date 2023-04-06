@@ -1,9 +1,6 @@
-# -*- coding: utf-8 -*-
-
 import os
 
 import koji
-import six
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.urls import reverse
@@ -17,13 +14,13 @@ __all__ = ('add_link_field', 'get_mock_by_name', 'check_brew_build', 'check_and_
 
 
 def add_link_field(target_model=None, field='', app='', field_name='link',
-                   link_text=six.text_type, field_label=''):
+                   link_text=str, field_label=''):
     def add_link(cls):
         reverse_name = target_model or cls.model.__name__.lower()
 
         def link(self, instance):
             app_name = app or instance._meta.app_label
-            reverse_path = "admin:%s_%s_change" % (app_name, reverse_name)
+            reverse_path = f"admin:{app_name}_{reverse_name}_change"
             link_obj = getattr(instance, field, None)
             if not link_obj:
                 return mark_safe('None')
