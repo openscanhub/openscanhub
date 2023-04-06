@@ -11,13 +11,14 @@ from osh.hub.other.exceptions import BrewException
 from osh.hub.scan.models import MockConfig, Tag
 
 
-def add_link_field(target_model=None, field='', app='', field_name='link',
-                   link_text=str, field_label=''):
+def add_link_field(target_model=None, field='', field_label=''):
+    field_name = field + '_link'
+
     def add_link(cls):
         reverse_name = target_model or cls.model.__name__.lower()
 
         def link(self, instance):
-            app_name = app or instance._meta.app_label
+            app_name = instance._meta.app_label
             reverse_path = f"admin:{app_name}_{reverse_name}_change"
             link_obj = getattr(instance, field, None)
             if not link_obj:
@@ -25,7 +26,7 @@ def add_link_field(target_model=None, field='', app='', field_name='link',
             url = reverse(reverse_path, args=(link_obj.id,))
             return format_html("<a href='{}'>{}</a>",
                                url,
-                               link_text(link_obj))
+                               str(link_obj))
         link.short_description = field_label or (reverse_name + ' link')
         setattr(cls, field_name, link)
         # cls.link = link

@@ -29,18 +29,15 @@ autoregister_admin('osh.hub.scan.models',
 autoregister_admin('django.contrib.admin.models')
 
 
-@add_link_field('scanbinding', 'scanbinding', field_label="Binding",
-                field_name="link_bind")
-@add_link_field('scan', 'base', field_name='link_base', field_label="Base")
-@add_link_field('scan', 'parent', field_name='link_parent',
-                field_label="Parent")
-@add_link_field('tag', 'tag', field_name='link_tag', field_label="Tag")
-@add_link_field('package', 'package', field_name='link_package',
-                field_label="Package")
+@add_link_field('scanbinding', 'scanbinding', field_label="Binding")
+@add_link_field('scan', 'base', field_label="Base")
+@add_link_field('scan', 'parent', field_label="Parent")
+@add_link_field('tag', 'tag', field_label="Tag")
+@add_link_field('package', 'package', field_label="Package")
 class ScanAdmin(admin.ModelAdmin):
-    list_display = ("id", "nvr", "state", "scan_type", 'link_base',
-                    'link_parent', "link_tag",
-                    'username', 'link_package', 'link_bind', 'enabled')
+    list_display = ("id", "nvr", "state", "scan_type", 'base_link',
+                    'parent_link', "tag_link",
+                    'username', 'package_link', 'scanbinding_link', 'enabled')
     raw_id_fields = ("base", "tag", "username", "package", "parent")
     search_fields = ['package__name', 'nvr']
     list_per_page = 15
