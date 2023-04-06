@@ -4,6 +4,7 @@ import koji
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.urls import reverse
+from django.utils.html import format_html
 from django.utils.safestring import mark_safe
 
 from osh.hub.other.exceptions import BrewException
@@ -25,9 +26,9 @@ def add_link_field(target_model=None, field='', app='', field_name='link',
             if not link_obj:
                 return mark_safe('None')
             url = reverse(reverse_path, args=(link_obj.id,))
-            return mark_safe("<a href='%s'>%s</a>" %
-                             (url, link_text(link_obj)))
-        link.allow_tags = True
+            return format_html("<a href='{}'>{}</a>",
+                               url,
+                               link_text(link_obj))
         link.short_description = field_label or (reverse_name + ' link')
         setattr(cls, field_name, link)
         # cls.link = link

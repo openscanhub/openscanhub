@@ -6,6 +6,7 @@ from django.contrib.admin.views.main import ChangeList
 from django.db.models import Count, ForeignKey, OneToOneField
 from django.db.models.base import ModelBase
 from django.urls import NoReverseMatch, reverse
+from django.utils.html import format_html
 from django.utils.safestring import mark_safe
 
 
@@ -33,8 +34,9 @@ def _get_admin_change_url(field):
                           args=[quote(link_args)])
         except NoReverseMatch:
             return link_text
-        return mark_safe('<a href="%s">%s</a>' % (url, link_text))
-    f.allow_tags = True
+        return format_html('<a href="{}">{}</a>',
+                           mark_safe(url),
+                           link_text)
     f.short_description = field.name
     return f
 
@@ -52,8 +54,10 @@ def _get_admin_changelist_url(source_field_name, target_model, target_field_name
             url = reverse('admin:%s_%s_changelist' % (target_model._meta.app_label, target_model._meta.model_name))
         except NoReverseMatch:
             return link_text
-        return mark_safe(f'<a href="{url}?{link_cond}">{link_text}</a>')
-    f.allow_tags = True
+        return format_html('<a href="{}?{}">{}</a>',
+                           mark_safe(url),
+                           mark_safe(link_cond),
+                           link_text)
     f.short_description = target_model.__name__
     return f
 
