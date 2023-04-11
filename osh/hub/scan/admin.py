@@ -29,6 +29,7 @@ autoregister_admin('osh.hub.scan.models',
 autoregister_admin('django.contrib.admin.models')
 
 
+@admin.register(Scan)
 @add_link_field('scanbinding', 'scanbinding', field_label="Binding")
 @add_link_field('scan', 'base', field_label="Base")
 @add_link_field('scan', 'parent', field_label="Parent")
@@ -131,6 +132,3 @@ class ScanAdmin(admin.ModelAdmin):
             'app_label': self.model._meta.app_label,
         }
         return render(request, 'admin/scan/scan/state_change.html', context)
-
-
-admin.site.register(Scan, ScanAdmin)
