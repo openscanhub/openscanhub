@@ -16,8 +16,7 @@ from osh.hub.errata.check import check_analyzers, check_srpm, check_upload
 from osh.hub.errata.models import ScanningSession
 from osh.hub.errata.service import return_or_raise
 from osh.hub.errata.utils import is_rebase
-from osh.hub.other.exceptions import (PackageBlacklistedException,
-                                      PackageNotEligibleException)
+from osh.hub.other.exceptions import PackageBlacklistedException
 from osh.hub.scan.models import (REQUEST_STATES, SCAN_TYPES, AppSettings,
                                  ClientAnalyzer, ETMapping, MockConfig,
                                  Package, Profile, Scan, ScanBinding, Tag)
@@ -220,9 +219,9 @@ class AbstractTargetScheduler(AbstractScheduler):
             pkg_name = self.package.name
             # TODO: make this configurable
             if pkg_name.startswith("kpatch-patch"):
-                raise PackageNotEligibleException('kpatch-patch is not eligible for scanning.')
+                raise PackageBlacklistedException('kpatch-patch is not eligible for scanning.')
             elif pkg_name.endswith("-container"):
-                raise PackageNotEligibleException(
+                raise PackageBlacklistedException(
                     'Container %s is not eligible for scanning.' % (self.package.name))
 
         check_package_is_blocked(self.package, self.tag.release)
@@ -735,7 +734,7 @@ def handle_scan(kwargs):
         etm.save()
 
         create_errata_scan2(kwargs, etm)
-    except (PackageBlacklistedException, PackageNotEligibleException) as ex:
+    except PackageBlacklistedException as ex:
         status = 'INELIGIBLE'
         message = str(ex)
     except RuntimeError as ex:
