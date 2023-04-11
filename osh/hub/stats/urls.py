@@ -1,26 +1,26 @@
-from django.conf.urls import url
+from django.urls import path
 
 import osh.hub.stats.views
 
 urlpatterns = [
-    url(r"^$",
-        osh.hub.stats.views.stats_list,
-        name="stats/list"),
-    url(r"^(?P<stat_id>\d+)/$",
-        osh.hub.stats.views.stats_detail,
-        name="stats/detail"),
+    path("",
+         osh.hub.stats.views.stats_list,
+         name="stats/list"),
+    path("<int:stat_id>/",
+         osh.hub.stats.views.stats_detail,
+         name="stats/detail"),
 
-    url(r"^release/(?P<release_id>\d+)/$",
-        osh.hub.stats.views.release_list,
-        name="stats/release/list"),
-    url(r"^release/(?P<release_id>\d+)/(?P<stat_id>\d+)/$",
-        osh.hub.stats.views.release_stats_detail,
-        name="stats/release/detail"),
+    path("release/<int:release_id>/",
+         osh.hub.stats.views.release_list,
+         name="stats/release/list"),
+    path("release/<int:release_id>/<int:stat_id>/",
+         osh.hub.stats.views.release_stats_detail,
+         name="stats/release/detail"),
 
-    url(r"^(?P<stat_id>\d+)/graph/$",
-        osh.hub.stats.views.stats_detail_graph,
-        name="stats/detail/graph"),
-    url(r"^(?P<stat_id>\d+)/(?P<release_id>\d+)/graph/$",
-        osh.hub.stats.views.release_stats_detail_graph,
-        name="stats/release/detail/graph"),
+    path("<int:stat_id>/graph/",
+         osh.hub.stats.views.stats_detail_graph,
+         name="stats/detail/graph"),
+    path("<int:stat_id>/<int:release_id>/graph/",
+         osh.hub.stats.views.release_stats_detail_graph,
+         name="stats/release/detail/graph"),
 ]
