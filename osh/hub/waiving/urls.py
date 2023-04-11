@@ -1,8 +1,3 @@
-# -*- coding: utf-8 -*-
-
-
-from __future__ import absolute_import
-
 from django.conf.urls import url
 
 from osh.hub.waiving.views import (ResultsListView, et_latest,

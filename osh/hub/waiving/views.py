@@ -1,11 +1,8 @@
-# -*- coding: utf-8 -*-
-
 import datetime
 import logging
 import os
+from urllib.parse import urlencode
 
-import six
-import six.moves.urllib.parse
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponseRedirect
@@ -276,16 +273,16 @@ class ResultsListView(ListView):
 
         def generate_url(args, order_key):
             """args = request.GET, order_key = "name" | "-user" """
-            args[u'order_by'] = order_key
-            url = six.moves.urllib.parse.urlencode(args)
+            args['order_by'] = order_key
+            url = urlencode(args)
             if url:
-                return u'?' + url
+                return '?' + url
             else:
-                return u""
+                return ""
 
         # link sort URLs to template
         self.table_sort = {}
-        for o in six.iterkeys(order_by_mapping):
+        for o in order_by_mapping:
             t = self.request.GET.copy()
 
             # generate URL + CSS style for clicked sorter
@@ -310,7 +307,7 @@ class ResultsListView(ListView):
         return q.order_by(self.order_scans()).select_related()
 
     def get_context_data(self, **kwargs):
-        context = super(ResultsListView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         context["search_form"] = self.search_form
         context['table_sort'] = self.table_sort
 
@@ -321,7 +318,7 @@ class ResultsListView(ListView):
         except KeyError:
             pass
         if args:
-            context['get_vars'] = '&' + six.moves.urllib.parse.urlencode(args)
+            context['get_vars'] = '&' + urlencode(args)
 
         return context
 
@@ -472,7 +469,7 @@ def waiver(request, sb_id, result_group_id):
         context['display_form'] = True
         context['waiver_type_helpers'] = \
             [(WAIVER_TYPES.get_item_help_text(k), v) for k, v in
-                six.iteritems(WAIVER_TYPES_HELP_TEXTS)]
+                WAIVER_TYPES_HELP_TEXTS.items()]
     else:
         context['display_form'] = False
         context['form_message'] = 'This is not the newest scan.'

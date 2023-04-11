@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 import kobo.django.upload.views
 import kobo.django.xmlrpc.views
 from django.conf.urls import url

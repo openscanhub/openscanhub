@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """custom task urls"""
 
 from django.conf.urls import url
