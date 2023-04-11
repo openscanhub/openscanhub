@@ -1,13 +1,7 @@
-# -*- coding: utf-8 -*-
-
-from __future__ import absolute_import
-
 import datetime
 import logging
 import re
 import types
-
-import six
 
 from . import stattypes
 from .models import StatResults, StatType
@@ -66,7 +60,7 @@ def update():
     Refresh statistics data.
     """
     logger.info('Update statistics.')
-    for func, desc in six.iteritems(get_mapping()):
+    for func, desc in get_mapping().items():
         stat_data = func()
         if isinstance(stat_data, int):
             create_stat_result(desc[0], stat_data)

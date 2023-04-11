@@ -1,6 +1,3 @@
-# -*- coding: utf-8 -*-
-
-import six
 from django import forms
 from django.db.models import Q
 
@@ -27,13 +24,13 @@ class ScanListSearchForm(forms.Form):
     latest = forms.BooleanField(required=False)
 
     def __init__(self, *args, **kwargs):
-        super(ScanListSearchForm, self).__init__(*args, **kwargs)
-        choices = [(item[0], item[1] + '.' + six.text_type(item[2]))
+        super().__init__(*args, **kwargs)
+        choices = [(item[0], item[1] + '.' + str(item[2]))
                    for item in get_used_releases()]
         # first option searches in every release
         choices.insert(0, ('', 'All'))
         self.fields['release'] = forms.ChoiceField(
-            choices=choices, label=u'RHEL Release', required=False)
+            choices=choices, label='RHEL Release', required=False)
         # The thing is that we want to mark first option as default -- initial
         # FIXME This is actually happening, *somehow*; this doesn't work:
         #   self.initial['release'] = choices[2][0]
