@@ -13,7 +13,6 @@ BuildRequires:  python3-kobo-client
 BuildRequires:  python3-kobo-rpmlib
 BuildRequires:  python3-psycopg2
 BuildRequires:  python3-setuptools
-BuildRequires:  python3-six
 BuildRequires:  systemd-rpm-macros
 
 # The following dependencies are not yet available in EPEL-9.  Make it
