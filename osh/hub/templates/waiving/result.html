@@ -7,13 +7,13 @@
 
 <div id="box_wrapper">
     {% if not bugzilla %}
-        {% if unreported_bugs_count > 0 %}
-    <a id="bz_create" class="btn margin_right" href="{% url 'waiving/new_bz' sb.scan.package.id sb.scan.tag.release.id %}">Create Bugzilla ({{ unreported_bugs_count }})</a>
+        {% if unreported_bugs_count_bz > 0 %}
+    <a id="bz_create" class="btn margin_right" href="{% url 'waiving/new_bz' sb.scan.package.id sb.scan.tag.release.id %}">Create Bugzilla ({{ unreported_bugs_count_bz }})</a>
         {% endif %}
     {% else %}
-    <a id="bz_number" class="btn {% if unreported_bugs_count == 0 %}margin_right{% endif %}" href="https://bugzilla.redhat.com/show_bug.cgi?id={{ bugzilla.number }}">BZ#{{ bugzilla.number }}</a>
-        {% if unreported_bugs_count > 0 %}
-        <a id="bz_update" class="btn margin_right" href="{% url 'waiving/update_bz' sb.scan.package.id sb.scan.tag.release.id %}">Update Bugzilla ({{ unreported_bugs_count }})</a>
+    <a id="bz_number" class="btn {% if unreported_bugs_count_bz == 0 %}margin_right{% endif %}" href="https://bugzilla.redhat.com/show_bug.cgi?id={{ bugzilla.number }}">BZ#{{ bugzilla.number }}</a>
+        {% if unreported_bugs_count_bz > 0 %}
+        <a id="bz_update" class="btn margin_right" href="{% url 'waiving/update_bz' sb.scan.package.id sb.scan.tag.release.id %}">Update Bugzilla ({{ unreported_bugs_count_bz }})</a>
         {% endif %}
     {% endif %}
     {% if sb %}

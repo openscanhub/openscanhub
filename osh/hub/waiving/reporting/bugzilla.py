@@ -1,18 +1,14 @@
-# -*- coding: utf-8 -*-
-
-from __future__ import absolute_import
+from xmlrpc.client import Fault
 
 import bugzilla
-import six.moves.xmlrpc_client
 from django.conf import settings
 from django.urls import reverse
 
 from osh.hub.other import get_or_none
+from osh.hub.waiving.models import WAIVER_TYPES, Bugzilla, ResultGroup, Waiver
 
-from .models import WAIVER_TYPES, Bugzilla, ResultGroup, Waiver
 
-
-def has_bugzilla(package, release):
+def has_bug(package, release):
     """
     return True if there is BZ created for specified package/release
     """
@@ -36,8 +32,6 @@ def get_unreported_bugs(package, release):
     )
     if waivers:
         return waivers.order_by('date')
-    else:
-        return None
 
 
 def format_waivers(waivers, request):
@@ -68,7 +62,7 @@ def get_checker_groups(waivers):
     return s
 
 
-def create_bugzilla(request, package, release):
+def create_bug(request, package, release):
     """
     create bugzilla for package/release and fill it with all IS_A_BUG waivers
     this function should be called by view -- button "Create Bugzilla"
@@ -81,26 +75,24 @@ def create_bugzilla(request, package, release):
     else:
         base = "NEW_PACKAGE"
 
-    comment = """
-Csmock has found defect(s) in package %(package)s
+    target = waivers[0].result_group.result.scanbinding.scan.nvr
+    groups = get_checker_groups(waivers)
+
+    comment = f"""
+Csmock has found defect(s) in package {package.name}s
 
 Package was scanned as differential scan:
 
-    %(target)s <= %(base)s
+    {target} <= {base}
 
 == Reported groups of defects ==
-%(groups)s
+{groups}
 == Notes ==
 If you have any questions, feel free to ask at Red Hat IRC channel \
 #covscan.
 
 == Marked waivers ==
-""" % {
-        'package': package.name,
-        'target': waivers[0].result_group.result.scanbinding.scan.nvr,
-        'base': base,
-        'groups': get_checker_groups(waivers),
-    }
+"""
 
     summary = 'New defect%s found in %s' % (
         's' if waivers.count() >= 2 else '',
@@ -127,7 +119,7 @@ If you have any questions, feel free to ask at Red Hat IRC channel \
 
     try:
         b = bz.createbug(**data)
-    except six.moves.xmlrpc_client.Fault:
+    except Fault:
         try:
             # most likely the email in CC does not exist in BZ as user
             del data['cc']
@@ -145,13 +137,13 @@ If you have any questions, feel free to ask at Red Hat IRC channel \
         w.save()
 
 
-def update_bugzilla(request, package, release):
+def update_bug(request, package, release):
     """
     add defects to specified bugzilla that aren't there yet
     this function should be called by view -- button "update bugzilla"
     """
     bz = bugzilla.Bugzilla(url=settings.BZ_URL, api_key=settings.BZ_API_KEY)
-    db_bz = has_bugzilla(package, release)
+    db_bz = has_bug(package, release)
     if db_bz:
         waivers = get_unreported_bugs(package, release)
         comment = format_waivers(waivers, request)
@@ -161,4 +153,4 @@ def update_bugzilla(request, package, release):
             w.bz = db_bz
             w.save()
     else:
-        create_bugzilla(package, release)
+        create_bug(package, release)

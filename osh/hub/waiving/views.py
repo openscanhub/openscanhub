@@ -21,15 +21,13 @@ from osh.hub.scan.notify import send_notif_new_comment
 from osh.hub.scan.service import get_latest_sb_by_package
 from osh.hub.scan.xmlrpc_helper import scan_notification_email
 from osh.hub.service.processing import task_has_results
-from osh.hub.waiving.bugzilla_reporting import (create_bugzilla,
-                                                get_unreported_bugs,
-                                                update_bugzilla)
 from osh.hub.waiving.forms import ScanListSearchForm, WaiverForm
 from osh.hub.waiving.models import (DEFECT_STATES, RESULT_GROUP_STATES,
                                     WAIVER_LOG_ACTIONS, WAIVER_TYPES,
                                     WAIVER_TYPES_HELP_TEXTS, Bugzilla,
                                     CheckerGroup, Defect, ResultGroup, Waiver,
                                     WaivingLog)
+from osh.hub.waiving.reporting import bugzilla
 from osh.hub.waiving.service import (apply_waiver, display_in_result,
                                      get_defects_diff_display, get_last_waiver,
                                      get_unwaived_rgs, get_waivers_for_rg,
@@ -76,14 +74,16 @@ def get_result_context(request, sb):
     package = sb.scan.package
     release = sb.scan.tag.release
 
-    unrep_waivers = get_unreported_bugs(package, release)
+    unrep_bz_waivers = bugzilla.get_unreported_bugs(package, release)
+
     context['bugzilla'] = get_or_none(Bugzilla,
                                       package=package,
                                       release=release)
-    if unrep_waivers:
-        context['unreported_bugs_count'] = unrep_waivers.count()
+
+    if unrep_bz_waivers:
+        context['unreported_bugs_count_bz'] = unrep_bz_waivers.count()
     else:
-        context['unreported_bugs_count'] = 0
+        context['unreported_bugs_count_bz'] = 0
     # numbers
     if sb.result:
         n_out, n_count = get_waiving_data(sb.result,
@@ -657,8 +657,8 @@ def new_bz(request, package_id, release_id):
     """
     package = get_object_or_404(Package, id=package_id)
     release = get_object_or_404(SystemRelease, id=release_id)
-    if get_unreported_bugs(package, release):
-        create_bugzilla(request, package, release)
+    if bugzilla.get_unreported_bugs(package, release):
+        bugzilla.create_bug(request, package, release)
     return HttpResponseRedirect(reverse('waiving/result/newest',
                                         args=(package.name, release.tag)))
 
@@ -669,7 +669,7 @@ def update_bz(request, package_id, release_id):
     """
     package = get_object_or_404(Package, id=package_id)
     release = get_object_or_404(SystemRelease, id=release_id)
-    if get_unreported_bugs(package, release):
-        update_bugzilla(request, package, release)
+    if bugzilla.get_unreported_bugs(package, release):
+        bugzilla.update_bug(request, package, release)
     return HttpResponseRedirect(reverse('waiving/result/newest',
                                         args=(package.name, release.tag)))

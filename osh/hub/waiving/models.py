@@ -464,10 +464,16 @@ checker belong", on_delete=models.CASCADE)
         return "#%d %s, CheckerGroup: (%s)" % (self.id, self.name, self.group)
 
 
-class Bugzilla(models.Model):
-    number = models.IntegerField()
+class Bug(models.Model):
     package = models.ForeignKey(Package, on_delete=models.CASCADE)
     release = models.ForeignKey(SystemRelease, on_delete=models.CASCADE)
+
+    class Meta:
+        abstract = True
+
+
+class Bugzilla(Bug):
+    number = models.IntegerField()
 
     def __str__(self):
         return "#%d BZ#%d (%s, %s.%d)" % (
