@@ -75,9 +75,6 @@ RESULT_GROUP_PROCESSED = (
     RESULT_GROUP_STATES['CONTAINS_BUG'],
 )
 
-# DEFECT_PRIORITY = Enum(
-# )
-
 CHECKER_SEVERITIES = Enum(
     EnumItem("NO_EFFECT", help_text="this test does not affect program, could be style issue"),
     EnumItem("FALSE_POSITIVE", help_text="test is not reliable & yields many false positives"),
@@ -222,10 +219,6 @@ class Defect(models.Model):
 
     order = models.IntegerField(null=True,
                                 help_text="Defects in view have fixed order.")
-
-    # priority = models.PositiveIntegerField(default=DEFECT_STATES["UNKNOWN"],
-    #                                    choices=DEFECT_STATES.get_mapping(),
-    #                                    help_text="Defect state")
 
     # practically anything
     annotation = models.CharField("Annotation", max_length=32,
