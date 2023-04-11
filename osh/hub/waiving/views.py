@@ -618,11 +618,7 @@ def newest_result(request, package_name, release_tag):
 
 
 def etmapping_latest(request, etmapping_id):
-    r"""
-    url(r"^et_mapping/(?P<etmapping_id>\d+)/$",
-        "osh.hub.waiving.views.etmapping_latest",
-        name="waiving/etmapping_id"),
-
+    """
     Display latest result for etm_id
     """
     etm = get_object_or_404(ETMapping, id=etmapping_id)
@@ -640,10 +636,6 @@ def etmapping_latest(request, etmapping_id):
 
 def et_latest(request, et_id):
     """
-    url(r"^et/(?P<et_id>.+)/$",
-        "osh.hub.waiving.views.et_latest",
-        name="waiving/et_id"),
-
     Display latest result for et_internal_covscan_id
     """
     etm = get_object_or_404(ETMapping, et_scan_id=et_id)
