@@ -472,6 +472,19 @@ class Bug(models.Model):
         abstract = True
 
 
+class JiraBug(Bug):
+    key = models.CharField(max_length=64, primary_key=True)
+
+    def __str__(self):
+        return "#%d Jira Issue #%d (%s, %s.%d)" % (
+            self.id,
+            self.key,
+            self.package.name,
+            self.release.product,
+            self.release.release,
+        )
+
+
 class Bugzilla(Bug):
     number = models.IntegerField()
 
@@ -546,6 +559,7 @@ waived for specific Result", on_delete=models.CASCADE)
                                         choices=WAIVER_TYPES.get_mapping(),
                                         help_text="Type of waiver")
     bz = models.ForeignKey(Bugzilla, blank=True, null=True, on_delete=models.CASCADE)
+    jira_bug = models.ForeignKey(JiraBug, blank=True, null=True, on_delete=models.CASCADE)
     is_deleted = models.BooleanField(default=False)
 
     is_active = models.BooleanField(default=False)

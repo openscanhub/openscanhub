@@ -43,6 +43,7 @@ RUN dnf -y --setopt=tsflags=nodocs install \
     python3-devel \
     python3-django \
     python3-gssapi \
+    python3-jira \
     python3-koji \
     python3-psycopg2 \
     python3-qpid-proton \

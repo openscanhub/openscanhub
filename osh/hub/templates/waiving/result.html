@@ -16,6 +16,16 @@
         <a id="bz_update" class="btn margin_right" href="{% url 'waiving/update_bz' sb.scan.package.id sb.scan.tag.release.id %}">Update Bugzilla ({{ unreported_bugs_count_bz }})</a>
         {% endif %}
     {% endif %}
+    {% if not jira %}
+        {% if unreported_bugs_count_jira > 0 %}
+    <a id="jira_create" class="btn margin_right" href="{% url 'waiving/new_jira' sb.scan.package.id sb.scan.tag.release.id %}">Create Jira Issue ({{ unreported_bugs_count_jira }})</a>
+        {% endif %}
+    {% else %}
+    <a id="jira_number" class="btn {% if unreported_bugs_count_jira == 0 %}margin_right{% endif %}" href="https://issues.redhat.com/projects/RHEL/issues/{{ jira.key }}?filter=allopenissues">Jira Issue #{{ jira.key }}</a>
+        {% if unreported_bugs_count_jira > 0 %}
+        <a id="jira_update" class="btn margin_right" href="{% url 'waiving/update_jira' sb.scan.package.id sb.scan.tag.release.id %}">Update Jira Issue ({{ unreported_bugs_count_jira }})</a>
+        {% endif %}
+    {% endif %}
     {% if sb %}
         <span id="scan_release" class="info_box black_font light_grey_bg margin_right">{{ sb.scan.tag.release.product }} release {{ sb.scan.tag.release.release }}</span>
         <span id="scan_state" class="info_box black_font bg_{{ sb.scan.get_state_display }} margin_right">{{ sb.scan.get_state_display }}</span>

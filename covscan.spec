@@ -87,6 +87,7 @@ Requires: csdiff
 Requires: file
 Requires: python3-bugzilla
 Requires: python3-csdiff
+Requires: python3-jira
 
 Requires(post): /usr/bin/pg_isready
 

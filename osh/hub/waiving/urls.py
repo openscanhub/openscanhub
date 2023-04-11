@@ -2,8 +2,9 @@ from django.urls import path
 
 from osh.hub.waiving.views import (ResultsListView, et_latest,
                                    etmapping_latest, fixed_defects, new_bz,
-                                   newest_result, previously_waived,
-                                   remove_waiver, result, update_bz, waiver)
+                                   new_jira, newest_result, previously_waived,
+                                   remove_waiver, result, update_bz,
+                                   update_jira, waiver)
 
 urlpatterns = [
     path("", ResultsListView.as_view(), name="waiving/list"),
@@ -40,4 +41,12 @@ urlpatterns = [
     path("<int:package_id>/<int:release_id>/updatebz/",
          update_bz,
          name="waiving/update_bz"),
+
+    # Jira stuff
+    path("<int:package_id>/<int:release_id>/newjira/",
+         new_jira,
+         name="waiving/new_jira"),
+    path("<int:package_id>/<int:release_id>/updatejira/",
+         update_jira,
+         name="waiving/update_jira"),
 ]
