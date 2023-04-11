@@ -91,8 +91,12 @@
         </span>
 
         <span id="btn_toggle_{{ wl.id }}" onclick="
-            $(&quot;#waiver_text_{{ wl.id }}&quot;).toggle();
-            $(&quot;#btn_toggle_{{ wl.id }}&quot;).toggleClass(&quot;currently_hiding&quot;);
+            function handle(evt) {
+                const waiver = document.getElementById('waiver_text_{{ wl.id }}');
+                waiver.style.display = (waiver.style.display === 'none')
+                                          ? 'initial' : 'none';
+                evt.target.classList.toggle('currently_hiding');
+            }; handle(event);
         " class="btn float_right margin_left">
         {% if wl.waiver.is_deleted %}
             <span class="show_text">Expand</span>

@@ -5,6 +5,7 @@
 {% load static %}
 
 {% block head %}
+<script type="text/javascript" src="{% static "js/jquery-1.8.3.min.js" %}"></script>
 <script type="text/javascript" src="{% static "js/morris.min.js" %}"></script>
 <script type="text/javascript" src="{% static "js/raphael-min.js" %}"></script>
 <script type="text/javascript" language="javascript">
@@ -15,23 +16,21 @@ function formatDate(x)
     return monthNames[x.getMonth()] + ' ' + x.getDate();
 }
 
-$(document).ready(function() {
-    $.getJSON("{{ json_url }}",function(data)
-    {
-        $("#chart_title").html(
-            '<h3>' + data.title + '</h3>\n' +
-            '<h4>' + data.subtitle + '</h4>'
-        );
+document.addEventListener("DOMContentLoaded", function() {
+    fetch("{{ json_url }}").then(response => response.json()).then(data => {
+        document.getElementById("chart_title").innerHTML =
+            '<h3>' + data.title + '</h3>\n<h4>' + data.subtitle + '</h4>';
+
         Morris.Line({
             element: 'chart',
             data: data.data,
             xkey: 'x',
             ykeys: data.ykeys,
             xLabels: 'day',
-            xLabelFormat: function (x) { return formatDate(x); },
+            xLabelFormat: formatDate,
             labels: data.labels
         });
-    })
+    }).catch(console.error);
 });
 </script>
 {% endblock %}

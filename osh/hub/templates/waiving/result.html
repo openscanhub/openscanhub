@@ -353,51 +353,64 @@ window.onload=function() {
     })(tabs[i]);
   }
 
-  $("#toggle_trace_all").click(function() {
-    var toggle_trace_all=$(this);
-    if (toggle_trace_all.hasClass("currently_hiding")) {
-      $(".events_list .level_1").removeClass("level_1_show");
-      $(".events_list .level_2").removeClass("level_2_show");
-      $(".event_collapse_btn").removeClass("currently_hiding");
+  // helper functions
+  function addClass(query, className) {
+      document.querySelectorAll(query).forEach(e => e.classList.add(className));
+  };
+  function hasClass(query, className) {
+      return Array.from(document.querySelectorAll(query))
+          .some(e => e.classList.contains(className));
+  }
+  function toggleClass(query, className) {
+      document.querySelectorAll(query).forEach(e => e.classList.toggle(className));
+  };
+  function removeClass(query, className) {
+      document.querySelectorAll(query).forEach(e => e.classList.remove(className));
+  };
+
+  document.getElementById("toggle_trace_all").onclick = function() {
+    if (hasClass("#toggle_trace_all", "currently_hiding")) {
+      removeClass(".events_list .level_1", "level_1_show");
+      removeClass(".events_list .level_2", "level_2_show");
+      removeClass(".event_collapse_btn", "currently_hiding");
     } else {
-      if (!$(".events_list .defect_event").hasClass("level_1_show")) {
-        $(".events_list .level_1").addClass("level_1_show");
+      if (!hasClass(".events_list .defect_event", "level_1_show")) {
+        addClass(".events_list .level_1", "level_1_show");
       }
-      if (!$(".events_list .defect_event").hasClass("level_2_show")) {
-        $(".events_list .level_2").addClass("level_2_show");
+      if (!hasClass(".events_list .defect_event", "level_2_show")) {
+        addClass(".events_list .level_2", "level_2_show");
       }
-      $(".event_collapse_btn").addClass("currently_hiding");
+      addClass(".event_collapse_btn", "currently_hiding");
     }
-    toggle_trace_all.toggleClass("currently_hiding");
-    $(".toggle_all").toggleClass("currently_hiding");
-  });
+    toggleClass("#toggle_trace_all", "currently_hiding");
+    toggleClass(".toggle_all", "currently_hiding");
+  };
 
   // add it to both buttons
-  $(".toggle_all").click(function() {
+  document.querySelectorAll(".toggle_all").forEach(e => e.onclick = function() {
     // check state only on first one
-    var toggle_all=$("#toggle_all");
-    if (toggle_all.hasClass("currently_hiding")) {
-      $(".events_list .level_1").removeClass("level_1_show");
-      $(".events_list .level_2").removeClass("level_2_show");
-      $(".event_collapse_btn").removeClass("currently_hiding");
+    if (hasClass("#toggle_all", "currently_hiding")) {
+      removeClass(".events_list .level_1", "level_1_show");
+      removeClass(".events_list .level_2", "level_2_show");
+      removeClass(".event_collapse_btn", "currently_hiding");
     } else {
-      if (!$(".events_list .defect_event").hasClass("level_1_show")) {
-        $(".events_list .level_1").addClass("level_1_show");
+      if (!hasClass(".events_list .defect_event", "level_1_show")) {
+        addClass(".events_list .level_1", "level_1_show");
       }
-      $(".event_collapse_btn").addClass("currently_hiding");
+      addClass(".event_collapse_btn", "currently_hiding");
     }
-    if ($("#toggle_trace_all").hasClass("currently_hiding")) {
-        $("#toggle_trace_all").removeClass("currently_hiding");
-    }
+    removeClass("#toggle_trace_all",  "currently_hiding");
 
     // apply change to both
-    $(".toggle_all").toggleClass("currently_hiding");
+    toggleClass(".toggle_all", "currently_hiding");
   });
 
-  $(".event_collapse_btn").click(function() {
-    $(this).closest(".defect").find(".level_1").toggleClass("level_1_show")
-    $(this).closest(".defect").find(".level_2").removeClass("level_2_show")
-    $(this).toggleClass("currently_hiding");
+  document.querySelectorAll(".event_collapse_btn").forEach(e => e.onclick = function() {
+    e.closest(".defect").querySelectorAll(".level_1")
+          .forEach(c => c.classList.toggle("level_1_show"));
+    e.closest(".defect").querySelectorAll(".level_2")
+          .forEach(c => c.classList.remove("level_2_show"));
+    e.classList.toggle("currently_hiding");
   });
 
 {% comment %}
