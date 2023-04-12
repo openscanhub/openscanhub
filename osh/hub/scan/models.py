@@ -1021,14 +1021,6 @@ class AppSettings(models.Model):
             return json.loads(dirs.value)
 
 
-class TaskExtension(models.Model):
-    task = models.OneToOneField(Task, on_delete=models.CASCADE)
-    secret_args = JSONField(default={})
-
-    def __str__(self):
-        return "%s %s" % (self.task, self.secret_args)
-
-
 class ClientAnalyzerMixin:
     def verify_by_name(self, name):
         try:
