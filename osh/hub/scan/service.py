@@ -390,9 +390,9 @@ def diff_fixed_defects_in_package(sb):
 
 def diff_defects_between_releases(sb, d_type):
     try:
-        previous = ScanBinding.objects.get(scan__enabled=True,
-                                           scan__package=sb.scan.package,
-                                           scan__tag__release=sb.scan.tag.release.child)
+        previous = ScanBinding.objects.filter(scan__enabled=True,
+                                              scan__package=sb.scan.package,
+                                              scan__tag__release=sb.scan.tag.release.child).latest()
         if d_type == 'f':
             return sb.result.fixed_defects_count() - \
                 previous.result.fixed_defects_count()
