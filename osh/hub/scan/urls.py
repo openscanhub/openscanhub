@@ -4,7 +4,7 @@ from osh.hub.scan.views import (MockConfigListView, PackageDetailView,
                                 PackageListView)
 
 urlpatterns = [
-    path("mock", MockConfigListView.as_view(),
+    path("mock/", MockConfigListView.as_view(),
          name="mock_config/index"),
 
     # path("<int:id>/", "osh.hub.scan.views.scan_detail",
