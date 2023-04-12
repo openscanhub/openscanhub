@@ -48,7 +48,7 @@ describes value of this stat.")
 
 class StatResults(models.Model):
     stat = models.ForeignKey(StatType, on_delete=models.CASCADE)
-    value = models.IntegerField(
+    value = models.BigIntegerField(
         help_text="Statistical data for specified stat type."
     )
     date = models.DateTimeField(auto_now_add=True, verbose_name="Date created")
