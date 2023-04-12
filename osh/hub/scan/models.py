@@ -311,7 +311,7 @@ of this packages scan")
 href="%s">%s</a> (%s) New defects: %d, fixed defects: %d</div>\n' % (
                 indent_level if indent_level <= 1 else indent_level * 2,
                 '\u2570\u2500\u2500' if indent_level > 0 else '',
-                reverse("waiving/result", args=(sb.result.id,)),  # url
+                reverse("waiving/result", args=(sb.id,)),  # url
                 sb.scan.nvr,
                 sb.scan.get_state_display(),
                 sb.result.new_defects_count(),
