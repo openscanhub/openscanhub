@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 import django.db.models as models
 from django.urls import reverse
 
@@ -16,7 +14,7 @@ describes value of this stat.")
     is_release_specific = models.BooleanField()
 
     def __str__(self):
-        return u"%s (%s)" % (self.key, self.comment)
+        return "%s (%s)" % (self.key, self.comment)
 
     def display_value(self, release=None):
         results = StatResults.objects.filter(stat=self)
@@ -60,4 +58,4 @@ class StatResults(models.Model):
         get_latest_by = "date"
 
     def __str__(self):
-        return u"%s = %s" % (self.stat.key, self.value)
+        return "%s = %s" % (self.stat.key, self.value)
