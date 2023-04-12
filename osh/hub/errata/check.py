@@ -11,7 +11,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from kobo.django.upload.models import FileUpload
 from kobo.rpmlib import parse_nvr
 
-from osh.hub.other.exceptions import PackageBlacklistedException
+from osh.hub.other.exceptions import PackageBlockedException
 from osh.hub.scan.models import ClientAnalyzer, ScanBinding
 from osh.hub.scan.xmlrpc_helper import cancel_scan
 
@@ -33,15 +33,15 @@ def check_package_eligibility(package, nvr, mock_profile, release, created):
     else:
         is_blocked = package.is_blocked(release)
         if is_blocked:
-            raise PackageBlacklistedException('Package %s is blacklisted.' %
-                                              (package.name))
+            raise PackageBlockedException('Package %s is blocked.' %
+                                          (package.name))
 
 
 def check_package_is_blocked(package, release):
     is_blocked = package.is_blocked(release)
     if is_blocked:
-        raise PackageBlacklistedException('Package %s is blacklisted.' %
-                                          (package.name))
+        raise PackageBlockedException('Package %s is blocked.' %
+                                      (package.name))
 
 
 def check_obsolete_scan(package, release):

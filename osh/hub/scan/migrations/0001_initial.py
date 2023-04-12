@@ -79,7 +79,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('name', models.CharField(max_length=64, verbose_name=b'Package name')),
-                ('blocked', models.NullBooleanField(default=False, help_text=b'If this is set to True, the package is blacklisted -- not accepted for scanning.')),
+                ('blocked', models.NullBooleanField(default=False, help_text=b'If this is set to True, the package is blocked -- not accepted for scanning.')),
                 ('eligible', models.NullBooleanField(default=True, help_text=b'DEPRECATED, do not use; use package attribute instead.')),
             ],
         ),

@@ -191,7 +191,7 @@ def create_errata_scan(kwargs, etm):
     check_obsolete_scan(package, tag.release)
     d['tag'] = tag
 
-    # check if package is written in scannable language and is not blacklisted
+    # check if package is written in scannable language and is not blocked
     check_package_eligibility(package, kwargs['target'],
                               options['mock_config'], tag.release,
                               created)

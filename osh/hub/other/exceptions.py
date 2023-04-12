@@ -8,7 +8,7 @@ class ScanException(Exception):
     """
 
 
-class PackageBlacklistedException(ScanException):
+class PackageBlockedException(ScanException):
     """
     Package is not eligible for scanning
     """

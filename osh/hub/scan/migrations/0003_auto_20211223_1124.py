@@ -38,7 +38,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='package',
             name='blocked',
-            field=models.NullBooleanField(default=False, help_text='If this is set to True, the package is blacklisted -- not accepted for scanning.'),
+            field=models.NullBooleanField(default=False, help_text='If this is set to True, the package is blocked -- not accepted for scanning.'),
         ),
         migrations.AlterField(
             model_name='package',
