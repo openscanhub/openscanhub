@@ -175,7 +175,7 @@ rm -rf %{buildroot}%{python3_sitelib}/scripts
 %dir %{_sysconfdir}/osh
 %{python3_sitelib}/osh/common
 %{python3_sitelib}/osh/__init__.py*
-%{python3_sitelib}/osh/__pycache__/__init__.*
+%{python3_sitelib}/osh/__pycache__
 %dir %{python3_sitelib}/osh
 %dir /var/lib/osh
 
