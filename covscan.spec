@@ -174,6 +174,8 @@ rm -rf %{buildroot}%{python3_sitelib}/scripts
 %defattr(644,root,root,755)
 %dir %{_sysconfdir}/osh
 %{python3_sitelib}/osh/common
+%{python3_sitelib}/osh/__init__.py*
+%{python3_sitelib}/osh/__pycache__/__init__.*
 %dir %{python3_sitelib}/osh
 %dir /var/lib/osh
 
