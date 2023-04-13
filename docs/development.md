@@ -51,8 +51,10 @@ Run the following command in the separated terminal window so you can follow its
 
 If you want to, you can restore a database backup from the production server. If not, you can skip these steps and osh-hub will create an empty database for you.
 
-* Download database backup from https://covscan-stage.lab.eng.brq2.redhat.com/openscanhub.db.gz
-* Import the database into the running container: `gzip -cd openscanhub.db.gz | podman exec -i db psql -h localhost -U openscanhub`
+* Download database backup from https://covscan-stage.lab.eng.brq2.redhat.com/openscanhub-limited.db.gz
+* Import the database into the running container: `gzip -cd openscanhub-limited.db.gz | podman exec -i db psql -h localhost -U openscanhub`
+
+Note that you can also restore the full snapshot of the production database (without the `-limited` suffix) if you have enough disk space and time.  The only difference between those two snapshots is that the `waiving_defect` table is empty in the `-limited` variant.
 
 ### Start the OSH hub
 
