@@ -1,4 +1,4 @@
-#!/usr/bin/python3 -tt
+#!/usr/bin/env python3
 """
 
 This is an XML-RPC client for OSH hub
