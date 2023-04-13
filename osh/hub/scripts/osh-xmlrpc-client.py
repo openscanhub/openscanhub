@@ -59,6 +59,7 @@ import sys
 import xmlrpc.client
 
 import kobo
+import kobo.client  # for nicer tracebacks
 from kobo.tback import set_except_hook
 from kobo.xmlrpc import CookieTransport, SafeCookieTransport
 
@@ -73,8 +74,6 @@ formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(messag
 ch.setFormatter(formatter)
 # add ch to logger
 logger.addHandler(ch)
-
-xmlrpc.client.Fault.__repr__ = lambda x: "<Fault %s: %s>" % (x.faultCode, str(x.faultString))
 
 
 def create_scan_cmd(options):
