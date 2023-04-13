@@ -87,12 +87,9 @@ def create_scan_cmd(options):
     username = options.username
     password = options.password
     c = Client(options.hub, username=username, password=password, verbose=options.verbose)
-    logger.info(
-        c.create_et_scan(
-            base=base, target=target, owner=owner, release=release, et_id=et_scan_id,
-            advisory_id=advisory_id
-        )
-    )
+    ret = c.create_et_scan(base=base, target=target, owner=owner, release=release,
+                           et_id=et_scan_id, advisory_id=advisory_id)
+    logger.info(ret)
 
 
 def get_filtered_scan_list_cmd(options):
@@ -264,9 +261,8 @@ def main():
     except AttributeError:
         if hasattr(args, 'func'):
             raise
-        else:
-            parser.print_help()
-            return 2
+        parser.print_help()
+        return 2
     except KeyboardInterrupt:
         print("Quitting on user request.")
         return 1
