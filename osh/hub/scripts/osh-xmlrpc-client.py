@@ -104,13 +104,12 @@ def set_options():
                         action="store_true")
     parser.add_argument("--username", help="username for authentication")
     parser.add_argument("--password", help="password for authentication")
-
-    subparsers = parser.add_subparsers(help='commands')
-
     parser.add_argument(
         "--hub",
         help="full URL of API endpoint, e.g. http://172.21.0.2:8000/xmlrpc/kerbauth"
     )
+
+    subparsers = parser.add_subparsers(help='commands')
 
     get_filtered_scan_list_parser = subparsers.add_parser(
         'get-filtered-scan-list',
