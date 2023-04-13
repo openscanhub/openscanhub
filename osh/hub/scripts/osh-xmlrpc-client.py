@@ -105,7 +105,7 @@ def set_options():
     parser.add_argument("--password", help="password for authentication")
     parser.add_argument(
         "--hub",
-        help="full URL of API endpoint, e.g. http://172.21.0.2:8000/xmlrpc/kerbauth"
+        help="full URL of API endpoint, e.g. http://172.21.0.2:8000/xmlrpc/kerbauth/"
     )
 
     subparsers = parser.add_subparsers(help='commands')
