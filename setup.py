@@ -27,6 +27,7 @@ data_files = {
         "osh/client/osh-cli",
     ],
     "/usr/sbin": [
+        "osh/hub/scripts/osh-stats",
         "osh/worker/osh-worker",
     ],
 }

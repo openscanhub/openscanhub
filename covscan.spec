@@ -206,6 +206,7 @@ fi
 
 %files hub
 %defattr(-,root,apache,-)
+%{_sbindir}/osh-stats
 %{_sysconfdir}/osh/hub
 %{python3_sitelib}/osh/hub
 %exclude %{python3_sitelib}/osh/hub/settings_local.py*
