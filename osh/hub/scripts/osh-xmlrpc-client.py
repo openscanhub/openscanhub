@@ -120,8 +120,7 @@ def set_options():
 
     parser.add_argument(
         "--hub",
-        help="full URL of API endpoint, e.g. http://172.21.0.2:8000/xmlrpc/kerbauth",
-        dest="hub", default=None
+        help="full URL of API endpoint, e.g. http://172.21.0.2:8000/xmlrpc/kerbauth"
     )
 
     get_filtered_scan_list_parser = subparsers.add_parser(
