@@ -1,11 +1,8 @@
-# -*- coding: utf-8 -*-
-
 """
     compilation of functions that provide functionality for waiving and fill
     database with defects from scan
 """
 
-from __future__ import absolute_import
 
 import json
 import logging
