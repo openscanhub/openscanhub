@@ -77,7 +77,7 @@ logger.addHandler(ch)
 xmlrpc.client.Fault.__repr__ = lambda x: "<Fault %s: %s>" % (x.faultCode, str(x.faultString))
 
 
-def create_scan_cmd(options, hub):
+def create_scan_cmd(options):
     base = options.base
     target = options.target
     et_scan_id = options.et_scan_id
@@ -86,7 +86,7 @@ def create_scan_cmd(options, hub):
     owner = options.owner
     username = options.username
     password = options.password
-    c = Client(hub, username=username, password=password, verbose=options.verbose)
+    c = Client(options.hub, username=username, password=password, verbose=options.verbose)
     logger.info(
         c.create_et_scan(
             base=base, target=target, owner=owner, release=release, et_id=et_scan_id,
@@ -95,15 +95,15 @@ def create_scan_cmd(options, hub):
     )
 
 
-def get_filtered_scan_list_cmd(options, hub):
-    c = Client(hub)
+def get_filtered_scan_list_cmd(options):
+    c = Client(options.hub)
     response = c.get_filtered_scan_list(options.id, options.target, options.base, options.username,
                                         options.state_type, options.release)
     logger.info(json.dumps(response, indent=2))
 
 
-def get_scan_state_cmd(options, hub):
-    c = Client(hub)
+def get_scan_state_cmd(options):
+    c = Client(options.hub)
     response = c.get_scan_state(options.SCAN_ID[0])
     logger.info(json.dumps(response, indent=2))
 
@@ -256,13 +256,12 @@ def main():
         # verbose tracebacks
         set_except_hook()
 
-    hub_url = args.hub
-    if not hub_url.endswith("/"):
+    if not args.hub.endswith("/"):
         raise ValueError("Hub URL has to end with slash (django weirdness).")
 
     before = datetime.datetime.now()
     try:
-        args.func(args, hub_url)
+        args.func(args)
     except AttributeError:
         if hasattr(args, 'func'):
             raise
