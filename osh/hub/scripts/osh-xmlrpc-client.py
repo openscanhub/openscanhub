@@ -160,7 +160,7 @@ def set_options():
     return parser, args
 
 
-class Client(object):
+class Client:
     """
     client of XML-RPC service
     """
