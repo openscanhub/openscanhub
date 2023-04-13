@@ -5,7 +5,7 @@ Util functions related to processing data -- results of analysis
 import json
 import logging
 import os
-import pipes
+import shlex
 
 from kobo.shortcuts import run
 
@@ -38,8 +38,8 @@ def csdiff(old, new, result, workdir):
     # whole csdiff call must be in one string, because character '>' cannot be
     # enclosed into quotes -- command '"csdiff" "-j" "old.err" "new.err" ">"
     # "csdiff.out"' does not work
-    diff_cmd = ' '.join(['csdiff', CSDIFF_ARGS, pipes.quote(old),
-                         pipes.quote(new), '>', result])
+    diff_cmd = ' '.join(['csdiff', CSDIFF_ARGS, shlex.quote(old),
+                         shlex.quote(new), '>', result])
     return _run(diff_cmd, workdir)
 
 

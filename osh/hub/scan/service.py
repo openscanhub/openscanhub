@@ -6,7 +6,7 @@
 import copy
 import logging
 import os
-import pipes
+import shlex
 import shutil
 
 from django.core.exceptions import ObjectDoesNotExist
@@ -57,10 +57,10 @@ old: %s new: %s', old_err, new_err)
     # whole csdiff call must be in one string, because character '>' cannot be
     # enclosed into quotes -- command '"csdiff" "-j" "old.err" "new.err" ">"
     # "csdiff.out"' does not work
-    diff_cmd = ' '.join(['csdiff', '-jz', pipes.quote(old_err),
-                         pipes.quote(new_err), '>', diff_file_path])
-    fixed_diff_cmd = ' '.join(['csdiff', '-jxz', pipes.quote(old_err),
-                              pipes.quote(new_err), '>',
+    diff_cmd = ' '.join(['csdiff', '-jz', shlex.quote(old_err),
+                         shlex.quote(new_err), '>', diff_file_path])
+    fixed_diff_cmd = ' '.join(['csdiff', '-jxz', shlex.quote(old_err),
+                              shlex.quote(new_err), '>',
                               fixed_diff_file_path])
     retcode, output = run(diff_cmd,
                           workdir=task_dir,
@@ -155,21 +155,21 @@ def extract_logs_from_tarball(task_id, name=None):
     # xz -cd asd.tar.xz | tar -x --exclude=\*.cov -C ./test/
     # tar -xzf file.tar.gz -C /output/directory
     if tar_archive.endswith('xz'):
-        command = ' '.join(['xz', '-cd', pipes.quote(tar_archive),
+        command = ' '.join(['xz', '-cd', shlex.quote(tar_archive),
                             '|', 'tar', '-x', r'--exclude=\*.cov',
                             r'--exclude=\*cov-html',
-                            '-C ' + pipes.quote(task_dir)])
+                            '-C ' + shlex.quote(task_dir)])
     elif tar_archive.endswith('lzma'):
         command = ' '.join(['xz', '-cd', '--format=lzma',
-                            pipes.quote(tar_archive),
+                            shlex.quote(tar_archive),
                             '|', 'tar', '-x', r'--exclude=\*.cov',
                             r'--exclude=\*cov-html',
-                            '-C ' + pipes.quote(task_dir)])
+                            '-C ' + shlex.quote(task_dir)])
     elif tar_archive.endswith('gz'):
         command = ['tar', '-xzf',
-                   pipes.quote(tar_archive),
+                   shlex.quote(tar_archive),
                    r'--exclude=\*.cov', r'--exclude=\*cov-html',
-                   '-C ' + pipes.quote(task_dir)]
+                   '-C ' + shlex.quote(task_dir)]
     else:
         raise RuntimeError('Unsupported compression format (%s), task id: %s' %
                            (tar_archive, task_id))
