@@ -6,15 +6,10 @@
 
 import json
 import logging
-import os
-import pipes
-import shutil
-import tempfile
 
 import pycsdiff
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Sum
-from kobo.shortcuts import run
 
 from .models import (DEFECT_STATES, RESULT_GROUP_STATES, Defect, ResultGroup,
                      Waiver, WaivingLog)
@@ -89,43 +84,6 @@ def get_serializable_dict(query):
         d_dict['events'] = d.events
         result_dict['defects'].append(d_dict)
     return result_dict
-
-
-def compare_result_groups_shell(rg1, rg2):
-    """
-        Compare defects of two distinct result groups
-        use csdiff tool - CLI interface
-    """
-    if rg1.defects_count != rg2.defects_count:
-        return False
-    return True
-    rg1_defects = rg1.get_new_defects()
-    rg2_defects = rg2.get_new_defects()
-
-    dict1 = get_serializable_dict(rg1_defects)
-    dict2 = get_serializable_dict(rg2_defects)
-
-    tmp_dir = tempfile.mkdtemp(prefix="cs_diff")
-    os.chmod(tmp_dir, 0o775)
-    fd1, filename1 = tempfile.mkstemp(prefix='rg1', text=True, dir=tmp_dir)
-    fd2, filename2 = tempfile.mkstemp(prefix='rg2', text=True, dir=tmp_dir)
-    with os.fdopen(fd1, 'w') as file1:
-        json.dump(dict1, file1)
-    with os.fdopen(fd2, 'w') as file2:
-        json.dump(dict2, file2)
-
-    diff_cmd = ' '.join(['csdiff', '-j',
-                         pipes.quote(os.path.join(tmp_dir, filename1)),
-                         pipes.quote(os.path.join(tmp_dir, filename1)),
-                         '>', 'result.js'])
-    retcode, output = run(diff_cmd,
-                          workdir=tmp_dir,
-                          stdout=False,
-                          can_fail=False,
-                          logfile='csdiff.log',
-                          return_stdout=False,
-                          show_cmd=False)
-    shutil.rmtree(tmp_dir)
 
 
 def compare_result_groups(rg1, rg2):
