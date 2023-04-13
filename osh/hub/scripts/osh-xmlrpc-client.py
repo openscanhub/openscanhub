@@ -6,7 +6,7 @@ This is an XML-RPC client for OSH hub
 
 ## DEPENDENCIES
 
-    yum install kobo*
+    dnf install kobo*
 
 
 ## USAGE
