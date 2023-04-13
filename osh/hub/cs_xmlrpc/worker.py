@@ -78,7 +78,8 @@ def finish_analyzers_version_retrieval(request, task_id, filename):
         AnalyzerVersion.objects.update_analyzers_versions(analyzers, mock_config)
     else:
         logger.error("Can't process results of task %s", task)
-        task.fail()
+        if not task.is_failed():
+            task.fail_task()
 
 
 @validate_worker
