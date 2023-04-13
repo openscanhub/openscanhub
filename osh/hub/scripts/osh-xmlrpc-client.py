@@ -78,17 +78,9 @@ xmlrpc.client.Fault.__repr__ = lambda x: "<Fault %s: %s>" % (x.faultCode, str(x.
 
 
 def create_scan_cmd(options):
-    base = options.base
-    target = options.target
-    et_scan_id = options.et_scan_id
-    advisory_id = options.advisory_id
-    release = options.release
-    owner = options.owner
-    username = options.username
-    password = options.password
-    c = Client(options.hub, username=username, password=password, verbose=options.verbose)
-    ret = c.create_et_scan(base=base, target=target, owner=owner, release=release,
-                           et_id=et_scan_id, advisory_id=advisory_id)
+    c = Client(options.hub, options.username, options.password, options.verbose)
+    ret = c.create_et_scan(options.base, options.target, options.advisory_id,
+                           options.et_scan_id, options.owner, options.release)
     logger.info(ret)
 
 
