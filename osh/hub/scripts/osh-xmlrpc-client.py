@@ -179,7 +179,7 @@ class Client:
         elif "http" in self.hub_url:
             transport = CookieTransport()
         else:
-            raise ValueError("URL to hub has to start with http(s): %r" % self.hub_url)
+            raise ValueError("URL to hub has to start with http(s): " + self.hub_url)
         logger.info("connecting to %s", self.hub_url)
         client = xmlrpc.client.ServerProxy(self.hub_url, allow_none=True, transport=transport, verbose=self.verbose)
         return client
@@ -236,7 +236,7 @@ class Client:
 
 def main():
     parser, args = set_options()
-    logger.debug('You are using kobo from %s' % kobo.__file__)
+    logger.debug('You are using kobo from %s', kobo.__file__)
 
     verbose = args.verbose
 
