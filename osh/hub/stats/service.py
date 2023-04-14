@@ -3,8 +3,8 @@ import logging
 import re
 import types
 
-from . import stattypes
-from .models import StatResults, StatType
+from osh.hub.stats import stattypes
+from osh.hub.stats.models import StatResults, StatType
 
 logger = logging.getLogger(__name__)
 
