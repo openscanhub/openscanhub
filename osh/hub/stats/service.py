@@ -74,9 +74,8 @@ def display_values(stat_type, release=None):
         results = StatResults.objects.filter(stat=stat_type, release=release)
     else:
         results = StatResults.objects.filter(stat=stat_type)
+
     if not results:
         return {datetime.datetime.now(): 0}
-    tmp = {}
-    for result in results.order_by('-date'):
-        tmp[result.date] = result.value
-    return tmp
+
+    return {res.date: res.value for res in results.order_by('-date')}
