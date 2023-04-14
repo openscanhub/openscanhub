@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 """
     Module that contains various statistics types. These functions are loaded
     dynamically. There is database record for each function.
