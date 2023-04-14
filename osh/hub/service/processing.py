@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Util functions related to processing data -- results of analysis
 """
@@ -68,7 +67,7 @@ def csgrep_err(input_file, output_file, workdir):
     return _run(cmd, workdir)
 
 
-class TaskDiffer(object):
+class TaskDiffer:
     def __init__(self, task, base_task):
         self.task = task
         self.base_task = base_task

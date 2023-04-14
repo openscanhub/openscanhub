@@ -1,9 +1,7 @@
-# -*- coding: utf-8 -*-
 """
     This module contains several services provided to XML-RPC calls mostly
 """
 
-from __future__ import absolute_import
 
 import copy
 import logging
