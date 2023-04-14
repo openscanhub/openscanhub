@@ -18,7 +18,6 @@ from kobo.shortcuts import run
 from osh.common.constants import (ERROR_DIFF_FILE, ERROR_HTML_FILE,
                                   ERROR_TXT_FILE, FIXED_DIFF_FILE,
                                   FIXED_HTML_FILE, FIXED_TXT_FILE)
-from osh.hub.other.decorators import public
 from osh.hub.other.exceptions import ScanException
 from osh.hub.other.shortcuts import (check_and_create_dirs, check_brew_build,
                                      get_mock_by_name)
@@ -30,7 +29,6 @@ from .models import (SCAN_STATES, SCAN_STATES_FINISHED_WELL, SCAN_TYPES_TARGET,
 logger = logging.getLogger(__name__)
 
 
-@public
 def run_diff(task_dir, base_task_dir, nvr, base_nvr):
     """
         Runs 'csdiff' and 'csdiff -x' command for results of scan with id
@@ -111,7 +109,6 @@ old: %s new: %s', old_err, new_err)
             workdir=task_dir, can_fail=True)
 
 
-@public
 def extract_logs_from_tarball(task_id, name=None):
     """
         Extracts files from tarball for specified task.
@@ -256,7 +253,6 @@ def create_base_diff_task(hub_opts, task_opts, parent_id):
         upload.delete()
 
 
-@public
 def create_diff_task(hub_opts, task_opts):
     """
         create scan of a package and perform diff on results against specified
@@ -356,7 +352,6 @@ def create_diff_task(hub_opts, task_opts):
     return task_id
 
 
-@public
 def get_latest_sb_by_package(release, package):
     """
     return latest scan for specified package and release.
@@ -373,7 +368,6 @@ def get_latest_sb_by_package(release, package):
         return bindings.latest()
 
 
-@public
 def diff_new_defects_in_package(sb):
     try:
         return sb.scan.get_first_scan_binding().result.\
@@ -384,7 +378,6 @@ def diff_new_defects_in_package(sb):
         return 0
 
 
-@public
 def diff_fixed_defects_in_package(sb):
     try:
         return sb.scan.get_first_scan_binding().result.\
@@ -395,7 +388,6 @@ def diff_fixed_defects_in_package(sb):
         return 0
 
 
-@public
 def diff_defects_between_releases(sb, d_type):
     try:
         previous = ScanBinding.objects.get(scan__enabled=True,
@@ -413,17 +405,14 @@ def diff_defects_between_releases(sb, d_type):
         return 0
 
 
-@public
 def diff_fixed_defects_between_releases(scan):
     return diff_defects_between_releases(scan, 'f')
 
 
-@public
 def diff_new_defects_between_releases(scan):
     return diff_defects_between_releases(scan, 'n')
 
 
-@public
 def get_latest_binding(scan_nvr, show_failed=False):
     """Return latest binding for specified nvr"""
     if show_failed:
@@ -446,7 +435,6 @@ def get_latest_binding(scan_nvr, show_failed=False):
         return None
 
 
-@public
 def get_used_releases():
     """ return tuple of used releases for search form """
     return list(Scan.targets.all().values_list('tag__release__id',

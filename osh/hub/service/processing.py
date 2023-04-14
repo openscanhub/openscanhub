@@ -10,7 +10,6 @@ import pipes
 from kobo.shortcuts import run
 
 from osh.common.constants import CSDIFF_ARGS
-from osh.hub.other.decorators import public
 from osh.hub.service.path import TaskResultPaths
 
 logger = logging.getLogger(__name__)
@@ -121,7 +120,6 @@ class TaskDiffer:
         return self.generate_diff_files()
 
 
-@public
 def add_title_to_json(path, title):
     # encoding="utf-8" is needed to load JSON with utf-8 chars on RHEL-8 when running in POSIX locale
     with open(path, "r+", encoding="utf-8") as fd:
@@ -132,7 +130,6 @@ def add_title_to_json(path, title):
         json.dump(loaded_json, fd, indent=4)
 
 
-@public
 def task_has_results(task):
     trp = TaskResultPaths(task)
     try:
@@ -141,7 +138,6 @@ def task_has_results(task):
         return False
 
 
-@public
 def task_is_diffed(task):
     trp = TaskResultPaths(task)
     return os.path.exists(trp.get_json_added()) or os.path.exists(trp.get_json_fixed())

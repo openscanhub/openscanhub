@@ -10,7 +10,6 @@ from osh.common.csmock_parser import unpack_and_return_api
 from osh.hub.errata.models import ScanningSession
 from osh.hub.errata.scanner import (BaseNotValidException, obtain_base2,
                                     prepare_base_scan)
-from osh.hub.other.decorators import public
 from osh.hub.scan.models import AnalyzerVersion, AppSettings, Scan, ScanBinding
 from osh.hub.scan.notify import send_task_notification
 from osh.hub.scan.xmlrpc_helper import fail_scan as h_fail_scan
@@ -25,14 +24,12 @@ logger = logging.getLogger(__name__)
 # REGULAR TASKS
 
 @validate_worker
-@public
 def email_task_notification(request, task_id):
     logger.debug('email_task_notification for %s', task_id)
     return send_task_notification(request, task_id)
 
 
 @validate_worker
-@public
 def finish_task(request, task_id):
     logger.info("Finishing task %s", task_id)
     task = Task.objects.get(id=task_id)
@@ -54,19 +51,16 @@ def finish_task(request, task_id):
 # ET SCANS
 
 @validate_worker
-@public
 def email_scan_notification(request, scan_id):
     scan_notification_email(request, scan_id)
 
 
 @validate_worker
-@public
 def finish_scan(request, scan_id, filename):
     h_finish_scan(request, scan_id, filename)
 
 
 @validate_worker
-@public
 def finish_analyzers_version_retrieval(request, task_id, filename):
     task = Task.objects.get(id=task_id)
     task_dir = Task.get_task_dir(task_id)
@@ -83,40 +77,34 @@ def finish_analyzers_version_retrieval(request, task_id, filename):
 
 
 @validate_worker
-@public
 def get_su_user(request):
     return AppSettings.setting_get_su_user()
 
 
 @validate_worker
-@public
 def set_scan_to_basescanning(request, scan_id):
     scan = Scan.objects.get(id=scan_id)
     scan.set_state_basescanning()
 
 
 @validate_worker
-@public
 def set_scan_to_scanning(request, scan_id):
     scan = Scan.objects.get(id=scan_id)
     scan.set_state_scanning()
 
 
 @validate_worker
-@public
 def fail_scan(request, scan_id, reason=None):
     h_fail_scan(scan_id, reason)
 
 
 @validate_worker
-@public
 def get_scanning_args(request, scanning_session_id):
     scanning_session = ScanningSession.objects.get(id=scanning_session_id)
     return scanning_session.profile.command_arguments
 
 
 @validate_worker
-@public
 def move_upload(request, task_id, upload_id):
     """ child task's srpm is uploaded, move it to task's dir """
     task_dir = Task.get_task_dir(task_id, create=True)
@@ -126,7 +114,6 @@ def move_upload(request, task_id, upload_id):
 
 
 @validate_worker
-@public
 def create_sb(request, task_id):
     task = Task.objects.get(id=task_id)
     scan = Scan.objects.get(id=task.args['scan_id'])
@@ -134,7 +121,6 @@ def create_sb(request, task_id):
 
 
 @validate_worker
-@public
 def ensure_cache(request, mock_config, scanning_session_id):
     """
     make sure that cache with version of analyzers is not stale
@@ -151,7 +137,6 @@ def ensure_cache(request, mock_config, scanning_session_id):
 
 
 @validate_worker
-@public
 def ensure_base_is_scanned_properly(request, scan_id, task_id):
     """
     Make sure that base is scanned properly (with up-to-date analyzers)
