@@ -8,7 +8,7 @@ from django.utils.html import format_html
 from django.utils.safestring import mark_safe
 
 from osh.hub.other.exceptions import BrewException
-from osh.hub.scan.models import MockConfig, Tag
+from osh.hub.scan.models import MockConfig
 
 
 def add_link_field(target_model=None, field='', field_label=''):
@@ -44,16 +44,6 @@ def get_mock_by_name(name):
     if not conf.enabled:
         raise RuntimeError("Mock config is disabled: %s" % conf)
     return conf
-
-
-def get_tag_by_name(name):
-    try:
-        tag = Tag.objects.get(name=name)
-    except:  # noqa: B902, E722
-        raise ObjectDoesNotExist("Unknown tag config: %s" % name)
-    if not tag.mock.enabled:
-        raise RuntimeError("Mock config is disabled: %s" % tag.mock)
-    return tag
 
 
 def check_brew_build(name):
