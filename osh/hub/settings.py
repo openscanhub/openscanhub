@@ -171,7 +171,6 @@ XMLRPC_METHODS = {
     ),
     'kerbauth': (
         ('osh.hub.cs_xmlrpc.errata', 'errata'),
-        ('osh.hub.cs_xmlrpc.test', 'test'),
         ('kobo.hub.xmlrpc.auth', 'auth'),
     ),
 
