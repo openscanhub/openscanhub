@@ -241,6 +241,9 @@ pg_isready -h localhost && %{python3_sitelib}/osh/hub/manage.py migrate
 
 
 %changelog
+* Fri Apr 14 2023 Kamil Dudka <kdudka@redhat.com> - 0.9.1-1
+- let osh-cli use hub URL with the new /osh prefix
+
 * Thu Mar 16 2023 Kamil Dudka <kdudka@redhat.com> - 0.9.0-1
 - stabilize the refactored version of covscan-client
 
