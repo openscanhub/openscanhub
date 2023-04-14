@@ -131,9 +131,11 @@ If you have any questions, feel free to ask at Red Hat IRC channel \
                 'name': rhel_ver,
             },
         ],
-        'priority': {
-            'name': 'Normal',
-        },
+        # temporarily commented out to work around
+        # https://gitlab.cee.redhat.com/covscan/covscan/-/issues/218
+        # 'priority': {
+        #     'name': 'Normal',
+        # },
         'issuetype': 'Bug',
         'security': {
             'name': 'Red Hat Employee',
