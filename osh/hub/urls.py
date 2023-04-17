@@ -27,5 +27,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
 
     # Include kobo hub xmlrpc module urls:
-    path("xmlrpc/", include("osh.hub.cs_xmlrpc.urls")),
+    path("xmlrpc/", include("osh.hub.osh_xmlrpc.urls")),
 ]
