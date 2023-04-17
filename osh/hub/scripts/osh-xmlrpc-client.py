@@ -78,9 +78,9 @@ logger.addHandler(ch)
 
 def create_scan_cmd(options):
     c = Client(options.hub, options.username, options.password, options.verbose)
-    ret = c.create_et_scan(options.base, options.target, options.advisory_id,
-                           options.et_scan_id, options.owner, options.release)
-    logger.info(ret)
+    response = c.create_et_scan(options.base, options.target, options.advisory_id,
+                                options.et_scan_id, options.owner, options.release)
+    logger.info(json.dumps(response, indent=2))
 
 
 def get_filtered_scan_list_cmd(options):
