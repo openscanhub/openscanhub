@@ -67,7 +67,6 @@ def stats_detail(request, stat_id):
 
 def stats_detail_graph(request, stat_id, release_id=None):
     """
-    View for AJAX
     Provide data for graph.
     """
     if release_id is not None:
@@ -83,16 +82,15 @@ def stats_detail_graph(request, stat_id, release_id=None):
     data = {
         'title': st.short_comment,
         'subtitle': st.comment,
-        'data': [],
-        'labels': [label],
-        'ykeys': ['a']
+        'label': label,
+        'x': [],
+        'y': [],
     }
 
-    time_format = "%Y-%m-%d"
     for result in sr.order_by('-date')[:12]:
-        data['data'].append(
-            {'x': result.date.strftime(time_format), 'a': result.value}
-        )
+        data['x'].append(result.date.strftime("%Y-%m-%d"))
+        data['y'].append(result.value)
+
     return HttpResponse(json.dumps(data).encode(),
                         content_type='application/json; charset=utf8')
 

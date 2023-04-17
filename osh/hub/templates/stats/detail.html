@@ -5,31 +5,49 @@
 {% load static %}
 
 {% block head %}
-<script type="text/javascript" src="{% static "js/jquery-1.8.3.min.js" %}"></script>
-<script type="text/javascript" src="{% static "js/morris.min.js" %}"></script>
-<script type="text/javascript" src="{% static "js/raphael-min.js" %}"></script>
+<script src="https://cdn.plot.ly/plotly-2.20.0.min.js" charset="utf-8"></script>
 <script type="text/javascript" language="javascript">
-function formatDate(x)
-{
-    monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug',
-        'Sep', 'Oct', 'Nov', 'Dec'];
-    return monthNames[x.getMonth()] + ' ' + x.getDate();
-}
-
 document.addEventListener("DOMContentLoaded", function() {
     fetch("{{ json_url }}").then(response => response.json()).then(data => {
         document.getElementById("chart_title").innerHTML =
             '<h3>' + data.title + '</h3>\n<h4>' + data.subtitle + '</h4>';
 
-        Morris.Line({
-            element: 'chart',
-            data: data.data,
-            xkey: 'x',
-            ykeys: data.ykeys,
-            xLabels: 'day',
-            xLabelFormat: formatDate,
-            labels: data.labels
-        });
+        Plotly.newPlot(document.getElementById('chart'),
+            // datasets
+            [{
+                type: 'scatter',
+                name: data.label,
+                hovertemplate: '<b>%{x}</b><br>%{fullData.name}: %{y:,}<extra></extra>',
+                x: data.x,
+                y: data.y,
+                line: {color: '#0b62a4'},
+            }],
+            // layout
+            {
+                autosize: true,
+                margin: {
+                    l: 50,
+                    r: 50,
+                    b: 50,
+                    t: 25,
+                    pad: 0,
+                },
+                showlegend: true,
+                xaxis: {
+                    type: 'date',
+                    showgrid: false,
+                },
+                yaxis: {
+                    rangemode: 'tozero',
+                    zeroline: false,
+                },
+            },
+            // config
+            {
+                displayModeBar: false,
+                responsive: true,
+            }
+        );
     }).catch(console.error);
 });
 </script>
