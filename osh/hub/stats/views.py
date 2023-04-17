@@ -88,12 +88,10 @@ def stats_detail_graph(request, stat_id, release_id=None):
 
     data['labels'] = [label]
     data['ykeys'] = ['a']
-    for result in sr.order_by('-date'):
+    for result in sr.order_by('-date')[:12]:
         data['data'].append(
             {'x': result.date.strftime(time_format), 'a': result.value}
         )
-        if len(data['data']) >= 12:
-            break
     return HttpResponse(json.dumps(data).encode(),
                         content_type='application/json; charset=utf8')
 
