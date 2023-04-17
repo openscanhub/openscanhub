@@ -79,15 +79,16 @@ def stats_detail_graph(request, stat_id, release_id=None):
         sr = StatResults.objects.filter(stat=stat_id)
 
     st = StatType.objects.get(id=stat_id)
-    data = {}
-    data['title'] = st.short_comment
-    data['subtitle'] = st.comment
-    data['data'] = []
+
+    data = {
+        'title': st.short_comment,
+        'subtitle': st.comment,
+        'data': [],
+        'labels': [label],
+        'ykeys': ['a']
+    }
 
     time_format = "%Y-%m-%d"
-
-    data['labels'] = [label]
-    data['ykeys'] = ['a']
     for result in sr.order_by('-date')[:12]:
         data['data'].append(
             {'x': result.date.strftime(time_format), 'a': result.value}
