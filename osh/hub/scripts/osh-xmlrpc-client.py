@@ -81,6 +81,8 @@ def create_scan_cmd(options):
     response = c.create_et_scan(options.base, options.target, options.advisory_id,
                                 options.et_scan_id, options.owner, options.release)
     logger.info(json.dumps(response, indent=2))
+    if response['status'] == 'ERROR':
+        raise RuntimeError(response['message'])
 
 
 def get_filtered_scan_list_cmd(options):
