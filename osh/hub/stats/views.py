@@ -95,7 +95,7 @@ def stats_detail_graph(request, stat_id, release_id=None):
         if len(data['data']) >= 12:
             break
     return HttpResponse(json.dumps(data).encode(),
-                        content_type='application/javascript; charset=utf8')
+                        content_type='application/json; charset=utf8')
 
 
 """ stats from all releases added to graph
