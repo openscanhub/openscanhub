@@ -1044,7 +1044,7 @@ class ClientAnalyzerMixin:
 
     def export_available(self):
         return list(self.list_available().values(
-            'analyzer__name', 'version', 'cli_short_command', 'cli_long_command'))
+            'analyzer__name', 'version', 'cli_long_command'))
 
     def filter_by_long_arg(self, long_opts):
         return self.list_available().filter(cli_long_command__in=long_opts)
@@ -1080,7 +1080,6 @@ class ClientAnalyzer(models.Model):
     version = models.CharField(max_length=32, blank=True, null=True)
     enabled = models.BooleanField(default=True)
     # what osh-cli option enables analyzer
-    cli_short_command = models.CharField(max_length=32, blank=True, null=True)
     cli_long_command = models.CharField(max_length=32, blank=False, null=False)
     # enable this analyzer with csmock -t <build_append>[,<build_append>...]
     build_append = models.CharField(max_length=32, blank=True, null=True,

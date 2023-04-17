@@ -131,7 +131,6 @@
   "model": "scan.clientanalyzer",
   "fields": {
     "build_append_args": "",
-    "cli_short_command": "-l",
     "enabled": true,
     "analyzer": 1,
     "build_append": "clang",
@@ -144,7 +143,6 @@
   "model": "scan.clientanalyzer",
   "fields": {
     "build_append_args": "",
-    "cli_short_command": "-c",
     "enabled": true,
     "analyzer": 3,
     "build_append": "cppcheck",
@@ -157,7 +155,6 @@
   "model": "scan.clientanalyzer",
   "fields": {
     "build_append_args": "",
-    "cli_short_command": "",
     "enabled": true,
     "analyzer": 2,
     "build_append": "gcc",
@@ -170,7 +167,6 @@
   "model": "scan.clientanalyzer",
   "fields": {
     "build_append_args": "--use-host-cppcheck",
-    "cli_short_command": "",
     "enabled": true,
     "analyzer": 3,
     "build_append": "cppcheck",
@@ -183,7 +179,6 @@
   "model": "scan.clientanalyzer",
   "fields": {
     "build_append_args": "",
-    "cli_short_command": "",
     "enabled": true,
     "analyzer": 5,
     "build_append": "pylint",
@@ -196,7 +191,6 @@
   "model": "scan.clientanalyzer",
   "fields": {
     "build_append_args": "",
-    "cli_short_command": "",
     "enabled": true,
     "analyzer": 6,
     "build_append": "shellcheck",
@@ -209,7 +203,6 @@
   "model": "scan.clientanalyzer",
   "fields": {
     "build_append_args": "",
-    "cli_short_command": "",
     "enabled": false,
     "analyzer": 7,
     "build_append": "smatch",
@@ -222,7 +215,6 @@
   "model": "scan.clientanalyzer",
   "fields": {
     "build_append_args": "",
-    "cli_short_command": "",
     "enabled": true,
     "analyzer": 8,
     "build_append": "valgrind",

@@ -2326,7 +2326,6 @@
       "analyzer": 1,
       "version": "dist",
       "enabled": true,
-      "cli_short_command": "-l",
       "cli_long_command": "clang",
       "build_append": "clang",
       "build_append_args": ""
@@ -2339,7 +2338,6 @@
       "analyzer": 3,
       "version": "dist",
       "enabled": true,
-      "cli_short_command": "-c",
       "cli_long_command": "cppcheck",
       "build_append": "cppcheck",
       "build_append_args": ""
@@ -2352,7 +2350,6 @@
       "analyzer": 2,
       "version": "dist",
       "enabled": true,
-      "cli_short_command": "",
       "cli_long_command": "gcc",
       "build_append": "gcc",
       "build_append_args": ""
@@ -2365,7 +2362,6 @@
       "analyzer": 3,
       "version": "2.6",
       "enabled": true,
-      "cli_short_command": "",
       "cli_long_command": "cppcheck-host",
       "build_append": "cppcheck",
       "build_append_args": "--use-host-cppcheck"
@@ -2378,7 +2374,6 @@
       "analyzer": 5,
       "version": "dist",
       "enabled": true,
-      "cli_short_command": "",
       "cli_long_command": "pylint",
       "build_append": "pylint",
       "build_append_args": ""
@@ -2391,7 +2386,6 @@
       "analyzer": 6,
       "version": "dist",
       "enabled": true,
-      "cli_short_command": "",
       "cli_long_command": "shellcheck",
       "build_append": "shellcheck",
       "build_append_args": ""
@@ -2404,7 +2398,6 @@
       "analyzer": 7,
       "version": "1.60.1599.g44eeafcf-2",
       "enabled": false,
-      "cli_short_command": "",
       "cli_long_command": "smatch",
       "build_append": "smatch",
       "build_append_args": ""
@@ -2417,7 +2410,6 @@
       "analyzer": 8,
       "version": "dist",
       "enabled": true,
-      "cli_short_command": "",
       "cli_long_command": "valgrind",
       "build_append": "valgrind",
       "build_append_args": ""
