@@ -21,6 +21,6 @@ urlpatterns = [
          osh.hub.stats.views.stats_detail_graph,
          name="stats/detail/graph"),
     path("<int:stat_id>/<int:release_id>/graph/",
-         osh.hub.stats.views.release_stats_detail_graph,
+         osh.hub.stats.views.stats_detail_graph,
          name="stats/release/detail/graph"),
 ]

@@ -65,15 +65,20 @@ def stats_detail(request, stat_id):
     return render(request, "stats/detail.html", context)
 
 
-def release_stats_detail_graph(request, stat_id, release_id):
+def stats_detail_graph(request, stat_id, release_id=None):
     """
     View for AJAX
     Provide data for graph.
     """
-    print(stat_id, release_id)
-    release = SystemRelease.objects.get(id=release_id)
+    if release_id is not None:
+        release = SystemRelease.objects.get(id=release_id)
+        label = release.tag
+        sr = StatResults.objects.filter(stat=stat_id, release=release)
+    else:
+        label = 'Global'
+        sr = StatResults.objects.filter(stat=stat_id)
+
     st = StatType.objects.get(id=stat_id)
-    sr = StatResults.objects.filter(stat=stat_id, release=release)
     data = {}
     data['title'] = st.short_comment
     data['subtitle'] = st.comment
@@ -81,7 +86,7 @@ def release_stats_detail_graph(request, stat_id, release_id):
 
     time_format = "%Y-%m-%d"
 
-    data['labels'] = [release.tag]
+    data['labels'] = [label]
     data['ykeys'] = ['a']
     for result in sr.order_by('-date'):
         data['data'].append(
@@ -89,33 +94,6 @@ def release_stats_detail_graph(request, stat_id, release_id):
         )
         if len(data['data']) >= 12:
             break
-    return HttpResponse(json.dumps(data),
-                        content_type='application/javascript; charset=utf8')
-
-
-def stats_detail_graph(request, stat_id):
-    """
-    View for AJAX
-    Provide data for graph.
-    """
-    st = StatType.objects.get(id=stat_id)
-    sr = StatResults.objects.filter(stat=stat_id)
-    data = {}
-    data['title'] = st.short_comment
-    data['subtitle'] = st.comment
-    data['data'] = []
-
-    time_format = "%Y-%m-%d"
-
-    data['labels'] = ['Global']
-    data['ykeys'] = ['a']
-    for result in sr.order_by('-date'):
-        data['data'].append(
-            {'x': result.date.strftime(time_format), 'a': result.value}
-        )
-        if len(data['data']) >= 12:
-            break
-
     return HttpResponse(json.dumps(data),
                         content_type='application/javascript; charset=utf8')
 
