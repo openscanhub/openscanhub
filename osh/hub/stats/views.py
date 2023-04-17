@@ -1,8 +1,6 @@
-# -*- coding: utf-8 -*-
 """
     TODO Once on 1.5, use filter from django.contrib.humanize
 """
-from __future__ import absolute_import, print_function
 
 import json
 from collections import OrderedDict
