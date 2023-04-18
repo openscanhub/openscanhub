@@ -602,7 +602,7 @@ def get_busy_minutes():
             result += t.time
         except TypeError:
             pass
-    return result.seconds / 60 + (result.days * 24 * 60)
+    return int(result.total_seconds() // 60)
 
 
 @stat_function(2, "TIME", "Scanning minutes",
@@ -611,6 +611,4 @@ def get_minutes_spent_scanning():
     result = Result.objects.all()
     if not result:
         return 0
-    else:
-        return result.aggregate(
-            Sum('scanning_time'))['scanning_time__sum'] / 60
+    return result.aggregate(sum=Sum('scanning_time'))['sum'] // 60
