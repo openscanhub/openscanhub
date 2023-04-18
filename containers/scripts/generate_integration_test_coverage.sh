@@ -112,6 +112,9 @@ main() {
     # priority offset feature testing end
     podman exec osh-client /usr/bin/coverage-3.6 run --parallel-mode '--omit=*site-packages*,*kobo*,' osh/hub/scripts/osh-xmlrpc-client.py --hub http://osh-hub:8000/xmlrpc/kerbauth/ --username=user --password=xxxxxx create-scan -b python-six-1.3.0-4.el7 -t python-six-1.9.0-2.el7 --et-scan-id=1 --release=RHEL-7.2.0 --owner=admin --advisory-id=1
 
+    # test generation of usage statistics
+    podman exec osh-hub /usr/bin/coverage-3.6 run --parallel-mode '--omit=*site-packages*,*kobo*,' osh/hub/scripts/stats_updater.py
+
     set +e; set +o pipefail
 
     # We have to kill django server and worker to generate coverage files
