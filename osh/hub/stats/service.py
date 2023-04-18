@@ -2,6 +2,8 @@ import datetime
 import inspect
 import logging
 
+from django.db.models import ObjectDoesNotExist
+
 from osh.hub.stats import stattypes
 from osh.hub.stats.models import StatResults, StatType
 
@@ -30,6 +32,25 @@ def get_mapping():
     return ((get_key(n), f) for n, f in inspect.getmembers(stattypes, filter))
 
 
+def create_stat_type(key, func):
+    """
+    Creates or updates a stat type from metadata stored in the given
+    stat function.
+    """
+    try:
+        st = StatType.objects.get(key=key)
+    except ObjectDoesNotExist:
+        st = StatType()
+
+    st.key = key
+    st.order = func.order
+    st.group = func.group
+    st.comment = func.comment
+    st.short_comment = func.short_comment
+    st.is_release_specific = 'RELEASE' in key
+    st.save()
+
+
 def create_stat_result(key, value, release=None):
     """
     Helper function that stores statistical result. If the result is same as
@@ -56,6 +77,8 @@ def update():
     """
     logger.info('Updating statistics.')
     for key, func in get_mapping():
+        create_stat_type(key, func)
+
         logger.info('Updating %s.', key)
         stat_data = func()
         if isinstance(stat_data, int):
