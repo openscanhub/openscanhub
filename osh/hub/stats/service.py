@@ -1,6 +1,5 @@
 import datetime
 import logging
-import re
 import types
 
 from osh.hub.stats import stattypes
@@ -28,10 +27,8 @@ def get_mapping():
         binding = getattr(stattypes, binding_name)
         if isinstance(binding, types.FunctionType) and\
                 binding.__name__.startswith('get_'):
-            doc = re.split('\n\\s*\n', binding.__doc__.strip())
-
             mapping[binding] = (binding.__name__[4:].upper(),
-                                doc[0].strip(), doc[1].strip(),
+                                binding.short_comment, binding.comment,
                                 binding.group, binding.order,
                                 )
     return mapping
