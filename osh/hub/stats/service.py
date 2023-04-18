@@ -81,11 +81,13 @@ def update():
 
         logger.info('Updating %s.', key)
         stat_data = func()
-        if isinstance(stat_data, int):
+
+        if not isinstance(stat_data, dict):
             create_stat_result(key, stat_data)
-        elif isinstance(stat_data, dict):
-            for s in stat_data:
-                create_stat_result(key, stat_data[s], s)
+            continue
+
+        for s in stat_data:
+            create_stat_result(key, stat_data[s], s)
 
     logger.info('Statistics successfully updated.')
 
