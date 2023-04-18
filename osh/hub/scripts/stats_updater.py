@@ -4,7 +4,11 @@
 Script for cron that submits actual statistical data
 """
 
+import logging
 import os
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger('osh-stats')
 
 os.environ['DJANGO_SETTINGS_MODULE'] = 'osh.hub.settings'
 

@@ -54,14 +54,17 @@ def update():
     """
     Refresh statistics data.
     """
-    logger.info('Update statistics.')
+    logger.info('Updating statistics.')
     for key, func in get_mapping():
+        logger.info('Updating %s.', key)
         stat_data = func()
         if isinstance(stat_data, int):
             create_stat_result(key, stat_data)
         elif isinstance(stat_data, dict):
             for s in stat_data:
                 create_stat_result(key, stat_data[s], s)
+
+    logger.info('Statistics successfully updated.')
 
 
 def display_values(stat_type, release=None):
