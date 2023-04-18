@@ -37,8 +37,10 @@ def create_stat_result(key, value, release=None):
     """
     stat_type = StatType.objects.get(key=key)
     last_stat = get_last_stat_result(stat_type, release)
+
     if not value:
         value = 0
+
     if not last_stat or last_stat.value != value:
         s = StatResults()
         s.stat = stat_type
