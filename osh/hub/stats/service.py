@@ -1,6 +1,6 @@
 import datetime
+import inspect
 import logging
-import types
 
 from osh.hub.stats import stattypes
 from osh.hub.stats.models import StatResults, StatType
@@ -19,19 +19,15 @@ def get_last_stat_result(stat_type, release=None):
 
 def get_mapping():
     """
-    Return mapping between statistical function and its properties:
-        { function: (tag, short_comment, comment, group, order), }
+    Return mapping between key and the corresponding statistical function.
     """
-    mapping = {}
-    for binding_name in dir(stattypes):
-        binding = getattr(stattypes, binding_name)
-        if isinstance(binding, types.FunctionType) and\
-                binding.__name__.startswith('get_'):
-            mapping[binding] = (binding.__name__[4:].upper(),
-                                binding.short_comment, binding.comment,
-                                binding.group, binding.order,
-                                )
-    return mapping
+    def filter(member):
+        return inspect.isfunction(member) and member.__name__.startswith('get_')
+
+    def get_key(name):
+        return name[4:].upper()
+
+    return ((get_key(n), f) for n, f in inspect.getmembers(stattypes, filter))
 
 
 def create_stat_result(key, value, release=None):
@@ -57,13 +53,13 @@ def update():
     Refresh statistics data.
     """
     logger.info('Update statistics.')
-    for func, desc in get_mapping().items():
+    for key, func in get_mapping():
         stat_data = func()
         if isinstance(stat_data, int):
-            create_stat_result(desc[0], stat_data)
+            create_stat_result(key, stat_data)
         elif isinstance(stat_data, dict):
             for s in stat_data:
-                create_stat_result(desc[0], stat_data[s], s)
+                create_stat_result(key, stat_data[s], s)
 
 
 def display_values(stat_type, release=None):
