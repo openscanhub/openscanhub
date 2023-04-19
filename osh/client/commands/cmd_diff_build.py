@@ -68,7 +68,6 @@ exist." % self.results_store_file)
 
         # optparser output is passed via *args (args) and **kwargs (opts)
         config = kwargs.pop("config", None)
-        cppcheck = kwargs.pop("cppcheck", None)
         email_to = kwargs.pop("email_to", [])
         comment = kwargs.pop("comment")
         nowait = kwargs.pop("nowait")
@@ -76,7 +75,6 @@ exist." % self.results_store_file)
         priority = kwargs.pop("priority")
         brew_build = kwargs.pop("brew_build")
         self.results_store_file = kwargs.pop("results_dir", None)
-        clang = kwargs.pop('clang', False)
         warn_level = kwargs.pop('warn_level', '0')
         analyzers = kwargs.pop('analyzers', '')
         profile = kwargs.pop('profile', None)
@@ -129,10 +127,6 @@ is not even one in your user configuration file \
         if priority is not None:
             options["priority"] = priority
 
-        if cppcheck:
-            options["cppcheck"] = cppcheck
-        if clang:
-            options['clang'] = clang
         if warn_level:
             options['warning_level'] = warn_level
         if analyzers:

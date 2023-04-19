@@ -81,7 +81,6 @@ local file"
 
         config = kwargs.pop("config", None)
         base_config = kwargs.pop("base_config", None)
-        cppcheck = kwargs.pop("cppcheck", None)
         email_to = kwargs.pop("email_to", [])
         comment = kwargs.pop("comment")
         nowait = kwargs.pop("nowait")
@@ -91,7 +90,6 @@ local file"
         brew_build = kwargs.pop("brew_build", None)
         base_srpm = kwargs.pop("base_srpm", None)
         srpm = kwargs.pop("srpm", None)
-        clang = kwargs.pop('clang', False)
         warn_level = kwargs.pop('warn_level', '0')
         analyzers = kwargs.pop('analyzers', '')
         profile = kwargs.pop('profile', None)
@@ -189,10 +187,6 @@ is not even one in your user configuration file \
         if priority is not None:
             options_consumed["priority"] = priority
 
-        if cppcheck:
-            options_forwarded["cppcheck"] = cppcheck
-        if clang:
-            options_forwarded['clang'] = clang
         if warn_level:
             options_forwarded['warning_level'] = warn_level
         if analyzers:
