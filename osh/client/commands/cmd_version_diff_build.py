@@ -12,7 +12,7 @@ from .common import (add_analyzers_option, add_comment_option,
                      add_priority_option, add_profile_option,
                      add_task_id_file_option)
 from .shortcuts import (check_analyzers, handle_perm_denied, upload_file,
-                        verify_brew_koji_build, verify_mock)
+                        verify_koji_build, verify_mock)
 
 
 class Version_Diff_Build(osh.client.OshCommand):
@@ -127,15 +127,12 @@ local file"
 a SRPM")
 
         if brew_build:
-            result = verify_brew_koji_build(brew_build, self.conf['BREW_URL'],
-                                            self.conf['KOJI_URL'])
+            result = verify_koji_build(brew_build, self.conf['KOJI_PROFILES'])
             if result is not None:
                 self.parser.error(result)
 
         if base_brew_build:
-            result = verify_brew_koji_build(base_brew_build,
-                                            self.conf['BREW_URL'],
-                                            self.conf['KOJI_URL'])
+            result = verify_koji_build(base_brew_build, self.conf['KOJI_PROFILES'])
             if result is not None:
                 self.parser.error(result)
 

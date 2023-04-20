@@ -19,7 +19,7 @@ from osh.client.commands.common import (add_analyzers_option,
                                         add_task_id_file_option)
 from osh.client.commands.shortcuts import (check_analyzers, fetch_results,
                                            handle_perm_denied, upload_file,
-                                           verify_brew_koji_build, verify_mock)
+                                           verify_koji_build, verify_mock)
 from osh.client.conf import get_conf
 
 
@@ -95,8 +95,7 @@ exist." % self.results_store_file)
 
         if brew_build:
             # get build from koji
-            result = verify_brew_koji_build(self.srpm, self.conf['BREW_URL'],
-                                            self.conf['KOJI_URL'])
+            result = verify_koji_build(self.srpm, self.conf['KOJI_PROFILES'])
             if result is not None:
                 self.parser.error(result)
         elif tarball_build_script:

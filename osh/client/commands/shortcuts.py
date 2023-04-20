@@ -13,11 +13,17 @@ def check_analyzers(proxy, analyzers_list):
         raise RuntimeError(result)
 
 
-def verify_build_exists(build, url):
+def verify_build_exists(build, profile):
     """
     Verify if build exists
     """
-    proxy_object = koji.ClientSession(url)
+    try:
+        cfg = koji.read_config(profile)
+    except koji.ConfigurationError as e:
+        print('koji:', e, file=sys.stderr)
+        return False
+
+    proxy_object = koji.ClientSession(cfg['server'])
     try:
         # getBuild XML-RPC call is defined here: ./hub/kojihub.py:3206
         returned_build = proxy_object.getBuild(build)
@@ -28,7 +34,7 @@ def verify_build_exists(build, url):
         returned_build.get('state', None) == koji.BUILD_STATES['COMPLETE']
 
 
-def verify_brew_koji_build(build, brew_url, koji_url):
+def verify_koji_build(build, profiles):
     """
     Verify if brew or koji build exists
     """
@@ -42,17 +48,21 @@ def verify_brew_koji_build(build, brew_url, koji_url):
         return f'Invalid N-V-R: {srpm}'
     dist_tag = match[1]
 
-    # Use brew first unless fc is in the dist tag.
-    # In that case, start with Koji.
-    urls = [brew_url, koji_url]
-    if 'fc' in dist_tag:
-        urls.reverse()
+    # Parse Koji profiles
+    koji_profiles = profiles.split(',')
+    if '' in koji_profiles:
+        return f'Koji profiles could not be parsed properly: {koji_profiles}'
 
-    if any(verify_build_exists(build, url) for url in urls):
+    # Use brew first unless fc is in the dist tag.
+    # In that case, start with Fedora Koji.
+    if 'fc' in dist_tag and 'brew' == koji_profiles[0]:
+        koji_profiles.reverse()
+
+    if any(verify_build_exists(build, p) for p in koji_profiles):
         return None
 
-    return f"Build {build} does not exist in koji nor in brew, or has its \
-files deleted, or did not finish successfully."
+    return f"Build {build} does not exist in {koji_profiles}, has its files \
+deleted, or did not finish successfully."
 
 
 def verify_mock(mock, hub):
