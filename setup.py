@@ -18,6 +18,8 @@ data_files = {
         "osh/worker/worker.conf",
     ],
     "/usr/lib/systemd/system": [
+        "osh/hub/osh-stats.service",
+        "osh/hub/osh-stats.timer",
         "osh/worker/osh-worker.service",
     ],
     "/usr/share/bash-completion/completions": [

@@ -209,6 +209,7 @@ fi
 %{_sbindir}/osh-stats
 %{_sysconfdir}/osh/hub
 %{python3_sitelib}/osh/hub
+%{_unitdir}/osh-stats.*
 %exclude %{python3_sitelib}/osh/hub/settings_local.py*
 %exclude %{python3_sitelib}/osh/hub/__pycache__/settings_local.*
 %dir %attr(775,root,apache) /var/log/osh/hub
@@ -235,6 +236,14 @@ fi
 
 # this only takes an effect if PostgreSQL is running and the database exists
 pg_isready -h localhost && %{python3_sitelib}/osh/hub/manage.py migrate
+
+%systemd_post osh-stats.service osh-stats.timer
+
+%preun hub
+%systemd_preun osh-stats.service osh-stats.timer
+
+%postun hub
+%systemd_postun_with_restart osh-stats.service osh-stats.timer
 
 %files hub-conf-devel
 %attr(640,root,apache) %config(noreplace) %{python3_sitelib}/osh/hub/settings_local.py

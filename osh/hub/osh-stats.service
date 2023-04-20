@@ -1,0 +1,12 @@
+[Unit]
+Description=OpenScanHub statistics collector
+StartLimitBurst=2
+StartLimitIntervalSec=2h
+
+[Service]
+ExecStart=/usr/sbin/osh-stats
+Restart=on-failure
+Type=oneshot
+
+[Install]
+WantedBy=multi-user.target
