@@ -343,7 +343,7 @@ package')
             .filter(tag__release__isnull=False).distinct()
         response = ""
 
-        for release in releases:
+        for release in releases.order_by('tag__release'):
             scans_package = scans.filter(
                 tag__release__id=release['tag__release'],
                 scan_type__in=SCAN_TYPES_TARGET)
