@@ -339,7 +339,8 @@ Base: %s</span></div>\n' % (base.nvr if base is not None else 'NEW_PACKAGE')
         if not scans:
             return mark_safe('There are no scans submitted related to this \
 package')
-        releases = scans.values('tag__release').distinct()
+        releases = scans.values('tag__release')\
+            .filter(tag__release__isnull=False).distinct()
         response = ""
 
         for release in releases:
