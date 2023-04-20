@@ -328,8 +328,17 @@ of this packages scan")
             if response.endswith('</div>\n'):
                 response = response[:-7]
             base = sb.scan.base
-            response += '<span style="position:absolute; left: 45em">\
-Base: %s</span></div>\n' % (base.nvr if base is not None else 'NEW_PACKAGE')
+            response += '<span style="position:absolute; left: 45em">Base: '
+
+            if base is not None:
+                sb_base = ScanBinding.objects.get(scan=base)
+                response += '<a href="%s">%s</a>' % (
+                    reverse("waiving/result", args=(sb_base.id,)),
+                    base.nvr)
+            else:
+                response += 'NEW_PACKAGE'
+            response += '</span></div>'
+
         return self.display_graph(scan.parent,
                                   response, indent_level + 1)
 
