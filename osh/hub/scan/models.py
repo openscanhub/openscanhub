@@ -904,7 +904,7 @@ class ETMapping(models.Model):
     advisory_id = models.CharField(max_length=16, blank=False, null=False)
     et_scan_id = models.CharField(max_length=16, blank=False, null=False)
     latest_run = models.ForeignKey(ScanBinding, null=True, blank=True, on_delete=models.CASCADE)
-    comment = models.CharField(max_length=256, default="", blank=True)
+    comment = models.CharField(max_length=384, default="", blank=True)
     state = models.PositiveIntegerField(
         default=REQUEST_STATES['OK'],
         choices=REQUEST_STATES.get_mapping(),
