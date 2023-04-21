@@ -386,14 +386,7 @@ class ClientScanScheduler(AbstractClientScanScheduler):
         # analyzers
         self.analyzers = self.options.get('analyzers', '')
         self.profile = self.options.get('profile', 'default')
-
-        # TODO: refactor this
-        additional_analyzers = []
-        if 'cppcheck' in self.options:
-            additional_analyzers.append('cppcheck')
-        if 'clang' in self.options:
-            additional_analyzers.append('clang')
-        self.analyzer_models = check_analyzers(self.analyzers, additional_analyzers)
+        self.analyzer_models = check_analyzers(self.analyzers)
         self.profile_analyzers, self.profile_args = Profile.objects.get_analyzers_and_args_for_profile(self.profile)
 
         # mock profile
@@ -549,13 +542,7 @@ class ClientDiffScanScheduler(AbstractClientScanScheduler):
         # analyzers
         self.analyzers = self.consume_options.get('analyzers', '')
         self.profile = self.consume_options.get('profile', 'default')
-        # TODO: refactor this
-        additional_analyzers = []
-        if 'cppcheck' in self.options:
-            additional_analyzers.append('cppcheck')
-        if 'clang' in self.options:
-            additional_analyzers.append('clang')
-        self.analyzer_models = check_analyzers(self.analyzers, additional_analyzers)
+        self.analyzer_models = check_analyzers(self.analyzers)
         self.profile_analyzers, self.profile_args = Profile.objects.get_analyzers_and_args_for_profile(self.profile)
 
         # mock profile
