@@ -350,7 +350,7 @@ class ClientScanScheduler(AbstractClientScanScheduler):
     """
     scheduler for tasks submitted from client -- users
     """
-    def __init__(self, options, method='MockBuild', additional_csmock_args='', **kwargs):
+    def __init__(self, options, method='MockBuild', additional_csmock_args=''):
         """ """
         self.task_args = {}
 
