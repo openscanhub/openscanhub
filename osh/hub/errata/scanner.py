@@ -488,50 +488,21 @@ class ClientDiffPatchesScanScheduler(ClientScanScheduler):
         )
 
 
-# TODO: make ClientDiff subclass of clientsched: reuse all code
-class ClientDiffScanScheduler(AbstractClientScanScheduler):
+class ClientDiffScanScheduler(ClientScanScheduler):
     """
     scheduler for diff tasks submitted from client -- users
     """
-    def __init__(self, consume_options, forward_options, additional_csmock_args='', **kwargs):
+    def __init__(self, options, method='VersionDiffBuild',
+                 additional_csmock_args=''):
         """ """
-        self.task_args = {}
-        self.base_task_args = {}
-
-        # provided options
-        self.consume_options = consume_options
-        self.options = forward_options
-
-        self.additional_csmock_args = additional_csmock_args
-
-        # required for base & target
-        self.nvr = None
-        self.base_nvr = None
-
-        self.validate_options()
+        super().__init__(options, method, additional_csmock_args)
 
     def validate_options(self):
-        self.username = get_or_fail('task_user', self.consume_options)
-        self.user = get_or_fail('user', self.consume_options)
-        self.upload_model_id = self.consume_options.get('upload_model_id', None)
+        super().validate_options()
 
-        self.model_name = None
-        if self.upload_model_id:
-            unused_nvr, self.model_name, self.model_path = check_upload(self.upload_model_id, self.username)
-
-        # srpm
-        self.target_build_nvr = self.consume_options.get('nvr_brew_build', None)
-        self.target_upload_id = self.consume_options.get('nvr_upload_id', None)
-        self.base_build_nvr = self.consume_options.get('base_brew_build', None)
-        self.base_upload_id = self.consume_options.get('base_upload_id', None)
-        self.target_srpm_path = None
-        self.target_srpm_name = None
-        target_check_srpm_response = check_srpm(self.target_upload_id, self.target_build_nvr, self.username)
-        if target_check_srpm_response['type'] == 'build':
-            self.target_build_kojibin = target_check_srpm_response['koji_bin']
-        elif target_check_srpm_response['type'] == 'upload':
-            self.target_srpm_path = target_check_srpm_response['srpm_path']
-            self.target_srpm_name = target_check_srpm_response['srpm_name']
+        # base srpm
+        self.base_build_nvr = self.options.get('base_brew_build', None)
+        self.base_upload_id = self.options.get('base_upload_id', None)
         base_check_srpm_response = check_srpm(self.base_upload_id, self.base_build_nvr, self.username)
         if base_check_srpm_response['type'] == 'build':
             self.base_build_kojibin = base_check_srpm_response['koji_bin']
@@ -539,65 +510,16 @@ class ClientDiffScanScheduler(AbstractClientScanScheduler):
             self.base_srpm_path = base_check_srpm_response['srpm_path']
             self.base_srpm_name = base_check_srpm_response['srpm_name']
 
-        # analyzers
-        self.analyzers = self.consume_options.get('analyzers', '')
-        self.profile = self.consume_options.get('profile', 'default')
-        self.analyzer_models = check_analyzers(self.analyzers)
-        self.profile_analyzers, self.profile_args = Profile.objects.get_analyzers_and_args_for_profile(self.profile)
-
-        # mock profile
-        self.target_mock_config = get_or_fail('nvr_mock', self.consume_options)
-        MockConfig.objects.verify_by_name(self.target_mock_config)
+        # base mock profile
         try:
-            self.base_mock_config = self.consume_options['base_mock']
+            self.base_mock_config = self.options['base_mock_config']
         except KeyError:
-            self.base_mock_config = self.target_mock_config
+            self.base_mock_config = self.mock_config
         else:
             MockConfig.objects.verify_by_name(self.base_mock_config)
 
-        self.priority = self.consume_options.get('priority', None)
-        if self.priority:
-            self.priority = int(self.priority)
-            if self.priority >= 20 and not self.user.is_staff:
-                raise RuntimeError("Only admin is able to set higher priority than 20!")
-
-        self.comment = self.consume_options.get('comment', '')
-
-        self.client_csmock_args = self.consume_options.get('csmock_args', None)
-        logger.debug("args from client: %s", self.client_csmock_args)
-
-        self.email_to = self.options.get("email_to", None)
-
     def prepare_args(self):
-        """ prepare dicts -- arguments for task and scan """
-        self.task_args['owner_name'] = self.username
-        self.task_args['label'] = self.target_build_nvr or self.target_srpm_name
-        self.task_args['method'] = 'VersionDiffBuild'
-        self.task_args['comment'] = self.comment
-        self.task_args['priority'] = AbstractClientScanScheduler.determine_priority(
-            self.priority, self.target_build_nvr, self.target_srpm_name)
-        self.task_args['state'] = TASK_STATES['CREATED']
-        self.task_args['args'] = {}
-        if self.target_build_nvr:
-            self.task_args['args']['build'] = {
-                'nvr': self.target_build_nvr,
-                'koji_bin': self.target_build_kojibin,
-            }
-        else:
-            self.task_args['args']['srpm_name'] = self.target_srpm_name
-
-        analyzer_opts = ClientAnalyzer.objects.get_opts(self.analyzer_models)
-        analyzers_set = set(analyzer_opts['analyzers'] + self.profile_analyzers)
-        analyzer_chain = ','.join(analyzers_set)
-        self.task_args['args']['analyzers'] = analyzer_chain
-        self.task_args['args']['mock_config'] = self.target_mock_config
-        self.task_args['args']['profile'] = self.profile
-        csmock_args = self.prepare_csmock_args(self.profile_args, *tuple(analyzer_opts['args']))
-        self.task_args['args']['csmock_args'] = csmock_args
-        self.task_args['args']['custom_model_name'] = self.model_name
-        self.task_args['args']['su_user'] = AppSettings.setting_get_su_user()
-        if self.email_to:
-            self.task_args['args']['email_to'] = self.email_to
+        super().prepare_args()
 
         # base task args has to be last!
         self.task_args['args']['base_task_args'] = self.prepare_basetask_args()
@@ -621,29 +543,6 @@ class ClientDiffScanScheduler(AbstractClientScanScheduler):
             args['srpm_name'] = self.base_srpm_name
             args['upload_id'] = self.base_upload_id
         return self.task_args['method'], args, label
-
-    def spawn(self):
-        """ """
-        task_id = Task.create_task(**self.task_args)
-        task_dir = Task.get_task_dir(task_id, create=True)
-        if self.target_upload_id:
-            # move file to task dir, remove upload record and make the task
-            # available
-            shutil.move(self.target_srpm_path, os.path.join(task_dir, self.target_srpm_name))
-            FileUpload.objects.get(id=self.target_upload_id).delete()
-
-        if self.upload_model_id:
-            shutil.move(self.model_path, os.path.join(task_dir, self.model_name))
-            FileUpload.objects.get(id=self.upload_model_id).delete()
-
-        Task.objects.get(id=task_id).free_task()
-        return task_id
-
-
-def create_diff_task(consume_opts, forward_opts):
-    cs = ClientDiffScanScheduler(consume_opts, forward_opts)
-    cs.prepare_args()
-    return cs.spawn()
 
 
 def prepare_base_scan(options, scanning_session):

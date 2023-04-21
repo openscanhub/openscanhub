@@ -73,11 +73,8 @@ local file"
         # optparser output is passed via *args (args) and **kwargs (opts)
         local_conf = get_conf(self.conf)
 
-        # options required for hub
-        options_consumed = {}
-        # options which should be forwarded to worker -- no need to manage
-        # them on hub
-        options_forwarded = {}
+        # options
+        options = {}
 
         config = kwargs.pop("config", None)
         base_config = kwargs.pop("base_config", None)
@@ -97,7 +94,7 @@ local file"
         cov_custom_model = kwargs.pop('cov_custom_model', None)
 
         if comment:
-            options_consumed['comment'] = comment
+            options['comment'] = comment
 
         # both bases are specified
         if base_brew_build and base_srpm:
@@ -169,59 +166,59 @@ is not even one in your user configuration file \
         if result is not None:
             self.parser.error(result)
 
-        options_consumed['base_mock'] = base_config
+        options['base_mock_config'] = base_config
 
         result = verify_mock(config, self.hub)
         if result is not None:
             self.parser.error(result)
 
-        options_consumed['nvr_mock'] = config
+        options['mock_config'] = config
 
         # end of CLI options handling
 
         if email_to:
-            options_forwarded["email_to"] = email_to
+            options["email_to"] = email_to
         if priority is not None:
-            options_consumed["priority"] = priority
+            options["priority"] = priority
 
         if warn_level:
-            options_forwarded['warning_level'] = warn_level
+            options['warning_level'] = warn_level
         if analyzers:
             try:
                 check_analyzers(self.hub, analyzers)
             except RuntimeError as ex:
                 self.parser.error(str(ex))
-            options_consumed['analyzers'] = analyzers
+            options['analyzers'] = analyzers
         if profile:
-            options_consumed['profile'] = profile
+            options['profile'] = profile
 
         if brew_build:
-            options_consumed["nvr_brew_build"] = brew_build
+            options["brew_build"] = brew_build
         else:
             target_dir = random_string(32)
             upload_id, err_code, err_msg = upload_file(self.hub, srpm,
                                                        target_dir, self.parser)
-            options_consumed["nvr_upload_id"] = upload_id
+            options["upload_id"] = upload_id
 
         if base_brew_build:
-            options_consumed["base_brew_build"] = base_brew_build
+            options["base_brew_build"] = base_brew_build
         else:
             target_dir = random_string(32)
             upload_id, err_code, err_msg = upload_file(self.hub, base_srpm,
                                                        target_dir, self.parser)
-            options_consumed["base_upload_id"] = upload_id
+            options["base_upload_id"] = upload_id
 
         if csmock_args:
-            options_consumed['csmock_args'] = csmock_args
+            options['csmock_args'] = csmock_args
         if cov_custom_model:
             target_dir = random_string(32)
             upload_model_id, err_code, err_msg = upload_file(self.hub,
                                                              cov_custom_model,
                                                              target_dir,
                                                              self.parser)
-            options_consumed["upload_model_id"] = upload_model_id
+            options["upload_model_id"] = upload_model_id
 
-        task_id = self.submit_task(options_consumed, options_forwarded)
+        task_id = self.submit_task(options)
 
         self.write_task_id_file(task_id, task_id_file)
         print("Task info: %s" % self.hub.client.task_url(task_id))
@@ -230,12 +227,8 @@ is not even one in your user configuration file \
             from kobo.client.task_watcher import TaskWatcher
             TaskWatcher.watch_tasks(self.hub, [task_id])
 
-    def submit_task(self, hub_opts, task_opts):
-        """
-        hub_opts -- options for creating Task (consumed on hub)
-        task_opts -- options for task itself
-        """
+    def submit_task(self, options):
         try:
-            return self.hub.scan.create_user_diff_task(hub_opts, task_opts)
+            return self.hub.scan.create_user_diff_task(options)
         except Fault as e:
             handle_perm_denied(e, self.parser)

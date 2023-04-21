@@ -8,7 +8,8 @@ from kobo.hub.models import Task
 
 from osh.common.constants import DEFAULT_SCAN_LIMIT
 from osh.hub.errata.scanner import (ClientDiffPatchesScanScheduler,
-                                    ClientScanScheduler, create_diff_task)
+                                    ClientDiffScanScheduler,
+                                    ClientScanScheduler)
 from osh.hub.scan.models import SCAN_STATES, ClientAnalyzer, Profile, Scan
 
 logger = logging.getLogger("openscanhub")
@@ -65,25 +66,16 @@ def mock_build(request, mock_config, comment, options, *args, **kwargs):
 
 
 @login_required
-def create_user_diff_task(request, hub_opts, task_opts):
+def create_user_diff_task(request, options):
     """
-        create scan of a package and perform diff on results against specified
-        version
-
-        kwargs:
-         - nvr_srpm - name, version, release of scanned package
-         - nvr_upload_id - upload id for target, so worker is able to download it
-         - nvr_brew_build - NVR of package to be downloaded from brew
-         - base_srpm - name, version, release of base package
-         - base_upload_id - upload id for base, so worker is able to download it
-         - base_brew_build - NVR of base package to be downloaded from brew
-         - nvr_mock - mock config
-         - base_mock - mock config
+    create scan of a package and perform diff on results against specified
+    version
     """
-    hub_opts['task_user'] = request.user.username
-    hub_opts['user'] = request.user
-    logger.debug("Client diff task: %s, %s", hub_opts, task_opts)
-    return create_diff_task(hub_opts, task_opts)
+    options['task_user'] = request.user.username
+    options['user'] = request.user
+    cs = ClientDiffScanScheduler(options)
+    cs.prepare_args()
+    return cs.spawn()
 
 
 def get_filtered_scan_list(request, kwargs, filter_scan_limit=DEFAULT_SCAN_LIMIT):
