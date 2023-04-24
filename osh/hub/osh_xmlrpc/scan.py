@@ -27,16 +27,23 @@ __all__ = (
 )
 
 
+def __client_build(request, options, Scheduler):
+    """
+    creates a user scan with given options and Scheduler
+    """
+    options['task_user'] = request.user.username
+    options['user'] = request.user
+    sched = Scheduler(options)
+    sched.prepare_args()
+    return sched.spawn()
+
+
 @login_required
 def diff_build(request, options):
     """
     diff_build(options)
     """
-    options['task_user'] = request.user.username
-    options['user'] = request.user
-    cs = ClientDiffPatchesScanScheduler(options)
-    cs.prepare_args()
-    return cs.spawn()
+    return __client_build(request, options, ClientDiffPatchesScanScheduler)
 
 
 @login_required
@@ -44,11 +51,7 @@ def mock_build(request, options):
     """
     mock_build(options)
     """
-    options['task_user'] = request.user.username
-    options['user'] = request.user
-    cs = ClientScanScheduler(options)
-    cs.prepare_args()
-    return cs.spawn()
+    return __client_build(request, options, ClientScanScheduler)
 
 
 @login_required
@@ -57,11 +60,7 @@ def create_user_diff_task(request, options):
     create scan of a package and perform diff on results against specified
     version
     """
-    options['task_user'] = request.user.username
-    options['user'] = request.user
-    cs = ClientDiffScanScheduler(options)
-    cs.prepare_args()
-    return cs.spawn()
+    return __client_build(request, options, ClientDiffScanScheduler)
 
 
 def get_filtered_scan_list(request, kwargs, filter_scan_limit=DEFAULT_SCAN_LIMIT):
