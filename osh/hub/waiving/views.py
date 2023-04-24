@@ -74,6 +74,9 @@ def get_result_context(request, sb):
     package = sb.scan.package
     release = sb.scan.tag.release
 
+    context['bz_url'] = settings.BZ_URL
+    context['jira_url'] = settings.JIRA_URL
+
     unrep_bz_waivers = bugzilla.get_unreported_bugs(package, release)
     unrep_jira_waivers = jira.get_unreported_bugs(package, release)
 
@@ -94,6 +97,7 @@ def get_result_context(request, sb):
         context['unreported_bugs_count_jira'] = unrep_jira_waivers.count()
     else:
         context['unreported_bugs_count_jira'] = 0
+
     # numbers
     if sb.result:
         n_out, n_count = get_waiving_data(sb.result,
