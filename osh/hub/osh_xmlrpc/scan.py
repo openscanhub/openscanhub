@@ -28,17 +28,10 @@ __all__ = (
 
 
 @login_required
-def diff_build(request, mock_config, comment, options, *args, **kwargs):
+def diff_build(request, options):
     """
-    diff_build(mock_config, comment, options, *args, **kwargs)
-
-    options = {
-        'upload_id': when uploading srpm directly via FileUpload
-        'brew_build': nvr of build in brew
-    }
+    diff_build(options)
     """
-    options['comment'] = comment
-    options['mock_config'] = mock_config
     options['task_user'] = request.user.username
     options['user'] = request.user
     cs = ClientDiffPatchesScanScheduler(options)
@@ -47,17 +40,10 @@ def diff_build(request, mock_config, comment, options, *args, **kwargs):
 
 
 @login_required
-def mock_build(request, mock_config, comment, options, *args, **kwargs):
+def mock_build(request, options):
     """
-    mock_build(mock_config, comment, options, *args, **kwargs)
-
-    options = {
-        'upload_id': when uploading srpm directly via FileUpload
-        'brew_build': nvr of build in brew
-    }
+    mock_build(options)
     """
-    options['comment'] = comment
-    options['mock_config'] = mock_config
     options['task_user'] = request.user.username
     options['user'] = request.user
     cs = ClientScanScheduler(options)

@@ -119,8 +119,11 @@ is not even one in your user configuration file \
             self.parser.error(result)
 
         # options setting
+        options = {
+            "comment": comment,
+            "mock_config": config
+        }
 
-        options = {}
         if email_to:
             options["email_to"] = email_to
         if priority is not None:
@@ -161,7 +164,7 @@ is not even one in your user configuration file \
         if tarball_build_script:
             options['tarball_build_script'] = tarball_build_script
 
-        task_id = self.submit_task(config, comment, options)
+        task_id = self.submit_task(options)
 
         self.write_task_id_file(task_id, task_id_file)
         task_url = self.hub.client.task_url(task_id)
@@ -175,8 +178,8 @@ is not even one in your user configuration file \
             if self.results_store_file is not None:
                 fetch_results(self.results_store_file, task_url, self.srpm)
 
-    def submit_task(self, config, comment, options):
+    def submit_task(self, options):
         try:
-            return self.hub.scan.diff_build(config, comment, options)
+            return self.hub.scan.diff_build(options)
         except Fault as e:
             handle_perm_denied(e, self.parser)
