@@ -131,11 +131,12 @@ If you have any questions, feel free to ask at Red Hat IRC channel \
                 'name': rhel_ver,
             },
         ],
-        # temporarily commented out to work around
-        # https://gitlab.cee.redhat.com/covscan/covscan/-/issues/218
-        # 'priority': {
-        #     'name': 'Normal',
-        # },
+        # temporarily using custom field because issues.redhat.com doesn't have
+        # the 'priority' field
+        # see: https://gitlab.cee.redhat.com/covscan/covscan/-/issues/218
+        'customfield_12316142': {  # Severity
+            'id': '15655',  # Normal
+        },
         'issuetype': 'Bug',
         'security': {
             'name': 'Red Hat Employee',
