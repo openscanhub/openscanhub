@@ -309,22 +309,21 @@ of this packages scan")
         if scan is None:
             return response
         sb = ScanBinding.objects.get(scan=scan)
+
+        response += '<div style="margin-left: %dem">%s<a href="%s">%s</a> (%s)' % (
+            indent_level if indent_level <= 1 else indent_level * 2,
+            '\u2570\u2500\u2500' if indent_level > 0 else '',
+            reverse("waiving/result", args=(sb.id,)),  # url
+            scan.nvr,
+            scan.get_state_display())
+
         if sb.result is not None:
-            response += '<div style="margin-left: %dem">%s<a \
-href="%s">%s</a> (%s) New defects: %d, fixed defects: %d</div>\n' % (
-                indent_level if indent_level <= 1 else indent_level * 2,
-                '\u2570\u2500\u2500' if indent_level > 0 else '',
-                reverse("waiving/result", args=(sb.id,)),  # url
-                sb.scan.nvr,
-                sb.scan.get_state_display(),
+            response += ' New defects: %d, fixed defects: %d' % (
                 sb.result.new_defects_count(),
-                sb.result.fixed_defects_count(),
-            )
-        else:
-            response += "%s%s<br/ >\n" % (
-                "&nbsp;" * indent_level * 4,
-                sb.scan.nvr,
-            )
+                sb.result.fixed_defects_count())
+
+        response += '</div>\n'
+
         if indent_level == 0:  # BASE
             if response.endswith('</div>\n'):
                 response = response[:-7]
