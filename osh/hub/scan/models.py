@@ -324,21 +324,6 @@ of this packages scan")
 
         response += '</div>\n'
 
-        if indent_level == 0:  # BASE
-            if response.endswith('</div>\n'):
-                response = response[:-7]
-            base = sb.scan.base
-            response += '<span style="position:absolute; left: 45em">Base: '
-
-            if base is not None:
-                sb_base = ScanBinding.objects.get(scan=base)
-                response += '<a href="%s">%s</a>' % (
-                    reverse("waiving/result", args=(sb_base.id,)),
-                    base.nvr)
-            else:
-                response += 'NEW_PACKAGE'
-            response += '</span></div>'
-
         return self.display_graph(scan.parent,
                                   response, indent_level + 1)
 
@@ -360,18 +345,33 @@ package')
                 scan_type__in=SCAN_TYPES_TARGET)
 
             release = SystemRelease.objects.get(id=release_id)
-            response += "<div>\n<h3>%s release %d</h3>\n" % (
+            response += '<div>\n<div style="display:flex; align-items: center;">\n'
+            response += '<h3>%s release %d</h3>\n' % (
                 release.product,
                 release.release
             )
 
             if not scans_package:
-                response += "No successful scans in this release.<hr/ ></div>\n"
+                response += "</div>No successful scans in this release.<hr/ ></div>\n"
                 continue
 
             # get latest scan with the first NVR
             first_nvr = scans_package.order_by('date_submitted')[0].nvr
             first_scan = scans_package.filter(nvr=first_nvr).latest()
+
+            # handle base scan
+            base = first_scan.base
+            response += '<span style="position:absolute; left: 45em">Base: '
+
+            if base is not None:
+                sb_base = ScanBinding.objects.get(scan=base)
+                response += '<a href="%s">%s</a>' % (
+                    reverse("waiving/result", args=(sb_base.id,)),
+                    base.nvr)
+            else:
+                response += 'NEW PACKAGE'
+
+            response += '</span>\n</div>\n'
 
             response = self.display_graph(first_scan, response)
             response += "<hr/ ></div>\n"
