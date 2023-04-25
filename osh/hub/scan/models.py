@@ -344,21 +344,27 @@ package')
         response = ""
 
         for release in releases.order_by('tag__release'):
+            release_id = release['tag__release']
+
             scans_package = scans.filter(
-                tag__release__id=release['tag__release'],
+                tag__release__id=release_id,
+                state__in=SCAN_STATES_FINISHED_WELL,
                 scan_type__in=SCAN_TYPES_TARGET)
+
+            release = SystemRelease.objects.get(id=release_id)
+            response += "<div>\n<h3>%s release %d</h3>\n" % (
+                release.product,
+                release.release
+            )
+
             if not scans_package:
-                response += "No scans in this release.<hr/ >\n"
+                response += "No successful scans in this release.<hr/ ></div>\n"
                 continue
 
             # get latest scan with the first NVR
             first_nvr = scans_package.order_by('date_submitted')[0].nvr
             first_scan = scans_package.filter(nvr=first_nvr).latest()
 
-            response += "<div>\n<h3>%s release %d</h3>\n" % (
-                first_scan.tag.release.product,
-                first_scan.tag.release.release
-            )
             response = self.display_graph(first_scan, response)
             response += "<hr/ ></div>\n"
         return mark_safe(response)
