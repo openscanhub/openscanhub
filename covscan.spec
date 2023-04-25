@@ -241,6 +241,9 @@ pg_isready -h localhost && %{python3_sitelib}/osh/hub/manage.py migrate
 
 
 %changelog
+* Tue Apr 25 2023 Lukáš Zaoral <lzaoral@redhat.com> - 0.9.2-1
+- revert osh-cli to use an absolute path to python3
+
 * Fri Apr 14 2023 Kamil Dudka <kdudka@redhat.com> - 0.9.1-1
 - let osh-cli use hub URL with the new /osh prefix
 
