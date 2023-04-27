@@ -113,6 +113,12 @@ done)
 
 %build
 
+# Add -s to the shebang in osh/client/osh-cli:
+# https://docs.fedoraproject.org/en-US/packaging-guidelines/Python/#_shebang_macros
+# TODO: Remove this when we migrate to newer Python packaging macros which
+# do this automatically.
+%py3_shebang_fix osh/client/osh-cli
+
 %if 0%{?rhel} != 9
 # collect static files from Django itself
 PYTHONPATH=. osh/hub/manage.py collectstatic --noinput
@@ -123,9 +129,6 @@ PYTHONPATH=. osh/hub/manage.py collectstatic --noinput
 
 %install
 %py3_install
-
-# avoid transforming /usr/bin/env -S ... to /usr/bin/-S
-%global __brp_mangle_shebangs_exclude_from %{_bindir}/osh-cli
 
 # Temporarily provide /usr/bin/covscan for backward compatibility
 ln -s osh-cli %{buildroot}%{_bindir}/covscan
