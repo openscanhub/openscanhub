@@ -227,18 +227,6 @@ def get_new_defects_in_updates_by_release():
     return result
 
 
-@stat_function(7, "DEFECTS", "Fixed defects in one release",
-               "Number of defects that were fixed between first scan and final one.")
-def get_fixed_defects_in_release():
-    releases = SystemRelease.objects.filter(active=True)
-    result = {}
-    for r in releases:
-        result[r] = 0
-        for sb in ScanBinding.objects.by_release(r).enabled():
-            result[r] += diff_fixed_defects_in_package(sb)
-    return result
-
-
 @stat_function(8, "DEFECTS", "Eliminated newly introduced defects in rebases",
                "Number of newly introduced defects in rebases that were fixed between first scan and final one.")
 def get_eliminated_in_rebases_in_release():
@@ -275,10 +263,9 @@ def get_eliminated_in_updates_in_release():
     return result
 
 
-# https://gitlab.cee.redhat.com/covscan/covscan/-/issues/157
 @stat_function(11, "DEFECTS", "Fixed defects in one release",
                "Number of defects that were fixed between first scan and final one.")
-def get_fixed_defects_in_release():  # noqa: F811
+def get_fixed_defects_in_release():
     releases = SystemRelease.objects.filter(active=True)
     result = {}
     for r in releases:
