@@ -229,6 +229,6 @@ is not even one in your user configuration file \
 
     def submit_task(self, options):
         try:
-            return self.hub.scan.create_user_diff_task(options)
+            return self.hub.scan.create_user_diff_task(options, {})
         except Fault as e:
             handle_perm_denied(e, self.parser)

@@ -39,27 +39,51 @@ def __client_build(request, options, Scheduler):
 
 
 @login_required
-def diff_build(request, options):
+def diff_build(request, mock_config, comment, options, *args, **kwargs):
     """
-    diff_build(options)
+    diff_build(mock_config, comment, options, *args, **kwargs)
+
+    options = {
+        'upload_id': when uploading srpm directly via FileUpload
+        'brew_build': nvr of build in brew
+    }
     """
+    options['comment'] = comment
+    options['mock_config'] = mock_config
     return __client_build(request, options, ClientDiffPatchesScanScheduler)
 
 
 @login_required
-def mock_build(request, options):
+def mock_build(request, mock_config, comment, options, *args, **kwargs):
     """
-    mock_build(options)
+    mock_build(mock_config, comment, options, *args, **kwargs)
+
+    options = {
+        'upload_id': when uploading srpm directly via FileUpload
+        'brew_build': nvr of build in brew
+    }
     """
+    options['comment'] = comment
+    options['mock_config'] = mock_config
     return __client_build(request, options, ClientScanScheduler)
 
 
 @login_required
-def create_user_diff_task(request, options):
+def create_user_diff_task(request, options, task_opts):
     """
     create scan of a package and perform diff on results against specified
     version
     """
+    options.update(task_opts)
+
+    # update legacy options
+    for old, new in {'base_mock': 'base_mock_config',
+                     'nvr_mock': 'mock_config',
+                     'nvr_brew_build': 'brew_build',
+                     'nvr_upload_id': 'upload_id'}.items():
+        if old in options:
+            options[new] = options[old]
+
     return __client_build(request, options, ClientDiffScanScheduler)
 
 

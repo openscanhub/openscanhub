@@ -16,8 +16,8 @@ class Mock_Build(Diff_Build):
         # this option cannot be used for diff-build tasks
         add_tarball_option(self.parser)
 
-    def submit_task(self, options):
+    def submit_task(self, config, comment, options):
         try:
-            return self.hub.scan.mock_build(options)
+            return self.hub.scan.mock_build(config, comment, options)
         except Fault as e:
             handle_perm_denied(e, self.parser)
