@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 from django import forms
 
 from osh.hub.other.exceptions import BrewException
@@ -30,7 +28,7 @@ VersionDiffBuild is selected")
     comment = forms.CharField(widget=forms.widgets.Textarea())
 
     def clean(self):
-        cleaned_data = super(ScanSubmissionForm, self).clean()
+        cleaned_data = super().clean()
         base = cleaned_data.get("base")
         scan_type = cleaned_data.get("scan_type")
 
