@@ -1,11 +1,12 @@
 from django import forms
 
-from osh.hub.errata.check import check_build
+from osh.hub.errata.check import check_build, check_nvr
 from osh.hub.scan.models import MockConfig
 
 
 def validate_brew_build(value):
     try:
+        check_nvr(value)
         check_build(value)
     except RuntimeError as e:
         raise forms.ValidationError(e)
@@ -16,26 +17,27 @@ class ScanSubmissionForm(forms.Form):
     base = forms.CharField(required=False, help_text="Required only when \
 VersionDiffBuild is selected")
     scan_type = forms.ChoiceField(label="Type of scan", choices=(('DiffBuild', 'DiffBuild'), ('MockBuild', 'MockBuild'), ('VersionDiffBuild', 'VersionDiffBuild')))
-    mock = forms.ChoiceField(label="Mock profile",
-                             choices=((m.name, m.name) for m in
-                                      MockConfig.objects.filter(enabled=True)))
-    security_checker = forms.BooleanField(label="Security checker",
-                                          required=False)
-    all_checker = forms.BooleanField(label="All checkers",
-                                     required=False)
-    comment = forms.CharField(widget=forms.widgets.Textarea())
+    mock = forms.ChoiceField(label="Mock profile")
+    comment = forms.CharField(widget=forms.Textarea())
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        # dynamic fields must be initialized in the __init__ method
+        self.fields['mock'].choices = ((m.name, m.name) for m in
+                                       MockConfig.objects.filter(enabled=True))
 
     def clean(self):
         cleaned_data = super().clean()
         base = cleaned_data.get("base")
         scan_type = cleaned_data.get("scan_type")
 
-        if not base:
-            self._errors['base'] = "Base nvr has to be specified!"
-            return cleaned_data
         if scan_type == 'VersionDiffBuild':
+            if not base:
+                self.add_error('base', "Base nvr has to be specified!")
+                return cleaned_data
             try:
                 validate_brew_build(base)
             except forms.ValidationError as e:
-                self._errors['base'] = e.messages
+                self.add_error('base', e.messages)
         return cleaned_data

@@ -1,7 +1,7 @@
 from django.urls import path
 
 from osh.hub.scan.views import (MockConfigListView, PackageDetailView,
-                                PackageListView)
+                                PackageListView, scan_submission)
 
 urlpatterns = [
     path("mock/", MockConfigListView.as_view(),
@@ -9,8 +9,8 @@ urlpatterns = [
 
     # path("<int:id>/", "osh.hub.scan.views.scan_detail",
     #      name="scan/detail"),
-    # path("new/", "osh.hub.scan.views.scan_submission",
-    #      name="scan/new"),
+    path("new/", scan_submission,
+         name="scan/new"),
 
     path("packages/", PackageListView.as_view(),
          name="package/list"),
