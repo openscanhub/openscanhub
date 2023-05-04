@@ -1,12 +1,8 @@
 import os
 
-import koji
-from django.conf import settings
 from django.urls import reverse
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe
-
-from osh.hub.other.exceptions import BrewException
 
 
 def add_link_field(target_model=None, field='', field_label=''):
@@ -32,18 +28,6 @@ def add_link_field(target_model=None, field='', field_label=''):
             [field_name]
         return cls
     return add_link
-
-
-def check_brew_build(name):
-    if name.endswith(".src.rpm"):
-        srpm = name[:-8]
-    else:
-        srpm = name
-    brew_proxy = koji.ClientSession(settings.BREW_HUB)
-    build = brew_proxy.getBuild(srpm)
-    if build is None:
-        raise BrewException('Brew build %s does not exist' % srpm)
-    return srpm
 
 
 def check_and_create_dirs(directory):

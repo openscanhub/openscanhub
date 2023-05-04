@@ -1,16 +1,14 @@
 from django import forms
 
-from osh.hub.other.exceptions import BrewException
-from osh.hub.other.shortcuts import check_brew_build
+from osh.hub.errata.check import check_build
 from osh.hub.scan.models import MockConfig
 
 
 def validate_brew_build(value):
     try:
-        check_brew_build(value)
-    except BrewException:
-        raise forms.ValidationError('Brew build %s does not exist'
-                                    % value)
+        check_build(value)
+    except RuntimeError as e:
+        raise forms.ValidationError(e)
 
 
 class ScanSubmissionForm(forms.Form):
