@@ -6,11 +6,8 @@
 import logging
 import os
 import shlex
-import shutil
 
 from django.core.exceptions import ObjectDoesNotExist
-from kobo.client.constants import TASK_STATES
-from kobo.django.upload.models import FileUpload
 from kobo.hub.models import Task
 from kobo.shortcuts import run
 
@@ -18,7 +15,6 @@ from osh.common.constants import (ERROR_DIFF_FILE, ERROR_HTML_FILE,
                                   ERROR_TXT_FILE, FIXED_DIFF_FILE,
                                   FIXED_HTML_FILE, FIXED_TXT_FILE)
 from osh.hub.other.exceptions import ScanException
-from osh.hub.other.shortcuts import check_and_create_dirs, check_brew_build
 from osh.hub.service.processing import add_title_to_json
 
 from .models import (SCAN_STATES, SCAN_STATES_FINISHED_WELL, SCAN_TYPES_TARGET,
@@ -176,79 +172,6 @@ def extract_logs_from_tarball(task_id, name=None):
     except RuntimeError:
         raise RuntimeError('[%s] Unable to extract tarball archive %s \
 I have used this command: %s' % (task_id, tar_archive, command))
-
-
-def create_base_diff_task(hub_opts, task_opts, parent_id):
-    """
-        create scan of a package and perform diff on results against specified
-        version
-        options of this scan are in dict 'kwargs'
-
-        kwargs
-         - task_user - username from request.user.username
-         - nvr_srpm - name, version, release of scanned package
-         - nvr_upload_id - upload id for target, so worker is able to download it
-         - nvr_brew_build - NVR of package to be downloaded from brew
-         - base_srpm - name, version, release of base package
-         - base_upload_id - upload id for base, so worker is able to download it
-         - base_brew_build - NVR of base package to be downloaded from brew
-         - nvr_mock - mock config
-         - base_mock - mock config
-    """
-    options = task_opts or {}
-
-    base_srpm = hub_opts.get('base_srpm', None)
-    base_brew_build = hub_opts.get('base_brew_build', None)
-    base_upload_id = hub_opts.get('base_upload_id', None)
-
-    # from request.user
-    task_user = hub_opts['task_user']
-
-    # Label, description or any reason for this task.
-    task_label = base_srpm or base_brew_build
-
-    base_mock = hub_opts['base_mock']
-    priority = hub_opts.get('priority', 10) + 1
-    comment = hub_opts.get('comment', '')
-
-    options["mock_config"] = base_mock
-
-    if base_brew_build:
-        options['brew_build'] = check_brew_build(base_brew_build)
-    elif base_upload_id:
-        try:
-            upload = FileUpload.objects.get(id=base_upload_id)
-        except FileUpload.DoesNotExist:
-            raise ObjectDoesNotExist("Can't find uploaded file with id: %s" % base_upload_id)
-
-        if upload.owner.username != task_user:
-            raise RuntimeError("Can't process a file uploaded by a different user")
-
-        srpm_path = os.path.join(upload.target_dir, upload.name)
-        options["srpm_name"] = upload.name
-        # cut .src.rpm suffix, because run_diff and extractTarball rely on this
-        task_label = options["srpm_name"][:-8]
-    else:
-        raise RuntimeError('Target build is not specified!')
-
-    task_id = Task.create_task(
-        owner_name=task_user,
-        label=task_label,
-        method='VersionDiffBuild',
-        args=options,
-        comment=comment,
-        state=TASK_STATES["FREE"],
-        priority=priority,
-        parent_id=parent_id,
-    )
-    task_dir = Task.get_task_dir(task_id)
-
-    check_and_create_dirs(task_dir)
-
-    if base_upload_id:
-        # move file to task dir, remove upload record and make the task available
-        shutil.move(srpm_path, os.path.join(task_dir, os.path.basename(srpm_path)))
-        upload.delete()
 
 
 def get_latest_sb_by_package(release, package):
