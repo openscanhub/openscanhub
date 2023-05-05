@@ -7,8 +7,10 @@ logic for spawning tasks
 
 import logging
 import os
+import re
 import shutil
 
+from django.core.exceptions import ObjectDoesNotExist
 from kobo.django.upload.models import FileUpload
 from kobo.hub.models import TASK_STATES, Task
 
@@ -320,7 +322,8 @@ class AbstractClientScanScheduler:
         return opts
 
     @classmethod
-    def determine_priority(cls, entered_priority, supposed_nvr, srpm_name):
+    def determine_priority(cls, entered_priority, supposed_nvr, srpm_name,
+                           is_tarball=False):
         """determine priority of scheduled task
 
         :param entered_priority: priority submitted by client
@@ -329,6 +332,8 @@ class AbstractClientScanScheduler:
         :type supposed_nvr: str
         :param srpm_name: name of submitted srpm
         :type srpm_name: str
+        :param is_tarball: determines whether we use a tarball build script
+        :type is_tarball: bool
         :return: priority of scheduled task
         :rtype: int
         """
@@ -336,13 +341,31 @@ class AbstractClientScanScheduler:
             return entered_priority
 
         priority_offset = 0
+        name_candidates = []
+
+        if srpm_name:
+            if srpm_name.endswith('.src.rpm'):
+                srpm_name = srpm_name[:-8]
+
+            if is_tarball:
+                srpm_name = re.sub(r'\.tar(\.[a-z0-9]+)?$', '', srpm_name)
+
         try:
-            nvr_dict = check_nvr(supposed_nvr or srpm_name[:-8])
-            packages = Package.objects.filter(name=nvr_dict['name'])
-            if len(packages) == 1:
-                priority_offset = packages[0].get_priority_offset()
-        except ValueError:
+            name_candidates.append(check_nvr(supposed_nvr or srpm_name)['name'])
+        except RuntimeError:
             pass
+
+        if srpm_name:
+            # try also only NV and the whole filename
+            name_candidates.append(re.sub('-[^-]*$', '', srpm_name))
+            name_candidates.append(srpm_name)
+
+        for name in name_candidates:
+            try:
+                priority_offset = Package.objects.get(name=name).get_priority_offset()
+                break
+            except (ObjectDoesNotExist, ValueError):
+                pass
 
         # the priority must be non-negative
         return max(0, 10 + priority_offset)
@@ -415,7 +438,7 @@ class ClientScanScheduler(AbstractClientScanScheduler):
         self.task_args['method'] = self.method
         self.task_args['comment'] = self.comment
         self.task_args['priority'] = AbstractClientScanScheduler.determine_priority(
-            self.priority, self.build_nvr, self.srpm_name)
+            self.priority, self.build_nvr, self.srpm_name, self.is_tarball)
         self.task_args['state'] = TASK_STATES['CREATED']
         self.task_args['args'] = {}
         if self.build_nvr:
