@@ -343,7 +343,9 @@ class AbstractClientScanScheduler:
                 priority_offset = packages[0].get_priority_offset()
         except ValueError:
             pass
-        return 10 + priority_offset
+
+        # the priority must be non-negative
+        return max(0, 10 + priority_offset)
 
 
 class ClientScanScheduler(AbstractClientScanScheduler):
