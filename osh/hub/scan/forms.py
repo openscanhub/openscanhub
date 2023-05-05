@@ -7,7 +7,7 @@ from osh.hub.scan.models import MockConfig
 def validate_brew_build(value):
     try:
         check_nvr(value)
-        check_build(value)
+        check_build(value, check_additional=True)
     except RuntimeError as e:
         raise forms.ValidationError(e)
 
