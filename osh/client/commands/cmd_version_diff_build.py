@@ -123,6 +123,10 @@ local file"
             self.parser.error("provided target file doesn't appear to be \
 a SRPM")
 
+        # non-negative priority
+        if priority is not None and priority < 0:
+            self.parser.error("Priority must be a non-negative number!")
+
         if brew_build:
             result = verify_koji_build(brew_build, self.conf['KOJI_PROFILES'])
             if result is not None:

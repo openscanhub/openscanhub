@@ -111,6 +111,10 @@ is not even one in your user configuration file \
 (~/.config/osh/client.conf) nor in system configuration file \
 (/etc/osh/client.conf)")
 
+        # non-negative priority
+        if priority is not None and priority < 0:
+            self.parser.error("Priority must be a non-negative number!")
+
         # login to the hub
         self.connect_to_hub(kwargs)
 
