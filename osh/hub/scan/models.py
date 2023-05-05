@@ -718,6 +718,9 @@ counted in statistics.")
             return None
 
     def get_first_scan_binding(self):
+        if self.tag is None:
+            return None
+
         related_scans = ScanBinding.objects.filter(
             scan__package=self.package,
             scan__tag__release=self.tag.release,
@@ -739,6 +742,9 @@ counted in statistics.")
             last_finished = last_finished.get_child_scan()
 
     def all_scans_in_release(self):
+        if self.tag is None:
+            return Scan.objects.none()
+
         scans = Scan.objects.filter(
             package=self.package,
             tag__release=self.tag.release

@@ -72,7 +72,7 @@ def get_result_context(request, sb):
     """
     context = get_common_context(request, sb)
     package = sb.scan.package
-    release = sb.scan.tag.release
+    release = sb.scan.tag.release if sb.scan.tag else None
 
     context['bz_url'] = settings.BZ_URL
     context['jira_url'] = settings.JIRA_URL
@@ -132,7 +132,7 @@ one)."
     # links for other runs
     context['first_sb'] = sb.scan.get_first_scan_binding()
     context['newest_sb'] = \
-        get_latest_sb_by_package(sb.scan.tag.release, sb.scan.package)
+        get_latest_sb_by_package(release, sb.scan.package)
     context['previous_sb'] = getattr(sb.scan.get_child_scan(),
                                      'scanbinding', None)
     context['next_sb'] = getattr(sb.scan.parent, 'scanbinding', None)

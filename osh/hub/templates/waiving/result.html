@@ -29,7 +29,9 @@
         {% endif %}
     {% endif %}
     {% if sb %}
-        <span id="scan_release" class="info_box black_font light_grey_bg margin_right">{{ sb.scan.tag.release.product }} release {{ sb.scan.tag.release.release }}</span>
+        {% if sb.scan.tag %}
+            <span id="scan_release" class="info_box black_font light_grey_bg margin_right">{{ sb.scan.tag.release.product }} release {{ sb.scan.tag.release.release }}</span>
+        {% endif %}
         <span id="scan_state" class="info_box black_font bg_{{ sb.scan.get_state_display }} margin_right">{{ sb.scan.get_state_display }}</span>
     {% endif %}
     {% if advisory_link %}
