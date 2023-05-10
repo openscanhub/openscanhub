@@ -18,7 +18,7 @@ class ScanSubmissionForm(forms.Form):
 VersionDiffBuild is selected")
     scan_type = forms.ChoiceField(label="Type of scan", choices=(('DiffBuild', 'DiffBuild'), ('MockBuild', 'MockBuild'), ('VersionDiffBuild', 'VersionDiffBuild')))
     mock = forms.ChoiceField(label="Mock profile")
-    comment = forms.CharField(widget=forms.Textarea())
+    comment = forms.CharField(required=False, widget=forms.Textarea())
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
