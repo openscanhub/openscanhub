@@ -86,7 +86,7 @@ TIME_ZONE = 'Europe/Prague'
 # KRB_AUTH_KEYTAB =
 
 ###############################################################################
-# COVSCAN SPECIFIC
+# OpenScanHub SPECIFIC
 ###############################################################################
 
 # Path to task logs and other files

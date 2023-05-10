@@ -87,9 +87,6 @@ Package was scanned as differential scan:
 
 == Reported groups of defects ==
 {groups}
-== Notes ==
-If you have any questions, feel free to ask at Red Hat IRC channel \
-#covscan.
 
 == Marked waivers ==
 """

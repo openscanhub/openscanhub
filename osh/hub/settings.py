@@ -1,4 +1,4 @@
-# Django global settings for covscanhub
+# Django global settings for OpenScanHub
 
 # DEBUG = True
 
@@ -132,7 +132,7 @@ INSTALLED_APPS = (
     'kobo.django.xmlrpc',
     'kobo.hub',
 
-    # covscan
+    # OpenScanHub
     'osh.hub.errata',
     'osh.hub.scan',
     'osh.hub.waiving',
@@ -146,7 +146,7 @@ INSTALLED_APPS = (
 PAGINATE_BY = 50
 
 ###############################################################################
-# COVSCAN SPECIFIC
+# OpenScanHub SPECIFIC
 ###############################################################################
 
 # kobo XML-RPC API calls

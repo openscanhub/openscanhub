@@ -79,7 +79,7 @@ KRB_AUTH_PRINCIPAL = 'HTTP/covscan.lab.eng.brq2.redhat.com@REDHAT.COM'
 KRB_AUTH_KEYTAB = '/etc/httpd/conf/httpd.keytab'
 
 ###############################################################################
-# COVSCAN SPECIFIC
+# OpenScanHub SPECIFIC
 ###############################################################################
 
 # Absolute path to task logs and other files

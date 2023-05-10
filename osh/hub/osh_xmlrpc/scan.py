@@ -117,8 +117,6 @@ def get_filtered_scan_list(request, kwargs, filter_scan_limit=DEFAULT_SCAN_LIMIT
         for scan in returned_object['scans']:  # goes through all scans
             print scan['nvr']                  # use which dictionary value you need
 
-     @see get_filtered_scan_list in covscan.covscan_api for more details
-
     """
 
     kwargs = __setup_kwargs(kwargs)
