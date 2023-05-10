@@ -1,6 +1,3 @@
-# -*- coding: utf-8 -*-
-
-
 from kobo.django.menu import MenuItem, include
 
 # Create your menu here.
