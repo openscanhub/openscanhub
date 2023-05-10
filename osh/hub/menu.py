@@ -31,8 +31,7 @@ menu = (
     MenuItem("Scan", "package/list", menu=(
         MenuItem("Mock configs", "mock_config/index"),
         MenuItem("Packages", "package/list"),
-        # FIXME: add link to "New Scan" when it's ready
-        # MenuItem("New", "scan/new"),
+        MenuItem("New scan", "scan/new"),
     )),
     MenuItem("Tasks", "task/index", menu=(
         MenuItem("All", "task/index"),
