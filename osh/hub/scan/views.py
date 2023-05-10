@@ -3,6 +3,7 @@ from django.shortcuts import render
 from django.urls import reverse
 from django.views.generic.detail import DetailView
 from django.views.generic.list import ListView
+from kobo.django.xmlrpc.decorators import login_required
 
 from osh.hub.osh_xmlrpc.scan import (create_user_diff_task, diff_build,
                                      mock_build)
@@ -44,6 +45,7 @@ class PackageDetailView(DetailView):
         return context
 
 
+@login_required
 def scan_submission(request):
     if request.method != "POST":
         return render(request, "scan/new.html", {'form': ScanSubmissionForm()})
