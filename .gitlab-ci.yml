@@ -59,7 +59,7 @@ build-rpms-on-copr-and-test:
     - gitlab-ci-build-on-copr
   before_script:
     # guard job sequence
-    - dnf install -y python3-pip
+    - dnf install --refresh -y python3-pip
     - python3 -m pip install setuptools
     # actual job starts
     - mkdir -p ~/.config
