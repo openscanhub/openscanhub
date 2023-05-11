@@ -18,7 +18,7 @@ BuildRequires:  systemd-rpm-macros
 # The following dependencies are not yet available in EPEL-9.  Make it
 # possible to build at least functional up2date osh-client for EPEL-9.
 %if 0%{?rhel} != 9
-BuildRequires:  python3-django
+BuildRequires:  python3-django3
 BuildRequires:  python3-kobo-django
 BuildRequires:  python3-kobo-hub
 BuildRequires:  python3-qpid-proton
@@ -73,7 +73,7 @@ Requires: boost-python3
 Requires: httpd
 Requires: mod_auth_gssapi
 Requires: mod_ssl
-Requires: python3-django
+Requires: python3-django3
 Requires: python3-kobo-client
 Requires: python3-kobo-django
 Requires: python3-kobo-hub
