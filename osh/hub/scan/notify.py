@@ -33,7 +33,7 @@ def send_mail(message, recipient, subject, recipients, headers, bcc=None):
         # mail just admins if AppSettings/SEND_MAIL is disabled
         recipients = [a[1] for a in settings.ADMINS]
 
-    from_addr = "<covscan-auto@redhat.com>"
+    from_addr = settings.NOTIFICATION_EMAIL_ADDRESS
 
     headers["X-Application-ID"] = "OpenScanHub"
     headers["X-Hostname"] = socket.gethostname()
@@ -264,7 +264,7 @@ def send_scan_notification(request, scan_id):
 
     # message setting
     if scan.is_failed() or scan.is_canceled():
-        recipient = "covscan-auto@redhat.com"
+        recipient = settings.DEVEL_EMAIL_ADDRESS
         message = mg.generate_failed_scan_text()
     elif scan.is_disputed():
         message = mg.generate_disputed_scan_text()
