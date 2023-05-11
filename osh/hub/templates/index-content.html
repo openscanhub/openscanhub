@@ -1,0 +1,23 @@
+<h2>OpenScanHub Web User Interface</h2>
+
+<p>
+OpenScanHub is a service that runs various static analyzers on RPM packages. The tasks can be triggered by users from the command-line interface provided by the osh-client RPM package.  The client can be invoked interactively as well as from CI environments and other automation.
+</p>
+
+<p>
+OpenScanHub by default uses <a href="https://github.com/danmar/cppcheck">Cppcheck</a>, <a
+    href="https://www.shellcheck.net/">ShellCheck</a>, the static analyzers embedded in <a
+    href="https://developers.redhat.com/blog/2020/03/26/static-analysis-in-gcc-10">GCC</a> and <a
+    href="https://clang-analyzer.llvm.org/">Clang</a>, and the <a
+    href="https://github.com/siddhesh/find-unicode-control">find-unicode-control</a> tool. Other
+tools for static (and dynamic) analysis can be enabled on demand while submitting an OpenScanHub task.
+</p>
+
+<p>
+OpenScanHub is not limited to RPM packages.  It can also statically analyze upstream tarballs and OpenShift containers.
+</p>
+
+<h3>Quick Links</h3>
+<ul>
+    <li><a href="https://github.com/openscanhub">OpenScanHub on GitHub</a></li>
+</ul>
