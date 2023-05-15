@@ -2,7 +2,10 @@
 {% load i18n %}
 
 {% block content %}
-<h2>Package {{ package.name }}</h2>
+<h2>Package {{ package.name }}
+  {% if package.blocked %} &ndash; BLOCKED
+  {% elif package.get_partially_blocked_releases %} &ndash; PARTIALLY BLOCKED{% endif %}
+</h2>
 
 {{ package.display_scan_tree }}
 

@@ -9,12 +9,20 @@
 <table class="list" width="100%">
   <tr>
     <th>{% trans "Name" %}</th>
+    <th>{% trans "Blocked" %}</th>
     <th>{% trans "Count" %}</th>
     <th>{% trans "Latest scans" %}</th>
   </tr>
 {% for package in page_obj %}
   <tr>
     <td><a href="{% url 'package/detail' package.id %}">{{ package.name }}</a></td>
+    <td>
+      {% if package.get_partially_blocked_releases and not package.blocked %}
+        Partially
+      {% else %}
+        {{ package.blocked }}
+      {% endif %}
+    </td>
     <td>{{ package.scans_number }}</td>
     <td>{{ package.display_latest_scans }}</td>
   </tr>

@@ -328,27 +328,32 @@ of this packages scan")
                                   response, indent_level + 1)
 
     def display_scan_tree(self):
+        blocked_releases = self.get_partially_blocked_releases()\
+                               .values_list('release', flat=True)
         scans = Scan.objects.filter(package=self)
-        if not scans:
+
+        if not blocked_releases and not scans:
             return mark_safe('There are no scans submitted related to this \
 package')
-        releases = scans.values('tag__release')\
-            .filter(tag__release__isnull=False).distinct()
+
+        releases = scans.filter(tag__release__isnull=False)\
+                        .values_list('tag__release', flat=True)\
+                        .union(blocked_releases)
         response = ""
 
-        for release in releases.order_by('tag__release'):
-            release_id = release['tag__release']
-
+        for release_id in sorted(releases):
             scans_package = scans.filter(
                 tag__release__id=release_id,
                 state__in=SCAN_STATES_FINISHED_WELL,
                 scan_type__in=SCAN_TYPES_TARGET)
 
             release = SystemRelease.objects.get(id=release_id)
+
             response += '<div>\n<div style="display:flex; align-items: center;">\n'
-            response += '<h3>%s release %d</h3>\n' % (
+            response += '<h3>%s release %d%s</h3>\n' % (
                 release.product,
-                release.release
+                release.release,
+                ' &ndash; BLOCKED' if release_id in blocked_releases else ''
             )
 
             if not scans_package:
@@ -384,6 +389,10 @@ package')
             return self.blocked
         else:
             return atr.is_blocked()
+
+    def get_partially_blocked_releases(self):
+        return PackageAttribute.objects.filter(
+            package=self, key=PackageAttribute.BLOCKED, value='Y').values('release')
 
     def get_priority_offset(self):
         return int(self.priority_offset)
