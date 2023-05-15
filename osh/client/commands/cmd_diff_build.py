@@ -95,7 +95,8 @@ exist." % self.results_store_file)
 
         if brew_build:
             # get build from koji
-            result = verify_koji_build(self.srpm, self.conf['KOJI_PROFILES'])
+            koji_profiles = self.conf.get('KOJI_PROFILES', 'brew,koji')
+            result = verify_koji_build(self.srpm, koji_profiles)
             if result is not None:
                 self.parser.error(result)
         elif tarball_build_script:

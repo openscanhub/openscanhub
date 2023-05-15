@@ -127,13 +127,14 @@ a SRPM")
         if priority is not None and priority < 0:
             self.parser.error("Priority must be a non-negative number!")
 
+        koji_profiles = self.conf.get('KOJI_PROFILES', 'brew,koji')
         if brew_build:
-            result = verify_koji_build(brew_build, self.conf['KOJI_PROFILES'])
+            result = verify_koji_build(brew_build, koji_profiles)
             if result is not None:
                 self.parser.error(result)
 
         if base_brew_build:
-            result = verify_koji_build(base_brew_build, self.conf['KOJI_PROFILES'])
+            result = verify_koji_build(base_brew_build, koji_profiles)
             if result is not None:
                 self.parser.error(result)
 
