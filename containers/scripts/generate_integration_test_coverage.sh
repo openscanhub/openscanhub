@@ -140,7 +140,7 @@ while [[ $# -gt 0 ]]; do
             echo "Usage: $0 [--force|-f]"
             echo
             echo "Options:"
-            echo "  -f, --force  Force container rebuild"
+            echo "  -f, --force  Force compose down"
             exit 0
             ;;
         --force)

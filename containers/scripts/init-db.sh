@@ -13,7 +13,7 @@ help() {
     echo
     echo "Options:"
     echo "  -h, --help      Show this message"
-    echo "  -f, --force     Force container rebuild"
+    echo "  -f, --force     Force compose down"
     echo "  -F, --full-dev  Create a system-independent development environment"
     echo "  -m, --minimal   Create a minimal database"
     echo "  -r, --restore   Auto-restore database from backup"

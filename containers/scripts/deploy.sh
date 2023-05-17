@@ -27,7 +27,7 @@ help() {
     echo
     echo "Options:"
     echo "  --clean          Remove all containers and volumes"
-    echo "  -f, --force      Force container rebuild"
+    echo "  -f, --force      Force compose down"
     echo "  -F, --full-dev   Create a system-independent development environment"
     echo "  -h, --help       Show this message"
     echo "  --no-start       Do not start containers"
@@ -38,9 +38,7 @@ main() {
 
     test_build_env || exit "$?"
 
-    if [ "$START" = '-d' ]; then
-        prepare_deploy
-    fi
+    prepare_deploy
 
     podman-compose -p osh up --build $START "${CONTAINERS[@]}"
 
@@ -79,36 +77,24 @@ prepare_deploy() {
     test_deploy_env || exit "$?"
 
     if [ "$IS_LINUX" = 1 ]; then
-        LABEL_PREFIX='io.podman'
+        LABEL='io.podman'
     else
-        LABEL_PREFIX='com.docker'
+        LABEL='com.docker'
     fi
+    LABEL+='.compose.project=osh'
 
-    containers_count="$(podman ps -a --filter label="$LABEL_PREFIX".compose.project=osh --filter status=running -q 2>/dev/null | wc -l)"
+    mapfile -t running < <(podman ps $LABEL -q 2>/dev/null)
 
-    if [[ "$containers_count" -gt 0 ]]; then
-        if [ "$FORCE" = true ]; then
-            # when running the down command docker won't stop osh-client if not
-            # specified causing errors when trying to remove the network
-            # we also can't specify container names in down command
-            containers=""
-            if [ "$IS_LINUX" = 1 ]; then
-                containers="db osh-hub osh-worker"
-                if [ "$containers_count" -gt 4 ]; then
-                    containers+=" osh-client"
-                fi
-            fi
-            podman-compose -p osh $PROFILE down $containers
-            return
-        else
-            # shellcheck disable=2016
-            echo 'One or more containers are already running under `compose`. Please use `compose down` to kill them.'
-            exit 1
-        fi
+    if [[ ${#running[@]} -gt 0 ]] && [ "$FORCE" = false ]; then
         # shellcheck disable=2016
         echo 'One or more containers are already running under `compose`. Please use `compose down` to kill them.'
         exit 4
     fi
+
+    if [ "$IS_LINUX" != 1 ]; then
+        running=()
+    fi
+    podman-compose -p osh $PROFILE down "${running[@]}"
 }
 
 
