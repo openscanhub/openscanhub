@@ -41,21 +41,3 @@ wait_for_container() {
     done
     return 0
 }
-
-# Checks against a program version
-#
-# @currentver Current software version
-# @requiredver Minimum required version
-#
-# Returns:
-# 0 if @currentver >= @requiredver and 1 otherwise
-version_compare() {
-    currentver="$1"
-    requiredver="$2"
-
-    sorted_ver="$(printf '%s\n' "$requiredver" "$currentver" | sort -V | head -n1)"
-    if [ "$sorted_ver" = "$requiredver" ]; then
-        return 0
-    fi
-    return 1
-}

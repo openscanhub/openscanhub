@@ -66,22 +66,6 @@ test_build_env() (
         return 2
     }
 
-    [ "$IS_LINUX" = 0 ] && return 0
-
-    # test podman-compose version
-    mapfile -t < <(grep ' version' <(podman-compose -v) |\
-        grep -o ' version\s.*' |\
-        sed -e 's, version\s*\([[0-9]]*\),\1,')
-
-    # if podman < 3.1.0 then we need podman-compose < 1.x.x
-    PODMAN_VER="${MAPFILE[0]}"
-    PODMAN_COMPOSE_VER="${MAPFILE[1]}"
-    [[ "$(version_compare "$PODMAN_VER" "3.1.0")" = 1 ]] &&\
-        [[ "$(version_compare "$PODMAN_COMPOSE_VER" "1.0.0")" = 0 ]] && {
-            echo "podman-compose version $PODMAN_COMPOSE_VER is not compatible with podman version $PODMAN_VER"
-            return 1
-        }
-
     return 0
 )
 
