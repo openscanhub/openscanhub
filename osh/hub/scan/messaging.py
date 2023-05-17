@@ -28,7 +28,7 @@ logger = logging.getLogger(__name__)
 
 class UMBSender(proton.handlers.MessagingHandler):
     def __init__(self, key, msg):
-        super(UMBSender, self).__init__()
+        super().__init__()
         self.urls = settings.UMB_BROKER_URLS
         self.cert = settings.UMB_CLIENT_CERT
         self.topic = settings.UMB_TOPIC_PREFIX + '.' + key

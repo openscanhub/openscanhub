@@ -3,7 +3,6 @@
 
 # -*- coding: utf-8 -*-
 
-from __future__ import print_function
 
 import os
 import pwd
@@ -93,7 +92,7 @@ DEFECTS_JSON = """
 #     return runner.analyze('cppcheck,clang', SRPM)
 
 
-class TestCsmockAPI(object):
+class TestCsmockAPI:
     """ intergration tests for csmock api """
 
     def test_run(self):

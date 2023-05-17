@@ -16,7 +16,7 @@ import osh.common.constants
 logger = logging.getLogger(__name__)
 
 
-class TaskResultPaths(object):
+class TaskResultPaths:
 
     def __init__(self, task):
         """

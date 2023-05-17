@@ -23,7 +23,7 @@ from osh.hub.waiving.service import find_processed_in_past
 logger = logging.getLogger(__name__)
 
 
-class TaskResultsProcessor(object):
+class TaskResultsProcessor:
     """
     when task finishes, unpack tarballs and make diffs
     """
@@ -61,7 +61,7 @@ class TaskResultsProcessor(object):
             return td.diff_results()
 
 
-class ScanResultsProcessor(object):
+class ScanResultsProcessor:
     """
     when scan finishes, we have to unpack results, do diffs and load
     them to DB; this class is responsible for unpacking and diffing
@@ -88,7 +88,7 @@ class ScanResultsProcessor(object):
             return self.rp.generate_diffs()
 
 
-class ResultsLoader(object):
+class ResultsLoader:
     """
     load results from json to DB and creates waiving.models.Result
     and attaches it to provided sb

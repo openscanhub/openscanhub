@@ -19,9 +19,9 @@ logger = logging.getLogger(__name__)
 
 def load_file_content(file_path):
     try:
-        with open(file_path, 'r') as fd:
+        with open(file_path) as fd:
             content = fd.read()
-    except IOError:
+    except OSError:
         logger.critical('Unable to open file %s', file_path)
         return
     return content
