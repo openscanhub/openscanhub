@@ -59,22 +59,9 @@ EOF
 }
 
 restore() {
-    FILEPATH='https://covscan-stage.lab.eng.brq2.redhat.com/openscanhub.db.gz'
-    DOWNLOAD=true
+    FILENAME='openscanhub-limited.db.gz'
 
-    if [ -e openscanhub.db.gz ]; then
-        if [ "$(echo "$(curl "${FILEPATH}.SHA512SUM" | cut -d'=' -f2)" openscanhub.db.gz | sha512sum --check)" ]; then
-            DOWNLOAD=false
-        fi
-    fi
-
-    if [ "$DOWNLOAD" = true ]; then
-        DOWNLOAD_COMMAND='curl -O'
-        if [ "$({ which aria2c 2>&1; } > /dev/null)" ]; then
-            DOWNLOAD_COMMAND='aria2c -s10'
-        fi
-        eval "$DOWNLOAD_COMMAND $FILEPATH"
-    fi
+    curl -O "https://covscan-stage.lab.eng.brq2.redhat.com/${FILENAME}"
 
     gzip -cd openscanhub.db.gz | podman exec -i db psql -h localhost -U openscanhub
     # HACK: this should be turned into a function
