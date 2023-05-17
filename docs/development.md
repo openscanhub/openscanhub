@@ -41,7 +41,7 @@ Also, pull container image for the database layer: `podman pull registry-proxy.e
 
 Note: podman-compose 1.0.0 and newer does not support DNS resolution between containers out of the box so make sure that you have also its dnsname plugin installed (provided by podman-plugins RPM package in Fedora).
 
-Run `podman-compose up --no-start` - this commands prepares all the services and a network for them but doesn't start them.
+Run `podman-compose -p osh up --no-start` - this commands prepares all the services and a network for them but doesn't start them.
 
 ### Start the db first
 
@@ -83,7 +83,7 @@ u.set_password('velryba')
 u.save()
 ```
 
-After the first-time setup, all you need is `podman-compose stop` and `podman-compose start`. If, for any reason, you need to start from scratch, `podman-compose down` stops and destroys all the containers and `podman-compose up` starts their fresh copies. The last two commands work also for specific services so you can destroy also only the osh-hub instance and keep the db.
+After the first-time setup, all you need is `podman stop` and `podman start`. If, for any reason, you need to start from scratch, `podman-compose -p osh down` stops and destroys all the containers and `podman-compose -p osh up` starts their fresh copies. The last two commands work also for specific services so you can destroy also only the osh-hub instance and keep the db.
 
 This step also saves their configuration so you can start them individually then via `podman start -a db`. It's good idea to start them in separated terminal windows so their outputs are not combined.
 
@@ -208,12 +208,12 @@ To run unit tests
      Django creates its own isolated database instance and things such
      credentials and user accounts are mocked by Django unit test framework
      (see [Writing and running tests](https://docs.djangoproject.com/en/2.2/topics/testing/overview/#module-django.test) for more info)
-2. ensure containers are running or create and run them by `podman-compose up -d db osh-hub`
+2. ensure containers are running or create and run them by `podman-compose -p osh up -d db osh-hub`
    command
-3. run unit tests by `podman-compose exec osh-hub python3 osh/hub/manage.py test`
+3. run unit tests by `podman exec osh-hub python3 osh/hub/manage.py test`
    command
 4. after you are done with unit testing, you can tear down the whole container
-   stack by `podman-compose down`
+   stack by `podman-compose -p osh down`
 
 # Gitlab CI
 

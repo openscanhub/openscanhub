@@ -37,7 +37,7 @@ main() {
         prepare_deploy
     fi
 
-    eval podman-compose up --build "$START" "$CONTAINERS"
+    eval podman-compose -p osh up --build "$START" "$CONTAINERS"
 
     if [ "$START" = '-d' ]; then
         wait_for_container 'HUB'
@@ -96,7 +96,7 @@ prepare_deploy() {
         LABEL_PREFIX='com.docker'
     fi
 
-    containers_count="$(podman ps -a --filter label="$LABEL_PREFIX".compose.project=covscan --filter status=running -q 2>/dev/null | wc -l)"
+    containers_count="$(podman ps -a --filter label="$LABEL_PREFIX".compose.project=osh --filter status=running -q 2>/dev/null | wc -l)"
 
     if [[ "$containers_count" -gt 0 ]]; then
         if [ "$FORCE" = true ]; then
@@ -110,7 +110,7 @@ prepare_deploy() {
                     containers+=" osh-client"
                 fi
             fi
-            podman-compose $PROFILE down $containers
+            podman-compose -p osh $PROFILE down $containers
             return
         else
             # shellcheck disable=2016
