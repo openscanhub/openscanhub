@@ -7,7 +7,12 @@ source containers/scripts/utils.sh
 
 # podman-compose is currently unable to use profiles
 # see: https://github.com/containers/podman-compose/issues/430
-CONTAINERS='db osh-hub osh-worker'
+CONTAINERS=(
+    db
+    osh-hub
+    osh-worker
+)
+
 if [ "$IS_LINUX" = 1 ]; then
     PROFILE=""
 else
@@ -37,7 +42,7 @@ main() {
         prepare_deploy
     fi
 
-    eval podman-compose -p osh up --build "$START" "$CONTAINERS"
+    podman-compose -p osh up --build $START "${CONTAINERS[@]}"
 
     if [ "$START" = '-d' ]; then
         wait_for_container 'HUB'
@@ -142,7 +147,7 @@ while [[ $# -gt 0 ]]; do
             shift
             ;;
         --full-dev|-F)
-            CONTAINERS+=' osh-client'
+            CONTAINERS+=('osh-client')
             shift
             ;;
         --no-start)
