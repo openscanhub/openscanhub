@@ -14,11 +14,15 @@ CONTAINERS=(
 )
 
 if [ "$IS_LINUX" = 1 ]; then
-    PROFILE=""
+    LABEL='io.podman'
+    PROFILE=
 else
-    PROFILE="--profile=full-dev"
+    LABEL='com.docker'
+    PROFILE='--profile=full-dev'
 fi
+LABEL+='.compose.project=osh'
 START='-d'
+CLEAN=false
 FORCE='false'
 
 help() {
@@ -39,6 +43,11 @@ main() {
     test_build_env || exit "$?"
 
     prepare_deploy
+
+    if [ "$CLEAN" = true ]; then
+        clean
+        exit "$?"
+    fi
 
     podman-compose -p osh up --build $START "${CONTAINERS[@]}"
 
@@ -76,13 +85,6 @@ test_build_env() (
 prepare_deploy() {
     test_deploy_env || exit "$?"
 
-    if [ "$IS_LINUX" = 1 ]; then
-        LABEL='io.podman'
-    else
-        LABEL='com.docker'
-    fi
-    LABEL+='.compose.project=osh'
-
     mapfile -t running < <(podman ps $LABEL -q 2>/dev/null)
 
     if [[ ${#running[@]} -gt 0 ]] && [ "$FORCE" = false ]; then
@@ -115,18 +117,17 @@ test_deploy_env() (
 clean() {
     set -e
 
-    eval podman-compose "$PROFILE" down -v
-    CONTAINERS=$(podman ps -a | grep 'osh' | sed -e "s/[[:space:]]\{2,\}/,/g" | cut -d, -f1)
-    echo "$CONTAINERS" | xargs podman rm -f
-    IMAGES=$(shell podman images | grep 'osh' | sed -e "s/[[:space:]]\{2,\}/,/g" | cut -d, -f3)
-    echo "$IMAGES" | xargs podman rmi -f
+    mapfile -t containers < <(podman ps -a $LABEL -q 2>/dev/null)
+    podman rm -f "${containers[@]}"
+    mapfile -t images < <(podman images $LABEL -q 2>/dev/null)
+    podman rmi -f "${images[@]}"
 }
 
 while [[ $# -gt 0 ]]; do
     case "$1" in
         --clean)
-            clean
-            exit "$?"
+            CLEAN=true
+            shift
             ;;
         --force|-f)
             FORCE='true'
