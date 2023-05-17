@@ -22,7 +22,7 @@ $ podman run -it -p 8888:80                      \
 * `--net openscanhub_internal-network` connects the container to the same network as OpenScanHub and database are connected to. The network is created by `podman-compose` and you can check its name first via `podman network ls`.
 * `-e PGADMIN_DEFAULT_*` sets the credentials to use with the web app.
 
-Then, you can log into the web app on [localhost:8888](http://localhost:8888/) and set a connection to the database server `db` using username and password from `docker-compose.yml`. The app stores that info so you'll not need to configure it again.
+Then, you can log into the web app on [localhost:8888](http://localhost:8888/) and set a connection to the database server `db` using username and password from `compose.yaml`. The app stores that info so you'll not need to configure it again.
 
 Next time, you only need to start the existing container via `podman start -a pgadmin`.
 

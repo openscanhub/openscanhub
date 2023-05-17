@@ -53,7 +53,7 @@ test_build_env() (
     set +e
     # check that we are in the top-level diretory of our git repo
     test -d .git || return 3
-    for f in docker-compose.yml containers/{hub/{Dockerfile,run.sh},{worker,client}.Dockerfile}; do
+    for f in compose.yaml containers/{hub/{Dockerfile,run.sh},{worker,client}.Dockerfile}; do
         test -f "$f" || {
             echo "Missing file: $f"
             return 3
