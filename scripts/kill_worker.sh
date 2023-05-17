@@ -1,4 +1,7 @@
 #!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-3.0-or-later
+# SPDX-FileCopyrightText: Copyright contributors to the OpenScanHub project.
+
 set -x
 ps -ef
 # Worker coverage reports are inconsistent due to issues with signal handling

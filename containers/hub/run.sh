@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-3.0-or-later
+# SPDX-FileCopyrightText: Copyright contributors to the OpenScanHub project.
 
 # collect static files from Django itself
 python3.6 osh/hub/manage.py collectstatic --noinput

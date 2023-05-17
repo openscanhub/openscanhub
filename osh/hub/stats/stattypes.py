@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+# SPDX-FileCopyrightText: Copyright contributors to the OpenScanHub project.
+
 """
     Module that contains various statistics types. These functions are loaded
     dynamically. There is database record for each function.

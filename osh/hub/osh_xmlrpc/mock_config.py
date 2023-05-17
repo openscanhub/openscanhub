@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+# SPDX-FileCopyrightText: Copyright contributors to the OpenScanHub project.
+
 from django.core.exceptions import ObjectDoesNotExist
 
 from osh.hub.scan.models import MockConfig

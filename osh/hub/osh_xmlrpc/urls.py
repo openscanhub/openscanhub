@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+# SPDX-FileCopyrightText: Copyright contributors to the OpenScanHub project.
+
 import kobo.django.upload.views
 import kobo.django.xmlrpc.views
 from django.urls import path

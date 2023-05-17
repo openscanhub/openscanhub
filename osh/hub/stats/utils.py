@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+# SPDX-FileCopyrightText: Copyright contributors to the OpenScanHub project.
+
 def stat_function(order, group, short_comment, comment):
     def decorator(function):
         function.order = order

@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+# SPDX-FileCopyrightText: Copyright contributors to the OpenScanHub project.
+
 from django.urls import path
 
 from osh.hub.waiving.views import (ResultsListView, et_latest,
