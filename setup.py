@@ -70,7 +70,7 @@ setup(
     version=".".join(map(str, package_version)),
     url="https://gitlab.cee.redhat.com/covscan/covscan",
     author="Red Hat, Inc.",
-    author_email="ttomecek@redhat.com",
+    author_email="openscanhub-devel@redhat.com",
     description="OpenScanHub is a service for static and dynamic analysis.",
     packages=find_namespace_packages(exclude=["kobo*"]),
     package_data=package_data,
