@@ -263,6 +263,9 @@ pg_isready -h localhost && %{python3_sitelib}/osh/hub/manage.py migrate
 
 
 %changelog
+* Wed May 17 2023 Kamil Dudka <kdudka@redhat.com> - 0.9.3-1
+- rename covscan-* packages to osh-*
+
 * Tue Apr 25 2023 Lukáš Zaoral <lzaoral@redhat.com> - 0.9.2-1
 - revert osh-cli to use an absolute path to python3
 
