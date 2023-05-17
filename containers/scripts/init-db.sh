@@ -16,7 +16,7 @@ help() {
     echo "  -f, --force     Force compose down"
     echo "  -F, --full-dev  Create a system-independent development environment"
     echo "  -m, --minimal   Create a minimal database"
-    echo "  -r, --restore   Auto-restore database from backup"
+    echo "  --restore       Auto-restore database from backup (DANGEROUS)"
 }
 
 main() {
@@ -27,6 +27,10 @@ main() {
     if [ "$MINIMAL" = true ]; then
         minimal
     elif [ "$RESTORE" = true ]; then
+        if [ "$FORCE" = false ]; then
+            echo "--restore must be used with --force"
+            exit 1
+        fi
         restore
     else
         help
@@ -63,7 +67,12 @@ restore() {
 
     curl -O "https://covscan-stage.lab.eng.brq2.redhat.com/${FILENAME}"
 
+    podman stop osh-hub
+    podman exec db dropdb openscanhub
+    podman exec db createdb openscanhub
     gzip -cd openscanhub.db.gz | podman exec -i db psql -h localhost -U openscanhub
+    podman start osh-hub
+    wait_for_container 'HUB'
     # HACK: this should be turned into a function
     # ref: https://stackoverflow.com/a/16853755/9814181
     podman exec -i osh-hub python3 osh/hub/manage.py shell << EOF
