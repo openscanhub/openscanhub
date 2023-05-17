@@ -41,7 +41,11 @@
     "fields": {
       "name": "ERRATA",
       "description": "Periodic scans of packages released by Errata Tool",
-      "options": "\"{\\\"comment_template\\\": \\\"errata process scan of %(target)s\\\", \\\"task_priority\\\": 20, \\\"method\\\": \\\"ErrataDiffBuild\\\"}\"",
+      "options": {
+        "comment_template": "errata process scan of %(target)s",
+        "method": "ErrataDiffBuild",
+        "task_priority": 20
+      },
       "profile": 1
     }
   },
@@ -2485,7 +2489,11 @@
       "name": "errata",
       "description": "profile used in errata scans (currently same as the default profile)",
       "enabled": true,
-      "command_arguments": "\"{\\\"analyzers\\\": \\\"gcc,clang,cppcheck,shellcheck\\\", \\\"koji_bin\\\": \\\"brew\\\", \\\"csmock_args\\\": \\\"--use-host-cppcheck --gcc-analyze\\\"}\""
+      "command_arguments": {
+        "analyzers": "gcc,clang,cppcheck,shellcheck",
+        "csmock_args": "--use-host-cppcheck --gcc-analyze",
+        "koji_bin": "brew"
+      }
     }
   },
   {
@@ -2495,7 +2503,11 @@
       "name": "default",
       "description": "default profile for user-initiated scans",
       "enabled": true,
-      "command_arguments": "\"{\\\"analyzers\\\": \\\"gcc,clang,cppcheck,shellcheck\\\", \\\"koji_bin\\\": \\\"brew\\\", \\\"csmock_args\\\": \\\"--use-host-cppcheck --gcc-analyze\\\"}\""
+      "command_arguments": {
+        "analyzers": "gcc,clang,cppcheck,shellcheck",
+        "csmock_args": "--use-host-cppcheck --gcc-analyze",
+        "koji_bin": "brew"
+      }
     }
   },
   {
@@ -2505,7 +2517,9 @@
       "name": "custom",
       "description": "base profile for custom scans (without additional options, it only builds the package)",
       "enabled": true,
-      "command_arguments": "\"{\\\"analyzers\\\": \\\"\\\"}\""
+      "command_arguments": {
+        "analyzers": ""
+      }
     }
   },
   {
@@ -2515,7 +2529,10 @@
       "name": "multi",
       "description": "profile with all analyzers enabled",
       "enabled": false,
-      "command_arguments": "\"{\\\"analyzers\\\": \\\"gcc,clang,cppcheck,shellcheck,pylint\\\", \\\"csmock_args\\\": \\\"--gcc-analyze\\\"}\""
+      "command_arguments": {
+        "analyzers": "gcc,clang,cppcheck,shellcheck,pylint",
+        "csmock_args": "--gcc-analyze"
+      }
     }
   },
   {
@@ -2525,7 +2542,10 @@
       "name": "cov-unstable",
       "description": "experimental profile using the latest release of csmock",
       "enabled": true,
-      "command_arguments": "\"{\\\"analyzers\\\": \\\"gcc\\\", \\\"koji_bin\\\": \\\"brew\\\"}\""
+      "command_arguments": {
+        "analyzers": "gcc",
+        "koji_bin": "brew"
+      }
     }
   },
   {
@@ -2535,7 +2555,11 @@
       "name": "errata-el5",
       "description": "errata profile without ShellCheck, which is currently not available on el5",
       "enabled": false,
-      "command_arguments": "\"{\\\"analyzers\\\": \\\"gcc,clang,cppcheck\\\", \\\"koji_bin\\\": \\\"brew\\\", \\\"csmock_args\\\": \\\"--cov-analyze-java --use-host-cppcheck\\\"}\""
+      "command_arguments": {
+        "analyzers": "gcc,clang,cppcheck",
+        "csmock_args": "--cov-analyze-java --use-host-cppcheck",
+        "koji_bin": "brew"
+      }
     }
   },
   {
@@ -2545,7 +2569,11 @@
       "name": "errata-el8",
       "description": "errata profile without Clang, which is currently not available on el8",
       "enabled": false,
-      "command_arguments": "\"{\\\"analyzers\\\": \\\"gcc,cppcheck\\\", \\\"koji_bin\\\": \\\"brew\\\", \\\"csmock_args\\\": \\\"--cov-analyze-java --use-host-cppcheck\\\"}\""
+      "command_arguments": {
+        "analyzers": "gcc,cppcheck",
+        "csmock_args": "--cov-analyze-java --use-host-cppcheck",
+        "koji_bin": "brew"
+      }
     }
   },
   {
@@ -2555,7 +2583,10 @@
       "name": "smatch",
       "description": "experimental profile for running the smatch static analyzer",
       "enabled": false,
-      "command_arguments": "\"{\\\"analyzers\\\": \\\"smatch\\\", \\\"koji_bin\\\": \\\"brew\\\"}\""
+      "command_arguments": {
+        "analyzers": "smatch",
+        "koji_bin": "brew"
+      }
     }
   },
   {
@@ -2565,7 +2596,11 @@
       "name": "gcc-unstable",
       "description": "experimental profile using non-default GCC warning flags",
       "enabled": false,
-      "command_arguments": "\"{\\\"analyzers\\\": \\\"gcc\\\", \\\"koji_bin\\\": \\\"brew\\\", \\\"csmock_args\\\": \\\"--gcc-add-flag=-Wduplicated-branches --gcc-add-flag=-Wduplicated-cond --gcc-add-flag=-Wlogical-op --gcc-add-flag=-Wjump-misses-init --gcc-add-flag=-Wshadow --gcc-add-flag=-Wformat=2 --gcc-add-flag=-Wfloat-equal\\\"}\""
+      "command_arguments": {
+        "analyzers": "gcc",
+        "csmock_args": "--gcc-add-flag=-Wduplicated-branches --gcc-add-flag=-Wduplicated-cond --gcc-add-flag=-Wlogical-op --gcc-add-flag=-Wjump-misses-init --gcc-add-flag=-Wshadow --gcc-add-flag=-Wformat=2 --gcc-add-flag=-Wfloat-equal",
+        "koji_bin": "brew"
+      }
     }
   },
   {
@@ -2575,7 +2610,10 @@
       "name": "gcc-asan",
       "description": "experimental profile that compiles with -fsanitize=address and runs %check",
       "enabled": true,
-      "command_arguments": "\"{\\\"analyzers\\\": \\\"gcc\\\", \\\"csmock_args\\\": \\\"--gcc-sanitize-address\\\"}\""
+      "command_arguments": {
+        "analyzers": "gcc",
+        "csmock_args": "--gcc-sanitize-address"
+      }
     }
   },
   {
@@ -2585,7 +2623,10 @@
       "name": "gcc-lsan",
       "description": "experimental profile that compiles with -fsanitize=leak and runs %check",
       "enabled": true,
-      "command_arguments": "\"{\\\"analyzers\\\": \\\"gcc\\\", \\\"csmock_args\\\": \\\"--gcc-sanitize-leak\\\"}\""
+      "command_arguments": {
+        "analyzers": "gcc",
+        "csmock_args": "--gcc-sanitize-leak"
+      }
     }
   },
   {
@@ -2595,7 +2636,10 @@
       "name": "gcc-tsan",
       "description": "experimental profile that compiles with -fsanitize=thread and runs %check",
       "enabled": true,
-      "command_arguments": "\"{\\\"analyzers\\\": \\\"gcc\\\", \\\"csmock_args\\\": \\\"--gcc-sanitize-thread\\\"}\""
+      "command_arguments": {
+        "analyzers": "gcc",
+        "csmock_args": "--gcc-sanitize-thread"
+      }
     }
   },
   {
@@ -2605,7 +2649,10 @@
       "name": "gcc-ubsan",
       "description": "experimental profile that compiles with -fsanitize=undefined and runs %check",
       "enabled": true,
-      "command_arguments": "\"{\\\"analyzers\\\": \\\"gcc\\\", \\\"csmock_args\\\": \\\"--gcc-sanitize-undefined\\\"}\""
+      "command_arguments": {
+        "analyzers": "gcc",
+        "csmock_args": "--gcc-sanitize-undefined"
+      }
     }
   },
   {
@@ -2615,7 +2662,10 @@
       "name": "csigsafe",
       "description": "experimental profile that compiles with -fplugin=csigsafe",
       "enabled": false,
-      "command_arguments": "\"{\\\"analyzers\\\": \\\"gcc\\\", \\\"csmock_args\\\": \\\"--install csigsafe --gcc-add-c-only-flag=-fplugin=csigsafe\\\"}\""
+      "command_arguments": {
+        "analyzers": "gcc",
+        "csmock_args": "--install csigsafe --gcc-add-c-only-flag=-fplugin=csigsafe"
+      }
     }
   },
   {
@@ -2625,7 +2675,10 @@
       "name": "gcc-analyzer",
       "description": "profile that runs `gcc -fanalyzer` in the background and captures its results (currently included in the default profile)",
       "enabled": true,
-      "command_arguments": "\"{\\\"analyzers\\\": \\\"gcc\\\", \\\"csmock_args\\\": \\\"--gcc-analyze\\\"}\""
+      "command_arguments": {
+        "analyzers": "gcc",
+        "csmock_args": "--gcc-analyze"
+      }
     }
   },
   {
@@ -2635,7 +2688,11 @@
       "name": "mass-scan-el9",
       "description": "profile for RHEL-9 mass scan (currently same as the default profile)",
       "enabled": true,
-      "command_arguments": "\"{\\\"analyzers\\\": \\\"gcc,clang,cppcheck,shellcheck,unicontrol\\\", \\\"koji_bin\\\": \\\"brew\\\", \\\"csmock_args\\\": \\\"--use-host-cppcheck --gcc-analyze --unicontrol-notests --unicontrol-bidi-only\\\"}\""
+      "command_arguments": {
+        "analyzers": "gcc,clang,cppcheck,shellcheck,unicontrol",
+        "csmock_args": "--use-host-cppcheck --gcc-analyze --unicontrol-notests --unicontrol-bidi-only",
+        "koji_bin": "brew"
+      }
     }
   },
   {
@@ -2645,7 +2702,10 @@
       "name": "valgrind",
       "description": "experimental profile that makes binaries produced in %build run through valgrind in %check",
       "enabled": true,
-      "command_arguments": "\"{\\\"analyzers\\\": \\\"gcc,valgrind\\\", \\\"csmock_args\\\": \\\"--gcc-del-flag=-flto=auto --keep-going\\\"}\""
+      "command_arguments": {
+        "analyzers": "gcc,valgrind",
+        "csmock_args": "--gcc-del-flag=-flto=auto --keep-going"
+      }
     }
   },
   {
@@ -2655,7 +2715,11 @@
       "name": "s390x-hack",
       "description": "profile for emergency scanning of s390x packages in x86_64 buildroot",
       "enabled": false,
-      "command_arguments": "\"{\\\"analyzers\\\": \\\"gcc,clang,cppcheck,shellcheck\\\", \\\"koji_bin\\\": \\\"brew\\\", \\\"csmock_args\\\": \\\"--use-host-cppcheck --gcc-analyze --rpm-build-opts='--define \\\\\\\\\\\\\\\"_target_cpu s390x\\\\\\\\\\\\\\\"' --keep-going\\\"}\""
+      "command_arguments": {
+        "analyzers": "gcc,clang,cppcheck,shellcheck",
+        "csmock_args": "--use-host-cppcheck --gcc-analyze --rpm-build-opts='--define \\\"_target_cpu s390x\\\"' --keep-going",
+        "koji_bin": "brew"
+      }
     }
   },
   {

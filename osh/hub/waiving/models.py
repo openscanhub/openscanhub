@@ -6,7 +6,6 @@ import logging
 
 from django.conf import settings
 from django.db import models, transaction
-from kobo.django.fields import JSONField
 from kobo.types import Enum, EnumItem
 
 from osh.hub.scan.models import (SCAN_TYPES, AnalyzerVersion, Package,
@@ -242,8 +241,8 @@ current defect",
                                         help_text="Defect state")
     result_group = models.ForeignKey('ResultGroup', blank=False, null=False, on_delete=models.CASCADE)
 
-    events = JSONField(default=[],
-                       help_text="List of defect related events.")
+    events = models.JSONField(default=list,
+                              help_text="List of defect related events.")
 
     objects = DefectManager()
 

@@ -13,7 +13,6 @@ from django.db import models, transaction
 from django.urls import reverse
 from django.utils.safestring import mark_safe
 from kobo.client.constants import TASK_STATES
-from kobo.django.fields import JSONField
 from kobo.hub.models import Task
 from kobo.types import Enum, EnumItem
 
@@ -1213,8 +1212,8 @@ class ProfileManager(models.Manager):
             logger.error("profile %s does not exist", profile_name)
             raise ObjectDoesNotExist("profile %s does not exist" % profile_name)
         else:
-            analyzer_list = ClientAnalyzer.chain_to_list(profile.command_arguments.get('analyzers', ''))
-            args_list = profile.command_arguments.get('csmock_args', '')
+            analyzer_list = ClientAnalyzer.chain_to_list(profile.analyzers)
+            args_list = profile.csmock_args
             return analyzer_list, args_list
 
     def export_available(self):
@@ -1228,8 +1227,8 @@ class Profile(models.Model):
     name = models.CharField(max_length=64)
     description = models.TextField(null=True, blank=True)
     enabled = models.BooleanField(default=True)
-    command_arguments = JSONField(
-        default={},
+    command_arguments = models.JSONField(
+        default=dict,
         help_text="this field has to contain key 'analyzers', "
                   "which is a comma separated list of analyzers, "
                   "optionally add key csmock_args, which is a string")

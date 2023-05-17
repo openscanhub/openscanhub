@@ -4,7 +4,6 @@
 import logging
 
 from django.db import models
-from kobo.django.fields import JSONField
 
 from osh.hub.scan.models import Profile
 
@@ -38,7 +37,7 @@ class ScanningSession(models.Model):
     # optional human-readable description
     description = models.CharField(max_length=128, blank=True, null=True)
 
-    options = JSONField(default={}, blank=True)
+    options = models.JSONField(default=dict, blank=True)
 
     profile = models.ForeignKey(Profile, blank=True, null=True, on_delete=models.CASCADE)
 
