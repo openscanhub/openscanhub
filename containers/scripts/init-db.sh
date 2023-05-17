@@ -35,6 +35,8 @@ main() {
 }
 
 minimal() {
+    set -ex
+
     # weak password used for testing purposes only
     PASSWD=xxxxxx
 
@@ -68,16 +70,16 @@ restore() {
 
     if [ "$DOWNLOAD" = true ]; then
         DOWNLOAD_COMMAND='curl -O'
-        [ "$({ which aria2c 2>&1; } > /dev/null)" ] && DOWNLOAD_COMMAND='aria2c -s10'
-        (set -x; eval "$DOWNLOAD_COMMAND $FILEPATH")
+        if [ "$({ which aria2c 2>&1; } > /dev/null)" ]; then
+            DOWNLOAD_COMMAND='aria2c -s10'
+        fi
+        eval "$DOWNLOAD_COMMAND $FILEPATH"
     fi
 
-    (
-        set -x
-        gzip -cd openscanhub.db.gz | podman exec -i db psql -h localhost -U openscanhub
-        # HACK: this should be turned into a function
-        # ref: https://stackoverflow.com/a/16853755/9814181
-        podman exec -i osh-hub python3 osh/hub/manage.py shell << EOF
+    gzip -cd openscanhub.db.gz | podman exec -i db psql -h localhost -U openscanhub
+    # HACK: this should be turned into a function
+    # ref: https://stackoverflow.com/a/16853755/9814181
+    podman exec -i osh-hub python3 osh/hub/manage.py shell << EOF
 from django.contrib.auth import get_user_model
 User = get_user_model()
 User.objects.create_user('user', 'user@redhat.com', 'xxxxxx')
@@ -85,7 +87,6 @@ u = User.objects.get(username='admin')
 u.set_password('xxxxxx')
 u.save()
 EOF
-    )
 }
 
 while [[ $# -gt 0 ]]; do

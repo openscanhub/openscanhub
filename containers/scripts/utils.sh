@@ -1,5 +1,4 @@
 # This script is made to be sourced only
-set -e
 
 # Exports host's variables to ensure compatibility
 export_host_variables() {
@@ -24,7 +23,9 @@ export_host_variables
 #
 # Returns:
 # 0 if container is running, 1 if it isn't started in 60s
-wait_for_container() {
+wait_for_container() (
+    set +x
+
     filename="$(echo "$1" | tr '[:lower:]' '[:upper:]')"
     filename+="_IS_READY"
 
@@ -40,4 +41,4 @@ wait_for_container() {
         fi
     done
     return 0
-}
+)

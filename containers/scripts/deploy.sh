@@ -40,7 +40,8 @@ help() {
 main() {
     set -ex
 
-    test_build_env || exit "$?"
+    test_build_env
+    test_deploy_env
 
     prepare_deploy
 
@@ -57,40 +58,27 @@ main() {
 }
 
 #Tests the build environment
-#
-# Returns:
-# 0 if everything is setup correctly, 1 there's a version mismatch, 2 if there are missing dependencies and 3 if there's an unknown error
 test_build_env() (
-    set +e
-    # check that we are in the top-level diretory of our git repo
-    test -d .git || return 3
+    set -e
+
+    test -d .git
+
     for f in compose.yaml containers/{hub/{Dockerfile,run.sh},{worker,client}.Dockerfile}; do
-        test -f "$f" || {
-            echo "Missing file: $f"
-            return 3
-        }
+        test -f "$f"
     done
 
     # test if *-compose is installed
-    command -v podman-compose >/dev/null 2>&1
-    test $? = 0 || {
-        echo 'Missing compose command'
-        return 2
-    }
-
-    return 0
+    command -v podman-compose
 )
 
 
 prepare_deploy() {
-    test_deploy_env || exit "$?"
-
     mapfile -t running < <(podman ps $LABEL -q 2>/dev/null)
 
     if [[ ${#running[@]} -gt 0 ]] && [ "$FORCE" = false ]; then
         # shellcheck disable=2016
         echo 'One or more containers are already running under `compose`. Please use `compose down` to kill them.'
-        exit 4
+        return 4
     fi
 
     if [ "$IS_LINUX" != 1 ]; then
@@ -101,22 +89,16 @@ prepare_deploy() {
 
 
 #Tests the deployment environment
-#
-# Returns:
-# 0 if everything is setup correctly, 1 there's a version mismatch, 2 if there
-# are missing dependencies and 3 if there's an unknown error
 test_deploy_env() (
-    set +e
-    cd kobo || return 2
+    set -e
+
+    cd kobo
     git ls-remote https://github.com/release-engineering/kobo > /dev/null ||\
-        git ls-remote https://github.com/frenzymadness/kobo > /dev/null ||\
-        return 2
+        git ls-remote https://github.com/frenzymadness/kobo > /dev/null
 )
 
 
 clean() {
-    set -e
-
     mapfile -t containers < <(podman ps -a $LABEL -q 2>/dev/null)
     podman rm -f "${containers[@]}"
     mapfile -t images < <(podman images $LABEL -q 2>/dev/null)
