@@ -41,7 +41,6 @@ main() {
 
     if [ "$START" = '-d' ]; then
         wait_for_container 'HUB'
-        wait_for_db
     fi
 }
 

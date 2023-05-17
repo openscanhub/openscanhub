@@ -18,22 +18,6 @@ export_host_variables() {
 
 export_host_variables
 
-# Checks db container status
-#
-# Returns:
-# 0 if db is ready, 1 if it isn't started in 60s
-wait_for_db() {
-    count=0
-    while ! podman exec -it osh-hub pg_isready -h db; do
-        sleep 1
-        count=$((count + 1))
-        if test "$count" -gt 60; then
-            return 1
-        fi
-    done
-    return 0
-}
-
 # Checks osh container status
 #
 # @param $1 container name (e.g. hub, worker, client)
