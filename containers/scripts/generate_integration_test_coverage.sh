@@ -26,7 +26,7 @@ CLI_XML=(
 main() {
     set -ex
 
-    ./containers/scripts/init-db.sh --deploy --full-dev --minimal "$FORCE"
+    ./containers/scripts/init-db.sh --full-dev --minimal "$FORCE"
 
     # Remove stale coverage data
     rm -rf htmlcov .coverage

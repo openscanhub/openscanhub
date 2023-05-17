@@ -7,15 +7,13 @@ source containers/scripts/utils.sh
 
 FULL_DEV=''
 FORCE=''
-DEPLOY='false'
 MINIMAL='false'
 
 help() {
     set +x
-    echo "Usage: $0 [--help|-h] [--deploy|-d [--force|-f] [--full-dev|-F]] (--minimal|--restore)"
+    echo "Usage: $0 [--help|-h] [--force|-f] [--full-dev|-F] (--minimal|--restore)"
     echo
     echo "Options:"
-    echo "  -d, --deploy    Deploy containers"
     echo "  -h, --help      Show this message"
     echo "  -f, --force     Force container rebuild"
     echo "  -F, --full-dev  Create a system-independent development environment"
@@ -26,9 +24,7 @@ help() {
 main() {
     set -ex
 
-    if [ "$DEPLOY" = true ]; then
-        ./containers/scripts/deploy.sh "$FULL_DEV" "$FORCE"
-    fi
+    containers/scripts/deploy.sh "$FULL_DEV" "$FORCE"
 
     if [ "$MINIMAL" = true ]; then
         minimal
@@ -96,10 +92,6 @@ EOF
 
 while [[ $# -gt 0 ]]; do
     case "$1" in
-        --deploy|-d)
-            DEPLOY='true'
-            shift
-            ;;
         --force|-f)
             FORCE='--force'
             shift
