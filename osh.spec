@@ -1,7 +1,7 @@
 Name:           osh
 Version:        %{version}
 Release:        1%{?dist}
-License:        Commercial
+License:        GPL-3.0-or-later
 Summary:        Static and Dynamic Analysis as a Service
 Source:         %{name}-%{version}.tar.bz2
 BuildArch:      noarch
