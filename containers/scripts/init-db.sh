@@ -63,14 +63,21 @@ EOF
 }
 
 restore() {
+    FQDN='covscan-stage.lab.eng.brq2.redhat.com'
+
+    if ! ping -c1 -W1 "$FQDN"; then
+        echo "Please verify that you have access to the internal network"
+        exit 1
+    fi
+
     FILENAME='openscanhub-limited.db.gz'
 
-    curl -O "https://covscan-stage.lab.eng.brq2.redhat.com/${FILENAME}"
+    curl -O "https://${FQDN}/${FILENAME}"
 
     podman stop osh-hub
     podman exec db dropdb openscanhub
     podman exec db createdb openscanhub
-    gzip -cd openscanhub.db.gz | podman exec -i db psql -h localhost -U openscanhub
+    gzip -cd "$FILENAME" | podman exec -i db psql -h localhost -U openscanhub
     podman start osh-hub
     wait_for_container 'HUB'
     # HACK: this should be turned into a function
