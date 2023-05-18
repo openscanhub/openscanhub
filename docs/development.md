@@ -251,7 +251,7 @@ Steps to set up GitLab CI runner for Copr:
 - Go to `Key Pair` section and verify that you have selected correct keypair.
 - Click on `Launch Instance` and wait for instance to appear.
 - Go to instances, click on instance name and select IP Address of the instance.
-- SSH to the machine through `ssh -i ~/.ssh/id_rsa   cloud-user@IP_ADDRESS`.
+- SSH to the machine through `ssh -i ~/.ssh/id_rsa cloud-user@IP_ADDRESS`.
 - Switch to `root` user.
 - Run `subscription-manager register` as `root` user.
 - Next steps are taken from https://docs.gitlab.com/runner/install/linux-repository.html and https://docs.gitlab.com/runner/register/index.html
