@@ -162,19 +162,19 @@ osh/hub/scripts/osh-xmlrpc-client.py \
 
 ## Code path when submitting user scan
 
- 1. Code execution starts in client, for a specific command, e.g. [diff-build](https://gitlab.cee.redhat.com/covscan/covscan/blob/master/covscan/commands/cmd_diff_build.py#L192).
-   * Files are uploaded to server via [`upload_file` XML-RPC call](https://gitlab.cee.redhat.com/covscan/covscan/blob/master/covscan/commands/shortcuts.py#L88).
-   * The XML-RPC call itself [is defined](https://gitlab.cee.redhat.com/covscan/covscan/blob/master/osh/hub/settings.py#L161) [in kobo](https://github.com/release-engineering/kobo/blob/master/kobo/django/upload/xmlrpc.py#L19).
- 2. Server code path starts in XML-RPC API at specific method for particular scan type, e.g. for [mock builds](https://gitlab.cee.redhat.com/covscan/covscan/blob/master/osh/hub/xmlrpc/scan.py#L50).
- 3. There is a hierarchical structure for configuring data for scan in `hub/errata/scanner.py`, for client scans this is [ClientScanScheduler](https://gitlab.cee.redhat.com/covscan/covscan/blob/master/osh/hub/errata/scanner.py#L321).
+ 1. Code execution starts in client, for a specific command, e.g. [diff-build](https://gitlab.cee.redhat.com/covscan/covscan/blob/master/osh/client/commands/cmd_diff_build.py).
+   * Files are uploaded to server via [`upload_file` XML-RPC call](https://gitlab.cee.redhat.com/covscan/covscan/blob/master/osh/client/commands/shortcuts.py#L104).
+   * The XML-RPC call itself [is defined](https://gitlab.cee.redhat.com/covscan/covscan/blob/master/osh/hub/settings.py#L160) [in kobo](https://github.com/release-engineering/kobo/blob/master/kobo/django/upload/xmlrpc.py#L19).
+ 2. Server code path starts in XML-RPC API at specific method for particular scan type, e.g. for [mock builds](https://gitlab.cee.redhat.com/covscan/covscan/blob/master/osh/hub/osh_xmlrpc/scan.py#L57).
+ 3. There is a hierarchical structure for configuring data for scan in `osh/hub/errata/scanner.py`, for client scans this is [ClientScanScheduler](https://gitlab.cee.redhat.com/covscan/covscan/blob/master/osh/hub/errata/scanner.py#L374).
    * These classes have multiple methods:
      * `validate_options` — checks whether input data is valid.
      * `prepare_args` — initiates data for scan itself and for task.
      * `store` — saves data into database.
      * `spawn` — creates task(s).
-   * Uploads are being processed [via kobo's API](https://gitlab.cee.redhat.com/covscan/covscan/blob/master/osh/hub/errata/check.py#L98).
+   * Uploads are being processed [via kobo's API](https://gitlab.cee.redhat.com/covscan/covscan/blob/master/osh/hub/errata/check.py#L70).
  4. Once everything is set up, OSH creates task(s) and [puts files](https://gitlab.cee.redhat.com/covscan/covscan/blob/master/osh/hub/errata/scanner.py#L420) into task's directory.
- 5. Command arguments for `csmock` may be pretty complex. These are specified via [CsmockRunner class](https://gitlab.cee.redhat.com/covscan/covscan/blob/master/osh/hub/service/csmock_parser.py#L183).
+ 5. Command arguments for `csmock` may be pretty complex. These are specified via [CsmockRunner class](https://gitlab.cee.redhat.com/covscan/covscan/blob/master/osh/common/csmock_parser.py#L161).
 
 
 ## XML-RPC API client
@@ -206,7 +206,7 @@ To run unit tests
    * there is no need for creating users or populating database with data,
      Django creates its own isolated database instance and things such
      credentials and user accounts are mocked by Django unit test framework
-     (see [Writing and running tests](https://docs.djangoproject.com/en/2.2/topics/testing/overview/#module-django.test) for more info)
+     (see [Writing and running tests](https://docs.djangoproject.com/en/3.2/topics/testing/overview/#module-django.test) for more info)
 2. ensure containers are running or create and run them by `podman-compose -p osh up -d db osh-hub`
    command
 3. run unit tests by `podman exec osh-hub python3 osh/hub/manage.py test`
