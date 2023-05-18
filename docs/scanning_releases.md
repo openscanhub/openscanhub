@@ -1,6 +1,6 @@
-# How covscan handles requests from Errata Tool
+# How OpenScanHub handles requests from Errata Tool
 
-This document shows how covscan picks proper mock profile and what changes should be performed in order to scan arbitrary packages from various components.
+This document shows how OSH picks proper mock profile and what changes should be performed in order to scan arbitrary packages from various components.
 
 
 Here's a scan request from Errata Tool:
@@ -17,9 +17,9 @@ Here's a scan request from Errata Tool:
 }
 ```
 
-Let me explain what it means: covscan is suppose to scan package `ceph-10.1.0-1.el7cp`, which is a newly added package (base is `NEW_PACKAGE`). It's part of product `CEPH-2.0` and built on top of RHEL 7. Bad thing is that covscan ignores `rhel_version`.
+Let me explain what it means: OSH is supposed to scan package `ceph-10.1.0-1.el7cp`, which is a newly added package (base is `NEW_PACKAGE`). It's part of product `CEPH-2.0` and is built on top of RHEL 7. The bad thing is that OSH ignores `rhel_version`.
 
-In order to scan this, covscan translates `release`. Translation rules can be found in **Release mappings** table:
+In order to scan this, OSH translates the `release` field. Translation rules can be found in the **Release mappings** table:
 
 ```
 Id   Release tag              Template            Priority
@@ -40,4 +40,3 @@ Id   Brew tag           Mock            Release
 As you can see, we have `RHEL-7-CEPH-2-0` here. And that's exactly what's being picked after translation.
 
 Therefore, `CEPH-2.0` is being scanned in `rhel-7-x86_64` mock profile.
-

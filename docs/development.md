@@ -6,7 +6,7 @@ As simple as possible development setup for all three major parts of OpenScanHub
 
 Because we need to fix issues in Kobo as well as in OpenScanHub, we should use it directly as cloned repository - this allows us to make changes in its code, test them and create a PR from them as quicky as possible.
 
-* Switch to the main covscan folder (where covscan, covscand, and covscanhub are).
+* Switch to the root project folder (where `osh` is).
 * Clone Kobo project: `git clone git@github.com:release-engineering/kobo.git`
 
 ## Using scripts
@@ -128,8 +128,8 @@ As pointed above, all of these dependencies are automatically set up in the clie
 
 * create Errata Scan using password authentication - new pkg:
 ```sh
-covscan/osh/hub/scripts/osh-xmlrpc-client.py \
-    --hub http://covscanhub/xmlrpc/kerbauth/ \
+osh/hub/scripts/osh-xmlrpc-client.py \
+    --hub https://$HOSTNAME/osh/xmlrpc/kerbauth/ \
     --username=kdudka --password=xxxxxx \
     create-scan -t curl-7.29.0-25.el7 \
     --et-scan-id 1234 --advisory-id 4567 \
@@ -139,8 +139,8 @@ covscan/osh/hub/scripts/osh-xmlrpc-client.py \
 
 * create Errata Scan using password authentication - update:
 ```sh
-covscan/osh/hub/scripts/osh-xmlrpc-client.py \
-    --hub http://covscanhub/xmlrpc/kerbauth/ \
+osh/hub/scripts/osh-xmlrpc-client.py \
+    --hub https://$HOSTNAME/osh/xmlrpc/kerbauth/ \
     --username=kdudka --password=xxxxxx \
     create-scan -t curl-7.29.0-55.el7 \
     --et-scan-id 1234 --advisory-id 4567 \
@@ -150,15 +150,15 @@ covscan/osh/hub/scripts/osh-xmlrpc-client.py \
 
 * create Errata Scan using Kerberos authentication:
 ```sh
-covscan/osh/hub/scripts/osh-xmlrpc-client.py \
-    --hub https://covscan.lab.eng.brq2.redhat.com/covscanhub/xmlrpc/kerbauth/ \
+osh/hub/scripts/osh-xmlrpc-client.py \
+    --hub https://$HOSTNAME/osh/xmlrpc/kerbauth/ \
     create-scan -t curl-7.29.0-55.el7 \
     --et-scan-id 1234 --advisory-id 4567 \
     --owner kdudka --release RHEL-7.7.0 \
     --base curl-7.29.0-25.el7
 ```
 
-# Developing covscan
+# Developing OSH
 
 ## Code path when submitting user scan
 
@@ -173,15 +173,14 @@ covscan/osh/hub/scripts/osh-xmlrpc-client.py \
      * `store` — saves data into database.
      * `spawn` — creates task(s).
    * Uploads are being processed [via kobo's API](https://gitlab.cee.redhat.com/covscan/covscan/blob/master/osh/hub/errata/check.py#L98).
- 4. Once everything is set up, covscan creates task(s) and [puts files](https://gitlab.cee.redhat.com/covscan/covscan/blob/master/osh/hub/errata/scanner.py#L420) into task's directory.
+ 4. Once everything is set up, OSH creates task(s) and [puts files](https://gitlab.cee.redhat.com/covscan/covscan/blob/master/osh/hub/errata/scanner.py#L420) into task's directory.
  5. Command arguments for `csmock` may be pretty complex. These are specified via [CsmockRunner class](https://gitlab.cee.redhat.com/covscan/covscan/blob/master/osh/hub/service/csmock_parser.py#L183).
 
 
 ## XML-RPC API client
 
 There is a client for connecting to hub's XML-RPC API located in
-
-osh/hub/scripts/osh-xmlrpc-client.py
+`osh/hub/scripts/osh-xmlrpc-client.py`.
 
 For more info, please check docstring of the script.
 
@@ -269,7 +268,7 @@ Steps to set up GitLab CI runner for Copr:
 Because we need to run containers in our CI, we cannot use the standard shared Gitlab CI runners.
 Therefore, we have our own private Gitlab CI runner on OpenStack.
 
-Steps to set up Covscan CI runner for containers:
+Steps to set up OSH CI runner for containers:
 - Follow same steps from `Gitlab CI for Copr` section. Set up instance name to `$USER-covscan-ci-runner`.
 - Run `dnf install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm`.
 - Run `dnf install -y podman podman-compose make git-core python3-pip`
