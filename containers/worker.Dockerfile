@@ -1,30 +1,16 @@
-FROM registry.access.redhat.com/ubi8/ubi
+FROM quay.io/centos/centos:stream8
 
-# Internal repositories with all RHEL packages and RCM tools
-COPY containers/rhel-8-pulp.repo containers/rcm-tools-for-rhel-8.repo /etc/yum.repos.d/
+RUN dnf install -y dnf-plugins-core https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
+RUN dnf config-manager --set-enabled powertools
 
 WORKDIR /src
 
 ENV PYTHONPATH=.:kobo
 ENV OSH_WORKER_CONFIG_FILE=osh/worker/worker-local.conf
 
-# Internal CA
-RUN cd /etc/pki/ca-trust/source/anchors/ && \
-    curl -O https://password.corp.redhat.com/RH-IT-Root-CA.crt && \
-    update-ca-trust
-
 RUN echo -e "max_parallel_downloads=20\nfastestmirror=True" >> /etc/dnf/dnf.conf
 
-# epel-release
-RUN dnf install -y https://kojipkgs.fedoraproject.org//packages/epel-release/8/13.el8/noarch/epel-release-8-13.el8.noarch.rpm
-
-# internal copr kdudka/mock needed for csmock-core-configs
-RUN cd /etc/yum.repos.d/ && curl -O https://copr.devel.redhat.com/coprs/kdudka/mock/repo/epel-8/kdudka-mock-epel-8.repo
-
 RUN dnf -y --setopt=tsflags=nodocs install \
-    boost-python3 \
-    boost-regex \
-    brewkoji \
     cppcheck \
     csmock \
     csmock-plugin-unicontrol \

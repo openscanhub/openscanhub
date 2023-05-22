@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   db:
-    image: registry-proxy.engineering.redhat.com/rh-osbs/rhel8-postgresql-12
+    image: quay.io/sclorg/postgresql-12-c8s
     container_name: db
     hostname: db
     environment:
