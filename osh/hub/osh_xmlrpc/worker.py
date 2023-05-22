@@ -5,15 +5,18 @@ import logging
 import os
 import shutil
 
+from kobo.client.constants import TASK_STATES
 from kobo.django.upload.models import FileUpload
 from kobo.hub.decorators import validate_worker
 from kobo.hub.models import Task
+from kobo.hub.xmlrpc.worker import interrupt_tasks as kobo_interrupt_tasks
 
 from osh.common.csmock_parser import unpack_and_return_api
 from osh.hub.errata.models import ScanningSession
 from osh.hub.errata.scanner import (BaseNotValidException, obtain_base,
                                     prepare_base_scan)
-from osh.hub.scan.models import AnalyzerVersion, AppSettings, Scan, ScanBinding
+from osh.hub.scan.models import (SCAN_STATES, AnalyzerVersion, AppSettings,
+                                 Scan, ScanBinding)
 from osh.hub.scan.notify import send_task_notification
 from osh.hub.scan.xmlrpc_helper import fail_scan as h_fail_scan
 from osh.hub.scan.xmlrpc_helper import finish_scan as h_finish_scan
@@ -177,3 +180,20 @@ def ensure_base_is_scanned_properly(request, scan_id, task_id):
             scan.set_base(base_scan)
     else:
         logger.info('Scan %s does not need base' % scan)
+
+
+@validate_worker
+def interrupt_tasks(request, task_list):
+    response = kobo_interrupt_tasks(request, task_list)
+
+    for task_id in task_list:
+        task = Task.objects.get(id=task_id)
+        if task.state != TASK_STATES["INTERRUPTED"]:
+            continue
+
+        sb = ScanBinding.objects.filter(task=task).first()
+        if sb is None:
+            continue
+        sb.scan.set_state(SCAN_STATES['FAILED'])
+
+    return response
