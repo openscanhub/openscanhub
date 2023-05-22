@@ -17,6 +17,9 @@ BuildRequires:  python3-psycopg2
 BuildRequires:  python3-setuptools
 BuildRequires:  systemd-rpm-macros
 
+# make sure that %%{bash_completions_dir} is defined in the buildroot
+%{!?bash_completions_dir: %global bash_completions_dir %{_datadir}/bash-completion/completions}
+
 # The following dependencies are not yet available in EPEL-9.  Make it
 # possible to build at least functional up2date osh-client for EPEL-9.
 %if 0%{?rhel} != 9
