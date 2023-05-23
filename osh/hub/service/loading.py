@@ -1,8 +1,6 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 # SPDX-FileCopyrightText: Copyright contributors to the OpenScanHub project.
 
-# -*- coding: utf-8 -*-
-
 """
 module for loading defects from JSON formatted files and making operations upon these data
 """

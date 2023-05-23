@@ -1,8 +1,6 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 # SPDX-FileCopyrightText: Copyright contributors to the OpenScanHub project.
 
-# -*- coding: utf-8 -*-
-
 """these functions are exported via XML-RPC"""
 
 import logging

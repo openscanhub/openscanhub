@@ -1,7 +1,6 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 # SPDX-FileCopyrightText: Copyright contributors to the OpenScanHub project.
 
-# -*- coding: utf-8 -*-
 """
 Created on Mon Aug 20 10:36:56 2012
 
