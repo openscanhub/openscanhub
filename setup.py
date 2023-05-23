@@ -45,12 +45,10 @@ package_data = {
 
 hub_path = Path("osh/hub")
 for folder in (
-    "static",
     "templates",
     "media",
     "scan/fixtures",
     "errata/fixtures",
-    "fixtures",
 ):
 
     for path in glob(str(hub_path / folder / "**"), recursive=True):

@@ -139,6 +139,11 @@ PYTHONPATH=. osh/hub/manage.py collectstatic --noinput
 %install
 %py3_install
 
+%if 0%{?rhel} != 9
+# install the files collected by `manage.py collectstatic`
+cp -a {,%{buildroot}%{python3_sitelib}/}osh/hub/static/
+%endif
+
 # Temporarily provide /usr/bin/covscan for backward compatibility
 ln -s osh-cli %{buildroot}%{_bindir}/covscan
 
