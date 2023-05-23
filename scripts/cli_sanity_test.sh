@@ -41,8 +41,8 @@ cov-list() (
 
 cov-mock-build() {
     args="$1"
-    config="${2:-fedora-36-$(uname -m)}"
-    build="${3:-units-2.21-4.fc36}"
+    config="${2:-fedora-37-$(uname -m)}"
+    build="${3:-units-2.21-5.fc37}"
 
 # RETRY=true
 
@@ -52,9 +52,9 @@ cov-mock-build() {
 
 cov-version-diff-build() {
     args="$1"
-    config="${2:-fedora-36-$(uname -m)}"
+    config="${2:-fedora-37-$(uname -m)}"
     build="${3:-units-2.21-4.eln116}"
-    base_build="${4:-units-2.21-4.fc36}"
+    base_build="${4:-units-2.21-5.fc37}"
 
 # RETRY=true
 

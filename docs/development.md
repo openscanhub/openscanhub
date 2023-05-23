@@ -111,7 +111,7 @@ As pointed above, all of these dependencies are automatically set up in the clie
 
   ```bash
   OSH_CLIENT_CONFIG_FILE=osh/client/client-local.conf PYTHONPATH=.:kobo python3 osh/client/osh-cli list-mock-configs
-  OSH_CLIENT_CONFIG_FILE=osh/client/client-local.conf PYTHONPATH=.:kobo python3 osh/client/osh-cli mock-build --config=fedora-36-x86_64 --brew-build units-2.21-4.fc36 --nowait
+  OSH_CLIENT_CONFIG_FILE=osh/client/client-local.conf PYTHONPATH=.:kobo python3 osh/client/osh-cli mock-build --config=fedora-37-x86_64 --brew-build units-2.21-5.fc37 --nowait
   OSH_CLIENT_CONFIG_FILE=osh/client/client-local.conf PYTHONPATH=.:kobo python3 osh/client/osh-cli watch-log 1 #Replace 1 with task id
   ```
 
@@ -121,7 +121,7 @@ As pointed above, all of these dependencies are automatically set up in the clie
 
   ```bash
   podman exec -i osh-client python3 osh/client/osh-cli list-mock-configs
-  podman exec -i osh-client python3 osh/client/osh-cli mock-build --config=fedora-36-x86_64 --brew-build units-2.21-4.fc36
+  podman exec -i osh-client python3 osh/client/osh-cli mock-build --config=fedora-37-x86_64 --brew-build units-2.21-5.fc37
   ```
 
 ## XML-RPC interface used by Errata Tool
