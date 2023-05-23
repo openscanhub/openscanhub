@@ -4,13 +4,12 @@ Requires=network-online.target
 After=network-online.target
 
 [Service]
-Type=forking
-PIDFile=/run/osh-worker.pid
+Type=exec
 ExecStartPre=test -r /etc/osh/worker.conf
-ExecStart=/usr/sbin/osh-worker -p /run/osh-worker.pid
-ExecStop=/usr/sbin/osh-worker -k
+ExecStart=/usr/sbin/osh-worker -f
 KillMode=process
 Restart=on-failure
+StandardOutput=append:/var/log/osh/worker.log
 
 [Install]
 WantedBy=multi-user.target
