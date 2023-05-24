@@ -77,6 +77,9 @@ build-rpms-on-copr-and-test:
     # enabling it in future.
     - setenforce 0
     - dnf remove -y $(rpm -qa | grep -i "covscan\|osh")
+    # Remove stale files from previous jobs to avoid conflicts with newer tasks
+    # https://gitlab.cee.redhat.com/covscan/covscan/-/merge_requests/358#note_6640916
+    - rm -rf /var/lib/osh/hub/{upload,tasks,worker}
     - systemctl status
   script:
     - cp containers/rhel-8-pulp.repo containers/rcm-tools-for-rhel-8.repo /etc/yum.repos.d/
