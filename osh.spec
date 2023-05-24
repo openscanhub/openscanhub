@@ -150,10 +150,6 @@ ln -s osh-worker %{buildroot}/usr/sbin/covscand
 # https://gitlab.cee.redhat.com/covscan/covscan/-/merge_requests/256#note_6196616
 ln -s osh-worker.service %{buildroot}%{_unitdir}/covscand.service
 
-# Temporarily provide /usr/lib/python3.6/site-packages/osh/hub/covscanhub.wsgi for backward compatibility
-# https://gitlab.cee.redhat.com/covscan/covscan/-/merge_requests/217#note_6042264
-ln -s osh-hub.wsgi %{buildroot}%{python3_sitelib}/osh/hub/covscanhub.wsgi
-
 # create /etc/osh/hub directory
 mkdir -p %{buildroot}%{_sysconfdir}/osh/hub
 
