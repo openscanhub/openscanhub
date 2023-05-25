@@ -8,7 +8,8 @@ import re
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
-from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
+from django.core.exceptions import (MultipleObjectsReturned,
+                                    ObjectDoesNotExist, ValidationError)
 from django.db import models, transaction
 from django.urls import reverse
 from django.utils.safestring import mark_safe
@@ -1220,6 +1221,25 @@ class ProfileManager(models.Manager):
         return self.filter(enabled=True).values("name", "description")
 
 
+# TODO: We should replace this key with a One-to-Many releation with Analyzer.
+def _validate_command_arguments(cmd_args):
+    if 'analyzers' not in cmd_args:
+        raise ValidationError('Command arguments must contain the "analyzers" key.')
+
+    analyzers = cmd_args['analyzers']
+    if not analyzers:
+        raise ValidationError('Command arguments contain an empty "analyzers" key.')
+
+    errors = [
+        ValidationError(f'Command arguments contain unknown analyzer: "{analyzer}"')
+        for analyzer in analyzers.split(',')
+        if not Analyzer.objects.filter(name=analyzer)
+    ]
+
+    if errors:
+        raise ValidationError(errors)
+
+
 class Profile(models.Model):
     """
     Preconfigured setups, e.g.: python, c, aggresive c, ...
@@ -1231,7 +1251,8 @@ class Profile(models.Model):
         default=dict,
         help_text="this field has to contain key 'analyzers', "
                   "which is a comma separated list of analyzers, "
-                  "optionally add key csmock_args, which is a string")
+                  "optionally add key csmock_args, which is a string",
+        validators=[_validate_command_arguments])
 
     objects = ProfileManager()
 
@@ -1243,11 +1264,7 @@ class Profile(models.Model):
 
     @property
     def analyzers(self):
-        try:
-            return self.command_arguments['analyzers']
-        except KeyError:
-            logger.error('profile doesn\'t have any analyzers: %s', self.command_arguments)
-            raise RuntimeError('no analyzers in profile %s', self)
+        return self.command_arguments['analyzers']
 
     @property
     def csmock_args(self):
