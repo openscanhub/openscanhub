@@ -24,9 +24,6 @@ RUN dnf -y --setopt=tsflags=nodocs install \
 
 RUN adduser csmock -G mock
 
-# override config_opts['use_bootstrap'] from mock config to make it work in a container
-RUN sed -e 's|print_main_output=True"|&, "--no-bootstrap-chroot"|' -i /usr/bin/csmock
-
 RUN touch /WORKER_IS_READY
 
 CMD coverage-3 run --parallel-mode --omit="*site-packages*,*kobo*," osh/worker/osh-worker -f
