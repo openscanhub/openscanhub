@@ -51,7 +51,7 @@ LOGGING = {
         },
     },
     'loggers': {
-        'openscanhub': {
+        'osh': {
             'handlers': ['file'],
             'level': 'DEBUG',
             'propagate': True,

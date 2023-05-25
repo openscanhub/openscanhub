@@ -58,7 +58,7 @@ LOGGING = {
         }
     },
     'loggers': {
-        'opencanhub': {
+        'osh': {
             'handlers': ['file', 'console'],
             'level': 'DEBUG',
             'propagate': True,
