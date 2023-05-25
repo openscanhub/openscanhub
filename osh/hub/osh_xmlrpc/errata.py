@@ -15,7 +15,7 @@ __all__ = (
     "get_scan_state",
 )
 
-logger = logging.getLogger("openscanhub")
+logger = logging.getLogger(__name__)
 
 
 @login_required
