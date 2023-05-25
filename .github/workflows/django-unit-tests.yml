@@ -1,0 +1,30 @@
+name: django-unit-tests
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+jobs:
+  django-unit-tests:
+    runs-on: ubuntu-latest
+    # container: fedora:37
+    steps:
+      - name: Install packages required for unit tests
+        run: |
+          sudo apt-get install -y git
+          pip3 install podman-compose
+      - name: Checkout Git Repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: before_script
+        run: |
+          # This is here to suppress a warning from GitHub
+          # git config --global --add safe.directory /__w/openscanhub/openscanhub
+          git clone https://github.com/release-engineering/kobo.git
+          containers/scripts/init-db.sh --force --minimal
+          podman exec -it db psql -c 'ALTER USER openscanhub CREATEDB;'
+          podman exec -it osh-hub /usr/bin/coverage-3.6 run --omit="*site-packages*,*kobo*," osh/hub/manage.py test -v 3 || exit 1
+          podman exec -it osh-hub /usr/bin/coverage-3.6 html
+          podman-compose logs db
+          podman-compose logs osh-hub
