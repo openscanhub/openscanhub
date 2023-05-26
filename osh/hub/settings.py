@@ -189,10 +189,6 @@ XMLRPC_METHODS = {
 LOGIN_URL_NAME = 'auth/krb5login'
 LOGIN_EXEMPT_URLS = ['.*xmlrpc/.*']
 
-BREW_URL = 'https://brewhub.engineering.redhat.com/brewhub'
-BREW_BIN_NAME = 'brew'
-KOJI_URL = 'https://koji.fedoraproject.org/kojihub'
-KOJI_BIN_NAME = 'koji'
 ET_SCAN_PRIORITY = 20
 
 VALID_TASK_LOG_EXTENSIONS = ['.log', '.ini', '.err', '.out', '.js', '.txt']

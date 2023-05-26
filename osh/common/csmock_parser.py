@@ -301,11 +301,11 @@ class CsmockRunner:
         return self.analyze(analyzers, srpm_path, profile, su_user, additional_arguments, **kwargs)
 
     def koji_analyze(self, analyzers, nvr, profile=None, su_user=None,
-                     additional_arguments=None, koji_bin="koji", **kwargs):
+                     additional_arguments=None, koji_profile="koji", **kwargs):
         if profile == "cspodman":
             return self.analyze(analyzers, nvr, profile, su_user, additional_arguments, result_filename=nvr, **kwargs)
 
-        download_cmd = [koji_bin, "download-build", "--quiet", "--arch=src", nvr]
+        download_cmd = ["koji", "-p", koji_profile, "download-build", "--quiet", "--arch=src", nvr]
         try:
             work_dir = self.tmpdir or os.getcwd()
             subprocess.check_call(download_cmd, cwd=work_dir)

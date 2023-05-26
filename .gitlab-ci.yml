@@ -81,7 +81,7 @@ build-rpms-on-copr-and-test:
   script:
     - cp containers/rhel-8-pulp.repo containers/rcm-tools-for-rhel-8.repo /etc/yum.repos.d/
     - (cd /etc/yum.repos.d/ && curl -O https://copr.devel.redhat.com/coprs/kdudka/mock/repo/epel-8/kdudka-mock-epel-8.repo)
-    - dnf install -y findutils git make openssl python36 python3-dnf-plugins-core python3-setuptools rpm-build postgresql-server
+    - dnf install -y findutils git make openssl python36 python3-dnf-plugins-core python3-setuptools rpm-build postgresql-server brewkoji
     - dnf install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
     - dnf copr enable @copr/copr -y
     - dnf copr enable copr.devel.redhat.com/rhcopr-project/toolset -y

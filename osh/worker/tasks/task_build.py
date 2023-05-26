@@ -54,7 +54,7 @@ class Build:
                     build['nvr'],
                     profile=mock_config,
                     additional_arguments=csmock_args,
-                    koji_bin=build['koji_bin'],
+                    koji_profile=build['koji_profile'],
                     su_user=su_user)
             elif srpm_name:
                 url = urljoin(task_url, f'log/{srpm_name}?format=raw')

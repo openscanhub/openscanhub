@@ -406,7 +406,7 @@ class ClientScanScheduler(AbstractClientScanScheduler):
         self.is_tarball = bool(self.options.get("tarball_build_script", None))
         check_srpm_response = check_srpm(self.upload_id, self.build_nvr, self.username, self.is_tarball)
         if check_srpm_response['type'] == 'build':
-            self.build_kojibin = check_srpm_response['koji_bin']
+            self.build_koji_profile = check_srpm_response['koji_profile']
         elif check_srpm_response['type'] == 'upload':
             self.srpm_path = check_srpm_response['srpm_path']
             self.srpm_name = check_srpm_response['srpm_name']
@@ -447,7 +447,7 @@ class ClientScanScheduler(AbstractClientScanScheduler):
         if self.build_nvr:
             self.task_args['args']['build'] = {
                 'nvr': self.build_nvr,
-                'koji_bin': self.build_kojibin,
+                'koji_profile': self.build_koji_profile,
             }
         else:
             self.task_args['args']['srpm_name'] = self.srpm_name
@@ -533,7 +533,7 @@ class ClientDiffScanScheduler(ClientScanScheduler):
         self.base_upload_id = self.options.get('base_upload_id', None)
         base_check_srpm_response = check_srpm(self.base_upload_id, self.base_build_nvr, self.username)
         if base_check_srpm_response['type'] == 'build':
-            self.base_build_kojibin = base_check_srpm_response['koji_bin']
+            self.base_build_koji_profile = base_check_srpm_response['koji_profile']
         elif base_check_srpm_response['type'] == 'upload':
             self.base_srpm_path = base_check_srpm_response['srpm_path']
             self.base_srpm_name = base_check_srpm_response['srpm_name']
@@ -565,7 +565,7 @@ class ClientDiffScanScheduler(ClientScanScheduler):
         if self.base_build_nvr:
             args['build'] = {
                 'nvr': self.base_build_nvr,
-                'koji_bin': self.base_build_kojibin,
+                'koji_profile': self.base_build_koji_profile,
             }
         else:
             args['srpm_name'] = self.base_srpm_name

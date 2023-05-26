@@ -9,7 +9,6 @@ import logging
 import os
 
 import koji
-from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from kobo.django.upload.models import FileUpload
 from kobo.rpmlib import parse_nvr
@@ -44,21 +43,21 @@ def check_obsolete_scan(package, release):
 
 
 def check_build(nvr, check_additional=False):
-    url = settings.BREW_URL
-    bin = settings.BREW_BIN_NAME
+    configs = ['brew']
+    if check_additional:
+        configs.append('koji')
 
-    brew_proxy = koji.ClientSession(url)
-    build = brew_proxy.getBuild(nvr)
+    for config in configs:
+        try:
+            server = koji.read_config(config)['server']
+        except koji.ConfigurationError as e:
+            logger.debug('koji: %s', e)
+            continue
+        build = koji.ClientSession(server).getBuild(nvr)
+        if build:
+            return {'nvr': nvr, 'koji_profile': config}
 
-    if not build and check_additional:
-        url = settings.KOJI_URL
-        bin = settings.KOJI_BIN_NAME
-        brew_proxy = koji.ClientSession(url)
-        build = brew_proxy.getBuild(nvr)
-    if not build:
-        raise RuntimeError("Brew build '%s' does not exist" % nvr)
-
-    return nvr, url, bin
+    raise RuntimeError(f"Build '{nvr}' does not exist")
 
 
 def check_analyzers(analyzers_chain):
@@ -94,14 +93,11 @@ def check_upload(upload_id, task_user, is_tarball=False):
 
 def check_srpm(upload_id, build_nvr, task_user, is_tarball=False):
     if build_nvr:
-        cb_response = check_build(build_nvr, check_additional=True)
-        response = {
-            'type': 'build',
-            'nvr': cb_response[0],
-            'koji_bin': cb_response[2],
-            'koji_url': cb_response[1],
-        }
-    elif upload_id:
+        response = check_build(build_nvr, check_additional=True)
+        response['type'] = 'build'
+        return response
+
+    if upload_id:
         cu_response = check_upload(upload_id, task_user, is_tarball)
         response = {
             'type': 'upload',
