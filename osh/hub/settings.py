@@ -55,6 +55,11 @@ STATICFILES_DIRS = (
 # Examples: "http://foo.com/media/", "/media/".
 ADMIN_MEDIA_PREFIX = '/osh/admin/media/'
 
+# Default field type for primary keys
+# TODO: By default, Django 3 uses BigAutoField but we must remain compatible
+# with Kobo which still supports Django 2.
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
