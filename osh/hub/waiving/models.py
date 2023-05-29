@@ -468,10 +468,10 @@ class Bug(models.Model):
 
 
 class JiraBug(Bug):
-    key = models.CharField(max_length=64, primary_key=True)
+    key = models.CharField(max_length=64)
 
     def __str__(self):
-        return "#%d Jira Issue #%d (%s, %s.%d)" % (
+        return "#%d Jira Issue #%s (%s, %s.%d)" % (
             self.id,
             self.key,
             self.package.name,
