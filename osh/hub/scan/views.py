@@ -6,11 +6,12 @@ from django.shortcuts import render
 from django.urls import reverse
 from django.views.generic.detail import DetailView
 from django.views.generic.list import ListView
+from kobo.django.views.generic import SearchView
 from kobo.django.xmlrpc.decorators import login_required
 
 from osh.hub.osh_xmlrpc.scan import (create_user_diff_task, diff_build,
                                      mock_build)
-from osh.hub.scan.forms import ScanSubmissionForm
+from osh.hub.scan.forms import PackageSearchForm, ScanSubmissionForm
 
 from .models import MockConfig, Package
 
@@ -26,15 +27,13 @@ class MockConfigListView(ListView):
         return MockConfig.objects.all()
 
 
-class PackageListView(ListView):
+class PackageListView(SearchView):
     template_name = "scan/package_list.html"
+    form_class = PackageSearchForm
     context_object_name = "package"
     title = "Package list"
     paginate_by = 50
     allow_empty = True
-
-    def get_queryset(self):
-        return Package.objects.all()
 
 
 class PackageDetailView(DetailView):

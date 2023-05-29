@@ -4,6 +4,11 @@
 {% block content %}
 <h2>{% trans "Package list" %}</h2>
 
+<form method="GET" target="" style="float: left;">
+  {{ form.search }}
+  <input type="submit" value="{% trans "Search" %}"/>
+</form>
+
 {% include "pagination.html" %}
 
 <table class="list" width="100%">

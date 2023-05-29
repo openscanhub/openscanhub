@@ -2,9 +2,29 @@
 # SPDX-FileCopyrightText: Copyright contributors to the OpenScanHub project.
 
 from django import forms
+from django.db.models import Q
 
 from osh.hub.errata.check import check_build, check_nvr
-from osh.hub.scan.models import MockConfig
+from osh.hub.scan.models import MockConfig, Package
+
+
+class PackageSearchForm(forms.Form):
+    blocked = forms.BooleanField(required=False)
+    search = forms.CharField(required=False)
+
+    def __init__(self, *args, **kwargs):
+        self.order_by = kwargs.pop('order_by', ['name'])
+        super().__init__(*args, **kwargs)
+
+    def get_query(self, request):
+        self.is_valid()
+        search = self.cleaned_data["search"]
+
+        query = Q()
+        if search:
+            query &= Q(name__icontains=search)
+
+        return Package.objects.filter(query).order_by(*self.order_by)
 
 
 def validate_brew_build(value):
