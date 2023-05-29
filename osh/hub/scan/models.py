@@ -417,6 +417,9 @@ class PackageAttributeManager(models.Manager, PackageAttributeMixin):
     def get_queryset(self):
         return PackageAttributeQuerySet(self.model, using=self._db)
 
+    def get_blocked_packages(self):
+        return self.get_queryset().filter(key=PackageAttribute.BLOCKED, value='Y').values_list("package__id", flat=True)
+
 
 class PackageAttribute(models.Model):
     """

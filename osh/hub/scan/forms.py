@@ -5,7 +5,7 @@ from django import forms
 from django.db.models import Q
 
 from osh.hub.errata.check import check_build, check_nvr
-from osh.hub.scan.models import MockConfig, Package
+from osh.hub.scan.models import MockConfig, Package, PackageAttribute
 
 
 class PackageSearchForm(forms.Form):
@@ -18,11 +18,15 @@ class PackageSearchForm(forms.Form):
 
     def get_query(self, request):
         self.is_valid()
+        blocked = self.cleaned_data["blocked"]
         search = self.cleaned_data["search"]
 
         query = Q()
         if search:
             query &= Q(name__icontains=search)
+
+        if blocked:
+            query &= Q(blocked=True) | Q(id__in=PackageAttribute.objects.get_blocked_packages())
 
         return Package.objects.filter(query).order_by(*self.order_by)
 

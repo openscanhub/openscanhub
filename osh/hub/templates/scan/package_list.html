@@ -7,6 +7,7 @@
 <form method="GET" target="" style="float: left;">
   {{ form.search }}
   <input type="submit" value="{% trans "Search" %}"/>
+  {{ form.blocked }} Show only blocked packages
 </form>
 
 {% include "pagination.html" %}
