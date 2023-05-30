@@ -69,7 +69,7 @@ main() {
     [[ -f "$untar_dir_name/scan-results.js" ]] && [[ -f "$untar_dir_name/scan-results.html" ]] && [[ -f "$untar_dir_name/scan.log" ]]
     rm -rf units*.tar.xz "$untar_dir_name"
 
-    podman exec osh-client "${CLI_XML[@]}" --hub http://osh-hub:8000/xmlrpc/kerbauth/ --username=user --password=xxxxxx create-scan -b mod_security_crs-3.0.0-5.el8 -t mod_security_crs-3.3.0-2.el8 --et-scan-id=1 --release=RHEL-8.5.0 --owner=admin --advisory-id=1
+    podman exec osh-client "${CLI_XML[@]}" --hub http://osh-hub:8000/xmlrpc/kerbauth/ --username=user --password=xxxxxx create-scan -b libssh2-1.10.0-5.fc37 -t libssh2-1.10.0-7.fc38 --et-scan-id=1 --release=Fedora-37 --owner=admin --advisory-id=1
 
     SCAN_STATUS=`podman exec osh-client "${CLI_XML[@]}" --hub http://osh-hub:8000/xmlrpc/kerbauth/ --username=user --password=xxxxxx get-scan-state 1 2>&1`
     while [[ $SCAN_STATUS == *"QUEUED"* ]] || [[ $SCAN_STATUS == *"SCANNING"* ]]; do
@@ -88,7 +88,7 @@ main() {
     podman exec -it db psql -d openscanhub -c "INSERT INTO scan_package (name, blocked, priority_offset) VALUES ('expat', false, 1);"
 
     # submit errata scan and check its tasks priorities
-    podman exec osh-client "${CLI_XML[@]}" --hub http://osh-hub:8000/xmlrpc/kerbauth/ --username=user --password=xxxxxx create-scan -b expat-2.2.5-4.el8 -t expat-2.2.5-10.el8_7.1 --et-scan-id=1 --release=RHEL-8.5.0 --owner=admin --advisory-id=1
+    podman exec osh-client "${CLI_XML[@]}" --hub http://osh-hub:8000/xmlrpc/kerbauth/ --username=user --password=xxxxxx create-scan -b expat-2.5.0-1.fc37 -t expat-2.5.0-2.fc38 --et-scan-id=1 --release=Fedora-37 --owner=admin --advisory-id=1
 
     SCAN_STATUS=`podman exec osh-client "${CLI_XML[@]}" --hub http://osh-hub:8000/xmlrpc/kerbauth/ --username=user --password=xxxxxx get-scan-state 2 2>&1`
     while [[ $SCAN_STATUS == *"QUEUED"* ]] || [[ $SCAN_STATUS == *"SCANNING"* ]]; do
@@ -96,7 +96,7 @@ main() {
         SCAN_STATUS=`podman exec osh-client "${CLI_XML[@]}" --hub http://osh-hub:8000/xmlrpc/kerbauth/ --username=user --password=xxxxxx get-scan-state 2 2>&1`
     done;
 
-    [[ $SCAN_STATUS == *"NEEDS_INSPECTION"* ]]
+    [[ $SCAN_STATUS == *"PASSED"* ]]
 
     # verify that main task has the right priority
     curl http://localhost:8000/task/8/ | grep -Pzo "<th>Priority</th>\n    <td>21</td>"
@@ -118,7 +118,7 @@ main() {
     curl http://localhost:8000/task/11/ | grep -Pzo "<th>Priority</th>\n    <td>11</td>"
 
     # priority offset feature testing end
-    podman exec osh-client /usr/bin/coverage-3.6 run --parallel-mode '--omit=*site-packages*,*kobo*,' osh/hub/scripts/osh-xmlrpc-client.py --hub http://osh-hub:8000/xmlrpc/kerbauth/ --username=user --password=xxxxxx create-scan -b python-six-1.3.0-4.el7 -t python-six-1.9.0-2.el7 --et-scan-id=1 --release=RHEL-7.2.0 --owner=admin --advisory-id=1
+    podman exec osh-client /usr/bin/coverage-3.6 run --parallel-mode '--omit=*site-packages*,*kobo*,' osh/hub/scripts/osh-xmlrpc-client.py --hub http://osh-hub:8000/xmlrpc/kerbauth/ --username=user --password=xxxxxx create-scan -b units-2.18-3.fc30 -t units-2.22-5.fc39 --et-scan-id=1 --release=Fedora-37 --owner=admin --advisory-id=1
 
     # test generation of usage statistics
     podman exec osh-hub /usr/bin/coverage-3.6 run --parallel-mode '--omit=*site-packages*,*kobo*,' osh/hub/scripts/osh-stats
