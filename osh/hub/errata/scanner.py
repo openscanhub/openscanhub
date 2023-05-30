@@ -64,7 +64,7 @@ class AbstractScheduler:
         self.package_owner = get_or_fail('package_owner', self.options)
         self.nvr = get_or_fail('target', self.options)
         self.target_nvre_dict = check_nvr(self.nvr)
-        check_build(self.nvr)
+        check_build(self.nvr, check_additional=True)
 
     def prepare_args(self):
         """ prepare dicts -- arguments for task and scan """
