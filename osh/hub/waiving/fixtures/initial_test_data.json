@@ -2492,7 +2492,7 @@
       "command_arguments": {
         "analyzers": "gcc,clang,cppcheck,shellcheck",
         "csmock_args": "--use-host-cppcheck --gcc-analyze",
-        "koji_profile": "brew"
+        "koji_profile": "koji"
       }
     }
   },
@@ -2506,7 +2506,7 @@
       "command_arguments": {
         "analyzers": "gcc,clang,cppcheck,shellcheck",
         "csmock_args": "--use-host-cppcheck --gcc-analyze",
-        "koji_profile": "brew"
+        "koji_profile": "koji"
       }
     }
   },
@@ -2544,7 +2544,7 @@
       "enabled": true,
       "command_arguments": {
         "analyzers": "gcc",
-        "koji_profile": "brew"
+        "koji_profile": "koji"
       }
     }
   },
@@ -2558,7 +2558,7 @@
       "command_arguments": {
         "analyzers": "gcc,clang,cppcheck",
         "csmock_args": "--cov-analyze-java --use-host-cppcheck",
-        "koji_profile": "brew"
+        "koji_profile": "koji"
       }
     }
   },
@@ -2572,7 +2572,7 @@
       "command_arguments": {
         "analyzers": "gcc,cppcheck",
         "csmock_args": "--cov-analyze-java --use-host-cppcheck",
-        "koji_profile": "brew"
+        "koji_profile": "koji"
       }
     }
   },
@@ -2585,7 +2585,7 @@
       "enabled": false,
       "command_arguments": {
         "analyzers": "smatch",
-        "koji_profile": "brew"
+        "koji_profile": "koji"
       }
     }
   },
@@ -2599,7 +2599,7 @@
       "command_arguments": {
         "analyzers": "gcc",
         "csmock_args": "--gcc-add-flag=-Wduplicated-branches --gcc-add-flag=-Wduplicated-cond --gcc-add-flag=-Wlogical-op --gcc-add-flag=-Wjump-misses-init --gcc-add-flag=-Wshadow --gcc-add-flag=-Wformat=2 --gcc-add-flag=-Wfloat-equal",
-        "koji_profile": "brew"
+        "koji_profile": "koji"
       }
     }
   },
@@ -2691,7 +2691,7 @@
       "command_arguments": {
         "analyzers": "gcc,clang,cppcheck,shellcheck,unicontrol",
         "csmock_args": "--use-host-cppcheck --gcc-analyze --unicontrol-notests --unicontrol-bidi-only",
-        "koji_profile": "brew"
+        "koji_profile": "koji"
       }
     }
   },
@@ -2718,7 +2718,7 @@
       "command_arguments": {
         "analyzers": "gcc,clang,cppcheck,shellcheck",
         "csmock_args": "--use-host-cppcheck --gcc-analyze --rpm-build-opts='--define \\\"_target_cpu s390x\\\"' --keep-going",
-        "koji_profile": "brew"
+        "koji_profile": "koji"
       }
     }
   },
