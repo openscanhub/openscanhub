@@ -11,9 +11,13 @@ BuildArch:      noarch
 BuildRequires:  koji
 BuildRequires:  python3-csdiff
 BuildRequires:  python3-devel
+BuildRequires:  python3-django >= %{min_required_version_django}
 BuildRequires:  python3-kobo-client
+BuildRequires:  python3-kobo-django
+BuildRequires:  python3-kobo-hub
 BuildRequires:  python3-kobo-rpmlib
 BuildRequires:  python3-psycopg2
+BuildRequires:  python3-qpid-proton
 BuildRequires:  python3-setuptools
 BuildRequires:  systemd-rpm-macros
 
@@ -21,14 +25,6 @@ BuildRequires:  systemd-rpm-macros
 %{!?bash_completions_dir: %global bash_completions_dir %{_datadir}/bash-completion/completions}
 %{!?zsh_completions_dir: %global zsh_completions_dir %{_datadir}/zsh/site-functions}
 
-# The following dependencies are not yet available in EPEL-9.  Make it
-# possible to build at least functional up2date osh-client for EPEL-9.
-%if 0%{?rhel} != 9
-BuildRequires:  python3-django >= %{min_required_version_django}
-BuildRequires:  python3-kobo-django
-BuildRequires:  python3-kobo-hub
-BuildRequires:  python3-qpid-proton
-%endif
 
 %description
 OpenScanHub is a service for static and dynamic analysis.
@@ -133,10 +129,8 @@ done)
 # do this automatically.
 %py3_shebang_fix osh/client/osh-cli
 
-%if 0%{?rhel} != 9
 # collect static files from Django itself
 PYTHONPATH=. osh/hub/manage.py collectstatic --noinput
-%endif
 
 %py3_build
 
@@ -144,10 +138,8 @@ PYTHONPATH=. osh/hub/manage.py collectstatic --noinput
 %install
 %py3_install
 
-%if 0%{?rhel} != 9
 # install the files collected by `manage.py collectstatic`
 cp -a {,%{buildroot}%{python3_sitelib}/}osh/hub/static/
-%endif
 
 # Temporarily provide /usr/bin/covscan for backward compatibility
 ln -s osh-cli %{buildroot}%{_bindir}/covscan
