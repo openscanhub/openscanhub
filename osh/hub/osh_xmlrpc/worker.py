@@ -14,8 +14,7 @@ from kobo.hub.xmlrpc.worker import interrupt_tasks as kobo_interrupt_tasks
 from osh.hub.errata.models import ScanningSession
 from osh.hub.errata.scanner import (BaseNotValidException, obtain_base,
                                     prepare_base_scan)
-from osh.hub.scan.models import (SCAN_STATES, AnalyzerVersion, AppSettings,
-                                 Scan, ScanBinding)
+from osh.hub.scan.models import AnalyzerVersion, AppSettings, Scan, ScanBinding
 from osh.hub.scan.notify import send_task_notification
 from osh.hub.scan.xmlrpc_helper import fail_scan as h_fail_scan
 from osh.hub.scan.xmlrpc_helper import finish_scan as h_finish_scan
@@ -194,6 +193,7 @@ def interrupt_tasks(request, task_list):
         sb = ScanBinding.objects.filter(task=task).first()
         if sb is None:
             continue
-        sb.scan.set_state(SCAN_STATES['FAILED'])
+
+        fail_scan(request, sb.scan.id, 'Task was interrupted')
 
     return response
