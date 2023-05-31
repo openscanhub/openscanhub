@@ -65,8 +65,6 @@ class ErrataDiffBuild(TaskBase):
                 pass
             self.hub.worker.set_scan_to_scanning(scan_id)
 
-        self.hub.worker.set_scan_to_scanning(scan_id)
-
         scanning_args = self.hub.worker.get_scanning_args(scanning_session_id)
         add_args = scanning_args.get('csmock_args', '')
         koji_profile = scanning_args.get('koji_profile', 'koji')
