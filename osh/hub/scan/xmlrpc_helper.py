@@ -75,7 +75,7 @@ def fail_scan(scan_id, reason=None):
         Task.objects.filter(id=scan.scanbinding.task.id).update(
             result="Scan failed due to: %s" % reason)
     if scan.is_errata_base_scan():
-        fail_scan(scan.scanbinding.task.parent.scanbinding.scan.id, "Bask scan failed")
+        fail_scan(scan.scanbinding.task.parent.scanbinding.scan.id, "Base scan failed")
 
 
 def cancel_scan_tasks(task):
