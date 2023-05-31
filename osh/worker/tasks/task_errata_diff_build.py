@@ -47,7 +47,7 @@ class ErrataDiffBuild(TaskBase):
         # (re)scan base if needed
         base_task_args = self.hub.worker.ensure_base_is_scanned_properly(scan_id, self.task_id)
         if base_task_args is not None:
-            subtask_id = self.spawn_subtask(*tuple(base_task_args))
+            subtask_id = self.spawn_subtask(*base_task_args)
             self.hub.worker.set_scan_to_basescanning(scan_id)
             self.hub.worker.assign_task(subtask_id)
             self.hub.worker.create_sb(subtask_id)
