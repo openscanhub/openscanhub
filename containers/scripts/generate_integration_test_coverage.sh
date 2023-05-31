@@ -40,7 +40,7 @@ main() {
     podman exec -it osh-client "${CLI_COV[@]}" list-profiles | grep default
     podman exec -it osh-client "${CLI_COV[@]}" list-mock-configs | grep fedora
     podman exec osh-client "${CLI_COV[@]}" mock-build --config=fedora-$FEDORA_VERSION-x86_64 --brew-build units-2.21-5.fc$FEDORA_VERSION | grep http://osh-hub:8000/task/1
-    [[ $(podman exec osh-client "${CLI_COV[@]}" task-info 1 | wc -l) -gt 0 ]]
+    podman exec osh-client "${CLI_COV[@]}" task-info 1 | grep "is_failed = False"
     podman exec -it osh-client "${CLI_COV[@]}" download-results 1
     untar_output=$(tar xvf units*.tar.xz)
     untar_dir_name=$(echo $untar_output | cut -d' ' -f1)
@@ -50,6 +50,7 @@ main() {
     [[ $(podman exec osh-client "${CLI_COV[@]}" find-tasks -p units) -eq 1 ]]
 
     podman exec osh-client "${CLI_COV[@]}" diff-build --config=fedora-$FEDORA_VERSION-x86_64 --brew-build units-2.21-5.fc$FEDORA_VERSION | grep http://osh-hub:8000/task/2
+    podman exec osh-client "${CLI_COV[@]}" task-info 2 | grep "is_failed = False"
     podman exec -it osh-client "${CLI_COV[@]}" download-results 2
     untar_output=$(tar xvf units*.tar.xz)
     untar_dir_name=$(echo $untar_output | cut -d' ' -f1)
@@ -61,6 +62,7 @@ main() {
     sed -i "s/RUN_TASKS_IN_FOREGROUND = 1/RUN_TASKS_IN_FOREGROUND = 0/g" osh/worker/worker-local.conf
     podman start osh-worker
     podman exec osh-client "${CLI_COV[@]}" version-diff-build --config=fedora-$FEDORA_VERSION-x86_64 --brew-build units-2.21-5.fc$FEDORA_VERSION --base-config=fedora-$FEDORA_VERSION-x86_64 --base-brew-build units-2.21-5.fc$FEDORA_VERSION | grep http://osh-hub:8000/task/3
+    podman exec osh-client "${CLI_COV[@]}" task-info 3 | grep "is_failed = False"
     podman exec -it osh-client "${CLI_COV[@]}" download-results 3
     untar_output=$(tar xvf units*.tar.xz)
     untar_dir_name=$(echo $untar_output | cut -d' ' -f1)
@@ -105,11 +107,13 @@ main() {
     fi
 
     podman exec osh-client "${CLI_COV[@]}" mock-build --config=fedora-$FEDORA_VERSION-x86_64 --brew-build expat-2.5.0-1.fc$FEDORA_VERSION | grep http://osh-hub:8000/task/10
+    podman exec osh-client "${CLI_COV[@]}" task-info 10 | grep "is_failed = False"
 
     # verify that mock build task has the right priority
     curl http://localhost:8000/task/10/ | grep -Pzo "<th>Priority</th>\n    <td>11</td>"
 
     podman exec osh-client "${CLI_COV[@]}" version-diff-build --config=fedora-$FEDORA_VERSION-x86_64 --brew-build expat-2.5.0-1.fc$FEDORA_VERSION --base-config=fedora-$FEDORA_VERSION-x86_64 --base-brew-build expat-2.5.0-1.fc$FEDORA_VERSION | grep http://osh-hub:8000/task/11
+    podman exec osh-client "${CLI_COV[@]}" task-info 11 | grep "is_failed = False"
     # verify main tasks priority
     curl http://localhost:8000/task/11/ | grep -Pzo "<th>Priority</th>\n    <td>11</td>"
 
