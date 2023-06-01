@@ -782,13 +782,7 @@ counted in statistics.")
 
 class ScanBindingMixin:
     def latest_packages_scans(self):
-        ids = []
-        q = self.finished_well()
-        for p_id in q.values_list('scan__package', flat=True).distinct():
-            p = q.filter(scan__package__id=p_id)
-            for base in p.values_list('scan__base__nvr', flat=True).distinct():
-                ids.append(p.filter(scan__base__nvr=base).latest().id)
-        return self.filter(id__in=ids)
+        return self.finished_well().filter(scan__parent=None)
 
     def by_scan_id(self, scan_id):
         return self.get(scan__id=scan_id)
