@@ -646,13 +646,13 @@ counted in statistics.")
             - True -- processed on time/still has time to process it
             - False -- do not processed on time
         """
-        if self.state not in SCAN_STATES_FINISHED_BAD:
-            d = AppSettings.setting_waiver_is_overdue()
-            return self.state in SCAN_STATES_PROCESSED or \
-                self.last_access > datetime.datetime.now() - \
-                datetime.timedelta(days=d)
-        else:
+        if self.state in SCAN_STATES_FINISHED_BAD:
             return None
+
+        d = AppSettings.setting_waiver_is_overdue()
+        return self.state in SCAN_STATES_PROCESSED or \
+            self.last_access > datetime.datetime.now() - \
+            datetime.timedelta(days=d)
 
     @classmethod
     def create_scan(cls, scan_type, nvr, username, package,
