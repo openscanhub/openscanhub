@@ -77,6 +77,3 @@ class ScanListSearchForm(forms.Form):
         if self.overdue_filled:
             q = q.overdue_scans()
         return q
-
-    def extra_query(self):
-        return self.overdue_filled or self.latest
