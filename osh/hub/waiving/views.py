@@ -318,9 +318,7 @@ class ResultsListView(ListView):
             scan__scan_type__in=SCAN_TYPES_TARGET)
         if self.search_form.is_valid():
             q = q.filter(self.search_form.get_query(self.request))
-            if self.search_form.extra_query():
-                q_ids = self.search_form.objects_satisfy(q)
-                q = q.filter(id__in=q_ids)
+            q = self.search_form.objects_satisfy(q)
         return q.order_by(self.order_scans()).select_related()
 
     def get_context_data(self, **kwargs):
