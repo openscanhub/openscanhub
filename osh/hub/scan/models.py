@@ -1023,11 +1023,7 @@ class AppSettings(models.Model):
     @classmethod
     def setting_waiver_is_overdue(cls):
         """Number of days when run is marked as not processed -- default value"""
-        try:
-            return int(cls.objects.get(key="WAIVER_IS_OVERDUE").value)
-        # TODO: remove this when we migrate the db to use ints
-        except ValueError:
-            return 7
+        return int(cls.objects.get(key="WAIVER_IS_OVERDUE").value)
 
     @classmethod
     def settings_get_analyzers_versions_cache_duration(cls):
