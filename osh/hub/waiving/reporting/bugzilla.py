@@ -104,7 +104,7 @@ Package was scanned as differential scan:
         'product': release.product,
         'component': package.name,
         'summary': summary,  # 'short_desc'
-        'version': release.get_prod_ver(),
+        'version': release.version,
         'comment': comment,
         'bug_severity': 'medium',
         'priority': 'high',

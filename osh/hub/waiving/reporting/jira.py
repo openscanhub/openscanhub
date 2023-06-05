@@ -1,8 +1,6 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 # SPDX-FileCopyrightText: Copyright contributors to the OpenScanHub project.
 
-import re
-
 from django.conf import settings
 from django.urls import reverse
 from jira import JIRA
@@ -114,7 +112,7 @@ Package was scanned as differential scan:
     comment += format_waivers(waivers, request)
 
     # rhel version should be in format 'rhel-X.y.0'
-    rhel_ver = re.sub(r'rhel-(\d+)\.(\d+).*', r'rhel-\1.\2.0', release.tag)
+    version = f'rhel-{release.version}.0'
 
     data = {
         'project': {
@@ -128,7 +126,7 @@ Package was scanned as differential scan:
         ],
         'versions': [
             {
-                'name': rhel_ver,
+                'name': version,
             },
         ],
         # temporarily using custom field because issues.redhat.com doesn't have

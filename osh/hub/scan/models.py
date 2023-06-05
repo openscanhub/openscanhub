@@ -203,12 +203,14 @@ statistical data will be harvested for this system release.")
 
     child = property(get_child)
 
-    def get_prod_ver(self):
+    @property
+    def version(self):
         """
-        return product version (such as 7.0, 6.4, etc.), created for BZ
+        Product release numbers (major.minor)
         """
-        return "%s.%s" % (re.search(r'(\d)', self.product).group(1),
-                          self.release)
+        x = re.search(r'(\d)', self.product).group(1)
+        y = self.release
+        return f"{x}.{y}"
 
 
 class TagMixin:
