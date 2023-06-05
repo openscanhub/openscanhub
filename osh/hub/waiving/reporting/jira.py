@@ -163,12 +163,13 @@ def update_bug(request, package, release):
     """
     jira = get_client()
     db_jira = has_bug(package, release)
-    if db_jira:
-        waivers = get_unreported_bugs(package, release)
-        comment = format_waivers(waivers, request)
-        jira.add_comment(db_jira.key, comment)
-        for w in waivers:
-            w.jira_bug = db_jira
-            w.save()
-    else:
-        create_bug(package, release)
+    if not db_jira:
+        create_bug(request, package, release)
+        return
+
+    waivers = get_unreported_bugs(package, release)
+    comment = format_waivers(waivers, request)
+    jira.add_comment(db_jira.key, comment)
+    for w in waivers:
+        w.jira_bug = db_jira
+        w.save()

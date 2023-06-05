@@ -144,13 +144,14 @@ def update_bug(request, package, release):
     """
     bz = bugzilla.Bugzilla(url=settings.BZ_URL, api_key=settings.BZ_API_KEY)
     db_bz = has_bug(package, release)
-    if db_bz:
-        waivers = get_unreported_bugs(package, release)
-        comment = format_waivers(waivers, request)
-        bzbug = bz.getbug(db_bz.number)
-        bzbug.addcomment(comment, False)
-        for w in waivers:
-            w.bz = db_bz
-            w.save()
-    else:
-        create_bug(package, release)
+    if not db_bz:
+        create_bug(request, package, release)
+        return
+
+    waivers = get_unreported_bugs(package, release)
+    comment = format_waivers(waivers, request)
+    bzbug = bz.getbug(db_bz.number)
+    bzbug.addcomment(comment, False)
+    for w in waivers:
+        w.bz = db_bz
+        w.save()
