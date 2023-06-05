@@ -203,6 +203,9 @@ statistical data will be harvested for this system release.")
 
     child = property(get_child)
 
+    def is_parent(self):
+        return self.child is not None
+
     @property
     def version(self):
         """

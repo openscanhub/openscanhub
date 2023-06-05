@@ -111,8 +111,10 @@ Package was scanned as differential scan:
 
     comment += format_waivers(waivers, request)
 
-    # rhel version should be in format 'rhel-X.y.0'
+    # rhel version should be in format 'rhel-X.y.0{.z}'
     version = f'rhel-{release.version}.0'
+    if release.is_parent():
+        version += '.z'
 
     data = {
         'project': {
