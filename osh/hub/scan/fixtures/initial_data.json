@@ -1550,6 +1550,15 @@
   }
 },
 {
+  "pk": 16,
+  "model": "scan.releasemapping",
+  "fields": {
+    "priority": 1,
+    "release_tag": "^Fedora-(\\d+)$",
+    "template": "Fedora-%s"
+  }
+},
+{
   "pk": 2,
   "model": "scan.systemrelease",
   "fields": {
@@ -2122,6 +2131,17 @@
   }
 },
 {
+  "pk": 54,
+  "model": "scan.systemrelease",
+  "fields": {
+    "release": 0,
+    "active": true,
+    "product": "Fedora 37",
+    "tag": "fedora-37",
+    "parent": null
+  }
+},
+{
   "pk": 2,
   "model": "scan.tag",
   "fields": {
@@ -2650,6 +2670,15 @@
     "release": 53,
     "name": "RHEL-9.0",
     "mock": 162
+  }
+},
+{
+  "pk": 61,
+  "model": "scan.tag",
+  "fields": {
+    "release": 54,
+    "name": "Fedora-37",
+    "mock": 171
   }
 },
 {
