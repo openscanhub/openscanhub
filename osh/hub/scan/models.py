@@ -784,6 +784,16 @@ class ScanBindingMixin:
     def latest_packages_scans(self):
         return self.finished_well().filter(scan__parent=None)
 
+    def overdue_scans(self):
+        # exclude waived or incomplete scans
+        nonwaivable_states = SCAN_STATES_PROCESSED + SCAN_STATES_FINISHED_BAD
+        waivable_scans = self.exclude(scan__state__in=nonwaivable_states)
+
+        # filter overdue scans
+        d = AppSettings.setting_waiver_is_overdue()
+        grace_period = datetime.datetime.now() - datetime.timedelta(days=d)
+        return waivable_scans.filter(scan__last_access__lte=grace_period)
+
     def by_scan_id(self, scan_id):
         return self.get(scan__id=scan_id)
 

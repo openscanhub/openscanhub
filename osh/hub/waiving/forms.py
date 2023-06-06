@@ -75,13 +75,8 @@ class ScanListSearchForm(forms.Form):
         if self.latest:
             q = q.latest_packages_scans()
         if self.overdue_filled:
-            # DO NOT USE `if not o.sca...`, because `scan.wai...` may return
-            # False and None which are two completely different states:
-            #    - False -- scan haven't been processed on time
-            #    - None -- scan failed or was cancelled
-            return [o.id for o in q if o.scan.waived_on_time() is False]
-        else:
-            return q
+            q = q.overdue_scans()
+        return q
 
     def extra_query(self):
         return self.overdue_filled or self.latest
