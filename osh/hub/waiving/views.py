@@ -8,7 +8,7 @@ from urllib.parse import urlencode
 
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
-from django.http import HttpResponseRedirect
+from django.http import Http404, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 from django.views.generic.list import ListView
@@ -622,11 +622,15 @@ def newest_result(request, package_name, release_tag):
     Display latest result for specified package -- this is available on
      specific URL
     """
-    context = get_result_context(request, ScanBinding.objects.filter(
-        scan__package__name=package_name,
-        scan__tag__release__tag=release_tag,
-        scan__enabled=True).latest()
-    )
+    try:
+        sb = ScanBinding.objects.filter(
+            scan__package__name=package_name,
+            scan__tag__release__tag=release_tag,
+            scan__enabled=True).latest()
+    except ObjectDoesNotExist:
+        raise Http404(f"No scans for package {package_name} and release {release_tag}")
+
+    context = get_result_context(request, sb)
     context['new_selected'] = "selected"
 
     return render(request, "waiving/result.html", context)
