@@ -52,8 +52,15 @@ def check_build(nvr, check_additional=False):
             logger.debug('koji: %s', e)
             continue
         build = koji.ClientSession(server).getBuild(nvr)
-        if build:
-            return {'nvr': nvr, 'koji_profile': config}
+        if build is None:
+            continue
+
+        if build['extra'] is not None and 'typeinfo' in build['extra'] and \
+                'module' in build['extra']['typeinfo']:
+            raise PackageBlockedException(
+                'Module metadata builds are not eligible for scanning.')
+
+        return {'nvr': nvr, 'koji_profile': config}
 
     raise RuntimeError(f"Build '{nvr}' does not exist")
 
