@@ -633,38 +633,28 @@ def newest_result(request, package_name, release_tag):
     return HttpResponseRedirect(reverse("waiving/result", args=[sb.id]))
 
 
+def _render_et_mapping(request, **kwargs):
+    etm = get_object_or_404(ETMapping, **kwargs)
+    if etm.latest_run is None:
+        context = {'not_finished': etm.comment}
+        return render(request, "waiving/result.html", context)
+
+    return HttpResponseRedirect(reverse("waiving/result",
+                                        args=[etm.latest_run.id]))
+
+
 def etmapping_latest(request, etmapping_id):
     """
     Display latest result for etm_id
     """
-    etm = get_object_or_404(ETMapping, id=etmapping_id)
-    if etm.latest_run:
-        context = get_result_context(
-            request,
-            etm.latest_run,
-        )
-        context['new_selected'] = "selected"
-    else:
-        context = {'not_finished': etm.comment}
-
-    return render(request, "waiving/result.html", context)
+    return _render_et_mapping(request, id=etmapping_id)
 
 
 def et_latest(request, et_id):
     """
-    Display latest result for et_internal_covscan_id
+    Display latest result for etm_et_scan_id
     """
-    etm = get_object_or_404(ETMapping, et_scan_id=et_id)
-    if etm.latest_run:
-        context = get_result_context(
-            request,
-            etm.latest_run,
-        )
-        context['new_selected'] = "selected"
-    else:
-        context = {'not_finished': etm.comment}
-
-    return render(request, "waiving/result.html", context)
+    return _render_et_mapping(request, et_scan_id=et_id)
 
 
 def new_bz(request, package_id, release_id):
