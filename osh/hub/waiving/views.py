@@ -630,10 +630,7 @@ def newest_result(request, package_name, release_tag):
     except ObjectDoesNotExist:
         raise Http404(f"No scans for package {package_name} and release {release_tag}")
 
-    context = get_result_context(request, sb)
-    context['new_selected'] = "selected"
-
-    return render(request, "waiving/result.html", context)
+    return HttpResponseRedirect(reverse("waiving/result", args=[sb.id]))
 
 
 def etmapping_latest(request, etmapping_id):
