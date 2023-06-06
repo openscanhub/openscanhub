@@ -29,10 +29,8 @@ def check_nvr(nvr):
 
 
 def check_package_is_blocked(package, release):
-    is_blocked = package.is_blocked(release)
-    if is_blocked:
-        raise PackageBlockedException('Package %s is blocked.' %
-                                      (package.name))
+    if package.is_blocked(release):
+        raise PackageBlockedException(f'Package {package.name} is blocked.')
 
 
 def check_obsolete_scan(package, release):
