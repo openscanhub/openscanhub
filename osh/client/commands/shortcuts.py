@@ -34,7 +34,7 @@ def verify_build_exists(nvr, profile):
         return False
 
     return build is not None and \
-        build.get('state', None) == koji.BUILD_STATES['COMPLETE']
+        build.get('state') == koji.BUILD_STATES['COMPLETE']
 
 
 def verify_koji_build(build, profiles):
