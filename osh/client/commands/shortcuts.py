@@ -29,12 +29,12 @@ def verify_build_exists(nvr, profile):
     proxy_object = koji.ClientSession(cfg['server'])
     try:
         # getBuild XML-RPC call is defined here: ./hub/kojihub.py:3206
-        returned_build = proxy_object.getBuild(nvr)
+        build = proxy_object.getBuild(nvr)
     except koji.GenericError:
         return False
 
-    return returned_build is not None and \
-        returned_build.get('state', None) == koji.BUILD_STATES['COMPLETE']
+    return build is not None and \
+        build.get('state', None) == koji.BUILD_STATES['COMPLETE']
 
 
 def verify_koji_build(build, profiles):
