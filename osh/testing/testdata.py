@@ -465,9 +465,9 @@ class TestDataMixin:
              +-- pkgA-1.2-6.el8 RHEL-8.6 user1 (NEEDS_INSPECTION)
         """
         # Add some "filling" to bring pagination into effect
-        for i in range(0, 20):
+        for i in range(1, 21):
             cls.mock_submit_scan(
-                nvr=f"pkgQ-1.0.0-{i+1}.el9", tag="RHEL-9.1", username="user1"
+                nvr=f"pkgQ-1.0.0-{i}.el9", tag="RHEL-9.1", username="user1"
             )
 
         # Add a dummy scan with no parent, base, tag, and scan binding

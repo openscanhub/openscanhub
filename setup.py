@@ -48,6 +48,12 @@ package_data = {
     ]
 }
 
+# patterns to exclude from packaging
+package_exclude = [
+    "kobo*",
+    "osh.testing",
+]
+
 hub_path = Path("osh/hub")
 for folder in (
     "templates",
@@ -70,7 +76,7 @@ setup(
     author="Red Hat, Inc.",
     author_email="openscanhub@lists.fedoraproject.org",
     description="OpenScanHub is a service for static and dynamic analysis.",
-    packages=find_namespace_packages(exclude=["kobo*"]),
+    packages=find_namespace_packages(exclude=package_exclude),
     package_data=package_data,
     data_files=data_files.items(),
 )
