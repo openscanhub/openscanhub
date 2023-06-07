@@ -26,31 +26,33 @@ def rescan(scan, user):
     logger.info('Rescheduling scan with nvr %s, latest binding %s',
                 scan.nvr, latest_binding)
 
-    if latest_binding.scan.state != SCAN_STATES['FAILED']:
+    latest_scan = latest_binding.scan
+    latest_task = latest_binding.task
+
+    if latest_scan.state != SCAN_STATES['FAILED']:
         raise ScanException("Latest run %d of %s haven't \
-failed. This is not supported." % (latest_binding.scan.id, scan.nvr))
+failed. This is not supported." % (latest_scan.id, scan.nvr))
 
     # scan is base scan
-    if latest_binding.scan.is_errata_base_scan():
+    if latest_scan.is_errata_base_scan():
         # clone does not support cloning of child tasks only
         task_id = Task.create_task(
-            owner_name=latest_binding.task.owner.username,
-            label=latest_binding.task.label,
-            method=latest_binding.task.method,
+            owner_name=latest_task.owner.username,
+            label=latest_task.label,
+            method=latest_task.method,
             args={},
-            comment="Rescan of base %s" % latest_binding.scan.nvr,
+            comment="Rescan of base %s" % latest_scan.nvr,
             state=TASK_STATES["CREATED"],
-            priority=latest_binding.task.priority,
+            priority=latest_task.priority,
             resubmitted_by=user,
-            resubmitted_from=latest_binding.task,
-        )
+            resubmitted_from=latest_task)
 
-        new_scan = latest_binding.scan.clone_scan()
+        new_scan = latest_scan.clone_scan()
 
     # scan is errata scan
     # do not forget to set up parent id for task
     else:
-        if latest_binding.task.parent:
+        if latest_task.parent:
             raise ScanException('You want to rescan a scan that has a parent. \
 Unsupported.')
 
@@ -62,17 +64,16 @@ did not finish successfully; reschedule base (latest base: %s)' % (
                 get_latest_binding(scan.base.nvr, show_failed=True))
             )
 
-        task_id = latest_binding.task.clone_task(
+        task_id = latest_task.clone_task(
             user,
             state=TASK_STATES["CREATED"],
             args={},
-            comment="Rescan of %s" % latest_binding.scan.nvr,
-        )
+            comment="Rescan of %s" % latest_scan.nvr)
 
         # update child
         child = scan.get_child_scan()
 
-        new_scan = latest_binding.scan.clone_scan(
+        new_scan = latest_scan.clone_scan(
             base=latest_base_binding.scan)
 
         if child:
@@ -82,7 +83,7 @@ did not finish successfully; reschedule base (latest base: %s)' % (
     task_dir = Task.get_task_dir(task_id)
     check_and_create_dirs(task_dir)
 
-    options = latest_binding.task.args
+    options = latest_task.args
     options.update({'scan_id': new_scan.id})
     task = Task.objects.get(id=task_id)
     task.args = options
