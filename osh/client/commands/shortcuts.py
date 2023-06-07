@@ -16,7 +16,7 @@ def check_analyzers(proxy, analyzers_list):
         raise RuntimeError(result)
 
 
-def verify_build_exists(build, profile):
+def verify_build_exists(nvr, profile):
     """
     Verify if build exists
     """
@@ -29,7 +29,7 @@ def verify_build_exists(build, profile):
     proxy_object = koji.ClientSession(cfg['server'])
     try:
         # getBuild XML-RPC call is defined here: ./hub/kojihub.py:3206
-        returned_build = proxy_object.getBuild(build)
+        returned_build = proxy_object.getBuild(nvr)
     except koji.GenericError:
         return False
 
