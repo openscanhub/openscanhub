@@ -45,24 +45,8 @@ failed. This is not supported." % (latest_binding.scan.id, scan.nvr))
             resubmitted_from=latest_binding.task,
         )
 
-        task_dir = Task.get_task_dir(task_id)
-
-        check_and_create_dirs(task_dir)
         new_scan = latest_binding.scan.clone_scan()
 
-        options = latest_binding.task.args
-        options.update({'scan_id': new_scan.id})
-        task = Task.objects.get(id=task_id)
-        task.args = options
-        task.save()
-        task.free_task()
-
-        sb = ScanBinding()
-        sb.task = task
-        sb.scan = new_scan
-        sb.save()
-
-        return sb
     # scan is errata scan
     # do not forget to set up parent id for task
     else:
@@ -85,10 +69,6 @@ did not finish successfully; reschedule base (latest base: %s)' % (
             comment="Rescan of %s" % latest_binding.scan.nvr,
         )
 
-        task_dir = Task.get_task_dir(task_id)
-
-        check_and_create_dirs(task_dir)
-
         # update child
         child = scan.get_child_scan()
 
@@ -99,19 +79,23 @@ did not finish successfully; reschedule base (latest base: %s)' % (
             child.parent = scan
             child.save()
 
-        options = latest_binding.task.args
-        options.update({'scan_id': new_scan.id})
-        task = Task.objects.get(id=task_id)
-        task.args = options
-        task.save()
-        task.free_task()
+    task_dir = Task.get_task_dir(task_id)
+    check_and_create_dirs(task_dir)
 
-        sb = ScanBinding()
-        sb.task = task
-        sb.scan = new_scan
-        sb.save()
+    options = latest_binding.task.args
+    options.update({'scan_id': new_scan.id})
+    task = Task.objects.get(id=task_id)
+    task.args = options
+    task.save()
+    task.free_task()
 
+    sb = ScanBinding()
+    sb.task = task
+    sb.scan = new_scan
+    sb.save()
+
+    if scan.is_errata_scan():
         ETMapping.objects.filter(
             latest_run=latest_binding).update(latest_run=sb)
 
-        return sb
+    return sb
