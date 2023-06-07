@@ -53,8 +53,8 @@ failed. This is not supported.")
         new_scan = latest_scan.clone_scan()
 
     # scan is errata scan
-    # do not forget to set up parent id for task
-    else:
+    elif latest_scan.is_errata_scan():
+        # do not forget to set up parent id for task
         if latest_task.parent:
             raise ScanException('You want to rescan a scan that has a parent. \
 Unsupported.')
@@ -80,6 +80,8 @@ did not finish successfully; reschedule base (latest base: {latest_failed_base_b
         if child:
             child.parent = scan
             child.save()
+    else:
+        raise ValueError(f"Unknown scan type: {scan}")
 
     task_dir = Task.get_task_dir(task_id)
     check_and_create_dirs(task_dir)
