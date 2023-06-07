@@ -30,8 +30,8 @@ def rescan(scan, user):
     latest_task = latest_binding.task
 
     if latest_scan.state != SCAN_STATES['FAILED']:
-        raise ScanException("Latest run %d of %s haven't \
-failed. This is not supported." % (latest_scan.id, scan.nvr))
+        raise ScanException(f"Latest scan {latest_scan.id} of {scan.nvr} haven't \
+failed. This is not supported.")
 
     # scan is base scan
     if latest_scan.is_errata_base_scan():
@@ -41,7 +41,7 @@ failed. This is not supported." % (latest_scan.id, scan.nvr))
             label=latest_task.label,
             method=latest_task.method,
             args={},
-            comment="Rescan of base %s" % latest_scan.nvr,
+            comment=f"Rescan of base {latest_scan.nvr}",
             state=TASK_STATES["CREATED"],
             priority=latest_task.priority,
             resubmitted_by=user,
@@ -58,17 +58,15 @@ Unsupported.')
 
         latest_base_binding = get_latest_binding(scan.base.nvr)
         if not latest_base_binding:
-            raise RuntimeError('It looks like that any of base scans of %s \
-did not finish successfully; reschedule base (latest base: %s)' % (
-                scan.base.nvr,
-                get_latest_binding(scan.base.nvr, show_failed=True))
-            )
+            latest_failed_base_binding = get_latest_binding(scan.base.nvr, show_failed=True)
+            raise RuntimeError(f'It looks like that any of base scans of {scan.base.nvr} \
+did not finish successfully; reschedule base (latest base: {latest_failed_base_binding})')
 
         task_id = latest_task.clone_task(
             user,
             state=TASK_STATES["CREATED"],
             args={},
-            comment="Rescan of %s" % latest_scan.nvr)
+            comment=f"Rescan of {latest_scan.nvr}")
 
         # update child
         child = scan.get_child_scan()
