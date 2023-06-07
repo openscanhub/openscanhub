@@ -33,8 +33,15 @@ def verify_build_exists(nvr, profile):
     except koji.GenericError:
         return False
 
-    return build is not None and \
-        build.get('state') == koji.BUILD_STATES['COMPLETE']
+    if build is None:
+        return False
+
+    # module metadata builds are not supported
+    if build['extra'] is not None and 'typeinfo' in build['extra'] and \
+            'module' in build['extra']['typeinfo']:
+        return False
+
+    return build.get('state') == koji.BUILD_STATES['COMPLETE']
 
 
 def verify_koji_build(build, profiles):
@@ -64,8 +71,8 @@ def verify_koji_build(build, profiles):
     if any(verify_build_exists(build, p) for p in koji_profiles):
         return None
 
-    return f"Build {build} does not exist in {koji_profiles}, has its files \
-deleted, or did not finish successfully."
+    return f"Build {build} does not exist in {koji_profiles}, is a module " +\
+        "metadata build, has its files deleted, or did not finish successfully."
 
 
 def verify_mock(mock, hub):
