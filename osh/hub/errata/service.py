@@ -7,20 +7,10 @@ from kobo.hub.models import TASK_STATES, Task
 
 from osh.hub.other.exceptions import ScanException
 from osh.hub.other.shortcuts import check_and_create_dirs
-from osh.hub.scan.models import (SCAN_STATES, ETMapping, ReleaseMapping,
-                                 ScanBinding)
+from osh.hub.scan.models import SCAN_STATES, ETMapping, ScanBinding
 from osh.hub.scan.service import get_latest_binding
 
 logger = logging.getLogger(__name__)
-
-
-def get_tag(release):
-    for rm in ReleaseMapping.objects.all():
-        tag = rm.get_tag(release)
-        if tag:
-            return tag
-    logger.critical("Unable to assign proper product and release: %s", release)
-    raise RuntimeError("Packages in this release are not being scanned.")
 
 
 def rescan(scan, user):
