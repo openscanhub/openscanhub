@@ -22,7 +22,10 @@ def rescan(scan, user):
         @param user - user that triggered resubmit
         @type user - django...User
     """
+    # FIXME: The function sometimes resturns the oldest binding...
     latest_binding = get_latest_binding(scan.nvr, show_failed=True)
+    assert latest_binding is not None, "At least one binding must exist!"
+
     logger.info('Rescheduling scan with nvr %s, latest binding %s',
                 scan.nvr, latest_binding)
 
