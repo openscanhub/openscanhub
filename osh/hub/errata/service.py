@@ -60,7 +60,7 @@ failed. This is not supported.")
 Unsupported.')
 
         latest_base_binding = get_latest_binding(scan.base.nvr)
-        if not latest_base_binding:
+        if latest_base_binding is None:
             latest_failed_base_binding = get_latest_binding(scan.base.nvr, show_failed=True)
             raise RuntimeError(f'It looks like that any of base scans of {scan.base.nvr} \
 did not finish successfully; reschedule base (latest base: {latest_failed_base_binding})')
