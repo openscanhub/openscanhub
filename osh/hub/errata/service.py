@@ -86,10 +86,10 @@ did not finish successfully; reschedule base (latest base: {latest_failed_base_b
     task_dir = Task.get_task_dir(task_id)
     check_and_create_dirs(task_dir)
 
-    options = latest_task.args
-    options.update({'scan_id': new_scan.id})
+    args = latest_task.args
+    args['scan_id'] = new_scan.id
     task = Task.objects.get(id=task_id)
-    task.args = options
+    task.args = args
     task.save()
     task.free_task()
 
