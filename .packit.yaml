@@ -29,6 +29,6 @@ jobs:
 
     - <<: *copr
       trigger: commit
-      owner: "openscanhub"
+      owner: "@openscanhub"
       project: "devel"
       branch: main
