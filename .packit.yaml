@@ -18,7 +18,7 @@ actions:
     # Generate spec file
     post-upstream-clone: ./make-srpm.sh --generate-spec
     # Get current version from generated spec file
-    get-current-version: "sed -n 's|^Version: *||p' dist/osh.spec"
+    get-current-version: "sed -n 's|^%global version *||p' dist/osh.spec"
 
 jobs:
     - &copr
