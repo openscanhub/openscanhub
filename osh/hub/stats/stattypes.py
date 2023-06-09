@@ -281,7 +281,8 @@ def get_fixed_defects_in_release():
 @stat_function(12, "DEFECTS", "Fixed defects between releases",
                "Number of defects that were fixed between this release and previous one")
 def get_fixed_defects_between_releases():
-    releases = SystemRelease.objects.filter(active=True, systemrelease=False)
+    releases = SystemRelease.objects.filter(active=True,
+                                            systemrelease__isnull=False)
     result = {}
     for r in releases:
         result[r] = 0
