@@ -96,28 +96,3 @@ def stats_detail_graph(request, stat_id, release_id=None):
 
     return HttpResponse(json.dumps(data).encode(),
                         content_type='application/json; charset=utf8')
-
-
-""" stats from all releases added to graph
-tmp = {}
-tmp_labels = {}
-for s in SystemRelease.objects.all():
-    # tmp = { date: { release: value } }
-    tmp_labels[s.tag] = chr(ord('a') + len(tmp_labels.keys()))
-    for result in sr.filter(release=s).order_by('date'):
-        if result.date not in tmp:
-            tmp[result.date] = {}
-        tmp[result.date][s.tag] = result.value
-
-        if len(tmp.keys()) >= 12: break
-
-for rel in tmp:
-    # data['data'] = [{x: date, a: 1, b: 2,...}]
-    # data['labels'] = ['rhel-7.0','rhel-6.4',...]
-    date_record = OrderedDict({'x': rel.strftime(time_format)})
-    for rel_tag in tmp[rel]:
-        date_record[tmp_labels[rel_tag]] = tmp[rel][rel_tag]
-    data['data'].append(date_record)
-data['ykeys'] = tmp_labels.values()
-data['labels'] = tmp_labels.keys()
-"""
