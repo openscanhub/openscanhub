@@ -26,9 +26,15 @@ jobs:
       trigger: pull_request
       targets:
           - fedora-all-x86_64
+          - epel-8-x86_64
 
     - <<: *copr
       trigger: commit
       owner: "@openscanhub"
       project: "devel"
       branch: main
+
+    - job: tests
+      trigger: pull_request
+      targets:
+        - epel-8-x86_64
