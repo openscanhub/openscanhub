@@ -17,7 +17,7 @@ class StatType(models.Model):
     is_release_specific = models.BooleanField()
 
     def __str__(self):
-        return "%s (%s)" % (self.key, self.comment)
+        return f"{self.key} ({self.comment})"
 
     def display_value(self, release=None):
         results = StatResults.objects.filter(stat=self)
@@ -59,4 +59,4 @@ class StatResults(models.Model):
         get_latest_by = "date"
 
     def __str__(self):
-        return "%s = %s" % (self.stat.key, self.value)
+        return f"{self.stat.key} = {self.value}"
