@@ -13,9 +13,8 @@ from django.shortcuts import render
 from django.urls import reverse
 
 from osh.hub.scan.models import SystemRelease
-
-from .models import StatResults, StatType
-from .service import display_values
+from osh.hub.stats.models import StatResults, StatType
+from osh.hub.stats.service import display_values
 
 
 def release_list(request, release_id):
