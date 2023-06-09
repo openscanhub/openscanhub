@@ -36,7 +36,6 @@ def stats_list(request):
         'release__id', flat=True).distinct()
     context['releases'] = SystemRelease.objects.filter(id__in=int_releases)
 
-    print(context['releases'])
     context['results'] = OrderedDict()
     for stattype in StatType.objects.filter(is_release_specific=False).\
             order_by('group', 'order'):
