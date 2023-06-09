@@ -1,0 +1,3 @@
+summary: Test builds on Testing Farm CI
+test: ./ci.sh
+duration: 1h

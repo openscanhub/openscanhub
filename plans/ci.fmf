@@ -1,0 +1,5 @@
+summary: Test builds created through packit
+discover:
+    how: fmf
+execute:
+    how: tmt
