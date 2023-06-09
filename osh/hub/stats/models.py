@@ -33,20 +33,9 @@ class StatType(models.Model):
 
     def detail_url(self, release=None):
         if self.is_release_specific:
-            return reverse(
-                'stats/release/detail',
-                kwargs={
-                    'release_id': release.id,
-                    'stat_id': self.id
-                }
-            )
+            return reverse('stats/release/detail', args=[release.id, self.id])
         else:
-            return reverse(
-                'stats/detail',
-                kwargs={
-                    'stat_id': self.id
-                }
-            )
+            return reverse('stats/detail', args=[self.id])
 
 
 class StatResults(models.Model):
