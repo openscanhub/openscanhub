@@ -8,8 +8,8 @@ from osh.hub.scan.models import SystemRelease
 
 
 class StatType(models.Model):
-    key = models.CharField("Key", max_length=128, help_text="Short tag that \
-describes value of this stat.")
+    key = models.CharField("Key", max_length=128,
+                           help_text="Short tag that describes value of this stat.")
     short_comment = models.CharField("Description", max_length=128)
     comment = models.CharField("Description", max_length=512)
     group = models.CharField("Description", max_length=16)
@@ -51,9 +51,7 @@ describes value of this stat.")
 
 class StatResults(models.Model):
     stat = models.ForeignKey(StatType, on_delete=models.CASCADE)
-    value = models.BigIntegerField(
-        help_text="Statistical data for specified stat type."
-    )
+    value = models.BigIntegerField(help_text="Statistical data for specified stat type.")
     date = models.DateTimeField(auto_now_add=True, verbose_name="Date created")
     release = models.ForeignKey(SystemRelease, blank=True, null=True, on_delete=models.CASCADE)
 
