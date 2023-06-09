@@ -52,8 +52,7 @@ def release_stats_detail(request, release_id, stat_id):
     context['type'] = StatType.objects.get(id=stat_id)
     context['results'] = display_values(context['type'], context['release'])
     context['json_url'] = reverse('stats/release/detail/graph',
-                                  kwargs={'stat_id': stat_id,
-                                          'release_id': release_id, })
+                                  args=[stat_id, release_id])
 
     return render(request, "stats/detail.html", context)
 
@@ -62,8 +61,7 @@ def stats_detail(request, stat_id):
     context = {}
     context['type'] = StatType.objects.get(id=stat_id)
     context['results'] = display_values(context['type'])
-    context['json_url'] = reverse('stats/detail/graph',
-                                  kwargs={'stat_id': stat_id})
+    context['json_url'] = reverse('stats/detail/graph', args=[stat_id])
     return render(request, "stats/detail.html", context)
 
 
