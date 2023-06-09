@@ -13,13 +13,17 @@ from osh.hub.stats.models import StatResults, StatType
 logger = logging.getLogger(__name__)
 
 
+def _get_stat_results(stat_type, release):
+    filter_args = {'stat': stat_type}
+    if release is not None:
+        filter_args['release'] = release
+    return StatResults.objects.filter(**filter_args)
+
+
 def get_last_stat_result(stat_type, release=None):
-    if release:
-        result = StatResults.objects.filter(stat=stat_type, release=release)
-    else:
-        result = StatResults.objects.filter(stat=stat_type)
-    if result:
-        return result.latest()
+    results = _get_stat_results(stat_type, release)
+    if results:
+        return results.latest()
 
 
 def get_mapping():
@@ -96,11 +100,7 @@ def update():
 
 
 def display_values(stat_type, release=None):
-    if release:
-        results = StatResults.objects.filter(stat=stat_type, release=release)
-    else:
-        results = StatResults.objects.filter(stat=stat_type)
-
+    results = _get_stat_results(stat_type, release)
     if not results:
         return {datetime.datetime.now(): 0}
 
