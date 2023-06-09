@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 # SPDX-FileCopyrightText: Copyright contributors to the OpenScanHub project.
 
-import django.db.models as models
+from django.db import models
 from django.urls import reverse
 
 from osh.hub.scan.models import SystemRelease
