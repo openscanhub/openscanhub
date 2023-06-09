@@ -33,11 +33,11 @@ def release_list(request, release_id):
 
 
 def stats_list(request):
-    int_releases = StatResults.objects.all().values_list(
+    release_ids = StatResults.objects.all().values_list(
         'release__id', flat=True).distinct()
 
     context = {
-        'releases': SystemRelease.objects.filter(id__in=int_releases),
+        'releases': SystemRelease.objects.filter(id__in=release_ids),
         'results': OrderedDict()
     }
 
