@@ -18,25 +18,29 @@ from osh.hub.stats.service import display_values
 
 
 def release_list(request, release_id):
-    context = {}
-    context['release'] = SystemRelease.objects.get(id=release_id)
+    release = SystemRelease.objects.get(id=release_id)
 
-    context['results'] = OrderedDict()
+    context = {
+        'release': release,
+        'results': OrderedDict()
+    }
     for stattype in StatType.objects.filter(is_release_specific=True).\
             order_by('group', 'order'):
         context['results'][stattype] = stattype.display_value(
-            context['release']), stattype.detail_url(context['release'])
+            release), stattype.detail_url(release)
 
     return render(request, "stats/list.html", context)
 
 
 def stats_list(request):
-    context = {}
     int_releases = StatResults.objects.all().values_list(
         'release__id', flat=True).distinct()
-    context['releases'] = SystemRelease.objects.filter(id__in=int_releases)
 
-    context['results'] = OrderedDict()
+    context = {
+        'releases': SystemRelease.objects.filter(id__in=int_releases),
+        'results': OrderedDict()
+    }
+
     for stattype in StatType.objects.filter(is_release_specific=False).\
             order_by('group', 'order'):
         context['results'][stattype] = stattype.display_value(), \
@@ -46,21 +50,25 @@ def stats_list(request):
 
 
 def release_stats_detail(request, release_id, stat_id):
-    context = {}
-    context['release'] = SystemRelease.objects.get(id=release_id)
-    context['type'] = StatType.objects.get(id=stat_id)
-    context['results'] = display_values(context['type'], context['release'])
-    context['json_url'] = reverse('stats/release/detail/graph',
-                                  args=[stat_id, release_id])
+    release = SystemRelease.objects.get(id=release_id)
+    stat_type = StatType.objects.get(id=stat_id)
 
+    context = {
+        'json_url': reverse('stats/release/detail/graph', args=[stat_id, release_id]),
+        'release': release,
+        'results': display_values(stat_type, release),
+        'type': stat_type
+    }
     return render(request, "stats/detail.html", context)
 
 
 def stats_detail(request, stat_id):
-    context = {}
-    context['type'] = StatType.objects.get(id=stat_id)
-    context['results'] = display_values(context['type'])
-    context['json_url'] = reverse('stats/detail/graph', args=[stat_id])
+    stat_type = StatType.objects.get(id=stat_id)
+    context = {
+        'json_url': reverse('stats/detail/graph', args=[stat_id]),
+        'results': display_values(stat_type),
+        'type': stat_type
+    }
     return render(request, "stats/detail.html", context)
 
 
