@@ -22,7 +22,9 @@ class StatType(models.Model):
     def display_value(self, release=None):
         results = StatResults.objects.filter(stat=self)
 
-        if self.is_release_specific and release:
+        if self.is_release_specific:
+            if release is None:
+                raise ValueError("Release specific statistic requested without a release!")
             results = results.filter(release=release)
 
         if not results:
