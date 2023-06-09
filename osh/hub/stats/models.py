@@ -21,15 +21,13 @@ class StatType(models.Model):
 
     def display_value(self, release=None):
         results = StatResults.objects.filter(stat=self)
+
+        if self.is_release_specific and release:
+            results = results.filter(release=release)
+
         if not results:
             return 0
-        if self.is_release_specific and release:
-            try:
-                return results.filter(release=release).latest().value
-            except Exception:  # noqa: B902
-                return 0
-        else:
-            return results.latest().value
+        return results.latest().value
 
     def detail_url(self, release=None):
         if self.is_release_specific:
