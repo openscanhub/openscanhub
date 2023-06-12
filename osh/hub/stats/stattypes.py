@@ -92,7 +92,7 @@ def get_updates_count_by_release():
 def get_total_lines():
     """
     """
-    sbs = ScanBinding.objects.filter(scan__enabled=True)
+    sbs = ScanBinding.objects.enabled()
     return sbs.aggregate(sum=Sum('result__lines'))['sum'] or 0
 
 
@@ -102,8 +102,7 @@ def get_lines_by_release():
     releases = SystemRelease.objects.filter(active=True)
     result = {}
     for r in releases:
-        result[r] = ScanBinding.objects.filter(
-            scan__enabled=True, scan__tag__release=r.id)\
+        result[r] = ScanBinding.objects.enabled().by_release(r)\
             .aggregate(sum=Sum('result__lines'))['sum'] or 0
     return result
 
