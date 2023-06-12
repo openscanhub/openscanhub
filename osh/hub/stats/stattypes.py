@@ -40,10 +40,8 @@ def get_total_scans():
                "Number of submitted scans by release.")
 def get_scans_by_release():
     releases = SystemRelease.objects.filter(active=True)
-    result = {}
-    for r in releases:
-        result[r] = Scan.objects.enabled().target().by_release(r).count()
-    return result
+    return {r: Scan.objects.enabled().target().by_release(r).count()
+            for r in releases}
 
 
 @stat_function(2, "SCANS", "Rebase scans count",
@@ -56,10 +54,7 @@ def get_rebases_count():
                "Number of all submitted scans of rebases by release.")
 def get_rebases_count_by_release():
     releases = SystemRelease.objects.filter(active=True)
-    result = {}
-    for r in releases:
-        result[r] = Scan.objects.rebases().by_release(r).count()
-    return result
+    return {r: Scan.objects.rebases().by_release(r).count() for r in releases}
 
 
 @stat_function(3, "SCANS", "New package scans count",
@@ -72,10 +67,7 @@ def get_newpkg_count():
                "Number of scans of new packages by release.")
 def get_newpkg_count_by_release():
     releases = SystemRelease.objects.filter(active=True)
-    result = {}
-    for r in releases:
-        result[r] = Scan.objects.newpkgs().by_release(r).count()
-    return result
+    return {r: Scan.objects.newpkgs().by_release(r).count() for r in releases}
 
 
 @stat_function(4, "SCANS", "Update scans count",
@@ -88,10 +80,7 @@ def get_updates_count():
                "Number of scans of updates by release.")
 def get_updates_count_by_release():
     releases = SystemRelease.objects.filter(active=True)
-    result = {}
-    for r in releases:
-        result[r] = Scan.objects.updates().by_release(r).count()
-    return result
+    return {r: Scan.objects.updates().by_release(r).count() for r in releases}
 
 #####
 # LOC
