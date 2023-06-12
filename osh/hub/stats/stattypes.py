@@ -93,7 +93,7 @@ def get_total_lines():
     """
     """
     sbs = ScanBinding.objects.filter(scan__enabled=True)
-    return sbs.aggregate(Sum('result__lines'))['result__lines__sum'] or 0
+    return sbs.aggregate(sum=Sum('result__lines'))['sum'] or 0
 
 
 @stat_function(1, "LOC", "Lines of code scanned",
@@ -104,7 +104,7 @@ def get_lines_by_release():
     for r in releases:
         result[r] = ScanBinding.objects.filter(
             scan__enabled=True, scan__tag__release=r.id)\
-            .aggregate(Sum('result__lines'))['result__lines__sum'] or 0
+            .aggregate(sum=Sum('result__lines'))['sum'] or 0
     return result
 
 #########
