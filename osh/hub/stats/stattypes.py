@@ -599,9 +599,9 @@ def get_busy_minutes():
 @stat_function(2, "TIME", "Scanning minutes",
                "Number of minutes that system spent scanning.")
 def get_minutes_spent_scanning():
-    result = Result.objects.all()
+    results = Result.objects.all()
 
     # TODO: Django 4 introduced default kwarg for the value of an empty Sum,
     # e.g. Sum over an empty QuerySet or only a field with Null values
-    sum = result.aggregate(sum=Sum('scanning_time'))['sum'] or 0
+    sum = results.aggregate(sum=Sum('scanning_time'))['sum'] or 0
     return sum // 60
