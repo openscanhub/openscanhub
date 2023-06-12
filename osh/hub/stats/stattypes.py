@@ -7,7 +7,7 @@
 
     Functions get_*_by_release return dictionary with structure:
     {
-        osh.hub.models.SystemRelease: value
+        osh.hub.scan.models.SystemRelease: value
     }
 """
 
