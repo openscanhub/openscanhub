@@ -214,9 +214,8 @@ def get_eliminated_in_rebases_in_release():
     releases = SystemRelease.objects.filter(active=True)
     result = {}
     for r in releases:
-        result[r] = 0
-        for sb in ScanBinding.objects.by_release(r).rebases().enabled():
-            result[r] += diff_new_defects_in_package(sb)
+        result[r] = sum(diff_new_defects_in_package(sb) for sb in
+                        ScanBinding.objects.by_release(r).rebases().enabled())
     return result
 
 
@@ -226,9 +225,8 @@ def get_eliminated_in_newpkgs_in_release():
     releases = SystemRelease.objects.filter(active=True)
     result = {}
     for r in releases:
-        result[r] = 0
-        for sb in ScanBinding.objects.by_release(r).newpkgs().enabled():
-            result[r] += diff_new_defects_in_package(sb)
+        result[r] = sum(diff_new_defects_in_package(sb) for sb in
+                        ScanBinding.objects.by_release(r).newpkgs().enabled())
     return result
 
 
@@ -238,9 +236,8 @@ def get_eliminated_in_updates_in_release():
     releases = SystemRelease.objects.filter(active=True)
     result = {}
     for r in releases:
-        result[r] = 0
-        for sb in ScanBinding.objects.by_release(r).updates().enabled():
-            result[r] += diff_new_defects_in_package(sb)
+        result[r] = sum(diff_new_defects_in_package(sb) for sb in
+                        ScanBinding.objects.by_release(r).updates().enabled())
     return result
 
 
@@ -250,9 +247,8 @@ def get_fixed_defects_in_release():
     releases = SystemRelease.objects.filter(active=True)
     result = {}
     for r in releases:
-        result[r] = 0
-        for sb in ScanBinding.objects.by_release(r).enabled():
-            result[r] += diff_fixed_defects_in_package(sb)
+        result[r] = sum(diff_fixed_defects_in_package(sb) for sb in
+                        ScanBinding.objects.by_release(r).enabled())
     return result
 
 
@@ -263,9 +259,8 @@ def get_fixed_defects_between_releases():
                                             systemrelease__isnull=False)
     result = {}
     for r in releases:
-        result[r] = 0
-        for sb in ScanBinding.objects.by_release(r).enabled():
-            result[r] += diff_fixed_defects_between_releases(sb)
+        result[r] = sum(diff_fixed_defects_between_releases(sb) for sb in
+                        ScanBinding.objects.by_release(r).enabled())
     return result
 
 
@@ -275,9 +270,8 @@ def get_new_defects_between_releases():
     releases = SystemRelease.objects.filter(active=True)
     result = {}
     for r in releases:
-        result[r] = 0
-        for sb in ScanBinding.objects.by_release(r).enabled():
-            result[r] += diff_new_defects_between_releases(sb)
+        result[r] = sum(diff_new_defects_between_releases(sb) for sb in
+                        ScanBinding.objects.by_release(r).enabled())
     return result
 
 #########
