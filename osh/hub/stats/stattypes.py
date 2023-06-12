@@ -263,9 +263,7 @@ def get_waivers_submitted_by_release():
     releases = SystemRelease.objects.filter(active=True)
     result = {}
     for r in releases:
-        result[r] = Waiver.waivers.filter(
-            result_group__result__scanbinding__scan__tag__release=r.id,
-        ).count()
+        result[r] = Waiver.waivers.by_release(r).count()
     return result
 
 
