@@ -261,10 +261,7 @@ def get_total_waivers_submitted():
                "Number of waivers submitted by release. (including invalidated)")
 def get_waivers_submitted_by_release():
     releases = SystemRelease.objects.filter(active=True)
-    result = {}
-    for r in releases:
-        result[r] = Waiver.waivers.by_release(r).count()
-    return result
+    return {r: Waiver.waivers.by_release(r).count() for r in releases}
 
 
 @stat_function(2, "WAIVERS", "Waivers submitted for regular updates",
@@ -277,10 +274,8 @@ def get_total_update_waivers_submitted():
                "Number of waivers submitted for updates in this release.")
 def get_total_update_waivers_submitted_by_release():
     releases = SystemRelease.objects.filter(active=True)
-    result = {}
-    for r in releases:
-        result[r] = Waiver.waivers.updates().by_release(r).count()
-    return result
+    return {r: Waiver.waivers.updates().by_release(r).count()
+            for r in releases}
 
 
 @stat_function(3, "WAIVERS", "Waivers submitted for rebases",
@@ -293,10 +288,8 @@ def get_total_rebase_waivers_submitted():
                "Number of waivers submitted for rebases in this release.")
 def get_total_rebase_waivers_submitted_by_release():
     releases = SystemRelease.objects.filter(active=True)
-    result = {}
-    for r in releases:
-        result[r] = Waiver.waivers.rebases().by_release(r).count()
-    return result
+    return {r: Waiver.waivers.rebases().by_release(r).count()
+            for r in releases}
 
 
 @stat_function(4, "WAIVERS", "Waivers submitted for newpkg scans",
@@ -309,10 +302,8 @@ def get_total_newpkg_waivers_submitted():
                "Number of waivers submitted for new package scans in this release.")
 def get_total_newpkg_waivers_submitted_by_release():
     releases = SystemRelease.objects.filter(active=True)
-    result = {}
-    for r in releases:
-        result[r] = Waiver.waivers.newpkgs().by_release(r).count()
-    return result
+    return {r: Waiver.waivers.newpkgs().by_release(r).count()
+            for r in releases}
 
 
 @stat_function(5, "WAIVERS", "Missing waivers",
@@ -325,10 +316,8 @@ def get_total_missing_waivers():
                "Number of groups that were not waived by release.")
 def get_missing_waivers_by_release():
     releases = SystemRelease.objects.filter(active=True)
-    result = {}
-    for r in releases:
-        result[r] = ResultGroup.objects.missing_waiver().by_release(r).count()
-    return result
+    return {r: ResultGroup.objects.missing_waiver().by_release(r).count()
+            for r in releases}
 
 
 @stat_function(6, "WAIVERS", "Missing waivers in rebases",
@@ -341,11 +330,8 @@ def get_total_missing_waivers_in_rebases():
                "Number of groups in rebases that were not waived by release.")
 def get_missing_waivers_in_rebases_by_release():
     releases = SystemRelease.objects.filter(active=True)
-    result = {}
-    for r in releases:
-        result[r] = ResultGroup.objects.missing_waiver().rebases().\
-            by_release(r).count()
-    return result
+    return {r: ResultGroup.objects.missing_waiver().rebases().by_release(r).count()
+            for r in releases}
 
 
 @stat_function(7, "WAIVERS", "Missing waivers in new packages",
@@ -358,11 +344,8 @@ def get_total_missing_waivers_in_newpkgs():
                "Number of groups in new package scans that were not waived by release.")
 def get_missing_waivers_in_newpkgs_by_release():
     releases = SystemRelease.objects.filter(active=True)
-    result = {}
-    for r in releases:
-        result[r] = ResultGroup.objects.missing_waiver().newpkgs().\
-            by_release(r).count()
-    return result
+    return {r: ResultGroup.objects.missing_waiver().newpkgs().by_release(r).count()
+            for r in releases}
 
 
 @stat_function(8, "WAIVERS", "Missing waivers in updates",
@@ -375,11 +358,8 @@ def get_total_missing_waivers_in_updates():
                "Number of groups in updates that were not waived.")
 def get_missing_waivers_in_updates_by_release():
     releases = SystemRelease.objects.filter(active=True)
-    result = {}
-    for r in releases:
-        result[r] = ResultGroup.objects.missing_waiver().updates().\
-            by_release(r).count()
-    return result
+    return {r: ResultGroup.objects.missing_waiver().updates().by_release(r).count()
+            for r in releases}
 
 
 @stat_function(9, "WAIVERS", "'is a bug' waivers",
@@ -392,40 +372,32 @@ def get_total_is_a_bug_waivers():
                "Number of waivers with type IS_A_BUG by release.")
 def get_is_a_bug_waivers_by_release():
     releases = SystemRelease.objects.filter(active=True)
-    result = {}
-    for r in releases:
-        result[r] = Waiver.waivers.is_a_bugs().by_release(r).count()
-    return result
+    return {r: Waiver.waivers.is_a_bugs().by_release(r).count()
+            for r in releases}
 
 
 @stat_function(10, "WAIVERS", "'is a bug' waivers in rebases",
                "Number of waivers with type IS_A_BUG in rebases by release.")
 def get_is_a_bug_waivers_in_rebases_by_release():
     releases = SystemRelease.objects.filter(active=True)
-    result = {}
-    for r in releases:
-        result[r] = Waiver.waivers.is_a_bugs().rebases().by_release(r).count()
-    return result
+    return {r: Waiver.waivers.is_a_bugs().rebases().by_release(r).count()
+            for r in releases}
 
 
 @stat_function(11, "WAIVERS", "'is a bug' waivers in newpkgs",
                "Number of waivers with type IS_A_BUG in new packages by release.")
 def get_is_a_bug_waivers_in_newpkgs_by_release():
     releases = SystemRelease.objects.filter(active=True)
-    result = {}
-    for r in releases:
-        result[r] = Waiver.waivers.is_a_bugs().newpkgs().by_release(r).count()
-    return result
+    return {r: Waiver.waivers.is_a_bugs().newpkgs().by_release(r).count()
+            for r in releases}
 
 
 @stat_function(12, "WAIVERS", "'is a bug' waivers in updates",
                "Number of waivers with type IS_A_BUG in updates by release.")
 def get_is_a_bug_waivers_in_updates_by_release():
     releases = SystemRelease.objects.filter(active=True)
-    result = {}
-    for r in releases:
-        result[r] = Waiver.waivers.is_a_bugs().updates().by_release(r).count()
-    return result
+    return {r: Waiver.waivers.is_a_bugs().updates().by_release(r).count()
+            for r in releases}
 
 
 @stat_function(10, "WAIVERS", "'not a bug' waivers",
@@ -438,40 +410,32 @@ def get_total_not_a_bug_waivers():
                "Number of waivers with type NOT_A_BUG by release.")
 def get_not_a_bug_waivers_by_release():
     releases = SystemRelease.objects.filter(active=True)
-    result = {}
-    for r in releases:
-        result[r] = Waiver.waivers.not_a_bugs().by_release(r).count()
-    return result
+    return {r: Waiver.waivers.not_a_bugs().by_release(r).count()
+            for r in releases}
 
 
 @stat_function(14, "WAIVERS", "'not a bug' waivers in rebases",
                "Number of waivers with type NOT_A_BUG in rebases by release.")
 def get_not_a_bug_waivers_in_rebases_by_release():
     releases = SystemRelease.objects.filter(active=True)
-    result = {}
-    for r in releases:
-        result[r] = Waiver.waivers.not_a_bugs().rebases().by_release(r).count()
-    return result
+    return {r: Waiver.waivers.not_a_bugs().rebases().by_release(r).count()
+            for r in releases}
 
 
 @stat_function(15, "WAIVERS", "'not a bug' waivers in newpkgs",
                "Number of waivers with type NOT_A_BUG in new packages by release.")
 def get_not_a_bug_waivers_in_newpkgs_by_release():
     releases = SystemRelease.objects.filter(active=True)
-    result = {}
-    for r in releases:
-        result[r] = Waiver.waivers.not_a_bugs().newpkgs().by_release(r).count()
-    return result
+    return {r: Waiver.waivers.not_a_bugs().newpkgs().by_release(r).count()
+            for r in releases}
 
 
 @stat_function(16, "WAIVERS", "'not a bug' waivers in updates",
                "Number of waivers with type NOT_A_BUG in updates by release.")
 def get_not_a_bug_waivers_in_updates_by_release():
     releases = SystemRelease.objects.filter(active=True)
-    result = {}
-    for r in releases:
-        result[r] = Waiver.waivers.not_a_bugs().updates().by_release(r).count()
-    return result
+    return {r: Waiver.waivers.not_a_bugs().updates().by_release(r).count()
+            for r in releases}
 
 
 @stat_function(11, "WAIVERS", "'fix later' waivers",
@@ -484,40 +448,32 @@ def get_total_fix_later_waivers():
                "Number of waivers with type FIX_LATER by release.")
 def get_fix_later_waivers_by_release():
     releases = SystemRelease.objects.filter(active=True)
-    result = {}
-    for r in releases:
-        result[r] = Waiver.waivers.fix_laters().by_release(r).count()
-    return result
+    return {r: Waiver.waivers.fix_laters().by_release(r).count()
+            for r in releases}
 
 
 @stat_function(18, "WAIVERS", "'fix later' waivers in rebases",
                "Number of waivers with type FIX_LATER in rebases by release.")
 def get_fix_later_waivers_in_rebases_by_release():
     releases = SystemRelease.objects.filter(active=True)
-    result = {}
-    for r in releases:
-        result[r] = Waiver.waivers.fix_laters().rebases().by_release(r).count()
-    return result
+    return {r: Waiver.waivers.fix_laters().rebases().by_release(r).count()
+            for r in releases}
 
 
 @stat_function(19, "WAIVERS", "'fix later' waivers in newpkgs",
                "Number of waivers with type FIX_LATER in new packages by release.")
 def get_fix_later_waivers_in_newpkgs_by_release():
     releases = SystemRelease.objects.filter(active=True)
-    result = {}
-    for r in releases:
-        result[r] = Waiver.waivers.fix_laters().newpkgs().by_release(r).count()
-    return result
+    return {r: Waiver.waivers.fix_laters().newpkgs().by_release(r).count()
+            for r in releases}
 
 
 @stat_function(20, "WAIVERS", "'fix later' waivers in updates",
                "Number of waivers with type FIX_LATER in updates by release.")
 def get_fix_later_waivers_in_updates_by_release():
     releases = SystemRelease.objects.filter(active=True)
-    result = {}
-    for r in releases:
-        result[r] = Waiver.waivers.fix_laters().updates().by_release(r).count()
-    return result
+    return {r: Waiver.waivers.fix_laters().updates().by_release(r).count()
+            for r in releases}
 
 ######
 # TIME
