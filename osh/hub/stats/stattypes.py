@@ -483,9 +483,8 @@ def get_fix_later_waivers_in_updates_by_release():
 @stat_function(1, "TIME", "Busy minutes",
                "Number of minutes during the system was busy.")
 def get_busy_minutes():
-    result = datetime.timedelta()
-    for t in Task.objects.all():
-        result += t.time or datetime.timedelta()
+    result = sum((t.time or datetime.timedelta() for t in Task.objects.all()),
+                 datetime.timedelta())
     return int(result.total_seconds() // 60)
 
 
