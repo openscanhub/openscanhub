@@ -22,8 +22,7 @@ from osh.hub.scan.service import (diff_fixed_defects_between_releases,
                                   diff_new_defects_between_releases,
                                   diff_new_defects_in_package)
 from osh.hub.stats.utils import stat_function
-from osh.hub.waiving.models import (DEFECT_STATES, Defect, Result, ResultGroup,
-                                    Waiver)
+from osh.hub.waiving.models import Defect, Result, ResultGroup, Waiver
 
 #######
 # SCANS
@@ -162,7 +161,7 @@ def get_fixed_defects_in_updates_by_release():
 @stat_function(4, "DEFECTS", "New defects",
                "Number of newly introduced defects.")
 def get_total_new_defects():
-    return Defect.objects.filter(state=DEFECT_STATES['NEW'], result_group__result__scanbinding__scan__enabled=True).count()
+    return Defect.objects.enabled().new().count()
 
 
 @stat_function(4, "DEFECTS", "New defects",
@@ -171,11 +170,7 @@ def get_new_defects_by_release():
     releases = SystemRelease.objects.filter(active=True)
     result = {}
     for r in releases:
-        result[r] = Defect.objects.filter(
-            result_group__result__scanbinding__scan__tag__release=r.id,
-            state=DEFECT_STATES['NEW'],
-            result_group__result__scanbinding__scan__enabled=True
-        ).count()
+        result[r] = Defect.objects.enabled().by_release(r).new().count()
     return result
 
 
@@ -269,8 +264,7 @@ def get_fixed_defects_between_releases():
     result = {}
     for r in releases:
         result[r] = 0
-        for sb in ScanBinding.objects.filter(scan__tag__release=r.id,
-                                             scan__enabled=True):
+        for sb in ScanBinding.objects.by_release(r).enabled():
             result[r] += diff_fixed_defects_between_releases(sb)
     return result
 
@@ -282,8 +276,7 @@ def get_new_defects_between_releases():
     result = {}
     for r in releases:
         result[r] = 0
-        for sb in ScanBinding.objects.filter(scan__tag__release=r.id,
-                                             scan__enabled=True):
+        for sb in ScanBinding.objects.by_release(r).enabled():
             result[r] += diff_new_defects_between_releases(sb)
     return result
 
