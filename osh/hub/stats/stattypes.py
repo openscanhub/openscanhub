@@ -485,10 +485,7 @@ def get_fix_later_waivers_in_updates_by_release():
 def get_busy_minutes():
     result = datetime.timedelta()
     for t in Task.objects.all():
-        try:
-            result += t.time
-        except TypeError:
-            pass
+        result += t.time or datetime.timedelta()
     return int(result.total_seconds() // 60)
 
 
