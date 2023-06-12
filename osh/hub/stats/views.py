@@ -22,13 +22,12 @@ def release_list(request, release_id):
 
     context = {
         'release': release,
-        'results': OrderedDict()
+        'results': OrderedDict(
+            (stattype, (stattype.display_value(release), stattype.detail_url(release)))
+            for stattype in StatType.objects.filter(is_release_specific=True)
+            .order_by('group', 'order')
+        )
     }
-    for stattype in StatType.objects.filter(is_release_specific=True).\
-            order_by('group', 'order'):
-        context['results'][stattype] = stattype.display_value(
-            release), stattype.detail_url(release)
-
     return render(request, "stats/list.html", context)
 
 
@@ -38,14 +37,12 @@ def stats_list(request):
 
     context = {
         'releases': SystemRelease.objects.filter(id__in=release_ids),
-        'results': OrderedDict()
+        'results': OrderedDict(
+            (stattype, (stattype.display_value(), stattype.detail_url()))
+            for stattype in StatType.objects.filter(is_release_specific=False)
+            .order_by('group', 'order')
+        )
     }
-
-    for stattype in StatType.objects.filter(is_release_specific=False).\
-            order_by('group', 'order'):
-        context['results'][stattype] = stattype.display_value(), \
-            stattype.detail_url()
-
     return render(request, "stats/list.html", context)
 
 
