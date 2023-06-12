@@ -100,11 +100,9 @@ def get_total_lines():
                "Number of LoC scanned by RHEL release.")
 def get_lines_by_release():
     releases = SystemRelease.objects.filter(active=True)
-    result = {}
-    for r in releases:
-        result[r] = ScanBinding.objects.enabled().by_release(r)\
+    return {r: ScanBinding.objects.enabled().by_release(r)
             .aggregate(sum=Sum('result__lines'))['sum'] or 0
-    return result
+            for r in releases}
 
 #########
 # DEFECTS
