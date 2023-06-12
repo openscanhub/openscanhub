@@ -118,10 +118,8 @@ def get_total_fixed_defects():
                "Number of fixed defects found by release.")
 def get_fixed_defects_by_release():
     releases = SystemRelease.objects.filter(active=True)
-    result = {}
-    for r in releases:
-        result[r] = Defect.objects.enabled().by_release(r).fixed().count()
-    return result
+    return {r: Defect.objects.enabled().by_release(r).fixed().count()
+            for r in releases}
 
 
 @stat_function(2, "DEFECTS", "Fixed defects in rebases",
@@ -134,11 +132,8 @@ def get_total_fixed_defects_in_rebases():
                "Number of fixed defects found in rebases by release.")
 def get_fixed_defects_in_rebases_by_release():
     releases = SystemRelease.objects.filter(active=True)
-    result = {}
-    for r in releases:
-        result[r] = Defect.objects.enabled().rebases().by_release(r)\
-            .fixed().count()
-    return result
+    return {r: Defect.objects.enabled().rebases().by_release(r).fixed().count()
+            for r in releases}
 
 
 @stat_function(3, "DEFECTS", "Fixed defects in updates",
@@ -151,11 +146,8 @@ def get_total_fixed_defects_in_updates():
                "Number of fixed defects found in updates by release.")
 def get_fixed_defects_in_updates_by_release():
     releases = SystemRelease.objects.filter(active=True)
-    result = {}
-    for r in releases:
-        result[r] = Defect.objects.enabled().updates().by_release(r)\
-            .fixed().count()
-    return result
+    return {r: Defect.objects.enabled().updates().by_release(r).fixed().count()
+            for r in releases}
 
 
 @stat_function(4, "DEFECTS", "New defects",
@@ -168,10 +160,8 @@ def get_total_new_defects():
                "Number of newly introduced defects by release.")
 def get_new_defects_by_release():
     releases = SystemRelease.objects.filter(active=True)
-    result = {}
-    for r in releases:
-        result[r] = Defect.objects.enabled().by_release(r).new().count()
-    return result
+    return {r: Defect.objects.enabled().by_release(r).new().count()
+            for r in releases}
 
 
 @stat_function(5, "DEFECTS", "New defects in rebases",
@@ -184,11 +174,8 @@ def get_total_new_defects_in_rebases():
                "Number of newly introduced defects in rebases by release.")
 def get_new_defects_in_rebases_by_release():
     releases = SystemRelease.objects.filter(active=True)
-    result = {}
-    for r in releases:
-        result[r] = Defect.objects.enabled().rebases().by_release(r)\
-            .new().count()
-    return result
+    return {r: Defect.objects.enabled().rebases().by_release(r).new().count()
+            for r in releases}
 
 
 @stat_function(6, "DEFECTS", "New defects in updates",
@@ -201,55 +188,44 @@ def get_total_new_defects_in_updates():
                "Number of newly introduced defects in updates by release.")
 def get_new_defects_in_updates_by_release():
     releases = SystemRelease.objects.filter(active=True)
-    result = {}
-    for r in releases:
-        result[r] = Defect.objects.enabled().updates().by_release(r)\
-            .new().count()
-    return result
+    return {r: Defect.objects.enabled().updates().by_release(r).new().count()
+            for r in releases}
 
 
 @stat_function(8, "DEFECTS", "Eliminated newly introduced defects in rebases",
                "Number of newly introduced defects in rebases that were fixed between first scan and final one.")
 def get_eliminated_in_rebases_in_release():
     releases = SystemRelease.objects.filter(active=True)
-    result = {}
-    for r in releases:
-        result[r] = sum(diff_new_defects_in_package(sb) for sb in
-                        ScanBinding.objects.by_release(r).rebases().enabled())
-    return result
+    return {r: sum(diff_new_defects_in_package(sb) for sb in
+                   ScanBinding.objects.by_release(r).rebases().enabled())
+            for r in releases}
 
 
 @stat_function(9, "DEFECTS", "Eliminated newly introduced defects in new packages",
                "Number of newly introduced defects in new packages that were fixed between first scan and final one.")
 def get_eliminated_in_newpkgs_in_release():
     releases = SystemRelease.objects.filter(active=True)
-    result = {}
-    for r in releases:
-        result[r] = sum(diff_new_defects_in_package(sb) for sb in
-                        ScanBinding.objects.by_release(r).newpkgs().enabled())
-    return result
+    return {r: sum(diff_new_defects_in_package(sb) for sb in
+                   ScanBinding.objects.by_release(r).newpkgs().enabled())
+            for r in releases}
 
 
 @stat_function(10, "DEFECTS", "Eliminated newly introduced defects in updates",
                "Number of newly introduced defects in updates that were fixed between first scan and final one.")
 def get_eliminated_in_updates_in_release():
     releases = SystemRelease.objects.filter(active=True)
-    result = {}
-    for r in releases:
-        result[r] = sum(diff_new_defects_in_package(sb) for sb in
-                        ScanBinding.objects.by_release(r).updates().enabled())
-    return result
+    return {r: sum(diff_new_defects_in_package(sb) for sb in
+                   ScanBinding.objects.by_release(r).updates().enabled())
+            for r in releases}
 
 
 @stat_function(11, "DEFECTS", "Fixed defects in one release",
                "Number of defects that were fixed between first scan and final one.")
 def get_fixed_defects_in_release():
     releases = SystemRelease.objects.filter(active=True)
-    result = {}
-    for r in releases:
-        result[r] = sum(diff_fixed_defects_in_package(sb) for sb in
-                        ScanBinding.objects.by_release(r).enabled())
-    return result
+    return {r: sum(diff_fixed_defects_in_package(sb) for sb in
+                   ScanBinding.objects.by_release(r).enabled())
+            for r in releases}
 
 
 @stat_function(12, "DEFECTS", "Fixed defects between releases",
@@ -257,22 +233,18 @@ def get_fixed_defects_in_release():
 def get_fixed_defects_between_releases():
     releases = SystemRelease.objects.filter(active=True,
                                             systemrelease__isnull=False)
-    result = {}
-    for r in releases:
-        result[r] = sum(diff_fixed_defects_between_releases(sb) for sb in
-                        ScanBinding.objects.by_release(r).enabled())
-    return result
+    return {r: sum(diff_fixed_defects_between_releases(sb) for sb in
+                   ScanBinding.objects.by_release(r).enabled())
+            for r in releases}
 
 
 @stat_function(13, "DEFECTS", "New defects between releases",
                "Number of newly added defects between this release and previous one")
 def get_new_defects_between_releases():
     releases = SystemRelease.objects.filter(active=True)
-    result = {}
-    for r in releases:
-        result[r] = sum(diff_new_defects_between_releases(sb) for sb in
-                        ScanBinding.objects.by_release(r).enabled())
-    return result
+    return {r: sum(diff_new_defects_between_releases(sb) for sb in
+                   ScanBinding.objects.by_release(r).enabled())
+            for r in releases}
 
 #########
 # WAIVERS
