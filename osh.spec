@@ -74,7 +74,6 @@ OpenScanHub worker
 
 %package hub
 Summary: OpenScanHub xml-rpc interface and web application
-Requires: boost-python3
 Requires: httpd
 Requires: mod_auth_gssapi
 Requires: mod_ssl
