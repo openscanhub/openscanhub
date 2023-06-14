@@ -46,7 +46,7 @@ package_data = {
 hub_path = Path("osh/hub")
 for folder in (
     "templates",
-    "media",
+    "static-assets",
     "scan/fixtures",
     "errata/fixtures",
 ):

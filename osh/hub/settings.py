@@ -33,27 +33,15 @@ USE_I18N = True
 # calendars according to the current locale
 USE_L10N = True
 
-# Absolute path to the directory that holds media.
-# Example: "/home/media/media.lawrence.com/"
-MEDIA_ROOT = os.path.join(PROJECT_DIR, "media/")
-
-# URL that handles the media served from MEDIA_ROOT. Make sure to use a
+# URL that handles the assets served from STATIC_ROOT. Make sure to use a
 # trailing slash if there is a path component (optional in other cases).
-# Examples: "http://media.lawrence.com", "http://example.com/media/"
-MEDIA_URL = '/osh/media/'
-
 STATIC_URL = URL_PREFIX + '/static/'
 
 STATIC_ROOT = os.path.join(PROJECT_DIR, 'static')
 
 STATICFILES_DIRS = (
-    os.path.join(PROJECT_DIR, "media"),
+    os.path.join(PROJECT_DIR, 'static-assets'),
 )
-
-# URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
-# trailing slash.
-# Examples: "http://foo.com/media/", "/media/".
-ADMIN_MEDIA_PREFIX = '/osh/admin/media/'
 
 # Default field type for primary keys
 # TODO: By default, Django 3 uses BigAutoField but we must remain compatible
@@ -73,7 +61,6 @@ TEMPLATES = [
             'context_processors': [
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
-                "django.template.context_processors.media",
                 "django.template.context_processors.request",
                 "kobo.django.menu.context_processors.menu_context_processor",
                 "django.template.context_processors.static",
