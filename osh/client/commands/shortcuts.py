@@ -85,13 +85,40 @@ obtain Kerberos ticket or specify username and password.')
     raise
 
 
-def fetch_results(dest, task_url, nvr):
-    """Downloads results for the given task URL"""
-    # we need nvr + '.tar.xz'
-    if nvr.endswith('.src.rpm'):
-        tarball = os.path.basename(nvr).replace('.src.rpm', '.tar.xz')
-    else:
-        tarball = nvr + '.tar.xz'
+def _get_result_filename(task_args):
+    """
+    Obtains the NVR from the task arguments dictionary.
+
+    If the task argument contain the 'result_filename' key, just use that.
+    Otherwise, use the following rules:
+
+    * MockBuild and VersionDiffBuild tasks use either the 'srpm_name' key
+      for an SRPM build or the 'build/nvr' key for Brew builds.
+    * ErrataDiffBuild uses the 'build' key and used 'brew_build' key in
+      the past.
+    """
+    if 'result_filename' in task_args:
+        return task_args['result_filename']
+
+    if "srpm_name" in task_args:
+        return task_args['srpm_name'].replace('.src.rpm', '')
+
+    if "brew_build" in task_args:
+        return task_args["brew_build"]
+
+    nvr = task_args['build']
+    if isinstance(nvr, dict):
+        nvr = nvr['nvr']
+    return nvr
+
+
+def fetch_results(hub, dest, task_id):
+    """Downloads results for the given task"""
+    task_info = hub.scan.get_task_info(task_id)
+    task_url = hub.client.task_url(task_id)
+
+    # we need result_filename + '.tar.xz'
+    tarball = _get_result_filename(task_info['args']) + '.tar.xz'
 
     # get absolute path
     dest_dir = os.path.abspath(dest if dest is not None else os.curdir)
