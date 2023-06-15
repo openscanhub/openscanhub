@@ -11,6 +11,7 @@ BuildArch:      noarch
 BuildRequires:  koji
 BuildRequires:  python3-csdiff
 BuildRequires:  python3-devel
+BuildRequires:  python3-dotenv
 BuildRequires:  python3-kobo-client
 BuildRequires:  python3-kobo-rpmlib
 BuildRequires:  python3-psycopg2
@@ -78,6 +79,7 @@ Requires: httpd
 Requires: mod_auth_gssapi
 Requires: mod_ssl
 Requires: python3-django >= %{min_required_version_django}
+Requires: python3-dotenv
 Requires: python3-kobo-client
 Requires: python3-kobo-django
 Requires: python3-kobo-hub

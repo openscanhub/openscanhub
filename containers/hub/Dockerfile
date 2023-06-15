@@ -28,6 +28,7 @@ RUN dnf -y --setopt=tsflags=nodocs install \
     python3-csdiff \
     python3-devel \
     python3-django3 \
+    python3-dotenv \
     python3-gssapi \
     python3-jira \
     python3-koji \

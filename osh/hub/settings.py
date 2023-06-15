@@ -9,6 +9,7 @@
 import os
 
 import kobo
+from dotenv import load_dotenv
 
 # Definition of PROJECT_DIR, just for convenience:
 # you can use it instead of specifying the full path
@@ -192,6 +193,14 @@ LOGIN_EXEMPT_URLS = ['.*xmlrpc/.*']
 ET_SCAN_PRIORITY = 20
 
 VALID_TASK_LOG_EXTENSIONS = ['.log', '.ini', '.err', '.out', '.js', '.txt']
+
+try:
+    load_dotenv(os.path.join(PROJECT_DIR, '.oshrc'))
+except OSError:
+    pass
+else:
+    BZ_API_KEY = os.getenv('BZ_API_KEY')
+    JIRA_API_KEY = os.getenv('JIRA_API_KEY')
 
 # override default values with custom ones from local settings
 try:

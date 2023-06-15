@@ -213,3 +213,9 @@ To run unit tests
    command
 4. after you are done with unit testing, you can tear down the whole container
    stack by `podman-compose -p osh down`
+
+## Testing reporting integrations
+
+Secrets should be place in a `.oshrc` file in the hub folder.
+You can use `BZ_API_KEY = "YOUR_TOKEN"` for Bugzilla and the same goes for `JIRA_API_KEY`, used for Jira.
+The default links at `osh/hub/settings_local.py` already point to the respective staging instances.
