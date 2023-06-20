@@ -7,7 +7,7 @@ from urllib.parse import urljoin
 
 from kobo.worker import TaskBase
 
-from osh.common.csmock_parser import CsmockRunner
+from osh.worker.csmock_runner import CsmockRunner
 
 
 class Build:

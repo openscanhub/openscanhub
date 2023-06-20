@@ -184,7 +184,7 @@ osh/hub/scripts/osh-xmlrpc-client.py \
      * `spawn` — creates task(s).
    * Uploads are being processed [via kobo's API](https://github.com/openscanhub/openscanhub/blob/main/osh/hub/errata/check.py).
  4. Once everything is set up, OSH creates task(s) and [puts files](https://github.com/openscanhub/openscanhub/blob/main/osh/hub/errata/scanner.py) into task's directory.
- 5. Command arguments for `csmock` may be pretty complex. These are specified via [CsmockRunner class](https://github.com/openscanhub/openscanhub/blob/main/osh/common/csmock_parser.py).
+ 5. Command arguments for `csmock` may be pretty complex. These are specified via [CsmockRunner class](https://github.com/openscanhub/openscanhub/blob/main/osh/worker/csmock_runner.py).
 
 
 ## XML-RPC API client
