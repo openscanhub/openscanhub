@@ -1,30 +1,6 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 # SPDX-FileCopyrightText: Copyright contributors to the OpenScanHub project.
 
-"""
-
-csmock python api
-
-{
-    "scan":
-    {
-        "analyzer-version-clang": "3.4",
-        "analyzer-version-cppcheck": "1.66",
-        "analyzer-version-gcc": "4.9.1",
-        "exit-code": 0,
-        "host": "quahog",
-        "mock-config": "fedora-21-x86_64",
-        "store-results-to": "/tmp/asd",
-        "time-created": "2014-09-01 18:30:19",
-        "time-finished": "2014-09-01 18:38:15",
-        "tool": "csmock",
-        "tool-args": "'/bin/csmock' '-t' 'cppcheck,gcc,clang' '--no-scan' '-r' 'fedora-21-x86_64' '-o' 'asd' '--force'",
-        "tool-version": "csmock-1.3.2.20140829.165742.ge16c941-1.fc21"
-    },
-    "defects": ""
-}
-"""
-
 import glob
 import json
 import logging
@@ -41,10 +17,6 @@ logger = logging.getLogger(__name__)
 
 
 class ResultsExtractor:
-    """
-
-    """
-
     def __init__(self, path, output_dir=None, unpack_in_temp=True):
         """
         path is either path to tarball or to a dir with results
@@ -102,10 +74,6 @@ class ResultsExtractor:
 
 
 class CsmockAPI:
-    """
-
-    """
-
     def __init__(self, json_results_path):
         """
         path -- path to results in JSON format
