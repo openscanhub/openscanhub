@@ -11,7 +11,6 @@ from kobo.hub.decorators import validate_worker
 from kobo.hub.models import Task
 from kobo.hub.xmlrpc.worker import interrupt_tasks as kobo_interrupt_tasks
 
-from osh.common.csmock_parser import unpack_and_return_api
 from osh.hub.errata.models import ScanningSession
 from osh.hub.errata.scanner import (BaseNotValidException, obtain_base,
                                     prepare_base_scan)
@@ -22,6 +21,7 @@ from osh.hub.scan.xmlrpc_helper import fail_scan as h_fail_scan
 from osh.hub.scan.xmlrpc_helper import finish_scan as h_finish_scan
 from osh.hub.scan.xmlrpc_helper import (prepare_version_retriever,
                                         scan_notification_email)
+from osh.hub.service.csmock_parser import unpack_and_return_api
 from osh.hub.waiving.results_loader import TaskResultsProcessor
 
 logger = logging.getLogger(__name__)
