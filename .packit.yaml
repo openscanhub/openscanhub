@@ -27,6 +27,7 @@ jobs:
       targets:
           - fedora-all-x86_64
           - epel-8-x86_64
+          - epel-9-x86_64
 
     - <<: *copr
       trigger: commit
