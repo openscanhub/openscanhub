@@ -129,26 +129,20 @@ As pointed above, all of these dependencies are automatically set up in the clie
 * create Errata Scan using password authentication - new pkg:
 ```sh
 osh/hub/scripts/osh-xmlrpc-client.py \
-    --hub https://$HOSTNAME/osh/xmlrpc/kerbauth/ \
-    --username=kdudka --password=xxxxxx \
-    create-scan -t curl-7.29.0-25.el7 \
-    --et-scan-id 1234 --advisory-id 4567 \
-    --owner kdudka --release RHEL-7.7.0 \
-    --base NEW_PACKAGE
+    --hub http://osh-hub:8000/xmlrpc/kerbauth/ --username=user --password=xxxxxx \
+    create-scan -b NEW_PACKAGE -t libssh2-1.10.0-7.fc38 --et-scan-id=1 \
+    --release=Fedora-37 --owner=admin --advisory-id=1
 ```
 
 * create Errata Scan using password authentication - update:
 ```sh
 osh/hub/scripts/osh-xmlrpc-client.py \
-    --hub https://$HOSTNAME/osh/xmlrpc/kerbauth/ \
-    --username=kdudka --password=xxxxxx \
-    create-scan -t curl-7.29.0-55.el7 \
-    --et-scan-id 1234 --advisory-id 4567 \
-    --owner kdudka --release RHEL-7.7.0 \
-    --base curl-7.29.0-25.el7
+    --hub http://osh-hub:8000/xmlrpc/kerbauth/ --username=user --password=xxxxxx \
+    create-scan -b libssh2-1.10.0-5.fc37 -t libssh2-1.10.0-7.fc38 --et-scan-id=1 \
+    --release=Fedora-37 --owner=admin --advisory-id=1
 ```
 
-* create Errata Scan using Kerberos authentication:
+* create Errata Scan using Kerberos authentication (will not work in a local development environment):
 ```sh
 osh/hub/scripts/osh-xmlrpc-client.py \
     --hub https://$HOSTNAME/osh/xmlrpc/kerbauth/ \
