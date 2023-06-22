@@ -1,0 +1,197 @@
+#compdef osh-cli
+
+_osh-cli_complete()
+{
+    # $1 - type of completion
+    # $2 - extra options for _values
+
+    # do not complete when --hub is used since the script will return
+    # stale cached results
+    [[ "${words[*]}" == *'--hub'* ]] && return
+
+    _values $2 'vals' $(python3 -m "osh.client.completion.main" "$1")
+}
+
+_osh-cli_cmds()
+{
+    local -a cmds
+    cmds=(
+        'cancel-tasks:cancel free, assigned or open tasks'
+        'diff-build:analyze a SRPM without and with patches, return diff'
+        'download-results:download tarball with results of specified task'
+        'find-tasks:find tasks by provided query string'
+        'help:show this help message and exit'
+        'help-admin:show help message about administrative commands and exit'
+        'help-rst:print program usage as reStructuredText'
+        'list-analyzers:list available versions of static analyzers'
+        'list-mock-configs:list available mock configs present on hub'
+        'list-profiles:list available scanning profiles'
+        'list-tasks:list RUNNING and/or FREE tasks'
+        'list-workers:list workers'
+        'mock-build:analyze a SRPM'
+        'resubmit-tasks:resubmit failed tasks'
+        'task-info:display info about provided task'
+        'version-diff-build:analyze 2 SRPMs (base and target) and diff results'
+        'watch-log:displays task logs incrementally'
+        'watch-tasks:track progress of particular tasks'
+    )
+
+    _describe -t commands 'commands' cmds
+}
+
+_osh-cli_args()
+{
+    local -a args
+
+    # opts that are always available
+    args=(
+        '(-h --help)'{-h,--help}'[show this help message and exit]'
+        '--password=[specify password]'
+        '--username=[specify user]'
+    )
+
+    # add --hub to args conditionally
+    if "${words[0]}" --help 2> /dev/null | grep -q -- --hub=HUB; then
+        args+=('--hub=[specify URL of XML-RPC interface on hub]')
+    fi
+
+    if [[ -z "${words[-1]}" ]]; then
+        _files
+        return
+    fi
+
+    case "${words[1]}" in
+        cancel-tasks|list-analyzers|list-mock-configs|list-profiles|help*|\
+        task-info|watch-tasks)
+            # these do not have any extra options
+            ;;
+
+        download-results)
+            args+=('(-d --dir)'{-d+,--dir=}'[path to store results]:filename:_files -/')
+            ;;
+
+        find-tasks)
+            args+=(
+                '(-l --latest)'{-l,--latest}'[display only latest task]'
+                '(-r --regex)'{-r,--regex}'[query by regular expression (python, module: re)]'
+                '(-p --pacakge)'{-p,--package}'[query by package name]'
+                '(-n --nvr)'{-n,--nvr}'[query by NVR (default one)]'
+            )
+            ;;
+
+        list-tasks)
+            args+=(
+                '--running[list RUNNING tasks]'
+                '--free[list FREE tasks]'
+                '--verbose[print details]'
+                '--json[print results in json]'
+            )
+            ;;
+
+        list-workers)
+            args+=('--show-disabled[show disabled workers]')
+            ;;
+
+        resubmit-tasks)
+            args+=(
+                '--force[Resubmit also tasks which are closed properly.]'
+                "--nowait[Don't wait until tasks finish.]"
+                '--priority=[priority]'
+            )
+            ;;
+
+        watch-log)
+            args+=(
+                '--type=[Show log with this name, default is stdout.log]'
+                '--poll=[Interval how often server should be polled for new info (seconds >= 15)]'
+                "--nowait[Return after fetching current logfile, don't wait until task finishes]"
+            )
+            ;;
+
+        # only common options for these:
+        mock-build|diff-build|version-diff-build)
+            args+=(
+                '(-w --warn-level)'{-w+,--warn-level=}'[adjust compiler warning level]:warn:->warn'
+                '(-a --analyzer)'{-a+,--analyzer=}'[list of comma-separated analyzers to use]:osh:->analyzers'
+                '(-p --profile)'{-p+,--profile=}'[use predefined scanning profile]:osh:->profiles'
+                '--csmock-args=[pass additional arguments to csmock (EXPERIMENTAL)]'
+                '--cov-custom-model=[path to custom Coverity model file for C/C++ code]:filename:_files'
+                '--config=[specify mock config name]:osh:->configs'
+                '--comment=[a task description]'
+                '--task-id-file=[task id is written to this file]:filename:_files'
+                "--nowait[don't wait until tasks finish]"
+                # '*' enables repetition
+                '*--email-to=[send notification to this address (can be used multiple times)]'
+                '--priority=[task priority (20+ is admin only), default is 10]'
+                '--brew-build[use a brew build (specified by NVR) instead of a local file]'
+            )
+            ;;
+    esac
+
+    # handle remaining flags
+    case "${words[1]}" in
+        diff-build|mock-build)
+            args+=(
+                '(-d --download-results)'{-d+,--download-results=}'[directory for storing results (leave blank for working directory)]:filename:_files -/'
+                '--install=[install packages into chroot wehan scanning tarballs]:filename:_files'
+            )
+
+            if [[ "${words[1]}" == 'mock-build' ]]; then
+                args+=('--tarball-build-script=[sets command which should build the tarball]')
+            fi
+            ;;
+
+        version-diff-build)
+            args+=(
+                '--base-brew-build=[use a brew build for base (specified by NVR)]'
+                '--base-srpm=[path to SRPM used as base]:filename:_files'
+                '--srpm=[path to SRPM used as target]:filename:_files'
+            )
+            ;;
+    esac
+
+    local state
+    _arguments -s "${args[@]}"
+    case "$state" in
+        analyzers)
+            # pass -s, to complete a comma-separated list
+            _osh-cli_complete analyzers -s,
+            ;;
+
+        configs)
+            _osh-cli_complete mock-configs
+            ;;
+
+        profiles)
+            _osh-cli_complete profiles
+            ;;
+
+        warn)
+            local -a warn_levels
+            warn_levels=(
+                '0:default'
+                '1:appends -Wall and -Wextra'
+                '2:additional useful warnings'
+            )
+            _describe -t warn-level 'warn-level' warn_levels
+            ;;
+    esac
+}
+
+_osh-cli()
+{
+    local state
+
+    # select state
+    _arguments -C "1:cmd:->cmds" "*:: :->args"
+
+    case "$state" in
+        cmds)
+            _osh-cli_cmds
+            ;;
+
+        *)
+            _osh-cli_args
+            ;;
+    esac
+}

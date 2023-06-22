@@ -28,6 +28,9 @@ data_files = {
     "/usr/share/bash-completion/completions": [
         "osh/client/completion/osh-cli.bash",
     ],
+    "/usr/share/zsh/site-functions": [
+        "osh/client/completion/_osh-cli"
+    ],
     "/usr/bin": [
         "osh/client/osh-cli",
     ],
