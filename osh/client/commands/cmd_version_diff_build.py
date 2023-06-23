@@ -101,8 +101,8 @@ local file"
 
         # both nvr/targets are specified
         if brew_build and srpm:
-            self.parser.error("Choose exactly one option (--nvr-brew-build, \
---nvr-srpm), not both of them.")
+            self.parser.error("Choose exactly one option (--brew-build, \
+--srpm), not both of them.")
 
         # no package option specified
         if (not base_brew_build and not brew_build and not srpm and not
