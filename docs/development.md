@@ -20,7 +20,7 @@ You can skip deployment and basic settings if you use the script.
 
 Worker depends on some system packages not available from PyPI, needs to run under root user and has kinda complex setup which are all the reasons to run it in a container.
 
-Build the container via: `podman build -f containers/worker.Dockerfile -t osh-worker .`.
+Build the container via: `podman build -f containers/worker.Dockerfile -t osh-worker .`
 
 Update `HUB_URL` and possibly other values in `osh/worker/worker-local.conf`.
 
