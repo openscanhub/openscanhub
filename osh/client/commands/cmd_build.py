@@ -47,12 +47,12 @@ class Base_Build(OshCommand):
         add_profile_option(self.parser)
         add_task_id_file_option(self.parser)
 
-    def check_build(self, args, kwargs):
+    def check_build(self, args, kwargs, prefix=""):
         local_conf = get_conf(self.conf)
 
-        brew_build = kwargs.get("brew_build")
-        config = kwargs.get("config")
-        srpm = kwargs.get("srpm")
+        brew_build = kwargs.get(prefix + "brew_build")
+        config = kwargs.get(prefix + "config")
+        srpm = kwargs.get(prefix + "srpm")
         tarball_build_script = kwargs.get("tarball_build_script")
 
         if not config:
@@ -62,13 +62,13 @@ class Base_Build(OshCommand):
 is not even one in your user configuration file \
 (~/.config/osh/client.conf) nor in system configuration file \
 (/etc/osh/client.conf)")
-            print("config not specified, using default one:", config)
+            print(prefix + "config not specified, using default one:", config)
 
         result = verify_mock(config, self.hub)
         if result is not None:
             self.parser.error(result)
 
-        options = {"mock_config": config}
+        options = {prefix + "mock_config": config}
 
         if brew_build:
             # get build from koji
@@ -76,7 +76,7 @@ is not even one in your user configuration file \
             result = verify_koji_build(brew_build, koji_profiles)
             if result is not None:
                 self.parser.error(result)
-            options["brew_build"] = brew_build
+            options[prefix + "brew_build"] = brew_build
         else:
             # we are analyzing tarball with build script
             if tarball_build_script:
@@ -87,7 +87,7 @@ is not even one in your user configuration file \
             target_dir = random_string(32)
             upload_id, *_ = upload_file(self.hub, srpm, target_dir,
                                         self.parser)
-            options["upload_id"] = upload_id
+            options[prefix + "upload_id"] = upload_id
 
         return options
 
