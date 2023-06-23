@@ -48,12 +48,12 @@ class Base_Build(OshCommand):
         add_profile_option(self.parser)
         add_task_id_file_option(self.parser)
 
-    def check_build(self, args, kwargs):
+    def check_build(self, args, kwargs, prefix=""):
         local_conf = get_conf(self.conf)
 
-        config = kwargs.get("config")
-        nvr = kwargs.get("nvr")
-        srpm = kwargs.get("srpm")
+        config = kwargs.get(prefix + "config")
+        nvr = kwargs.get(prefix + "nvr")
+        srpm = kwargs.get(prefix + "srpm")
         tarball_build_script = kwargs.get("tarball_build_script")
 
         if not config:
@@ -63,13 +63,13 @@ class Base_Build(OshCommand):
 is not even one in your user configuration file \
 (~/.config/osh/client.conf) nor in system configuration file \
 (/etc/osh/client.conf)")
-            print("config not specified, using default one:", config)
+            print(prefix + "config not specified, using default one:", config)
 
         result = verify_mock(config, self.hub)
         if result is not None:
             self.parser.error(result)
 
-        options = {"mock_config": config}
+        options = {prefix + "mock_config": config}
 
         if nvr:
             # get build from koji
@@ -77,7 +77,7 @@ is not even one in your user configuration file \
             result = verify_koji_build(nvr, koji_profiles)
             if result is not None:
                 self.parser.error(result)
-            options["brew_build"] = nvr
+            options[prefix + "brew_build"] = nvr
         else:
             # we are analyzing tarball with build script
             if tarball_build_script:
@@ -87,7 +87,7 @@ is not even one in your user configuration file \
 
             target_dir = random_string(32)
             upload_id, *_ = upload_file(self.hub, srpm, target_dir, self.parser)
-            options["upload_id"] = upload_id
+            options[prefix + "upload_id"] = upload_id
 
         return options
 
