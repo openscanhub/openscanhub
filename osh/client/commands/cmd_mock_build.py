@@ -1,10 +1,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 # SPDX-FileCopyrightText: Copyright contributors to the OpenScanHub project.
 
-from xmlrpc.client import Fault
-
 from osh.client.commands.cmd_diff_build import Diff_Build
-from osh.client.commands.shortcuts import handle_perm_denied
 
 
 class Mock_Build(Diff_Build):
@@ -26,8 +23,7 @@ class Mock_Build(Diff_Build):
                  "\"make\", in case of packages which doesn't need to be built, just pass \"true\".",
         )
 
-    def submit_task(self, config, comment, options):
-        try:
-            return self.hub.scan.mock_build(config, comment, options)
-        except Fault as e:
-            handle_perm_denied(e, self.parser)
+    def submit_task(self, options):
+        return self.hub.scan.mock_build(options['mock_config'],
+                                        options['comment'],
+                                        options)
