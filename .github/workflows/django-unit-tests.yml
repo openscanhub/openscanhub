@@ -1,4 +1,4 @@
-name: django-unit-tests
+name: Django Unit Tests
 on:
   push:
     branches: [main]
@@ -7,17 +7,17 @@ on:
 jobs:
   django-unit-tests:
     runs-on: ubuntu-20.04
-    # container: fedora:37
     steps:
       - name: Install packages required for unit tests
         run: |
           sudo apt-get install -y git
-          pip3 install podman-compose
+          # Install same version of coverage as in containers
+          pip3 install podman-compose coverage==4.5.1
       - name: Checkout Git Repository
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      - name: before_script
+      - name: Run unit tests
         run: |
           # This is here to suppress a warning from GitHub
           # git config --global --add safe.directory /__w/openscanhub/openscanhub
@@ -25,6 +25,14 @@ jobs:
           containers/scripts/init-db.sh --force --minimal
           podman exec -it db psql -c 'ALTER USER openscanhub CREATEDB;'
           podman exec -it osh-hub /usr/bin/coverage-3.6 run --omit="*site-packages*,*kobo*," osh/hub/manage.py test -v 3 || exit 1
-          podman exec -it osh-hub /usr/bin/coverage-3.6 html
+          # Generate xml report to be uploaded to codecov
+          podman exec -it osh-hub /usr/bin/coverage-3.6 xml
           podman-compose logs db
           podman-compose logs osh-hub
+      - name: "Upload Django Unit Tests Coverage to Codecov"
+        uses: codecov/codecov-action@v3
+        with:
+          name: "Archive Django Unit Tests Coverage"
+          files: coverage.xml
+          fail_ci_if_error: false
+          verbose: true
