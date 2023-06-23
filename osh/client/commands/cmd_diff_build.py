@@ -7,7 +7,7 @@ from xmlrpc.client import Fault
 
 from kobo.shortcuts import random_string
 
-import osh.client
+from osh.client.commands.cmd_build import Base_Build
 from osh.client.commands.common import (add_analyzers_option,
                                         add_comment_option,
                                         add_comp_warnings_option,
@@ -28,7 +28,7 @@ from osh.client.commands.shortcuts import (check_analyzers, fetch_results,
 from osh.client.conf import get_conf
 
 
-class Diff_Build(osh.client.OshCommand):
+class Diff_Build(Base_Build):
     """analyze a SRPM without and with patches, return diff"""
     enabled = True
     admin = False  # admin type account required

@@ -5,7 +5,7 @@ from xmlrpc.client import Fault
 
 from kobo.shortcuts import random_string
 
-import osh.client
+from osh.client.commands.cmd_build import Base_Build
 from osh.client.conf import get_conf
 
 from .common import (add_analyzers_option, add_comment_option,
@@ -19,7 +19,7 @@ from .shortcuts import (check_analyzers, handle_perm_denied, upload_file,
                         verify_scan_profile_exists)
 
 
-class Version_Diff_Build(osh.client.OshCommand):
+class Version_Diff_Build(Base_Build):
     """analyze 2 SRPMs (base and target) and diff results"""
     enabled = True
     admin = False  # admin type account required
