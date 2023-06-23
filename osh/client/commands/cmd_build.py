@@ -17,9 +17,10 @@ from osh.client.commands.common import (add_analyzers_option,
                                         add_priority_option,
                                         add_profile_option,
                                         add_task_id_file_option)
-from osh.client.commands.shortcuts import (fetch_results, handle_perm_denied,
-                                           upload_file, verify_koji_build,
-                                           verify_mock)
+from osh.client.commands.shortcuts import (check_analyzers, fetch_results,
+                                           handle_perm_denied, upload_file,
+                                           verify_koji_build, verify_mock,
+                                           verify_scan_profile_exists)
 from osh.client.conf import get_conf
 
 
@@ -91,7 +92,62 @@ is not even one in your user configuration file \
         return options
 
     def prepare_task_options(self, args, kwargs):
-        pass
+        # optparser output is passed via args (args) and kwargs (opts)
+        analyzers = kwargs.get('analyzers', '')
+        comment = kwargs.get("comment")
+        cov_custom_model = kwargs.get('cov_custom_model')
+        csmock_args = kwargs.get('csmock_args')
+        email_to = kwargs.get("email_to", [])
+        packages_to_install = kwargs.get('install_to_chroot')
+        priority = kwargs.get("priority")
+        profile = kwargs.get('profile')
+        warn_level = kwargs.get('warn_level', '0')
+
+        # non-negative priority
+        if priority is not None and priority < 0:
+            self.parser.error("Priority must be a non-negative number!")
+
+        # options setting
+        options = {
+            "comment": comment,
+            **self.check_build(args, kwargs),
+        }
+
+        if email_to:
+            options["email_to"] = email_to
+
+        if priority is not None:
+            options["priority"] = priority
+
+        if warn_level:
+            options['warning_level'] = warn_level
+
+        if analyzers:
+            try:
+                check_analyzers(self.hub, analyzers)
+            except RuntimeError as ex:
+                self.parser.error(str(ex))
+            options['analyzers'] = analyzers
+
+        if profile:
+            result = verify_scan_profile_exists(self.hub, profile)
+            if result is not None:
+                self.parser.error(result)
+            options['profile'] = profile
+
+        if csmock_args:
+            options['csmock_args'] = csmock_args
+
+        if cov_custom_model:
+            target_dir = random_string(32)
+            upload_model_id, *_ = upload_file(self.hub, cov_custom_model,
+                                              target_dir, self.parser)
+            options["upload_model_id"] = upload_model_id
+
+        if packages_to_install:
+            options['install_to_chroot'] = packages_to_install
+
+        return options
 
     def run(self, *args, **kwargs):
         # login to the hub
