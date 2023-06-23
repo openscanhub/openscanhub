@@ -158,7 +158,7 @@ _osh_cli()
             COMPREPLY+=( $(compgen -W "--comment= --task-id-file=" -- "${cur}") )
             COMPREPLY+=( $(compgen -W "--nowait --email-to=" -- "${cur}") )
             COMPREPLY+=( $(compgen -W "--priority=" -- "${cur}") )
-            COMPREPLY+=( $(compgen -W "--nvr" -- "${cur}") )
+            COMPREPLY+=( $(compgen -W "--nvr=" -- "${cur}") )
             ;;
         esac
 

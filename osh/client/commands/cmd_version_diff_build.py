@@ -11,7 +11,7 @@ from osh.client.conf import get_conf
 from .common import (add_analyzers_option, add_comment_option,
                      add_comp_warnings_option, add_config_option,
                      add_csmock_args_option, add_custom_model_option,
-                     add_email_to_option, add_nowait_option,
+                     add_email_to_option, add_nowait_option, add_nvr_option,
                      add_priority_option, add_profile_option,
                      add_task_id_file_option)
 from .shortcuts import (check_analyzers, handle_perm_denied, upload_file,
@@ -47,17 +47,13 @@ class Version_Diff_Build(osh.client.OshCommand):
         add_comment_option(self.parser)
         add_task_id_file_option(self.parser)
         add_nowait_option(self.parser)
+        add_nvr_option(self.parser)
         add_email_to_option(self.parser)
         add_priority_option(self.parser)
 
         self.parser.add_option(
             "--base-nvr",
             help="use a Koji build for base (specified by NVR) instead of a local file"
-        )
-
-        self.parser.add_option(
-            "--nvr",
-            help="use a Koji build for target (specified by NVR) instead of a local file"
         )
 
         self.parser.add_option(
@@ -73,8 +69,6 @@ class Version_Diff_Build(osh.client.OshCommand):
         # Deprecated aliases:
         self.parser.add_option("--base-brew-build", dest="base_nvr",
                                help="DEPRECATED alias for --base-nvr")
-        self.parser.add_option("--brew-build", dest="nvr",
-                               help="DEPRECATED alias for --nvr")
 
     def run(self, *args, **kwargs):  # noqa: C901
         # optparser output is passed via *args (args) and **kwargs (opts)
