@@ -102,8 +102,6 @@ def add_priority_option(parser):
 def add_brew_build_option(parser):
     parser.add_option(
         "--brew-build",
-        action="store_true",
-        default=False,
         help="use a brew build (specified by NVR) instead of a local file"
     )
 

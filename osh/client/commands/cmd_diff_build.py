@@ -76,7 +76,7 @@ exist." % self.results_store_file)
         nowait = kwargs.pop("nowait")
         task_id_file = kwargs.pop("task_id_file")
         priority = kwargs.pop("priority")
-        brew_build = kwargs.pop("brew_build")
+        brew_build = kwargs.get("brew_build")
         self.results_store_file = kwargs.pop("results_dir", None)
         warn_level = kwargs.pop('warn_level', '0')
         analyzers = kwargs.pop('analyzers', '')
@@ -86,12 +86,12 @@ exist." % self.results_store_file)
         tarball_build_script = kwargs.pop('tarball_build_script', None)
         packages_to_install = kwargs.pop('install_to_chroot', None)
 
-        if len(args) != 1:
-            self.parser.error("please specify exactly one SRPM")
-        if brew_build:
-            # self.srpm contains NVR if --brew-build is used!
-            self.srpm = args[0]
-        else:
+        if bool(args) == bool(brew_build):
+            self.parser.error("please specify either SRPM or brew build")
+
+        if args:
+            if len(args) != 1:
+                self.parser.error("please specify exactly one SRPM")
             self.srpm = os.path.abspath(os.path.expanduser(args[0]))
 
         self.validate_results_store_file()
@@ -99,7 +99,7 @@ exist." % self.results_store_file)
         if brew_build:
             # get build from koji
             koji_profiles = self.conf.get('KOJI_PROFILES', 'brew,koji')
-            result = verify_koji_build(self.srpm, koji_profiles)
+            result = verify_koji_build(brew_build, koji_profiles)
             if result is not None:
                 self.parser.error(result)
         elif tarball_build_script:
@@ -149,7 +149,7 @@ is not even one in your user configuration file \
             options['profile'] = profile
 
         if brew_build:
-            options["brew_build"] = self.srpm
+            options["brew_build"] = brew_build
         else:
             target_dir = random_string(32)
             upload_id, err_code, err_msg = upload_file(self.hub, self.srpm,

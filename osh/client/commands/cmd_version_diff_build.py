@@ -8,12 +8,12 @@ from kobo.shortcuts import random_string
 import osh.client
 from osh.client.conf import get_conf
 
-from .common import (add_analyzers_option, add_comment_option,
-                     add_comp_warnings_option, add_config_option,
-                     add_csmock_args_option, add_custom_model_option,
-                     add_email_to_option, add_nowait_option,
-                     add_priority_option, add_profile_option,
-                     add_task_id_file_option)
+from .common import (add_analyzers_option, add_brew_build_option,
+                     add_comment_option, add_comp_warnings_option,
+                     add_config_option, add_csmock_args_option,
+                     add_custom_model_option, add_email_to_option,
+                     add_nowait_option, add_priority_option,
+                     add_profile_option, add_task_id_file_option)
 from .shortcuts import (check_analyzers, handle_perm_denied, upload_file,
                         verify_koji_build, verify_mock)
 
@@ -42,6 +42,7 @@ class Version_Diff_Build(osh.client.OshCommand):
             help="specify mock config name for base package"
         )
 
+        add_brew_build_option(self.parser)
         add_config_option(self.parser)
         add_comment_option(self.parser)
         add_task_id_file_option(self.parser)
@@ -52,12 +53,6 @@ class Version_Diff_Build(osh.client.OshCommand):
         self.parser.add_option(
             "--base-brew-build",
             help="use a brew build for base (specified by NVR) instead of a \
-local file"
-        )
-
-        self.parser.add_option(
-            "--brew-build",
-            help="use a brew build for target (specified by NVR) instead of a \
 local file"
         )
 
