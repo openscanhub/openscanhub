@@ -150,7 +150,6 @@ is not even one in your user configuration file \
 
         if brew_build:
             options["brew_build"] = self.srpm
-            options["srpm_name"] = self.srpm
         else:
             target_dir = random_string(32)
             upload_id, err_code, err_msg = upload_file(self.hub, self.srpm,
