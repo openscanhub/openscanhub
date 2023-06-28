@@ -87,7 +87,7 @@ srpm: source
 		--define "_srcrpmdir ."
 
 REPO = origin
-BRANCH = master
+BRANCH = main
 
 lint:
 	pre-commit run --show-diff-on-failure --color=always --from-ref $(REPO)/$(BRANCH) --to-ref HEAD
