@@ -84,12 +84,17 @@ def create_bug(request, package, release):
     jira = get_client()
     waivers = get_unreported_bugs(package, release)
 
-    if waivers[0].result_group.result.scanbinding.scan.base:
-        base = waivers[0].result_group.result.scanbinding.scan.base.nvr
+    if not waivers:
+        raise ValueError("No waivers to report")
+
+    scan = waivers[0].result_group.result.scanbinding.scan
+
+    if scan.base:
+        base = scan.base.nvr
     else:
         base = "NEW_PACKAGE"
 
-    target = waivers[0].result_group.result.scanbinding.scan.nvr
+    target = scan.nvr
     groups = get_checker_groups(waivers)
 
     comment = f"""
@@ -107,7 +112,7 @@ Package was scanned as differential scan:
 
     summary = 'New defect%s found in %s' % (
         's' if waivers.count() >= 2 else '',
-        waivers[0].result_group.result.scanbinding.scan.nvr)
+        scan.nvr)
 
     comment += format_waivers(waivers, request)
 
@@ -168,6 +173,10 @@ def update_bug(request, package, release):
         return
 
     waivers = get_unreported_bugs(package, release)
+
+    if not waivers:
+        raise ValueError("No waivers to report")
+
     comment = format_waivers(waivers, request)
     jira.add_comment(db_jira.key, comment)
     for w in waivers:
