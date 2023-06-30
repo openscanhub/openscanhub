@@ -55,8 +55,34 @@ class AbstractBugReporter(ABC):
         if waivers:
             return waivers.order_by('date')
 
+    def get_initial_comment(self, waivers, request):
+        scan = waivers[0].result_group.result.scanbinding.scan
+        if scan.base:
+            base = scan.base.nvr
+        else:
+            base = "NEW_PACKAGE"
+
+        target = scan.nvr
+        groups = self.__get_checker_groups(waivers)
+
+        comment = (
+            f'Csmock has found defect(s) in package {self.package.name}\n\n'
+            'Package was scanned as differential scan:\n\n'
+            f'\t{target} <= {base}\n\n'
+            f'== Reported groups of defects ==\n\n'
+            f'{groups}\n\n'
+            '== Marked waivers =='
+        )
+
+        comment += self.__format_waivers(waivers, request)
+        return comment
+
+    @classmethod
+    def get_comment(cls, waivers, request):
+        return cls.__format_waivers(waivers, request)
+
     @staticmethod
-    def format_waivers(request, waivers):
+    def __format_waivers(request, waivers):
         """
         return output of waivers/defects that is posted to bugzilla
         """
@@ -80,7 +106,7 @@ class AbstractBugReporter(ABC):
         return comment
 
     @staticmethod
-    def get_checker_groups(waivers):
+    def __get_checker_groups(waivers):
         return "\n".join(
             name for name in waivers
             .values_list('result_group__checker_group__name', flat=True)

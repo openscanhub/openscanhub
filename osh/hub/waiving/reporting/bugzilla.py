@@ -20,45 +20,14 @@ class BugzillaReporter(AbstractBugReporter):
         xmlrpc_url = urljoin(settings.BZ_URL, 'xmlrpc.cgi')
         return bugzilla.Bugzilla(url=xmlrpc_url, api_key=settings.BZ_API_KEY)
 
-    def create_bug(self, request):
-        """
-        create bugzilla for package/release and fill it with all IS_A_BUG waivers
-        this function should be called by view -- button "Create Bugzilla"
-        """
-        bz = self.__get_client()
-        waivers = self.get_unreported_bugs()
-
-        if not waivers:
-            raise ValueError("No waivers to report")
-
+    def __get_data(self, waivers, request):
         scan = waivers[0].result_group.result.scanbinding.scan
-
-        if scan.base:
-            base = scan.base.nvr
-        else:
-            base = "NEW_PACKAGE"
-
-        target = scan.nvr
-        groups = self.get_checker_groups(waivers)
-
-        comment = f"""
-Csmock has found defect(s) in package {self.package.name}s
-
-Package was scanned as differential scan:
-
-    {target} <= {base}
-
-== Reported groups of defects ==
-{groups}
-
-== Marked waivers ==
-"""
 
         summary = 'New defect%s found in %s' % (
             's' if waivers.count() >= 2 else '',
             scan.nvr)
 
-        comment += self.format_waivers(waivers, request)
+        comment = self.get_initial_comment(waivers, request)
 
         data = {
             'product': self.release.product,
@@ -76,6 +45,21 @@ Package was scanned as differential scan:
 
         if scan.username != request.user:
             data['cc'].append(f'{request.user.username}@redhat.com')
+
+        return data
+
+    def create_bug(self, request):
+        """
+        create bugzilla for package/release and fill it with all IS_A_BUG waivers
+        this function should be called by view -- button "Create Bugzilla"
+        """
+        bz = self.__get_client()
+        waivers = self.get_unreported_bugs()
+
+        if not waivers:
+            raise ValueError("No waivers to report")
+
+        data = self.__get_data(waivers, request)
 
         try:
             b = bz.createbug(**data)
@@ -109,7 +93,7 @@ Package was scanned as differential scan:
         if not waivers:
             raise ValueError("No waivers to report")
 
-        comment = self.format_waivers(waivers, request)
+        comment = self.get_comment(waivers, request)
         bzbug = bz.getbug(db_bz.number)
         bzbug.addcomment(comment, False)
         for w in waivers:
