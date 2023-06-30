@@ -2,23 +2,15 @@
 # SPDX-FileCopyrightText: Copyright contributors to the OpenScanHub project.
 
 from django.conf import settings
-from django.urls import reverse
 from jira import JIRA
 
-from osh.hub.other import get_or_none
 from osh.hub.waiving.models import WAIVER_TYPES, JiraBug, ResultGroup, Waiver
+from osh.hub.waiving.reporting.bug import AbstractBugReporter
 
 
-class JiraReporter:
+class JiraReporter(AbstractBugReporter):
     def __init__(self, package, release):
-        self.package = package
-        self.release = release
-
-    def has_bug(self):
-        """
-        returns True if there is a jira issue created for specified package/release
-        """
-        return get_or_none(JiraBug, package=self.package, release=self.release)
+        super().__init__(JiraBug, package, release)
 
     def get_unreported_bugs(self):
         """
@@ -37,34 +29,6 @@ class JiraReporter:
         )
         if waivers:
             return waivers.order_by('date')
-
-    @staticmethod
-    def format_waivers(waivers, request):
-        """
-        returns output of waivers/defects that is posted to jira
-        """
-        comment = ''
-        for w in waivers:
-            comment += "Group: %s\nDate: %s\nMessage: %s\nLink: %s\n" % (
-                w.result_group.checker_group.name,
-                w.date.strftime('%Y-%m-%d %H:%M:%S %Z'),  # 2013-01-04 04:09:51 EST
-                w.message,
-                request.build_absolute_uri(
-                    reverse('waiving/waiver',
-                            args=(w.result_group.result.scanbinding.id,
-                                  w.result_group.id))
-                )
-            )
-            if w != waivers.reverse()[0]:
-                comment += "-" * 78 + "\n\n"
-        return comment
-
-    @staticmethod
-    def get_checker_groups(waivers):
-        s = ""
-        for n in waivers.values('result_group__checker_group__name').distinct():
-            s += "%s\n" % n['result_group__checker_group__name']
-        return s
 
     @staticmethod
     def __get_client():
