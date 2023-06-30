@@ -25,45 +25,12 @@ class JiraReporter(AbstractBugReporter):
             }
         return JIRA(**options)
 
-    def create_bug(self, request):
-        """
-        create jira issue for package/release and fill it with all IS_A_BUG waivers
-        this function should be called by view -- button "Create Jira Issue"
-        """
-        jira = self.__get_client()
-        waivers = self.get_unreported_bugs()
-
-        if not waivers:
-            raise ValueError("No waivers to report")
-
+    def __get_data(self, waivers):
         scan = waivers[0].result_group.result.scanbinding.scan
-
-        if scan.base:
-            base = scan.base.nvr
-        else:
-            base = "NEW_PACKAGE"
-
-        target = scan.nvr
-        groups = self.get_checker_groups(waivers)
-
-        comment = f"""
-Csmock has found defect(s) in package {self.package.name}s
-
-Package was scanned as differential scan:
-
-    {target} <= {base}
-
-== Reported groups of defects ==
-{groups}
-
-== Marked waivers ==
-"""
 
         summary = 'New defect%s found in %s' % (
             's' if waivers.count() >= 2 else '',
             scan.nvr)
-
-        comment += self.format_waivers(waivers, request)
 
         # rhel version should be in format 'rhel-X.y.0{.z}'
         version = f'rhel-{self.release.version}.0'
@@ -97,7 +64,23 @@ Package was scanned as differential scan:
             },
         }
 
+        return data
+
+    def create_bug(self, request):
+        """
+        create jira issue for package/release and fill it with all IS_A_BUG waivers
+        this function should be called by view -- button "Create Jira Issue"
+        """
+        jira = self.__get_client()
+        waivers = self.get_unreported_bugs()
+
+        if not waivers:
+            raise ValueError("No waivers to report")
+
+        data = self.__get_data(waivers)
         issue_key = jira.create_issue(fields=data).key
+
+        comment = self.get_initial_comment(waivers, request)
         jira.add_comment(issue_key, comment)
 
         db_jira = JiraBug()
@@ -125,7 +108,7 @@ Package was scanned as differential scan:
         if not waivers:
             raise ValueError("No waivers to report")
 
-        comment = self.format_waivers(waivers, request)
+        comment = self.get_comment(waivers, request)
         jira.add_comment(db_jira.key, comment)
         for w in waivers:
             w.jira_bug = db_jira
