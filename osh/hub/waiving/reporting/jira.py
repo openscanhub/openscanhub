@@ -4,31 +4,13 @@
 from django.conf import settings
 from jira import JIRA
 
-from osh.hub.waiving.models import WAIVER_TYPES, JiraBug, ResultGroup, Waiver
+from osh.hub.waiving.models import JiraBug
 from osh.hub.waiving.reporting.bug import AbstractBugReporter
 
 
 class JiraReporter(AbstractBugReporter):
     def __init__(self, package, release):
         super().__init__(JiraBug, package, release)
-
-    def get_unreported_bugs(self):
-        """
-        returns IS_A_BUG waivers that weren't reported yet
-        """
-        rgs = ResultGroup.objects.select_related().filter(
-            result__scanbinding__scan__package=self.package,
-            result__scanbinding__scan__tag__release=self.release,
-        )
-        waivers = Waiver.waivers.filter(
-            result_group__result__scanbinding__scan__package=self.package,
-            result_group__result__scanbinding__scan__tag__release=self.release,
-            state__in=[WAIVER_TYPES['IS_A_BUG'], WAIVER_TYPES['FIX_LATER']],
-            jira_bug__isnull=True,
-            id__in=[rg.has_waiver().id for rg in rgs if rg.has_waiver()]
-        )
-        if waivers:
-            return waivers.order_by('date')
 
     @staticmethod
     def __get_client():

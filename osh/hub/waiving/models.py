@@ -356,7 +356,7 @@ associated with this group.")
         return Waiver.waivers.waivers_for(self)
 
     def latest_waiver(self):
-        waivers = Waiver.waivers.waivers_for(self)
+        waivers = self.get_waivers()
         if waivers:
             return waivers.latest()
 
@@ -365,11 +365,7 @@ associated with this group.")
         return latest waiver, if it exists
         """
         if self.state in RESULT_GROUP_PROCESSED:
-            waivers = self.get_waivers()
-            if not waivers:
-                return None
-            else:
-                return waivers.latest()
+            return self.latest_waiver()
 
     def is_marked_as_bug(self):
         """
@@ -497,6 +493,21 @@ class WaiverOnlyMixin:
     def by_release(self, release):
         return self.filter(
             result_group__result__scanbinding__scan__tag__release=release)
+
+    def by_package(self, package):
+        return self.filter(
+            result_group__result__scanbinding__scan__package=package)
+
+    def unreported(self, model):
+        model_name = model.__name__
+        if model_name.lower() == 'bugzilla':
+            field = 'bz'
+        elif model_name.lower() == 'jirabug':
+            field = 'jira_bug'
+        else:
+            raise ValueError(f"Unknown model_name: {model_name}")
+        query = f"{field}__isnull"
+        return self.filter(**{query: True})
 
     def waivers_for(self, rg):
         return self.filter(result_group=rg)
