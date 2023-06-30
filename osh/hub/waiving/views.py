@@ -16,7 +16,6 @@ from django.views.generic.list import ListView
 from osh.common.constants import (ERROR_DIFF_FILE, ERROR_HTML_FILE,
                                   ERROR_TXT_FILE, FIXED_DIFF_FILE,
                                   FIXED_HTML_FILE, FIXED_TXT_FILE)
-from osh.hub.other import get_or_none
 from osh.hub.scan.compare import get_compare_title
 from osh.hub.scan.models import (SCAN_STATES, SCAN_TYPES_TARGET, ETMapping,
                                  Package, Scan, ScanBinding, SystemRelease)
@@ -27,10 +26,9 @@ from osh.hub.service.processing import task_has_results
 from osh.hub.waiving.forms import ScanListSearchForm, WaiverForm
 from osh.hub.waiving.models import (DEFECT_STATES, RESULT_GROUP_STATES,
                                     WAIVER_LOG_ACTIONS, WAIVER_TYPES,
-                                    WAIVER_TYPES_HELP_TEXTS, Bugzilla,
-                                    CheckerGroup, Defect, JiraBug, ResultGroup,
-                                    Waiver, WaivingLog)
-from osh.hub.waiving.reporting import bugzilla, jira
+                                    WAIVER_TYPES_HELP_TEXTS, CheckerGroup,
+                                    Defect, ResultGroup, Waiver, WaivingLog)
+from osh.hub.waiving.reporting import BugzillaReporter, JiraReporter
 from osh.hub.waiving.service import (apply_waiver, display_in_result,
                                      get_defects_diff_display, get_last_waiver,
                                      get_unwaived_rgs, get_waivers_for_rg,
@@ -78,28 +76,16 @@ def get_result_context(request, sb):
     release = sb.scan.tag.release if sb.scan.tag else None
 
     context['bz_url'] = settings.BZ_URL
+    bz_reporter = BugzillaReporter(package, release)
+    context['bugzilla'] = bz_reporter.has_bug()
+    unrep_bz_waivers = bz_reporter.get_unreported_bugs()
+    context['unreported_bugs_count_bz'] = unrep_bz_waivers.count() if unrep_bz_waivers else 0
+
     context['jira_url'] = settings.JIRA_URL
-
-    unrep_bz_waivers = bugzilla.get_unreported_bugs(package, release)
-    unrep_jira_waivers = jira.get_unreported_bugs(package, release)
-
-    context['bugzilla'] = get_or_none(Bugzilla,
-                                      package=package,
-                                      release=release)
-
-    context['jira'] = get_or_none(JiraBug,
-                                  package=package,
-                                  release=release)
-
-    if unrep_bz_waivers:
-        context['unreported_bugs_count_bz'] = unrep_bz_waivers.count()
-    else:
-        context['unreported_bugs_count_bz'] = 0
-
-    if unrep_jira_waivers:
-        context['unreported_bugs_count_jira'] = unrep_jira_waivers.count()
-    else:
-        context['unreported_bugs_count_jira'] = 0
+    jira_reporter = JiraReporter(package, release)
+    context['jira'] = jira_reporter.has_bug()
+    unrep_jira_waivers = jira_reporter.get_unreported_bugs()
+    context['unreported_bugs_count_jira'] = unrep_jira_waivers.count() if unrep_jira_waivers else 0
 
     # numbers
     if sb.result:
@@ -663,8 +649,9 @@ def new_bz(request, package_id, release_id):
     """
     package = get_object_or_404(Package, id=package_id)
     release = get_object_or_404(SystemRelease, id=release_id)
-    if bugzilla.get_unreported_bugs(package, release):
-        bugzilla.create_bug(request, package, release)
+    bz_reporter = BugzillaReporter(package, release)
+    if bz_reporter.get_unreported_bugs():
+        bz_reporter.create_bug(request)
     return HttpResponseRedirect(reverse('waiving/result/newest',
                                         args=(package.name, release.tag)))
 
@@ -675,8 +662,9 @@ def update_bz(request, package_id, release_id):
     """
     package = get_object_or_404(Package, id=package_id)
     release = get_object_or_404(SystemRelease, id=release_id)
-    if bugzilla.get_unreported_bugs(package, release):
-        bugzilla.update_bug(request, package, release)
+    bz_reporter = BugzillaReporter(package, release)
+    if bz_reporter.get_unreported_bugs():
+        bz_reporter.update_bug(request)
     return HttpResponseRedirect(reverse('waiving/result/newest',
                                         args=(package.name, release.tag)))
 
@@ -687,8 +675,9 @@ def new_jira(request, package_id, release_id):
     """
     package = get_object_or_404(Package, id=package_id)
     release = get_object_or_404(SystemRelease, id=release_id)
-    if jira.get_unreported_bugs(package, release):
-        jira.create_bug(request, package, release)
+    jira_reporter = JiraReporter(package, release)
+    if jira_reporter.get_unreported_bugs():
+        jira_reporter.create_bug(request)
     return HttpResponseRedirect(reverse('waiving/result/newest',
                                         args=(package.name, release.tag)))
 
@@ -699,7 +688,8 @@ def update_jira(request, package_id, release_id):
     """
     package = get_object_or_404(Package, id=package_id)
     release = get_object_or_404(SystemRelease, id=release_id)
-    if jira.get_unreported_bugs(package, release):
-        jira.update_bug(request, package, release)
+    jira_reporter = JiraReporter(package, release)
+    if jira_reporter.get_unreported_bugs():
+        jira_reporter.update_bug(request)
     return HttpResponseRedirect(reverse('waiving/result/newest',
                                         args=(package.name, release.tag)))
