@@ -211,7 +211,9 @@ statistical data will be harvested for this system release.")
         """
         Product release numbers (major.minor)
         """
-        x = re.search(r'(\d)', self.product).group(1)
+        digits = re.search(r'(\d)', self.product)
+        assert digits is not None, f'Unable to parse major version from: {self.product!r}'
+        x = digits.group(1)
         y = self.release
         return f"{x}.{y}"
 
