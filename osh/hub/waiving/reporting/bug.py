@@ -3,6 +3,7 @@ from abc import ABC, abstractmethod
 from django.urls import reverse
 
 from osh.hub.other import get_or_none
+from osh.hub.waiving.models import WAIVER_TYPES, ResultGroup, Waiver
 
 
 class AbstractBugReporter(ABC):
@@ -25,6 +26,34 @@ class AbstractBugReporter(ABC):
         returns True if there is a jira issue created for specified package/release
         """
         return get_or_none(self._model, package=self.package, release=self.release)
+
+    def get_unreported_bugs(self):
+        """
+        return IS_A_BUG waivers that weren't reported yet
+        """
+        rgs = ResultGroup.objects.select_related().filter(
+            result__scanbinding__scan__package=self.package,
+            result__scanbinding__scan__tag__release=self.release,
+        )
+
+        valid_ids = []
+        for rg in rgs:
+            waiver = rg.has_waiver()
+            if waiver:
+                valid_ids.append(waiver.id)
+
+        waivers = Waiver.waivers.by_package(self.package)\
+            .by_release(self.release)\
+            .unreported(self._model)\
+            .filter(
+                state__in=[
+                    WAIVER_TYPES['IS_A_BUG'],
+                    WAIVER_TYPES['FIX_LATER']
+                ],
+                id__in=valid_ids
+        )
+        if waivers:
+            return waivers.order_by('date')
 
     @staticmethod
     def format_waivers(request, waivers):
