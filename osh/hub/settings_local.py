@@ -101,7 +101,7 @@ TASK_DIR = os.path.join(FILES_PATH, 'tasks')
 # Root directory for uploaded files
 UPLOAD_DIR = os.path.join(FILES_PATH, 'upload')
 
-BZ_URL = "https://bugzilla.stage.redhat.com/xmlrpc.cgi"
+BZ_URL = "https://bugzilla.stage.redhat.com"
 BZ_API_KEY = "xxxxxx"
 JIRA_URL = "https://issues.stage.redhat.com"
 JIRA_API_KEY = "xxxxxx"
