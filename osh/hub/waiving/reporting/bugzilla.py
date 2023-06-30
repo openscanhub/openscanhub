@@ -117,22 +117,19 @@ Package was scanned as differential scan:
         'rep_platform': 'All',
         'op_sys': 'Linux',
         'groups': ['private'],  # others are devel, qa
+        'cc': [],
     }
 
     if waivers[0].result_group.result.scanbinding.scan.username != \
             request.user:
-        data['cc'] = [request.user.username + '@redhat.com']
+        data['cc'].append(f'{request.user.username}@redhat.com')
 
     try:
         b = bz.createbug(**data)
     except Fault:
-        try:
-            # most likely the email in CC does not exist in BZ as user
-            del data['cc']
-        except KeyError:
-            pass
-        else:
-            b = bz.createbug(**data)
+        # most likely the email in CC does not exist in BZ as user
+        del data['cc']
+        b = bz.createbug(**data)
     db_bz = Bugzilla()
     db_bz.release = release
     db_bz.package = package
