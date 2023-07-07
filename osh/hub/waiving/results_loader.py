@@ -43,7 +43,7 @@ class TaskResultsProcessor:
     def unpack_results(self):
         tb_path = self.target_paths.get_tarball_path()
         if task_has_results(self.target_task):
-            logger.info("Results are already unpacked for task", self.target_task)
+            logger.info("Results are already unpacked for task %s", self.target_task)
             return
         else:
             logger.debug('Unpacking %s', tb_path)
