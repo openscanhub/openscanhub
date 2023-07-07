@@ -193,6 +193,7 @@ rm -rf %{buildroot}%{python3_sitelib}/scripts
 %{python3_sitelib}/osh/worker
 %{_unitdir}/osh-worker.service
 %attr(754,root,root) /usr/sbin/osh-worker
+%dir %attr(775,root,root) /var/log/osh
 
 %post client
 if test -f /etc/covscan/covscan.conf; then
@@ -219,6 +220,7 @@ fi
 %{_unitdir}/osh-stats.*
 %exclude %{python3_sitelib}/osh/hub/settings_local.py*
 %exclude %{python3_sitelib}/osh/hub/__pycache__/settings_local.*
+%dir %attr(775,root,root) /var/log/osh
 %dir %attr(775,root,apache) /var/log/osh/hub
 %ghost %attr(640,apache,apache) /var/log/osh/hub/hub.log
 %attr(775,root,apache) /var/lib/osh/hub
