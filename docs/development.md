@@ -16,14 +16,14 @@ By default, this script will deploy a `postgresql` instance, the worker and the 
 
 You can skip deployment and basic settings if you use the script.
 
-### MacOS Users
+### macOS Users
 
 If you are using MacOS to develop for OpenScanHub you will need to set up a different environment:
 
 1. You will need to install the latest Bash version using brew:
     `brew install bash`
 2. Locate the new package:
-   `which bash` -> `/opt/homebrew/bin/bash`
+   `command bash` -> `/opt/homebrew/bin/bash`
 3. Run it:
     `/opt/homebrew/bin/bash`
 4. In the new console, you can run the scripts form the [Using scripts](#using-scripts) section.
