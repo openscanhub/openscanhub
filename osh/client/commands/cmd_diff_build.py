@@ -184,7 +184,7 @@ is not even one in your user configuration file \
 
             # store results if user requested this
             if self.results_store_file is not None:
-                fetch_results(self.results_store_file, task_url, self.srpm)
+                fetch_results(self.hub, self.results_store_file, task_id)
 
     def submit_task(self, config, comment, options):
         try:

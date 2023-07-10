@@ -17,8 +17,9 @@ BuildRequires:  python3-psycopg2
 BuildRequires:  python3-setuptools
 BuildRequires:  systemd-rpm-macros
 
-# make sure that %%{bash_completions_dir} is defined in the buildroot
+# make sure that shell completion dir macros are defined in the buildroot
 %{!?bash_completions_dir: %global bash_completions_dir %{_datadir}/bash-completion/completions}
+%{!?zsh_completions_dir: %global zsh_completions_dir %{_datadir}/zsh/site-functions}
 
 # The following dependencies are not yet available in EPEL-9.  Make it
 # possible to build at least functional up2date osh-client for EPEL-9.
@@ -175,7 +176,8 @@ rm -rf %{buildroot}%{python3_sitelib}/scripts
 %attr(755,root,root) %{_bindir}/osh-cli
 %{_bindir}/covscan
 %attr(644,root,root) %config(noreplace) /etc/osh/client.conf
-%{bash_completions_dir}/osh-cli.bash
+%{bash_completions_dir}
+%{zsh_completions_dir}
 %{python3_sitelib}/osh/client
 %{python3_sitelib}/osh-*-py%{python3_version}.egg-info
 
