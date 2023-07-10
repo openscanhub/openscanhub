@@ -176,7 +176,7 @@ rm -rf %{buildroot}%{python3_sitelib}/scripts
 %attr(755,root,root) %{_bindir}/osh-cli
 %{_bindir}/covscan
 %attr(644,root,root) %config(noreplace) /etc/osh/client.conf
-%{bash_completions_dir}/osh-cli.bash
+%{bash_completions_dir}
 %{zsh_completions_dir}
 %{python3_sitelib}/osh/client
 %{python3_sitelib}/osh-*-py%{python3_version}.egg-info
