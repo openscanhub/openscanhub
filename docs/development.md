@@ -16,6 +16,34 @@ By default, this script will deploy a `postgresql` instance, the worker and the 
 
 You can skip deployment and basic settings if you use the script.
 
+### macOS Users
+
+If you are using MacOS to develop for OpenScanHub you will need to set up a different environment:
+
+1. You will need to install the latest Bash version using brew:
+    `brew install bash`
+2. Locate the new package:
+   `command bash` -> `/opt/homebrew/bin/bash`
+3. Run it:
+    `/opt/homebrew/bin/bash`
+4. In the new console, you can run the scripts form the [Using scripts](#using-scripts) section.
+
+Once it has been set up, you will need update the mock config:
+
+1. Create an [admin user](#osh-hub-users)
+2. Login as the admin user at: http://localhost:8000/auth/login/?next=/
+3. On the top right corner, click on the `admin` section
+4. Go to `Scan` section -> `Mock configs` -> `Add`:
+    - Name: `fedora-37-aarch64`
+    - Enabled: `true`
+5. Click on `Save`
+6. Go back to `Mock configs`, look for the recent created one and take its ID.
+7. Go back to the `admin` section -> `Scan` section -> `Tags` -> `Fedora 37`.
+8. Click on `Edit` and change the `Mock Config ID` for the one of step 6.
+9. Click on `Save`
+
+You are ready to start scanning!
+
 ## OSH worker
 
 Worker depends on some system packages not available from PyPI, needs to run under root user and has kinda complex setup which are all the reasons to run it in a container.
