@@ -58,8 +58,6 @@ main() {
 
 # Tests the build environment
 test_build_env() (
-    set -e
-
     test -d .git
 
     for f in compose.yaml containers/{hub/{Dockerfile,run.sh},{worker,client}.Dockerfile}; do
@@ -86,7 +84,6 @@ prepare_deploy() {
 
 # Tests the deployment environment
 test_deploy_env() {
-    set -e
     git -C kobo ls-remote https://github.com/release-engineering/kobo > /dev/null
 }
 
