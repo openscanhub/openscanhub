@@ -61,10 +61,9 @@ for folder in (
 
 if os.path.isdir(".git"):
     if not git_check_tag_for_HEAD(THIS_FILE_PATH):
-        package_version.append("git")
         git_version = get_git_version(THIS_FILE_PATH)
         git_date, git_time = get_git_date_and_time(THIS_FILE_PATH)
-        package_version += [git_date, git_time, git_version]
+        package_version += ['dev' + git_date, git_time, git_version]
 
 setup(
     name="osh",
