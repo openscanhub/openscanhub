@@ -95,6 +95,7 @@ test_deploy_env() {
 
 
 clean() {
+    podman-compose -p osh $PROFILE down -v
     mapfile -t containers < <(podman ps -a --filter label=$LABEL -q)
     podman rm -f "${containers[@]}"
     mapfile -t images < <(podman images --filter label=$LABEL -q)
