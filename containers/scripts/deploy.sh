@@ -111,6 +111,10 @@ while [[ $# -gt 0 ]]; do
             CONTAINERS+=('osh-client')
             shift
             ;;
+        --help|-h)
+            help
+            exit
+            ;;
         --no-start)
             START='--no-start'
             shift
