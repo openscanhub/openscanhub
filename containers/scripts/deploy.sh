@@ -22,7 +22,7 @@ else
 fi
 LABEL+='.compose.project=osh'
 START='-d'
-CLEAN=false
+CLEAN='false'
 FORCE='false'
 
 help() {
