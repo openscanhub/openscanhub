@@ -57,7 +57,7 @@ main() {
     fi
 }
 
-#Tests the build environment
+# Tests the build environment
 test_build_env() (
     set -e
 
@@ -88,7 +88,7 @@ prepare_deploy() {
 }
 
 
-#Tests the deployment environment
+# Tests the deployment environment
 test_deploy_env() (
     set -e
 
