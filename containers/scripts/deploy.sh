@@ -96,7 +96,7 @@ test_deploy_env() {
 
 clean() {
     podman-compose -p osh $PROFILE down -v
-    mapfile -t images < <(podman images --filter label=$LABEL -q)
+    mapfile -t images < <(podman images -q 'osh-*')
     podman rmi -f "${images[@]}"
 }
 
