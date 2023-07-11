@@ -1175,6 +1175,14 @@
   }
 },
 {
+  "pk": 172,
+  "model": "scan.mockconfig",
+  "fields": {
+    "enabled": true,
+    "name": "fedora-37-aarch64"
+  }
+},
+{
   "pk": 1,
   "model": "scan.profile",
   "fields": {
