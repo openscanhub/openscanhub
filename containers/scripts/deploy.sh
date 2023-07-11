@@ -31,7 +31,7 @@ help() {
     echo
     echo "Options:"
     echo "  --clean          Remove all containers and volumes"
-    echo "  -f, --force      Force compose down"
+    echo "  -f, --force      Force container rebuild"
     echo "  -F, --full-dev   Create a system-independent development environment"
     echo "  -h, --help       Show this message"
     echo "  --no-start       Do not start containers"
@@ -76,14 +76,11 @@ prepare_deploy() {
 
     if [[ ${#running[@]} -gt 0 ]] && [ "$FORCE" = false ]; then
         # shellcheck disable=2016
-        echo 'One or more containers are already running under `compose`. Please use `compose down` to kill them.'
+        echo 'One or more containers are already running under `compose`. Please use `--clean` to kill them.'
         return 4
     fi
 
-    if [ "$IS_LINUX" != 1 ]; then
-        running=()
-    fi
-    podman-compose -p osh $PROFILE down "${running[@]}"
+    clean
 }
 
 
