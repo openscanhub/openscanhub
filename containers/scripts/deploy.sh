@@ -93,8 +93,11 @@ test_deploy_env() {
 
 clean() {
     podman-compose -p osh $PROFILE down -v
-    mapfile -t images < <(podman images -q 'osh-*')
-    podman rmi -f "${images[@]}"
+
+    images=$(podman images -q 'osh-*' | paste -s -d' ')
+    # podman images -q has a defined format
+    # shellcheck disable=2086
+    podman rmi -f $images
 }
 
 while [[ $# -gt 0 ]]; do
