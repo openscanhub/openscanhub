@@ -72,9 +72,9 @@ test_build_env() (
 
 
 prepare_deploy() {
-    mapfile -t running < <(podman ps --filter label=$LABEL -q)
+    running="$(podman ps --filter label=$LABEL -q)"
 
-    if [[ ${#running[@]} -gt 0 ]] && [ "$FORCE" = false ]; then
+    if [[ -n "$running" ]] && [ "$FORCE" = false ]; then
         # shellcheck disable=2016
         echo 'One or more containers are already running under `compose`. Please use `--clean` to kill them.'
         return 4
