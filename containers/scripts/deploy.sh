@@ -73,7 +73,7 @@ test_build_env() (
 
 
 prepare_deploy() {
-    mapfile -t running < <(podman ps $LABEL -q 2>/dev/null)
+    mapfile -t running < <(podman ps --filter label=$LABEL -q)
 
     if [[ ${#running[@]} -gt 0 ]] && [ "$FORCE" = false ]; then
         # shellcheck disable=2016
@@ -96,9 +96,9 @@ test_deploy_env() {
 
 
 clean() {
-    mapfile -t containers < <(podman ps -a $LABEL -q 2>/dev/null)
+    mapfile -t containers < <(podman ps -a --filter label=$LABEL -q)
     podman rm -f "${containers[@]}"
-    mapfile -t images < <(podman images $LABEL -q 2>/dev/null)
+    mapfile -t images < <(podman images --filter label=$LABEL -q)
     podman rmi -f "${images[@]}"
 }
 
