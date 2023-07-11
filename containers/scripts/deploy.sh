@@ -43,13 +43,12 @@ main() {
     test_build_env
     test_deploy_env
 
-    prepare_deploy
-
     if [ "$CLEAN" = true ]; then
         clean
         exit "$?"
     fi
 
+    prepare_deploy
     podman-compose -p osh up --build $START "${CONTAINERS[@]}"
 
     if [ "$START" = '-d' ]; then
