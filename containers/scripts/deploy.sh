@@ -89,12 +89,10 @@ prepare_deploy() {
 
 
 # Tests the deployment environment
-test_deploy_env() (
+test_deploy_env() {
     set -e
-
-    cd kobo
-    git ls-remote https://github.com/release-engineering/kobo > /dev/null
-)
+    git -C kobo ls-remote https://github.com/release-engineering/kobo > /dev/null
+}
 
 
 clean() {
