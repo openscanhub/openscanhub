@@ -93,8 +93,7 @@ test_deploy_env() (
     set -e
 
     cd kobo
-    git ls-remote https://github.com/release-engineering/kobo > /dev/null ||\
-        git ls-remote https://github.com/frenzymadness/kobo > /dev/null
+    git ls-remote https://github.com/release-engineering/kobo > /dev/null
 )
 
 
