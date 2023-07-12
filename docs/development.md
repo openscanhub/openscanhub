@@ -35,7 +35,7 @@ In case the dependencies of OSH client are not available on your system, you can
 ### Prepare container images
 
 Just run `podman build -f containers/hub/Dockerfile -t osh-hub .` and after a while, you'll have container image ready. You can do the same in case you need the client image with `podman build -f containers/client.Dockerfile -t osh-client .`.
-Also, pull container image for the database layer: `podman pull registry-proxy.engineering.redhat.com/rh-osbs/rhel8-postgresql-12`.
+Also, pull container image for the database layer: `podman pull quay.io/sclorg/postgresql-12-c8s`.
 
 ### Prepare the cluster
 
