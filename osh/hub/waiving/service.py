@@ -11,7 +11,6 @@ import json
 import logging
 
 import pycsdiff
-from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Sum
 
 from .models import (DEFECT_STATES, RESULT_GROUP_STATES, Defect, ResultGroup,
@@ -135,54 +134,6 @@ def get_last_waiver(checker_group, package, release, exclude=None):
             return None
         else:
             return latest_waiver
-    else:
-        return None
-
-
-def get_first_result_group(checker_group, result, defect_type):
-    """
-    Return result group for same checker group, which is associated with
-     previous scan (previous build of specified package)
-    """
-    first_sb = result.scanbinding.scan.get_first_scan_binding()
-    if first_sb:
-        if first_sb.result:
-            try:
-                return ResultGroup.objects.get(
-                    checker_group=checker_group,
-                    result=first_sb.result,
-                    defect_type=defect_type,
-                )
-            except ObjectDoesNotExist:
-                return None
-
-
-def get_defects_diff(checker_group=None, result=None, defect_type=None,
-                     rg=None):
-    """
-    diff between number of new defects from this scan and first one.
-    Return None, if you dont have anything to diff against.
-
-    @rtype: None or int
-    @return: difference between defects
-    """
-    if rg is None:
-        first_rg = get_first_result_group(checker_group, result, defect_type)
-    else:
-        first_rg = get_first_result_group(rg.checker_group, rg.result,
-                                          rg.defect_type)
-    # there is no first result group and there is actual one
-    if first_rg is None and rg is not None:
-        # is this scan first scan? If so, we dont need diff
-        if rg.result.scanbinding.scan.get_child_scan():
-            return rg.defects_count
-        else:
-            return None
-    # there is first result group and there is no actual one
-    elif first_rg is not None and rg is None:
-        return first_rg.defects_count * -1
-    elif first_rg is not None and rg is not None:
-        return rg.defects_count - first_rg.defects_count
     else:
         return None
 
