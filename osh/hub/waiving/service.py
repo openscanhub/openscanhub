@@ -11,7 +11,6 @@ import json
 import logging
 
 import pycsdiff
-from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Sum
 
 from .models import (DEFECT_STATES, RESULT_GROUP_STATES, Defect, ResultGroup,
@@ -24,7 +23,6 @@ __all__ = (
     'get_unwaived_rgs',
     'compare_result_groups',
     'get_last_waiver',
-    'get_defects_diff_display',
     'display_in_result',
 )
 
@@ -139,95 +137,6 @@ def get_last_waiver(checker_group, package, release, exclude=None):
         return None
 
 
-def get_first_result_group(checker_group, result, defect_type):
-    """
-    Return result group for same checker group, which is associated with
-     previous scan (previous build of specified package)
-    """
-    first_sb = result.scanbinding.scan.get_first_scan_binding()
-    if first_sb:
-        if first_sb.result:
-            try:
-                return ResultGroup.objects.get(
-                    checker_group=checker_group,
-                    result=first_sb.result,
-                    defect_type=defect_type,
-                )
-            except ObjectDoesNotExist:
-                return None
-
-
-def get_defects_diff(checker_group=None, result=None, defect_type=None,
-                     rg=None):
-    """
-    diff between number of new defects from this scan and first one.
-    Return None, if you dont have anything to diff against.
-
-    @rtype: None or int
-    @return: difference between defects
-    """
-    if rg is None:
-        first_rg = get_first_result_group(checker_group, result, defect_type)
-    else:
-        first_rg = get_first_result_group(rg.checker_group, rg.result,
-                                          rg.defect_type)
-    # there is no first result group and there is actual one
-    if first_rg is None and rg is not None:
-        # is this scan first scan? If so, we dont need diff
-        if rg.result.scanbinding.scan.get_child_scan():
-            return rg.defects_count
-        else:
-            return None
-    # there is first result group and there is no actual one
-    elif first_rg is not None and rg is None:
-        return first_rg.defects_count * -1
-    elif first_rg is not None and rg is not None:
-        return rg.defects_count - first_rg.defects_count
-    else:
-        return None
-
-
-def get_defects_diff_display(response=None, checker_group=None,
-                             result=None, defect_type=None, rg=None):
-    if response is None:
-        response = {}
-    defects_diff = 0
-    # defects_diff = get_defects_diff(checker_group=checker_group,
-    #                                 result=result,
-    #                                 defect_type=defect_type,
-    #                                 rg=rg)
-    if defects_diff:  # not None & != 0
-        if defect_type == DEFECT_STATES['NEW']:
-            if defects_diff > 0:
-                response['diff_state'] = 'defects_increased'
-                response['diff_count'] = "%s%d" % ('+', defects_diff)
-            elif defects_diff < 0:
-                response['diff_state'] = 'defects_decreased'
-                response['diff_count'] = "%d" % (defects_diff)
-        elif defect_type == DEFECT_STATES['FIXED']:
-            if defects_diff > 0:
-                response['diff_state'] = 'defects_decreased'
-                response['diff_count'] = "%s%d" % ('+', defects_diff)
-            elif defects_diff < 0:
-                response['diff_state'] = 'defects_increased'
-                response['diff_count'] = "%d" % (defects_diff)
-        elif defect_type == DEFECT_STATES['PREVIOUSLY_WAIVED']:
-            response['diff_state'] = 'diff_state_neutral'
-            if defects_diff > 0:
-                response['diff_count'] = "%s%d" % ('+', defects_diff)
-            elif defects_diff < 0:
-                response['diff_count'] = "%d" % (defects_diff)
-    return response
-
-
-def get_defects_diff_display_by_rg(response, rg):
-    return get_defects_diff_display(response,
-                                    checker_group=rg.checker_group,
-                                    result=rg.result,
-                                    defect_type=rg.defect_type,
-                                    rg=rg)
-
-
 def display_in_result(rg):
     """
     return data that are displayed in waiver
@@ -235,7 +144,6 @@ def display_in_result(rg):
     response = {'group_state': rg.get_state_to_display()}
     response['defects_count'] = rg.defects_count
     response['defects_state'] = DEFECT_STATES.get_value(rg.defect_type)
-    get_defects_diff_display_by_rg(response=response, rg=rg)
     return response
 
 

@@ -32,9 +32,8 @@ from osh.hub.waiving.models import (DEFECT_STATES, RESULT_GROUP_STATES,
                                     Waiver, WaivingLog)
 from osh.hub.waiving.reporting import bugzilla, jira
 from osh.hub.waiving.service import (apply_waiver, display_in_result,
-                                     get_defects_diff_display, get_last_waiver,
-                                     get_unwaived_rgs, get_waivers_for_rg,
-                                     waiver_condition)
+                                     get_last_waiver, get_unwaived_rgs,
+                                     get_waivers_for_rg, waiver_condition)
 
 logger = logging.getLogger(__name__)
 
@@ -216,9 +215,7 @@ def get_waiving_data(result_object, defect_type):
                                          result=result_object,
                                          defect_type=defect_type)
         except ObjectDoesNotExist:
-            output[group] = get_defects_diff_display(checker_group=group,
-                                                     result=result_object,
-                                                     defect_type=defect_type)
+            output[group] = {}
         else:
             count += 1
             view_data = display_in_result(rg)

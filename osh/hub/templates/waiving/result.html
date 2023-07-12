@@ -70,9 +70,6 @@
         {% if data and data.id %}
         <td class="bg_{{ data.group_state }} {% if active_group and active_group.id == data.id %} active {% endif %}">
             <a href="{% url 'waiving/waiver' sb.id data.id %}#defects">{{ group.name }}</a>
-            {% if data.diff_state %}
-            <span class="{{ data.diff_state }}">{{ data.diff_count }}</span>
-            {% endif %}
             {% if data.defects_state %}
             <span class="defects_count {{ data.defects_state }}">{{ data.defects_count }}</span>
             {% endif %}
@@ -80,9 +77,6 @@
         {% else %}
         <td class="empty">
             {{ group.name }}
-            {% if data.diff_state %}
-            <span class="{{ data.diff_state }}">{{ data.diff_count }}</span>
-            {% endif %}
         </td>
         {% endif %}
     {% endfor %}
@@ -102,9 +96,6 @@
         {% if data and data.id %}
         <td class="bg_{{ data.group_state }} {% if active_group and active_group.id == data.id %} active {% endif %}">
             <a href="{% url 'waiving/fixed_defects' sb.id data.id %}#defects">{{ group.name }}</a>
-            {% if data.diff_state %}
-            <span class="{{ data.diff_state }}">{{ data.diff_count }}</span>
-            {% endif %}
             {% if data.defects_state %}
             <span class="defects_count {{ data.defects_state }}">{{ data.defects_count }}</span>
             {% endif %}
@@ -112,9 +103,6 @@
         {% else %}
         <td class="empty">
             {{ group.name }}
-            {% if data.diff_state %}
-            <span class="{{ data.diff_state }}">{{ data.diff_count }}</span>
-            {% endif %}
         </td>
         {% endif %}
     {% endfor %}
@@ -134,9 +122,6 @@
         {% if data and data.id %}
         <td class="bg_{{ data.group_state }} {% if active_group and active_group.id == data.id %} active {% endif %}">
             <a href="{% url 'waiving/previously_waived' sb.id data.id %}#defects">{{ group.name }}</a>
-            {% if data.diff_state %}
-            <span class="{{ data.diff_state }}">{{ data.diff_count }}</span>
-            {% endif %}
             {% if data.defects_state %}
             <span class="defects_count {{ data.defects_state }}">{{ data.defects_count }}</span>
             {% endif %}
@@ -144,9 +129,6 @@
         {% else %}
         <td class="empty">
             {{ group.name }}
-            {% if data.diff_state %}
-            <span class="{{ data.diff_state }}">{{ data.diff_count }}</span>
-            {% endif %}
         </td>
         {% endif %}
     {% endfor %}
