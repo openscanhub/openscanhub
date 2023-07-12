@@ -1,0 +1,3 @@
+# When modifying this file, please validate using
+# curl -X POST --data-binary @codecov.yml https://codecov.io/validate
+comment: false
