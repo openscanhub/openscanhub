@@ -23,7 +23,6 @@ __all__ = (
     'get_unwaived_rgs',
     'compare_result_groups',
     'get_last_waiver',
-    'get_defects_diff_display',
     'display_in_result',
 )
 
@@ -136,13 +135,6 @@ def get_last_waiver(checker_group, package, release, exclude=None):
             return latest_waiver
     else:
         return None
-
-
-def get_defects_diff_display(response=None, checker_group=None,
-                             result=None, defect_type=None, rg=None):
-    if response is None:
-        response = {}
-    return response
 
 
 def display_in_result(rg):
