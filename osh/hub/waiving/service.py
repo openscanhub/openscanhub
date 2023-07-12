@@ -191,32 +191,6 @@ def get_defects_diff_display(response=None, checker_group=None,
                              result=None, defect_type=None, rg=None):
     if response is None:
         response = {}
-    defects_diff = 0
-    # defects_diff = get_defects_diff(checker_group=checker_group,
-    #                                 result=result,
-    #                                 defect_type=defect_type,
-    #                                 rg=rg)
-    if defects_diff:  # not None & != 0
-        if defect_type == DEFECT_STATES['NEW']:
-            if defects_diff > 0:
-                response['diff_state'] = 'defects_increased'
-                response['diff_count'] = "%s%d" % ('+', defects_diff)
-            elif defects_diff < 0:
-                response['diff_state'] = 'defects_decreased'
-                response['diff_count'] = "%d" % (defects_diff)
-        elif defect_type == DEFECT_STATES['FIXED']:
-            if defects_diff > 0:
-                response['diff_state'] = 'defects_decreased'
-                response['diff_count'] = "%s%d" % ('+', defects_diff)
-            elif defects_diff < 0:
-                response['diff_state'] = 'defects_increased'
-                response['diff_count'] = "%d" % (defects_diff)
-        elif defect_type == DEFECT_STATES['PREVIOUSLY_WAIVED']:
-            response['diff_state'] = 'diff_state_neutral'
-            if defects_diff > 0:
-                response['diff_count'] = "%s%d" % ('+', defects_diff)
-            elif defects_diff < 0:
-                response['diff_count'] = "%d" % (defects_diff)
     return response
 
 
