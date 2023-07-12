@@ -39,8 +39,6 @@ Also, pull container image for the database layer: `podman pull registry-proxy.e
 
 ### Prepare the cluster
 
-Note: podman-compose 1.0.0 and newer does not support DNS resolution between containers out of the box so make sure that you have also its dnsname plugin installed (provided by podman-plugins RPM package in Fedora).
-
 Run `podman-compose -p osh up --no-start` - this commands prepares all the services and a network for them but doesn't start them.
 
 ### Start the db first
