@@ -145,14 +145,6 @@ def get_defects_diff_display(response=None, checker_group=None,
     return response
 
 
-def get_defects_diff_display_by_rg(response, rg):
-    return get_defects_diff_display(response,
-                                    checker_group=rg.checker_group,
-                                    result=rg.result,
-                                    defect_type=rg.defect_type,
-                                    rg=rg)
-
-
 def display_in_result(rg):
     """
     return data that are displayed in waiver
@@ -160,7 +152,6 @@ def display_in_result(rg):
     response = {'group_state': rg.get_state_to_display()}
     response['defects_count'] = rg.defects_count
     response['defects_state'] = DEFECT_STATES.get_value(rg.defect_type)
-    get_defects_diff_display_by_rg(response=response, rg=rg)
     return response
 
 
