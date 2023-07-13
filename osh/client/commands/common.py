@@ -102,8 +102,6 @@ def add_priority_option(parser):
 def add_brew_build_option(parser):
     parser.add_option(
         "--brew-build",
-        action="store_true",
-        default=False,
         help="use a brew build (specified by NVR) instead of a local file"
     )
 
@@ -124,16 +122,4 @@ def add_install_to_chroot_option(parser):
         action="store",
         help="When scanning tarballs, you can install packages into chroot with this option ("
              "usually devel packages)"
-    )
-
-
-def add_tarball_option(parser):
-    parser.add_option(
-        "--tarball-build-script",
-        dest="tarball_build_script",
-        action="store",
-        help="With this option osh-cli accepts path to tarball specified via first argument and "
-             "then the tarball will be scanned. "
-             "This option sets command which should build the package, usually this should be just "
-             "\"make\", in case of packages which doesn't need to be built, just pass \"true\".",
     )
