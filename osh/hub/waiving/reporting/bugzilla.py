@@ -1,6 +1,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 # SPDX-FileCopyrightText: Copyright contributors to the OpenScanHub project.
 
+from urllib.parse import urljoin
 from xmlrpc.client import Fault
 
 import bugzilla
@@ -9,6 +10,11 @@ from django.urls import reverse
 
 from osh.hub.other import get_or_none
 from osh.hub.waiving.models import WAIVER_TYPES, Bugzilla, ResultGroup, Waiver
+
+
+def get_client():
+    xmlrpc_url = urljoin(settings.BZ_URL, 'xmlrpc.cgi')
+    return bugzilla.Bugzilla(url=xmlrpc_url, api_key=settings.BZ_API_KEY)
 
 
 def has_bug(package, release):
@@ -70,7 +76,7 @@ def create_bug(request, package, release):
     create bugzilla for package/release and fill it with all IS_A_BUG waivers
     this function should be called by view -- button "Create Bugzilla"
     """
-    bz = bugzilla.Bugzilla(url=settings.BZ_URL, api_key=settings.BZ_API_KEY)
+    bz = get_client()
     waivers = get_unreported_bugs(package, release)
 
     if waivers[0].result_group.result.scanbinding.scan.base:
@@ -142,7 +148,7 @@ def update_bug(request, package, release):
     add defects to specified bugzilla that aren't there yet
     this function should be called by view -- button "update bugzilla"
     """
-    bz = bugzilla.Bugzilla(url=settings.BZ_URL, api_key=settings.BZ_API_KEY)
+    bz = get_client()
     db_bz = has_bug(package, release)
     if not db_bz:
         create_bug(request, package, release)
