@@ -2,6 +2,7 @@
 # SPDX-FileCopyrightText: Copyright contributors to the OpenScanHub project.
 
 from django.contrib import admin
+from django.conf import settings
 from django.urls import include, path
 from django.views.generic.base import TemplateView
 
@@ -9,8 +10,8 @@ admin.autodiscover()
 
 
 urlpatterns = [
-    path("", TemplateView.as_view(template_name="index.html"), name="index"),
-    path("", TemplateView.as_view(template_name="index.html"), name="home/index"),
+    path("", TemplateView.as_view(template_name="index.html", extra_context={"BASE_HTML_FOOTER": settings.BASE_HTML_FOOTER}), name="index"),
+    path("", TemplateView.as_view(template_name="index.html", extra_context={"BASE_HTML_FOOTER": settings.BASE_HTML_FOOTER}), name="home/index"),
     # Uncomment the admin/doc line below and add 'django.contrib.admindocs'
     # to INSTALLED_APPS to enable admin documentation:
     # path('admin/doc/', include('django.contrib.admindocs.urls')),

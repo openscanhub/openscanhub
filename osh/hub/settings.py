@@ -180,6 +180,8 @@ ET_SCAN_PRIORITY = 20
 
 VALID_TASK_LOG_EXTENSIONS = ['.log', '.ini', '.err', '.out', '.js', '.txt']
 
+BASE_HTML_FOOTER = 'Bugs and RFEs should be reported on <a href="https://github.com/openscanhub/openscanhub/">GitHub</a>.'
+
 # override default values with custom ones from local settings
 try:
     from .settings_local import *  # noqa
