@@ -195,13 +195,10 @@ statistical data will be harvested for this system release.")
     def __str__(self):
         return "%s -- %s.%d" % (self.tag, self.product, self.release)
 
-    def get_child(self):
-        try:
+    @property
+    def child(self):
+        if hasattr(self, 'systemrelease'):
             return self.systemrelease
-        except ObjectDoesNotExist:
-            return None
-
-    child = property(get_child)
 
     def is_parent(self):
         return self.child is not None
@@ -211,7 +208,9 @@ statistical data will be harvested for this system release.")
         """
         Product release numbers (major.minor)
         """
-        x = re.search(r'(\d)', self.product).group(1)
+        digits = re.search(r'(\d)', self.product)
+        assert digits is not None, f'Unable to parse major version from: {self.product!r}'
+        x = digits.group(1)
         y = self.release
         return f"{x}.{y}"
 
