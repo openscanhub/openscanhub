@@ -195,13 +195,12 @@ statistical data will be harvested for this system release.")
     def __str__(self):
         return "%s -- %s.%d" % (self.tag, self.product, self.release)
 
-    def get_child(self):
+    @property
+    def child(self):
         try:
             return self.systemrelease
         except ObjectDoesNotExist:
             return None
-
-    child = property(get_child)
 
     def is_parent(self):
         return self.child is not None
