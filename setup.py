@@ -69,7 +69,7 @@ if os.path.isdir(".git"):
 setup(
     name="osh",
     version=".".join(map(str, package_version)),
-    url="https://gitlab.cee.redhat.com/covscan/covscan",
+    url="https://github.com/openscanhub/openscanhub",
     author="Red Hat, Inc.",
     author_email="openscanhub-devel@redhat.com",
     description="OpenScanHub is a service for static and dynamic analysis.",
