@@ -1,10 +1,9 @@
 from django.http import HttpResponse
-from django.urls import reverse
 from django.template.loader import get_template
+from django.urls import reverse
 
 
-
-class LoginRequiredMiddleware(object):
+class LoginRequiredMiddleware:
     """
     Specially hacked middleware to make sure the user list/detail page are
     visible only to authenticated users.
