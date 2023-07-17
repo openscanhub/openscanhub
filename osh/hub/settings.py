@@ -100,6 +100,8 @@ MIDDLEWARE = (
     'kobo.django.auth.middleware.LimitedRemoteUserMiddleware',
     'kobo.hub.middleware.WorkerMiddleware',
     'kobo.django.menu.middleware.MenuMiddleware',
+
+    'osh.hub.other.middleware.LoginRequiredMiddleware',
 )
 
 INTERNAL_IPS = ('127.0.0.1',)
