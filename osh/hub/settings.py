@@ -19,6 +19,9 @@ URL_PREFIX = "/osh"
 # file to read the real SECRET_KEY from
 SECRET_KEY_FILE = "/var/lib/osh/hub/secret_key"
 
+# where to read API keys from
+SECRETS_DIR = "/etc/osh/hub/secrets"
+
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
 LANGUAGE_CODE = 'en-us'
@@ -185,6 +188,18 @@ try:
     from .settings_local import *  # noqa
 except ImportError:
     pass
+
+
+def _get_secret(name):
+    try:
+        with open(os.path.join(SECRETS_DIR, name)) as f:
+            return f.read().strip()
+    except OSError:
+        return None
+
+
+BZ_API_KEY = _get_secret('bugzilla_secret')
+JIRA_API_KEY = _get_secret('jira_secret')
 
 # read the real SECRET_KEY from SECRET_KEY_FILE if availble
 try:
