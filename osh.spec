@@ -144,8 +144,8 @@ cp -a {,%{buildroot}%{python3_sitelib}/}osh/hub/static/
 # Temporarily provide /usr/bin/covscan for backward compatibility
 ln -s osh-cli %{buildroot}%{_bindir}/covscan
 
-# create /etc/osh/hub directory
-mkdir -p %{buildroot}%{_sysconfdir}/osh/hub
+# create /etc/osh/hub/secrets directory
+mkdir -p %{buildroot}%{_sysconfdir}/osh/hub/secrets
 
 # create /var/lib dirs
 mkdir -p %{buildroot}/var/lib/osh/hub/{tasks,upload,worker}
@@ -219,6 +219,9 @@ fi
 %ghost %attr(640,apache,apache) /var/log/osh/hub/hub.log
 %attr(775,root,apache) /var/lib/osh/hub
 %ghost %attr(640,root,apache) /var/lib/osh/hub/secret_key
+%dir %attr(775,root,apache) %{_sysconfdir}/osh/hub/secrets
+%ghost %attr(640,root,apache) %{_sysconfdir}/osh/hub/secrets/jira_secret
+%ghost %attr(640,root,apache) %{_sysconfdir}/osh/hub/secrets/bugzilla_secret
 
 %post hub
 exec &>> /var/log/osh/hub/post-install-%{name}-%{version}-%{release}.log

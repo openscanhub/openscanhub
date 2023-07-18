@@ -223,3 +223,9 @@ To run unit tests
    command
 4. after you are done with unit testing, you can tear down the whole container
    stack by `podman-compose -p osh down`
+
+## Testing reporting integrations
+
+Staging secrets for `bugzilla` and `jira` should be placed in a corresponding `*_secret` file in the `.secrets` folder at the top-level of the application.
+Notice that `/etc/osh/hub/secrets` should be used for production.
+Endpoints at `osh/hub/settings_local.py` already point to the respective staging instances.

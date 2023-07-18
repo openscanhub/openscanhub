@@ -11,6 +11,9 @@ import os
 
 DEBUG = True
 
+# where to read API keys from
+SECRETS_DIR = ".secrets"
+
 ADMINS = (
     ('Kamil Dudka', 'kdudka@redhat.com'),
 )
@@ -105,9 +108,7 @@ TASK_DIR = os.path.join(FILES_PATH, 'tasks')
 UPLOAD_DIR = os.path.join(FILES_PATH, 'upload')
 
 BZ_URL = "https://bugzilla.stage.redhat.com"
-BZ_API_KEY = "xxxxxx"
 JIRA_URL = "https://issues.stage.redhat.com"
-JIRA_API_KEY = "xxxxxx"
 
 ET_URL = 'https://errata-web-01.host.stage.eng.bos.redhat.com'
 
