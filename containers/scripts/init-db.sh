@@ -75,8 +75,8 @@ restore() {
     curl -O "https://${FQDN}/${FILENAME}"
 
     podman stop osh-hub
-    podman exec db dropdb openscanhub
-    podman exec db createdb openscanhub
+    podman exec db dropdb -h localhost -U openscanhub openscanhub
+    podman exec db createdb -h localhost -U openscanhub openscanhub
     gzip -cd "$FILENAME" | podman exec -i db psql -h localhost -U openscanhub
     podman start osh-hub
     wait_for_container 'HUB'

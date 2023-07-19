@@ -32,7 +32,7 @@ main() {
 
     # Remove stale coverage data
     rm -rf htmlcov .coverage
-    podman exec -it db psql -c 'ALTER USER openscanhub CREATEDB;'
+    podman exec -it db psql -h localhost -U openscanhub -c 'ALTER USER openscanhub CREATEDB;'
 
     set -o pipefail
     # Only generate test coverage report for OpenScanHub project
@@ -85,7 +85,7 @@ main() {
     curl http://localhost:8000/task/5/ | grep -Pzo "<th>Priority</th>\n    <td>20</td>"
 
     # insert priority offset setting into the database
-    podman exec -it db psql -d openscanhub -c "INSERT INTO scan_package (name, blocked, priority_offset) VALUES ('expat', false, 1);"
+    podman exec -it db psql -h localhost -U openscanhub -d openscanhub -c "INSERT INTO scan_package (name, blocked, priority_offset) VALUES ('expat', false, 1);"
 
     # submit errata scan and check its tasks priorities
     podman exec osh-client "${CLI_XML[@]}" --hub http://osh-hub:8000/xmlrpc/kerbauth/ --username=user --password=xxxxxx create-scan -b expat-2.5.0-1.fc37 -t expat-2.5.0-2.fc38 --et-scan-id=1 --release=Fedora-37 --owner=admin --advisory-id=1

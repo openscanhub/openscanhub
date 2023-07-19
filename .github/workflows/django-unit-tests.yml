@@ -23,7 +23,7 @@ jobs:
           # git config --global --add safe.directory /__w/openscanhub/openscanhub
           git clone https://github.com/release-engineering/kobo.git
           containers/scripts/init-db.sh --force --minimal
-          podman exec -it db psql -c 'ALTER USER openscanhub CREATEDB;'
+          podman exec -it db psql -h localhost -U openscanhub -c 'ALTER USER openscanhub CREATEDB;'
           podman exec -it osh-hub /usr/bin/coverage-3.6 run --omit="*site-packages*,*kobo*," osh/hub/manage.py test -v 3 || exit 1
           # Generate xml report to be uploaded to codecov
           podman exec -it osh-hub /usr/bin/coverage-3.6 xml
