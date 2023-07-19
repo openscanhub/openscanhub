@@ -13,14 +13,10 @@ CONTAINERS=(
     osh-worker
 )
 
-if [ "$IS_LINUX" = 1 ]; then
-    LABEL='io.podman'
-    PROFILE=
-else
-    LABEL='com.docker'
+if [ "$IS_LINUX" = 0 ]; then
     PROFILE='--profile=full-dev'
 fi
-LABEL+='.compose.project=osh'
+LABEL='com.docker.compose.project=osh'
 START='-d'
 CLEAN='false'
 FORCE='false'
