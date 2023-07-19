@@ -89,6 +89,8 @@ test_deploy_env() {
 
 
 clean() {
+    # The $PROFILE variable may be unset.
+    # shellcheck disable=2086
     podman-compose -p osh $PROFILE down -v
 
     images=$(podman images -q 'osh-*' | paste -s -d' ')
