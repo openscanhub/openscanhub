@@ -1,3 +1,4 @@
+# shellcheck shell=bash
 # This script is made to be sourced only
 
 # Exports host's variables to ensure compatibility
