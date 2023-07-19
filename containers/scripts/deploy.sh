@@ -13,7 +13,7 @@ CONTAINERS=(
     osh-worker
 )
 
-if [ "$IS_LINUX" = 0 ]; then
+if [ -z "$IS_PODMAN" ]; then
     PROFILE='--profile=full-dev'
 fi
 LABEL='com.docker.compose.project=osh'

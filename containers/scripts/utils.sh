@@ -3,17 +3,31 @@
 
 # Exports host's variables to ensure compatibility
 export_host_variables() {
+    typeset -a tools
+
+    # prefer podman on linux and docker on non-linux platforms
     if [[ "$OSTYPE" =~ 'linux' ]]; then
-        export IS_LINUX=1
+        tools=(podman docker)
     else
-        export IS_LINUX=0
+        tools=(docker podman)
     fi
 
-    if test "$IS_LINUX" = 0; then
+    for tool in "${tools[@]}"; do
+        command -v "$tool" || continue
+
+        if [[ "$tool" = podman ]]; then
+            export IS_PODMAN=1
+        fi
+
         shopt -s expand_aliases
-        alias podman=docker
-        alias podman-compose=docker-compose
-    fi
+        # shellcheck disable=2139
+        # we want to expand $tool immediately
+        alias podman="$tool" && alias podman-compose="$tool-compose"
+        return
+    done
+
+    echo "podman nor docker were found on this machine!" 1>&2
+    exit 1
 }
 
 export_host_variables
