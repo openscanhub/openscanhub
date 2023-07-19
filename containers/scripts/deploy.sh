@@ -89,7 +89,7 @@ clean() {
     # shellcheck disable=2086
     podman-compose -p osh $PROFILE down -v
 
-    images=$(podman images -q 'osh-*' | paste -s -d' ')
+    images=$(podman images -q 'osh-*' | paste -s -d' ' -)
     # podman images -q has a defined format
     # shellcheck disable=2086
     [ -z "$images" ] || podman rmi -f $images
