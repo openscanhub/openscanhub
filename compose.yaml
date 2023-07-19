@@ -2,13 +2,13 @@ version: '3.8'
 
 services:
   db:
-    image: quay.io/sclorg/postgresql-12-c8s
+    image: docker.io/postgres:12
     container_name: db
     hostname: db
     environment:
-      POSTGRESQL_PASSWORD: velryba
-      POSTGRESQL_USER: openscanhub
-      POSTGRESQL_DATABASE: openscanhub
+      POSTGRES_PASSWORD: velryba
+      POSTGRES_USER: openscanhub
+      POSTGRES_DB: openscanhub
     ports:
       - "5432:5432"
     networks:
