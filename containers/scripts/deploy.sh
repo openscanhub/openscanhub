@@ -62,6 +62,12 @@ test_build_env() (
 
     # test if *-compose is installed
     command -v podman-compose
+
+    if [[ -n "$IS_PODMAN" ]] && [[ "$OSTYPE" = *darwin* ]] && grep ':z$' compose.yaml; then
+        echo "podman on macOS does not support SELinux labeling at the moment."
+        echo "Please, remove them from compose.yaml and execute this script again."
+        exit 1
+    fi
 )
 
 
