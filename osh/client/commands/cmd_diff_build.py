@@ -2,14 +2,11 @@
 # SPDX-FileCopyrightText: Copyright contributors to the OpenScanHub project.
 
 import os
-import sys
-from xmlrpc.client import Fault
 
 from kobo.shortcuts import random_string
 
 from osh.client.commands.cmd_build import Base_Build
-from osh.client.commands.shortcuts import (check_analyzers, fetch_results,
-                                           handle_perm_denied, upload_file,
+from osh.client.commands.shortcuts import (check_analyzers, upload_file,
                                            verify_koji_build, verify_mock,
                                            verify_scan_profile_exists)
 from osh.client.conf import get_conf
@@ -20,27 +17,14 @@ class Diff_Build(Base_Build):
     enabled = True
     admin = False  # admin type account required
 
-    def validate_results_store_file(self):
-        if self.results_store_file:
-            if isinstance(self.results_store_file, str):
-                if not os.path.isdir(self.results_store_file):
-                    self.parser.error("Path (%s) for storing results doesn't \
-exist." % self.results_store_file)
-            else:
-                self.parser.error("Invalid path to store results.")
-
-    def run(self, *args, **kwargs):  # noqa: C901
+    def prepare_task_options(self, args, kwargs):  # noqa: C901
         local_conf = get_conf(self.conf)
 
-        # optparser output is passed via *args (args) and **kwargs (opts)
         config = kwargs.pop("config", None)
         email_to = kwargs.pop("email_to", [])
         comment = kwargs.pop("comment")
-        nowait = kwargs.pop("nowait")
-        task_id_file = kwargs.pop("task_id_file")
         priority = kwargs.pop("priority")
         nvr = kwargs.pop("nvr")
-        self.results_store_file = kwargs.pop("results_dir", None)
         warn_level = kwargs.pop('warn_level', '0')
         analyzers = kwargs.pop('analyzers', '')
         profile = kwargs.pop('profile', None)
@@ -56,8 +40,6 @@ exist." % self.results_store_file)
             if len(args) != 1:
                 self.parser.error("please specify exactly one SRPM")
             self.srpm = os.path.abspath(os.path.expanduser(args[0]))
-
-        self.validate_results_store_file()
 
         if nvr:
             # get build from koji
@@ -81,9 +63,6 @@ is not even one in your user configuration file \
         # non-negative priority
         if priority is not None and priority < 0:
             self.parser.error("Priority must be a non-negative number!")
-
-        # login to the hub
-        self.connect_to_hub(kwargs)
 
         result = verify_mock(config, self.hub)
         if result is not None:
@@ -137,23 +116,9 @@ is not even one in your user configuration file \
         if tarball_build_script:
             options['tarball_build_script'] = tarball_build_script
 
-        task_id = self.submit_task(config, comment, options)
+        return options
 
-        self.write_task_id_file(task_id, task_id_file)
-        task_url = self.hub.client.task_url(task_id)
-        print("Task info: %s" % task_url)
-
-        if not nowait:
-            from kobo.client.task_watcher import TaskWatcher
-            TaskWatcher.watch_tasks(self.hub, [task_id])
-
-            # store results if user requested this
-            if self.results_store_file is not None and \
-                    not fetch_results(self.hub, self.results_store_file, task_id):
-                sys.exit(1)
-
-    def submit_task(self, config, comment, options):
-        try:
-            return self.hub.scan.diff_build(config, comment, options)
-        except Fault as e:
-            handle_perm_denied(e, self.parser)
+    def submit_task(self, options):
+        return self.hub.scan.diff_build(options['mock_config'],
+                                        options['comment'],
+                                        options)

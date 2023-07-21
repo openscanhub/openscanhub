@@ -1,16 +1,13 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 # SPDX-FileCopyrightText: Copyright contributors to the OpenScanHub project.
 
-from xmlrpc.client import Fault
-
 from kobo.shortcuts import random_string
 
 from osh.client.commands.cmd_build import Base_Build
 from osh.client.conf import get_conf
 
-from .shortcuts import (check_analyzers, handle_perm_denied, upload_file,
-                        verify_koji_build, verify_mock,
-                        verify_scan_profile_exists)
+from .shortcuts import (check_analyzers, upload_file, verify_koji_build,
+                        verify_mock, verify_scan_profile_exists)
 
 
 class Version_Diff_Build(Base_Build):
@@ -45,8 +42,7 @@ class Version_Diff_Build(Base_Build):
         self.parser.add_option("--base-brew-build", dest="base_nvr",
                                help="DEPRECATED alias for --base-nvr")
 
-    def run(self, *args, **kwargs):  # noqa: C901
-        # optparser output is passed via *args (args) and **kwargs (opts)
+    def prepare_task_options(self, args, kwargs):  # noqa: C901
         local_conf = get_conf(self.conf)
 
         # options
@@ -56,8 +52,6 @@ class Version_Diff_Build(Base_Build):
         base_config = kwargs.pop("base_config", None)
         email_to = kwargs.pop("email_to", [])
         comment = kwargs.pop("comment")
-        nowait = kwargs.pop("nowait")
-        task_id_file = kwargs.pop("task_id_file")
         priority = kwargs.pop("priority")
         base_nvr = kwargs.pop("base_nvr", None)
         nvr = kwargs.pop("nvr", None)
@@ -137,9 +131,6 @@ is not even one in your user configuration file \
             print("Mock config for target not specified, using default: %s" %
                   config)
 
-        # login to the hub
-        self.connect_to_hub(kwargs)
-
         result = verify_mock(base_config, self.hub)
         if result is not None:
             self.parser.error(result)
@@ -199,17 +190,7 @@ is not even one in your user configuration file \
                                                              self.parser)
             options["upload_model_id"] = upload_model_id
 
-        task_id = self.submit_task(options)
-
-        self.write_task_id_file(task_id, task_id_file)
-        print("Task info: %s" % self.hub.client.task_url(task_id))
-
-        if not nowait:
-            from kobo.client.task_watcher import TaskWatcher
-            TaskWatcher.watch_tasks(self.hub, [task_id])
+        return options
 
     def submit_task(self, options):
-        try:
-            return self.hub.scan.create_user_diff_task(options, {})
-        except Fault as e:
-            handle_perm_denied(e, self.parser)
+        return self.hub.scan.create_user_diff_task(options, {})
