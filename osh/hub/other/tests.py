@@ -15,6 +15,12 @@ class LoginRequiredMiddlewareTest(TestCase):
             username='test',
             email='user@example.com',
             password='test')
+        # Create staff user
+        User.objects.create_user(
+            username='test_staff',
+            email='user_staff@example.com',
+            password='test',
+            is_staff=True)
 
     def test_anonymous_access_user_list(self):
         response = self.client.get(self.url)
@@ -22,6 +28,11 @@ class LoginRequiredMiddlewareTest(TestCase):
 
     def test_authenticated_access_user_list(self):
         self.client.login(username='test', password='test')
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 403)
+
+    def test_staff_access_user_list(self):
+        self.client.login(username='test_staff', password='test')
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
 

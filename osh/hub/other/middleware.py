@@ -21,10 +21,11 @@ class LoginRequiredMiddleware:
         # This `user/list` comes from kobo's view name for user
         kobo_user_view_url = reverse("user/list")
         if path_info.startswith(kobo_user_view_url):
-            if not request.user.is_authenticated:
+            # Restrict access to staff(admin) users only.
+            if not request.user.is_staff:
                 template = get_template("base.html")
                 context = {
-                    "info_message": "Please login to view users.",
+                    "error_message": "Only app admin can view users.",
                 }
                 return HttpResponse(
                     template.render(context, request=request),
