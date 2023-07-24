@@ -88,6 +88,9 @@ TIME_ZONE = 'Europe/Prague'
 # KRB_AUTH_PRINCIPAL =
 # KRB_AUTH_KEYTAB =
 
+# Regular users cannot bind to port 25.
+EMAIL_PORT = 8025
+
 ###############################################################################
 # OpenScanHub SPECIFIC
 ###############################################################################

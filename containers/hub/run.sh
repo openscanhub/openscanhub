@@ -24,7 +24,7 @@ if [ "$(osh/hub/manage.py dumpdata scan.MockConfig)" = "[]" ]; then
 fi
 
 # Run a dummy SMTP server in background
-python3 -m smtpd -n -c DebuggingServer localhost:25 >> osh/hub/emails.log &
+python3 -m smtpd -n -c DebuggingServer localhost:8025 >> osh/hub/emails.log &
 
 touch /HUB_IS_READY
 
