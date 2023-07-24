@@ -29,4 +29,5 @@ python3 -m smtpd -n -c DebuggingServer localhost:8025 >> osh/hub/emails.log &
 touch /HUB_IS_READY
 
 # Run main web app
-coverage-3 run --parallel-mode --omit="*site-packages*,*kobo*," osh/hub/manage.py runserver 0.0.0.0:8000
+coverage-3 run --parallel-mode --omit="*site-packages*,*kobo*," --rcfile=/coveragerc \
+    osh/hub/manage.py runserver 0.0.0.0:8000

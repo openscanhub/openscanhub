@@ -24,6 +24,9 @@ RUN dnf -y --setopt=tsflags=nodocs install \
 
 RUN adduser csmock -G mock
 
+# store coverage to a separate volume
+RUN printf '[run]\ndata_file = /cov/coverage\n' > /coveragerc
+
 RUN touch /WORKER_IS_READY
 
-CMD coverage-3 run --parallel-mode --omit="*site-packages*,*kobo*," osh/worker/osh-worker -f
+CMD coverage-3 run --parallel-mode --omit="*site-packages*,*kobo*," --rcfile=/coveragerc osh/worker/osh-worker -f

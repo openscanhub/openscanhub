@@ -18,6 +18,9 @@ RUN dnf -y --setopt=tsflags=nodocs install \
     python36 \
     xz
 
+# store coverage to a separate volume
+RUN printf '[run]\ndata_file = /cov/coverage\n' > /coveragerc
+
 RUN touch /CLIENT_IS_READY
 
 CMD sleep inf
