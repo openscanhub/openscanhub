@@ -40,7 +40,10 @@ RUN dnf -y --setopt=tsflags=nodocs install \
 # store coverage to a separate volume
 RUN printf '[run]\ndata_file = /cov/coverage\n' > /coveragerc
 
+RUN adduser --system --no-create-home osh
+
 COPY containers/hub/run.sh /run.sh
 RUN chmod +x /run.sh
 
+USER osh
 CMD /run.sh
