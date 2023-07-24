@@ -132,8 +132,15 @@ main() {
     # Combine coverage report for hub, worker and client
     podman exec -it osh-client /usr/bin/coverage-3.6 combine
 
-    # Convert test coverage to html
-    podman exec -it osh-client /usr/bin/coverage-3.6 html
+    # Avoid generating html reports in GitHub Actions CI
+    if [[ "$GITHUB_ACTIONS" = "true" ]];
+    then
+        # We use codecov in GitHub Actions CI. Upload xml reports to it.
+        podman exec -it osh-client /usr/bin/coverage-3.6 xml
+    else
+        # Convert test coverage to html
+        podman exec -it osh-client /usr/bin/coverage-3.6 html
+    fi
 
     # Open the coverage report under your favourite browser
     echo "Coverage report generated in 'htmlcov' directory."
