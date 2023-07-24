@@ -14,15 +14,6 @@ done
 # If the database is empty or if it has records about already
 # applied migrations, this command should work without any troubles.
 osh/hub/manage.py migrate
-ret=$?
-
-# If the pure migration fails, we either have an existing database content
-# or the content is not consistent and we need to skip some
-# old already-applied migrations. In that case, user is responsible
-# for the database and we can ignore issues in migrations.
-if [ "$ret" -gt 0 ]; then
-    osh/hub/manage.py migrate --fake
-fi
 
 # If the table of mock configs is empty, we most likely have an empty database.
 # In this case, we load the initial data into the database to make the OSH
