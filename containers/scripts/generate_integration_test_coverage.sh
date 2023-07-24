@@ -60,7 +60,8 @@ main() {
 
     # `version-diff-build` needs worker to run in background
     podman exec -i osh-worker scripts/kill_worker.sh
-    sed -i "s/RUN_TASKS_IN_FOREGROUND = 1/RUN_TASKS_IN_FOREGROUND = 0/g" osh/worker/worker-local.conf
+    sed "s/RUN_TASKS_IN_FOREGROUND = 1/RUN_TASKS_IN_FOREGROUND = 0/g" osh/worker/worker-local.conf > osh/worker/worker-local.conf.new
+    mv osh/worker/worker-local.conf{.new,}
     podman start osh-worker
     podman exec osh-client "${CLI_COV[@]}" version-diff-build --config=fedora-$FEDORA_VERSION-x86_64 --brew-build units-2.21-5.fc$FEDORA_VERSION --base-config=fedora-$FEDORA_VERSION-x86_64 --base-brew-build units-2.21-5.fc$FEDORA_VERSION | grep http://osh-hub:8000/task/3
     podman exec osh-client "${CLI_COV[@]}" task-info 3 | grep "is_failed = False"
