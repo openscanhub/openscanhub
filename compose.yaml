@@ -28,7 +28,7 @@ services:
     networks:
       - internal-network
     volumes:
-      - ./:/src:z
+      - ./:/src:ro,z
       - hub-static:/src/osh/hub/static
       - hub-tasks:/src/osh/hub/tasks
       - hub-upload:/src/osh/hub/upload
