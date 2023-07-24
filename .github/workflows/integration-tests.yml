@@ -23,3 +23,10 @@ jobs:
           sed -i "s/RUN_TASKS_IN_FOREGROUND = 0/RUN_TASKS_IN_FOREGROUND = 1/g"  osh/worker/worker-local.conf
           containers/scripts/generate_integration_test_coverage.sh --force
           podman-compose down
+      - name: "Upload Integration Tests Coverage to Codecov"
+        uses: codecov/codecov-action@v3
+        with:
+          name: "Archive Integration Tests Coverage"
+          files: coverage.xml
+          fail_ci_if_error: false
+          verbose: true
