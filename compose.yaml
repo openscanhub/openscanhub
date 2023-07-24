@@ -29,6 +29,10 @@ services:
       - internal-network
     volumes:
       - ./:/src:z
+      - hub-static:/src/osh/hub/static
+      - hub-tasks:/src/osh/hub/tasks
+      - hub-upload:/src/osh/hub/upload
+      - hub-worker:/src/osh/hub/worker
     stdin_open: true
     tty: true
 
@@ -69,3 +73,9 @@ services:
 
 networks:
   internal-network:
+
+volumes:
+  hub-static:
+  hub-tasks:
+  hub-upload:
+  hub-worker:
