@@ -20,6 +20,9 @@ actions:
     # Get current version from generated spec file
     get-current-version: "sed -n 's|^%global version *||p' dist/osh.spec"
 
+# Do not automatically merge the PR to the target branch
+merge_pr_in_ci: false
+
 jobs:
     - &copr
       job: copr_build
