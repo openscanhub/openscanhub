@@ -48,7 +48,7 @@ wait_for_container() (
     containername+="$(echo "$1" | tr '[:upper:]' '[:lower:]')"
 
     count=0
-    while ! podman exec -i "$containername" bash -c "[[ -f /$filename ]]"; do
+    while ! podman exec -i "$containername" bash -c "[[ -f /tmp/$filename ]]"; do
         sleep 1
         count=$((count + 1))
         if test "$count" -gt 60; then
