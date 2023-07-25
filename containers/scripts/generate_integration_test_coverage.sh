@@ -83,7 +83,7 @@ main() {
     # priority offset feature testing
 
     # verify that main task has the right priority
-    curl http://localhost:8000/task/5/ | grep -Pzo "<th>Priority</th>\n    <td>20</td>"
+    podman exec osh-client "${CLI_COV[@]}" task-info 5 | grep "priority = 20"
 
     # insert priority offset setting into the database
     podman exec -it db psql -h localhost -U openscanhub -d openscanhub -c "INSERT INTO scan_package (name, blocked, priority_offset) VALUES ('expat', false, 1);"
@@ -100,23 +100,23 @@ main() {
     [[ $SCAN_STATUS == *"PASSED"* ]]
 
     # verify that main task has the right priority
-    curl http://localhost:8000/task/8/ | grep -Pzo "<th>Priority</th>\n    <td>21</td>"
+    podman exec osh-client "${CLI_COV[@]}" task-info 8 | grep "priority = 21"
 
     # verify subtask priority inheritance if we have recent enough Kobo
     if [ $(git -C kobo log --tags --oneline --grep='0\.26\.0' | wc -l) == 1 ]; then
-        curl http://localhost:8000/task/9/ | grep -Pzo "<th>Priority</th>\n    <td>21</td>"
+        podman exec osh-client "${CLI_COV[@]}" task-info 9 | grep "priority = 21"
     fi
 
     podman exec osh-client "${CLI_COV[@]}" mock-build --config=fedora-$FEDORA_VERSION-x86_64 --brew-build expat-2.5.0-1.fc$FEDORA_VERSION | grep http://osh-hub:8000/task/10
     podman exec osh-client "${CLI_COV[@]}" task-info 10 | grep "is_failed = False"
 
     # verify that mock build task has the right priority
-    curl http://localhost:8000/task/10/ | grep -Pzo "<th>Priority</th>\n    <td>11</td>"
+    podman exec osh-client "${CLI_COV[@]}" task-info 10 | grep "priority = 11"
 
     podman exec osh-client "${CLI_COV[@]}" version-diff-build --config=fedora-$FEDORA_VERSION-x86_64 --brew-build expat-2.5.0-1.fc$FEDORA_VERSION --base-config=fedora-$FEDORA_VERSION-x86_64 --base-brew-build expat-2.5.0-1.fc$FEDORA_VERSION | grep http://osh-hub:8000/task/11
     podman exec osh-client "${CLI_COV[@]}" task-info 11 | grep "is_failed = False"
     # verify main tasks priority
-    curl http://localhost:8000/task/11/ | grep -Pzo "<th>Priority</th>\n    <td>11</td>"
+    podman exec osh-client "${CLI_COV[@]}" task-info 11 | grep "priority = 11"
 
     # priority offset feature testing end
     podman exec osh-client "${CLI_XML[@]}" --hub http://osh-hub:8000/xmlrpc/kerbauth/ --username=user --password=xxxxxx create-scan -b units-2.18-3.fc30 -t units-2.22-5.fc39 --et-scan-id=1 --release=Fedora-37 --owner=admin --advisory-id=1
