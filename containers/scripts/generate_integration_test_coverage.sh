@@ -39,7 +39,7 @@ main() {
     podman exec -it osh-client "${CLI_COV[@]}" list-analyzers | grep gcc
     podman exec -it osh-client "${CLI_COV[@]}" list-profiles | grep default
     podman exec -it osh-client "${CLI_COV[@]}" list-mock-configs | grep fedora
-    podman exec osh-client "${CLI_COV[@]}" mock-build --config=fedora-$FEDORA_VERSION-x86_64 --brew-build units-2.21-5.fc$FEDORA_VERSION | grep http://osh-hub:8000/task/1
+    podman exec osh-client "${CLI_COV[@]}" mock-build --profile default --config=fedora-$FEDORA_VERSION-x86_64 --brew-build units-2.21-5.fc$FEDORA_VERSION | grep http://osh-hub:8000/task/1
     podman exec osh-client "${CLI_COV[@]}" task-info 1 | grep "is_failed = False"
     podman exec -it osh-client "${CLI_COV[@]}" download-results 1
     untar_output=$(tar xvf units*.tar.xz)
