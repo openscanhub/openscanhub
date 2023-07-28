@@ -15,7 +15,8 @@ from .common import (add_analyzers_option, add_comment_option,
                      add_priority_option, add_profile_option,
                      add_task_id_file_option)
 from .shortcuts import (check_analyzers, handle_perm_denied, upload_file,
-                        verify_koji_build, verify_mock)
+                        verify_koji_build, verify_mock,
+                        verify_scan_profile_exists)
 
 
 class Version_Diff_Build(osh.client.OshCommand):
@@ -198,6 +199,9 @@ is not even one in your user configuration file \
                 self.parser.error(str(ex))
             options['analyzers'] = analyzers
         if profile:
+            result = verify_scan_profile_exists(self.hub, profile)
+            if result is not None:
+                self.parser.error(result)
             options['profile'] = profile
 
         if brew_build:

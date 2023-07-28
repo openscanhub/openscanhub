@@ -145,3 +145,11 @@ def upload_file(hub, srpm, target_dir, parser):
         return hub.upload_file(os.path.expanduser(srpm), target_dir)
     except Fault as e:
         handle_perm_denied(e, parser)
+
+
+def verify_scan_profile_exists(hub, profile_name):
+    """Verify if scan profile exists"""
+    profiles = hub.scan.list_profiles()
+    if any(p["name"] == profile_name for p in profiles):
+        return None
+    return f"Scan profile {profile_name} does not exist."
