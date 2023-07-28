@@ -51,7 +51,7 @@ User = get_user_model()
 print(User.objects.create_superuser('admin', 'kdudka@redhat.com', '${PASSWD}'))
 print(User.objects.create_user('user', 'user@example.com', '${PASSWD}'))
 for login in ['idoamara', 'kdudka', 'lbalhar']:
-    print(User.objects.create_user(login, 'f{login}@redhat.com', '${PASSWD}'))
+    print(User.objects.create_user(login, f'{login}@redhat.com', '${PASSWD}'))
 EOF
 
     # dump the database to a file
