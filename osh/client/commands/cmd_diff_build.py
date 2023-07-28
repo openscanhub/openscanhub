@@ -22,7 +22,8 @@ from osh.client.commands.common import (add_analyzers_option,
                                         add_task_id_file_option)
 from osh.client.commands.shortcuts import (check_analyzers, fetch_results,
                                            handle_perm_denied, upload_file,
-                                           verify_koji_build, verify_mock)
+                                           verify_koji_build, verify_mock,
+                                           verify_scan_profile_exists)
 from osh.client.conf import get_conf
 
 
@@ -146,6 +147,9 @@ is not even one in your user configuration file \
                 self.parser.error(str(ex))
             options['analyzers'] = analyzers
         if profile:
+            result = verify_scan_profile_exists(self.hub, profile)
+            if result is not None:
+                self.parser.error(result)
             options['profile'] = profile
 
         if brew_build:
