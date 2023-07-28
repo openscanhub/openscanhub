@@ -1,0 +1,38 @@
+[
+  {
+    "model": "kobo_auth.user",
+    "pk": 1,
+    "fields": {
+      "password": "pbkdf2_sha256$260000$Y1AhkH2Wye8AtwGVo4DkVh$siXy50B5w/8qJcKgquDm6ncKp0+S1pnX9Fy71Cog6oQ=",
+      "last_login": "2023-07-28T10:14:10.268",
+      "is_superuser": true,
+      "username": "admin",
+      "first_name": "",
+      "last_name": "",
+      "email": "admin@example.com",
+      "is_staff": true,
+      "is_active": true,
+      "date_joined": "2023-07-28T10:13:53.861",
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "kobo_auth.user",
+    "pk": 2,
+    "fields": {
+      "password": "pbkdf2_sha256$260000$LAZkXxPRSa8MEZYRxPBsMp$qUgdfDKMVr+f6caMPfwULHgfQM0Iqfh2SwbSRWv6l+k=",
+      "last_login": null,
+      "is_superuser": false,
+      "username": "user",
+      "first_name": "",
+      "last_name": "",
+      "email": "user@example.com",
+      "is_staff": false,
+      "is_active": true,
+      "date_joined": "2023-07-28T10:13:54.036",
+      "groups": [],
+      "user_permissions": []
+    }
+  }
+]

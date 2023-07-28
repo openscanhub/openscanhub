@@ -41,21 +41,11 @@ main() {
 minimal() {
     set -ex
 
-    # weak password used for testing purposes only
-    PASSWD=xxxxxx
-
     # grant CREATEDB priviledges needed for tests
     podman exec db psql -h localhost -U openscanhub -c 'ALTER USER openscanhub CREATEDB;'
 
     # create OpenScanHub users
-    podman exec -i osh-hub python3 osh/hub/manage.py shell << EOF
-from django.contrib.auth import get_user_model
-User = get_user_model()
-print(User.objects.create_superuser('admin', 'kdudka@redhat.com', '${PASSWD}'))
-print(User.objects.create_user('user', 'user@example.com', '${PASSWD}'))
-for login in ['idoamara', 'kdudka', 'lbalhar']:
-    print(User.objects.create_user(login, f'{login}@redhat.com', '${PASSWD}'))
-EOF
+    podman exec osh-hub python3 osh/hub/manage.py loaddata osh/hub/other/test_fixtures/users.json
 
     # dump the database to a file
     podman exec -i db pg_dump -h localhost -U openscanhub \
@@ -82,20 +72,13 @@ restore() {
     podman exec db createdb -h localhost -U openscanhub openscanhub
     gzip -cd "$FILENAME" | podman exec -i db psql -h localhost -U openscanhub
     podman start osh-hub
-    wait_for_container 'HUB'
-    # HACK: this should be turned into a function
-    # ref: https://stackoverflow.com/a/16853755/9814181
-    podman exec -i osh-hub python3 osh/hub/manage.py shell << EOF
-from django.contrib.auth import get_user_model
-User = get_user_model()
-User.objects.create_user('user', 'user@redhat.com', 'xxxxxx')
-u = User.objects.get(username='admin')
-u.set_password('xxxxxx')
-u.save()
-EOF
 
+    wait_for_container 'HUB'
     # grant CREATEDB priviledges needed for tests
     podman exec db psql -h localhost -U openscanhub -c 'ALTER USER openscanhub CREATEDB;'
+
+    # create OpenScanHub users
+    podman exec osh-hub python3 osh/hub/manage.py loaddata osh/hub/other/test_fixtures/users.json
 }
 
 while [[ $# -gt 0 ]]; do

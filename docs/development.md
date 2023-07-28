@@ -79,6 +79,7 @@ Now, you can start the hub with: `podman start -a osh-hub`. The hub will try to 
 
 #### OSH hub users
 
+* See [initial user fixtures readme](../osh/hub/other/test_fixtures/README.md) for pre-populated users in the minimal database.
 * Enter the interactive shell inside the running container: `podman exec -it osh-hub python3 osh/hub/manage.py shell`
 * Create user and admin:
 
