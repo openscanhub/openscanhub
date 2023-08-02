@@ -180,7 +180,7 @@ For more info, please check docstring of the script.
 
 ## Test Coverage
 
-TODO
+Latest test coverage report can be seen in [Codecov](https://app.codecov.io/gh/openscanhub/openscanhub).
 
 ### Test Coverage and os.fork()
 
