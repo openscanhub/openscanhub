@@ -2,6 +2,24 @@
 
 As simple as possible development setup for all three major parts of OpenScanHub (OSH) pipeline. We want to make it compatible with Python 3.6 (the main Python in RHEL 8, supported for its whole lifetime) so we use that specific version inside and outside of the container.
 
+## Quick setup
+
+Execute following commands to quickly try a local OpenScanHub deployment (through podman/docker compose):
+
+```bash
+git clone https://github.com/openscanhub/openscanhub.git
+cd openscanhub
+git clone https://github.com/release-engineering/kobo.git
+containers/scripts/init-db.sh --full-dev --minimal
+# Get arch name and remove trailing carriage return or new line
+OSH_ARCH_UNAME=$(podman exec -it osh-client uname -m 2>/dev/null | tr -d '\n\r')
+podman exec -it osh-client env OSH_CLIENT_CONFIG_FILE=osh/client/client-local.conf PYTHONPATH=.:kobo python3 osh/client/osh-cli mock-build --config="fedora-37-$OSH_ARCH_UNAME" --brew-build units-2.21-5.fc37 --nowait
+```
+
+If the last command is successful, there should be a task accessible at http://localhost:8000/task/1/.
+
+Run `containers/scripts/deploy.sh --clean` from root directory of the repository to bring down the compose.
+
 ## Kobo
 
 Because we need to fix issues in Kobo as well as in OpenScanHub, we should use it directly as cloned repository - this allows us to make changes in its code, test them and create a PR from them as quicky as possible.
