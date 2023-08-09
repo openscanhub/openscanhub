@@ -5,7 +5,8 @@ Version:        %{version}
 Release:        1%{?dist}
 License:        GPL-3.0-or-later
 Summary:        Static and Dynamic Analysis as a Service
-Source:         %{name}-%{version}.tar.gz
+URL:            https://github.com/openscanhub/openscanhub/
+Source:         https://github.com/openscanhub/openscanhub/archive/refs/tags/%{name}-%{version}.tar.gz
 BuildArch:      noarch
 
 BuildRequires:  koji
@@ -96,7 +97,7 @@ Requires: python3-bugzilla
 Requires: python3-csdiff
 Requires: python3-jira
 
-Requires(post): /usr/bin/pg_isready
+Requires(post): %{_bindir}/pg_isready
 
 Requires: %{name}-common = %{version}-%{release}
 Requires: osh-hub-conf
@@ -148,11 +149,11 @@ ln -s osh-cli %{buildroot}%{_bindir}/covscan
 mkdir -p %{buildroot}%{_sysconfdir}/osh/hub/secrets
 
 # create /var/lib dirs
-mkdir -p %{buildroot}/var/lib/osh/hub/{tasks,upload,worker}
+mkdir -p %{buildroot}%{_sharedstatedir}/osh/hub/{tasks,upload,worker}
 
 # create log file
-mkdir -p %{buildroot}/var/log/osh/hub
-touch %{buildroot}/var/log/osh/hub/hub.log
+mkdir -p %{buildroot}%{_localstatedir}/log/osh/hub
+touch %{buildroot}%{_localstatedir}/log/osh/hub/hub.log
 
 # copy checker_groups.txt
 cp -R osh/hub/scripts/checker_groups.txt %{buildroot}%{python3_sitelib}/osh/hub/scripts/
@@ -167,7 +168,7 @@ rm -rf %{buildroot}%{python3_sitelib}/scripts
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_bindir}/osh-cli
 %{_bindir}/covscan
-%attr(644,root,root) %config(noreplace) /etc/osh/client.conf
+%attr(644,root,root) %config(noreplace) %{_sysconfdir}/osh/client.conf
 %{bash_completions_dir}
 %{zsh_completions_dir}
 %{python3_sitelib}/osh/client
@@ -180,18 +181,18 @@ rm -rf %{buildroot}%{python3_sitelib}/scripts
 %{python3_sitelib}/osh/__init__.py*
 %{python3_sitelib}/osh/__pycache__
 %dir %{python3_sitelib}/osh
-%dir /var/lib/osh
+%dir %{_sharedstatedir}/osh
 
 %files worker
 %defattr(644,root,root,755)
 %{python3_sitelib}/osh/worker
 %{_unitdir}/osh-worker.service
-%attr(754,root,root) /usr/sbin/osh-worker
-%dir %attr(775,root,root) /var/log/osh
+%attr(754,root,root) %{_sbindir}/osh-worker
+%dir %attr(775,root,root) %{_localstatedir}/log/osh
 
 %post client
-if test -f /etc/covscan/covscan.conf; then
-    mv /etc/covscan/covscan.conf /etc/osh/client.conf
+if test -f %{_sysconfdir}/covscan/covscan.conf; then
+    mv %{_sysconfdir}/covscan/covscan.conf %{_sysconfdir}/osh/client.conf
 fi
 
 %post worker
@@ -204,7 +205,7 @@ fi
 %systemd_postun_with_restart osh-worker.service
 
 %files worker-conf-devel
-%attr(640,root,root) %config(noreplace) /etc/osh/worker.conf
+%attr(640,root,root) %config(noreplace) %{_sysconfdir}/osh/worker.conf
 
 %files hub
 %defattr(-,root,apache,-)
@@ -214,17 +215,16 @@ fi
 %{_unitdir}/osh-stats.*
 %exclude %{python3_sitelib}/osh/hub/settings_local.py*
 %exclude %{python3_sitelib}/osh/hub/__pycache__/settings_local.*
-%dir %attr(775,root,root) /var/log/osh
-%dir %attr(775,root,apache) /var/log/osh/hub
-%ghost %attr(640,apache,apache) /var/log/osh/hub/hub.log
-%attr(775,root,apache) /var/lib/osh/hub
-%ghost %attr(640,root,apache) /var/lib/osh/hub/secret_key
-%dir %attr(775,root,apache) %{_sysconfdir}/osh/hub/secrets
+%dir %attr(775,root,root) %{_localstatedir}/log/osh
+%dir %attr(775,root,apache) %{_localstatedir}/log/osh/hub
+%ghost %attr(640,apache,apache) %{_localstatedir}/log/osh/hub/hub.log
+%attr(775,root,apache) %{_sharedstatedir}/osh/hub
+%ghost %attr(640,root,apache) %{_sharedstatedir}/osh/hub/secret_key
 %ghost %attr(640,root,apache) %{_sysconfdir}/osh/hub/secrets/jira_secret
 %ghost %attr(640,root,apache) %{_sysconfdir}/osh/hub/secrets/bugzilla_secret
 
 %post hub
-exec &>> /var/log/osh/hub/post-install-%{name}-%{version}-%{release}.log
+exec &>> %{_localstatedir}/log/osh/hub/post-install-%{name}-%{version}-%{release}.log
 
 # record timestamp
 echo -n '>>> '
@@ -233,11 +233,11 @@ date -R
 set -x
 umask 0026
 
-if ! test -e /var/lib/osh/hub/secret_key; then
+if ! test -e %{_sharedstatedir}/osh/hub/secret_key; then
     # generate Django secret key for a fresh installation
     %{__python3} -c "from django.core.management.utils import get_random_secret_key
-print(get_random_secret_key())" > /var/lib/osh/hub/secret_key
-    chgrp apache /var/lib/osh/hub/secret_key
+print(get_random_secret_key())" > %{_sharedstatedir}/osh/hub/secret_key
+    chgrp apache %{_sharedstatedir}/osh/hub/secret_key
 fi
 
 # this only takes an effect if PostgreSQL is running and the database exists
