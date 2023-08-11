@@ -4,6 +4,7 @@
 import os
 import re
 import sys
+from urllib.error import HTTPError
 from urllib.request import urlretrieve
 from xmlrpc.client import Fault
 
@@ -134,8 +135,15 @@ def fetch_results(hub, dest, task_id):
     # task_url is url to task with trailing '/'
     url = f"{task_url}log/{tarball}?format=raw"
 
-    print(f"Downloading {tarball}", file=sys.stderr)
-    urlretrieve(url, local_path)
+    print(f"Downloading {tarball}: ", file=sys.stderr, end="")
+    try:
+        urlretrieve(url, local_path)
+    except HTTPError as e:
+        print(e, file=sys.stderr)
+        return False
+
+    print("OK", file=sys.stderr)
+    return True
 
 
 def upload_file(hub, srpm, target_dir, parser):

@@ -47,7 +47,7 @@ class Download_Results(osh.client.OshCommand):
                 success = False
                 continue
 
-            fetch_results(self.hub, results_dir, task_id)
+            success &= fetch_results(self.hub, results_dir, task_id)
 
         if not success:
             sys.exit(1)

@@ -2,6 +2,7 @@
 # SPDX-FileCopyrightText: Copyright contributors to the OpenScanHub project.
 
 import os
+import sys
 from xmlrpc.client import Fault
 
 from kobo.shortcuts import random_string
@@ -186,8 +187,9 @@ is not even one in your user configuration file \
             TaskWatcher.watch_tasks(self.hub, [task_id])
 
             # store results if user requested this
-            if self.results_store_file is not None:
-                fetch_results(self.hub, self.results_store_file, task_id)
+            if self.results_store_file is not None and \
+                    not fetch_results(self.hub, self.results_store_file, task_id):
+                sys.exit(1)
 
     def submit_task(self, config, comment, options):
         try:
