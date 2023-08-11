@@ -10,7 +10,6 @@ jobs:
     steps:
       - name: Install packages required for unit tests
         run: |
-          sudo apt-get install -y git
           # Install same version of coverage as in containers
           pip3 install podman-compose coverage==4.5.1
       - name: Checkout Git Repository
