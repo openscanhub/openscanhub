@@ -4,12 +4,24 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
+
 jobs:
   django-unit-tests:
-    runs-on: ubuntu-20.04
+    name: Django Unit Tests - ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-20.04, macos-latest]
+
+    runs-on: ${{ matrix.os }}
     steps:
       - name: Install packages required for unit tests
         run: |
+          if [[ "${{ matrix.os }}" = macos* ]]; then
+            brew install podman
+            podman machine init
+            podman machine start
+          fi
           pip3 install podman-compose
 
       - name: Checkout Git Repository
@@ -26,6 +38,12 @@ jobs:
 
       - name: Run unit tests
         run: |
+          # TODO: Remove this when podman starts to support SELinux labels on macOS
+          if [[ "${{ matrix.os }}" = macos* ]]; then
+            sed -E -e 's/:z$//' -e 's/(:[^:]+),z$/\1/' compose.yaml > compose.yaml.new
+            mv compose.yaml{.new,}
+          fi
+
           containers/scripts/init-db.sh --force --minimal
           podman exec -it osh-hub /usr/bin/coverage-3.6 run --omit="*site-packages*,*kobo*," --rcfile=/coveragerc osh/hub/manage.py test -v 3 || exit 1
 
