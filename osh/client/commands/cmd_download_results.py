@@ -40,15 +40,14 @@ class Download_Results(osh.client.OshCommand):
         # login to the hub
         self.connect_to_hub(kwargs)
 
-        failed = False
-
+        success = True
         for task_id in tasks:
             if not self.hub.scan.get_task_info(task_id):
                 print(f"Task {task_id} does not exist!", file=sys.stderr)
-                failed = True
+                success = False
                 continue
 
             fetch_results(self.hub, results_dir, task_id)
 
-        if failed:
+        if not success:
             sys.exit(1)
