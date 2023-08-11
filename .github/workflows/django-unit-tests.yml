@@ -10,8 +10,7 @@ jobs:
     steps:
       - name: Install packages required for unit tests
         run: |
-          # Install same version of coverage as in containers
-          pip3 install podman-compose coverage==4.5.1
+          pip3 install podman-compose
       - name: Checkout Git Repository
         uses: actions/checkout@v3
         with:
