@@ -28,6 +28,10 @@ main() {
 
     FEDORA_VERSION=37
 
+    # Try to run jobs in foreground for better coverage reports
+    sed "s/RUN_TASKS_IN_FOREGROUND = 0/RUN_TASKS_IN_FOREGROUND = 1/g" osh/worker/worker-local.conf > osh/worker/worker-local.conf.new
+    mv osh/worker/worker-local.conf{.new,}
+
     ./containers/scripts/init-db.sh --full-dev --minimal "$FORCE"
 
     # The container may have a different arch than the host!  Moreover, uname -m
