@@ -42,6 +42,10 @@ main() {
     rm -rf htmlcov .coverage
     podman exec -it osh-client rm -rf '/cov/*'
 
+    # Try to run jobs in foreground for better coverage reports
+    sed "s/RUN_TASKS_IN_FOREGROUND = 0/RUN_TASKS_IN_FOREGROUND = 1/g" osh/worker/worker-local.conf > osh/worker/worker-local.conf.new
+    mv osh/worker/worker-local.conf{.new,}
+
     set -o pipefail
     # Only generate test coverage report for OpenScanHub project
     podman exec -it osh-client "${CLI_COV[@]}" list-analyzers | grep gcc
