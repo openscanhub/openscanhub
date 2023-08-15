@@ -234,5 +234,3 @@ _osh_cli()
 }
 
 complete -F _osh_cli osh-cli
-# This is kept here for backward compatibility reasons
-complete -F _osh_cli covscan
