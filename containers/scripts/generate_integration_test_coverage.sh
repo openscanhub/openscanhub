@@ -41,7 +41,6 @@ main() {
     # Remove stale coverage data
     rm -rf htmlcov .coverage
     podman exec -it osh-client rm -rf '/cov/*'
-    podman exec -it db psql -h localhost -U openscanhub -c 'ALTER USER openscanhub CREATEDB;'
 
     set -o pipefail
     # Only generate test coverage report for OpenScanHub project

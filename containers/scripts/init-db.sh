@@ -44,6 +44,9 @@ minimal() {
     # weak password used for testing purposes only
     PASSWD=xxxxxx
 
+    # grant CREATEDB priviledges needed for tests
+    podman exec db psql -h localhost -U openscanhub -c 'ALTER USER openscanhub CREATEDB;'
+
     # create OpenScanHub users
     podman exec -i osh-hub python3 osh/hub/manage.py shell << EOF
 from django.contrib.auth import get_user_model
@@ -90,6 +93,9 @@ u = User.objects.get(username='admin')
 u.set_password('xxxxxx')
 u.save()
 EOF
+
+    # grant CREATEDB priviledges needed for tests
+    podman exec db psql -h localhost -U openscanhub -c 'ALTER USER openscanhub CREATEDB;'
 }
 
 while [[ $# -gt 0 ]]; do
