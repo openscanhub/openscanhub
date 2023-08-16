@@ -17,11 +17,8 @@ jobs:
           fetch-depth: 0
       - name: Run integration tests
         run: |
-          # This is here to suppress a warning from GitHub
-          # git config --global --add safe.directory /__w/openscanhub/openscanhub
           git clone https://github.com/release-engineering/kobo.git
           containers/scripts/generate_integration_test_coverage.sh --force
-          podman-compose down
       - name: "Upload Integration Tests Coverage to Codecov"
         uses: codecov/codecov-action@v3
         with:
