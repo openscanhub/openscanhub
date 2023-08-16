@@ -30,6 +30,7 @@ jobs:
           # Show logs
           podman-compose logs db
           podman-compose logs osh-hub
+          podman-compose logs osh-worker
 
       - name: "Upload Django Unit Tests Coverage to Codecov"
         uses: codecov/codecov-action@v3
