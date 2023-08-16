@@ -11,14 +11,17 @@ jobs:
       - name: Install packages required to run job in a container
         run: |
           pip3 install podman-compose
+
       - name: Checkout Git Repository
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
+
       - name: Run integration tests
         run: |
           git clone https://github.com/release-engineering/kobo.git
           containers/scripts/generate_integration_test_coverage.sh --force
+
       - name: "Upload Integration Tests Coverage to Codecov"
         uses: codecov/codecov-action@v3
         with:

@@ -12,10 +12,12 @@ jobs:
       - name: Install packages required for lint
         run: |
           dnf install -y pre-commit make git-core
+
       - name: Checkout Git Repository
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
+
       - name: Lint
         run: |
           # This is here to suppress a warning from GitHub
