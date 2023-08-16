@@ -17,9 +17,15 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Checkout Kobo Git Repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          path: kobo
+          repository: release-engineering/kobo
+
       - name: Run unit tests
         run: |
-          git clone https://github.com/release-engineering/kobo.git
           containers/scripts/init-db.sh --force --minimal
           podman exec -it osh-hub /usr/bin/coverage-3.6 run --omit="*site-packages*,*kobo*," --rcfile=/coveragerc osh/hub/manage.py test -v 3 || exit 1
 

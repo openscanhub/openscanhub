@@ -17,9 +17,15 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Checkout Kobo Git Repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          path: kobo
+          repository: release-engineering/kobo
+
       - name: Run integration tests
         run: |
-          git clone https://github.com/release-engineering/kobo.git
           containers/scripts/generate_integration_test_coverage.sh --force
 
       - name: "Upload Integration Tests Coverage to Codecov"
