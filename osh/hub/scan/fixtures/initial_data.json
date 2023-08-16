@@ -74,7 +74,7 @@
   "pk": 2,
   "model": "scan.appsettings",
   "fields": {
-    "value": "Y",
+    "value": "N",
     "key": "SEND_BUS_MESSAGE"
   }
 },
