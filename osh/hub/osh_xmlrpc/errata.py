@@ -39,11 +39,11 @@ def create_errata_diff_scan(request, kwargs):
     @return:
      - status: status message: { 'OK', 'ERROR', 'INELIGIBLE' }
      - message: in case of error, here is detailed message
-     - id: ID of mapping between ET_IDs and covscan IDs. This may be used to
+     - id: ID of mapping between ET_IDs and OSH IDs. This may be used to
        access waiver upon scan creation (you may use both URLs, same content
        is served):
            <hub_prefix>/waiving/et_mapping/<id>
-           <hub_prefix>/waiving/et/<et_inernal_covscan_id>
+           <hub_prefix>/waiving/et/<et_internal_osh_id>
 
      for more info see http://etherpad.corp.redhat.com/Covscan-ErrataTool-Integration
     """
