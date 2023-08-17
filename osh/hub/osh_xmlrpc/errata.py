@@ -44,8 +44,6 @@ def create_errata_diff_scan(request, kwargs):
        is served):
            <hub_prefix>/waiving/et_mapping/<id>
            <hub_prefix>/waiving/et/<et_internal_osh_id>
-
-     for more info see http://etherpad.corp.redhat.com/Covscan-ErrataTool-Integration
     """
     logger.info('[CREATE_SCAN] %s', kwargs)
     # either there is no need to check user or user has to have permission to
@@ -86,13 +84,9 @@ def get_scan_state(request, etm_id):
     @return:
      - status: status message: { 'OK', 'ERROR', 'INELIGIBLE' }
      - message: in case of error, here is detailed message
-     - state: state of scan. It can be one of following values (description
-         can be found in etherpad in part "Requirements"):
+     - state: state of scan. It can be one of following values:
        {'QUEUED', 'SCANNING', 'NEEDS_INSPECTION', 'WAIVED', 'PASSED',
         'FAILED', 'BASE_SCANNING', 'CANCELED', 'DISPUTED'}
-
-    More info can be found here:
-        http://etherpad.corp.redhat.com/Covscan-ErrataTool-Integration
     """
 
     logger.info('[SCAN_STATE] %s', etm_id)
