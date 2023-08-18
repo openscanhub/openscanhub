@@ -280,6 +280,9 @@ class ResultsListView(ListView):
                 order_prefix = '-'
                 order_by = order_by[1:]
 
+            if order_by not in order_by_mapping:
+                raise Http404('Unknown column to order by: ' + order_by)
+
             order = order_prefix + order_by_mapping[order_by]
         else:
             # order by scan__date, because result might not exist
