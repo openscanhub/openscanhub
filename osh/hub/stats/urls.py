@@ -14,7 +14,7 @@ urlpatterns = [
          name="stats/detail"),
 
     path("release/<int:release_id>/",
-         views.release_list,
+         views.release_stats_list,
          name="stats/release/list"),
     path("release/<int:release_id>/<int:stat_id>/",
          views.release_stats_detail,

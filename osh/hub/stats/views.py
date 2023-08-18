@@ -13,7 +13,7 @@ from osh.hub.stats.models import StatResults, StatType
 from osh.hub.stats.service import display_values
 
 
-def release_list(request, release_id):
+def release_stats_list(request, release_id):
     release = get_object_or_404(SystemRelease, id=release_id)
 
     context = {
