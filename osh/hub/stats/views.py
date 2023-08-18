@@ -5,7 +5,7 @@ import json
 from collections import OrderedDict
 
 from django.http import HttpResponse
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 
 from osh.hub.scan.models import SystemRelease
@@ -14,7 +14,7 @@ from osh.hub.stats.service import display_values
 
 
 def release_list(request, release_id):
-    release = SystemRelease.objects.get(id=release_id)
+    release = get_object_or_404(SystemRelease, id=release_id)
 
     context = {
         'release': release,
@@ -43,8 +43,8 @@ def stats_list(request):
 
 
 def release_stats_detail(request, release_id, stat_id):
-    release = SystemRelease.objects.get(id=release_id)
-    stat_type = StatType.objects.get(id=stat_id)
+    release = get_object_or_404(SystemRelease, id=release_id)
+    stat_type = get_object_or_404(StatType, id=stat_id)
 
     context = {
         'json_url': reverse('stats/release/detail/graph', args=[stat_id, release_id]),
@@ -56,7 +56,7 @@ def release_stats_detail(request, release_id, stat_id):
 
 
 def stats_detail(request, stat_id):
-    stat_type = StatType.objects.get(id=stat_id)
+    stat_type = get_object_or_404(StatType, id=stat_id)
     context = {
         'json_url': reverse('stats/detail/graph', args=[stat_id]),
         'results': display_values(stat_type),
@@ -69,15 +69,15 @@ def stats_detail_graph(request, stat_id, release_id=None):
     """
     Provide data for graph.
     """
+    st = get_object_or_404(StatType, id=stat_id)
+
     if release_id is not None:
-        release = SystemRelease.objects.get(id=release_id)
+        release = get_object_or_404(SystemRelease, id=release_id)
         label = release.tag
-        sr = StatResults.objects.filter(stat=stat_id, release=release)
+        sr = StatResults.objects.filter(stat=st, release=release)
     else:
         label = 'Global'
-        sr = StatResults.objects.filter(stat=stat_id)
-
-    st = StatType.objects.get(id=stat_id)
+        sr = StatResults.objects.filter(stat=st)
 
     data = {
         'title': st.short_comment,

@@ -540,7 +540,7 @@ def fixed_defects(request, sb_id, result_group_id):
     sb = get_object_or_404(ScanBinding, id=sb_id)
     context = get_result_context(request, sb)
 
-    context['active_group'] = ResultGroup.objects.get(id=result_group_id)
+    context['active_group'] = get_object_or_404(ResultGroup, id=result_group_id)
     context['defects'] = Defect.objects.filter(result_group=result_group_id,
                                                state=DEFECT_STATES['FIXED']).order_by("order")
     context['display_form'] = False
