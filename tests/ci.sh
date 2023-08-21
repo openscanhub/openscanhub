@@ -1,4 +1,7 @@
-#!/bin/bash -x
+#!/bin/bash
+
+set -exo pipefail
+
 # `TMT_TREE` variable references path that contains clone of git repository to be tested
 cd "$TMT_TREE"
 # We are making lots of tweaks in configurations while setting up this job, which may cause
