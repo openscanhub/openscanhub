@@ -13,13 +13,11 @@ setenforce 0
 # Install test dependencies
 dnf config-manager --set-enabled powertools
 dnf install -y findutils openssl python36 postgresql-server koji
-systemctl stop httpd postgresql
 
 # Setup OpenScanHub settings
 cp osh/hub/settings_local.ci.py /usr/lib/python3.6/site-packages/osh/hub/settings_local.py
 
 # Setup postgresql
-mv -fvT --backup=numbered /var/lib/pgsql/data/ /root/pgsql-data
 postgresql-setup --initdb
 sed -e 's|ident$|md5|' -i /var/lib/pgsql/data/pg_hba.conf
 systemctl start postgresql
