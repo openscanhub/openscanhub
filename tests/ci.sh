@@ -11,8 +11,7 @@ cd "$TMT_TREE"
 setenforce 0
 
 # Install test dependencies
-dnf config-manager --set-enabled powertools
-dnf install -y findutils openssl python36 postgresql-server koji
+dnf install -y openssl postgresql-server
 
 # Setup OpenScanHub settings
 cp osh/hub/settings_local.ci.py /usr/lib/python3.6/site-packages/osh/hub/settings_local.py
