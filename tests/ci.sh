@@ -31,6 +31,6 @@ systemctl start httpd osh-worker
 # firewall-cmd --zone=public --add-port=443/tcp --permanent
 # firewall-cmd --reload
 sed -i "s|http://osh-hub:8000|https://localhost/osh|g" osh/client/client-local.conf
-OSH_CLIENT_CONFIG_FILE=osh/client/client-local.conf /usr/bin/osh-cli mock-build --config=fedora-37-x86_64 --brew-build units-2.21-5.fc37
+OSH_CLIENT_CONFIG_FILE=osh/client/client-local.conf /usr/bin/osh-cli mock-build --config=fedora-37-x86_64 --nvr units-2.21-5.fc37
 OSH_CLIENT_CONFIG_FILE=osh/client/client-local.conf /usr/bin/osh-cli task-info 1 | grep "is_failed = False"
 osh/hub/scripts/osh-xmlrpc-client.py --hub "https://localhost/osh/xmlrpc/kerbauth/" --username=user --password=xxxxxx create-scan -b expat-2.5.0-1.fc37 -t expat-2.5.0-2.fc38 --et-scan-id=1 --release=Fedora-37 --owner=admin --advisory-id=1

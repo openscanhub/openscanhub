@@ -47,7 +47,7 @@ cov-mock-build() {
 # RETRY=true
 
     mock-task python3 osh/client/osh-cli mock-build --config="$config"\
-                                                 --brew-build "$build" "$args"
+                                                    --nvr "$build" "$args"
 }
 
 cov-version-diff-build() {
@@ -59,8 +59,8 @@ cov-version-diff-build() {
 # RETRY=true
 
     mock-task python3 osh/client/osh-cli version-diff-build\
-        --base-config="$config" --base-brew-build "$base_build"\
-        --config="$config" --brew-build "$build" "$args"
+        --base-config="$config" --base-nvr "$base_build"\
+        --config="$config" --nvr "$build" "$args"
 }
 
 mock-task() {
