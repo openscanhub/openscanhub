@@ -51,15 +51,13 @@ class Version_Diff_Build(osh.client.OshCommand):
         add_priority_option(self.parser)
 
         self.parser.add_option(
-            "--base-brew-build",
-            help="use a brew build for base (specified by NVR) instead of a \
-local file"
+            "--base-nvr",
+            help="use a Koji build for base (specified by NVR) instead of a local file"
         )
 
         self.parser.add_option(
-            "--brew-build",
-            help="use a brew build for target (specified by NVR) instead of a \
-local file"
+            "--nvr",
+            help="use a Koji build for target (specified by NVR) instead of a local file"
         )
 
         self.parser.add_option(
@@ -71,6 +69,12 @@ local file"
             "--srpm",
             help="path to SRPM used as target"
         )
+
+        # Deprecated aliases:
+        self.parser.add_option("--base-brew-build", dest="base_nvr",
+                               help="DEPRECATED alias for --base-nvr")
+        self.parser.add_option("--brew-build", dest="nvr",
+                               help="DEPRECATED alias for --nvr")
 
     def run(self, *args, **kwargs):  # noqa: C901
         # optparser output is passed via *args (args) and **kwargs (opts)
@@ -86,8 +90,8 @@ local file"
         nowait = kwargs.pop("nowait")
         task_id_file = kwargs.pop("task_id_file")
         priority = kwargs.pop("priority")
-        base_brew_build = kwargs.pop("base_brew_build", None)
-        brew_build = kwargs.pop("brew_build", None)
+        base_nvr = kwargs.pop("base_nvr", None)
+        nvr = kwargs.pop("nvr", None)
         base_srpm = kwargs.pop("base_srpm", None)
         srpm = kwargs.pop("srpm", None)
         warn_level = kwargs.pop('warn_level', '0')
@@ -100,26 +104,23 @@ local file"
             options['comment'] = comment
 
         # both bases are specified
-        if base_brew_build and base_srpm:
-            self.parser.error("Choose exactly one option (--base-brew-build, \
---base-srpm), not both of them.")
+        if base_nvr and base_srpm:
+            self.parser.error("Choose exactly one option (--base-nvr, --base-srpm), not both of them.")
 
         # both nvr/targets are specified
-        if brew_build and srpm:
-            self.parser.error("Choose exactly one option (--nvr-brew-build, \
---nvr-srpm), not both of them.")
+        if nvr and srpm:
+            self.parser.error("Choose exactly one option (--nvr, --srpm), not both of them.")
 
         # no package option specified
-        if (not base_brew_build and not brew_build and not srpm and not
-                base_srpm):
+        if (not base_nvr and not nvr and not srpm and not base_srpm):
             self.parser.error("Please specify both builds or SRPMs.")
 
         # no base specified
-        if not base_brew_build and not base_srpm:
+        if not base_nvr and not base_srpm:
             self.parser.error("You haven't specified base.")
 
         # no nvr/target specified
-        if not brew_build and not srpm:
+        if not nvr and not srpm:
             self.parser.error("You haven't specified target.")
 
         if srpm and not srpm.endswith(".src.rpm"):
@@ -131,13 +132,13 @@ a SRPM")
             self.parser.error("Priority must be a non-negative number!")
 
         koji_profiles = self.conf.get('KOJI_PROFILES', 'brew,koji')
-        if brew_build:
-            result = verify_koji_build(brew_build, koji_profiles)
+        if nvr:
+            result = verify_koji_build(nvr, koji_profiles)
             if result is not None:
                 self.parser.error(result)
 
-        if base_brew_build:
-            result = verify_koji_build(base_brew_build, koji_profiles)
+        if base_nvr:
+            result = verify_koji_build(base_nvr, koji_profiles)
             if result is not None:
                 self.parser.error(result)
 
@@ -203,16 +204,16 @@ is not even one in your user configuration file \
                 self.parser.error(result)
             options['profile'] = profile
 
-        if brew_build:
-            options["brew_build"] = brew_build
+        if nvr:
+            options["brew_build"] = nvr
         else:
             target_dir = random_string(32)
             upload_id, err_code, err_msg = upload_file(self.hub, srpm,
                                                        target_dir, self.parser)
             options["upload_id"] = upload_id
 
-        if base_brew_build:
-            options["base_brew_build"] = base_brew_build
+        if base_nvr:
+            options["base_brew_build"] = base_nvr
         else:
             target_dir = random_string(32)
             upload_id, err_code, err_msg = upload_file(self.hub, base_srpm,

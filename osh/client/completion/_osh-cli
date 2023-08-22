@@ -123,7 +123,7 @@ _osh-cli_args()
                 # '*' enables repetition
                 '*--email-to=[send notification to this address (can be used multiple times)]'
                 '--priority=[task priority (20+ is admin only), default is 10]'
-                '--brew-build[use a brew build (specified by NVR) instead of a local file]'
+                '--nvr[use a Koji build (specified by NVR) instead of a local file]'
             )
             ;;
     esac
@@ -143,7 +143,7 @@ _osh-cli_args()
 
         version-diff-build)
             args+=(
-                '--base-brew-build=[use a brew build for base (specified by NVR)]'
+                '--base-nvr=[use a Koji build for base (specified by NVR)]'
                 '--base-srpm=[path to SRPM used as base]:filename:_files'
                 '--srpm=[path to SRPM used as target]:filename:_files'
             )

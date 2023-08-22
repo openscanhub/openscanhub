@@ -158,7 +158,7 @@ _osh_cli()
             COMPREPLY+=( $(compgen -W "--comment= --task-id-file=" -- "${cur}") )
             COMPREPLY+=( $(compgen -W "--nowait --email-to=" -- "${cur}") )
             COMPREPLY+=( $(compgen -W "--priority=" -- "${cur}") )
-            COMPREPLY+=( $(compgen -W "--brew-build" -- "${cur}") )
+            COMPREPLY+=( $(compgen -W "--nvr" -- "${cur}") )
             ;;
         esac
 
@@ -202,7 +202,7 @@ _osh_cli()
                 _osh_cli_complete mock-configs
                 return
                 ;;
-            --base-brew-build)
+            --base-nvr)
                 COMPREPLY=()
                 return
                 ;;
@@ -213,7 +213,7 @@ _osh_cli()
                 ;;
             *)
                 COMPREPLY+=( $(compgen -W "--base-config=" -- "${cur}") )
-                COMPREPLY+=( $(compgen -W "--base-brew-build=" -- "${cur}") )
+                COMPREPLY+=( $(compgen -W "--base-nvr=" -- "${cur}") )
                 COMPREPLY+=( $(compgen -W "--srpm= --base-srpm=" -- "${cur}") )
                 ;;
             esac

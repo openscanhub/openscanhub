@@ -99,12 +99,18 @@ def add_priority_option(parser):
     )
 
 
-def add_brew_build_option(parser):
+def add_nvr_option(parser):
     parser.add_option(
-        "--brew-build",
+        "--nvr",
         action="store_true",
         default=False,
-        help="use a brew build (specified by NVR) instead of a local file"
+        help="use a Koji build (specified by NVR) instead of a local file"
+    )
+
+    # Deprecated alias
+    parser.add_option(
+        "--brew-build", dest="nvr", action="store_true", default=False,
+        help="DEPRECATED alias for --nvr"
     )
 
 

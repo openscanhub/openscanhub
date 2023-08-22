@@ -9,7 +9,6 @@ from kobo.shortcuts import random_string
 
 import osh.client
 from osh.client.commands.common import (add_analyzers_option,
-                                        add_brew_build_option,
                                         add_comment_option,
                                         add_comp_warnings_option,
                                         add_config_option,
@@ -18,7 +17,8 @@ from osh.client.commands.common import (add_analyzers_option,
                                         add_download_results_option,
                                         add_email_to_option,
                                         add_install_to_chroot_option,
-                                        add_nowait_option, add_priority_option,
+                                        add_nowait_option, add_nvr_option,
+                                        add_priority_option,
                                         add_profile_option,
                                         add_task_id_file_option)
 from osh.client.commands.shortcuts import (check_analyzers, fetch_results,
@@ -53,7 +53,7 @@ class Diff_Build(osh.client.OshCommand):
         add_nowait_option(self.parser)
         add_email_to_option(self.parser)
         add_priority_option(self.parser)
-        add_brew_build_option(self.parser)
+        add_nvr_option(self.parser)
         add_custom_model_option(self.parser)
 
         add_install_to_chroot_option(self.parser)
@@ -77,7 +77,7 @@ exist." % self.results_store_file)
         nowait = kwargs.pop("nowait")
         task_id_file = kwargs.pop("task_id_file")
         priority = kwargs.pop("priority")
-        brew_build = kwargs.pop("brew_build")
+        nvr = kwargs.pop("nvr")
         self.results_store_file = kwargs.pop("results_dir", None)
         warn_level = kwargs.pop('warn_level', '0')
         analyzers = kwargs.pop('analyzers', '')
@@ -89,15 +89,15 @@ exist." % self.results_store_file)
 
         if len(args) != 1:
             self.parser.error("please specify exactly one SRPM")
-        if brew_build:
-            # self.srpm contains NVR if --brew-build is used!
+        if nvr:
+            # self.srpm contains NVR if --nvr is used!
             self.srpm = args[0]
         else:
             self.srpm = os.path.abspath(os.path.expanduser(args[0]))
 
         self.validate_results_store_file()
 
-        if brew_build:
+        if nvr:
             # get build from koji
             koji_profiles = self.conf.get('KOJI_PROFILES', 'brew,koji')
             result = verify_koji_build(self.srpm, koji_profiles)
@@ -152,7 +152,7 @@ is not even one in your user configuration file \
                 self.parser.error(result)
             options['profile'] = profile
 
-        if brew_build:
+        if nvr:
             options["brew_build"] = self.srpm
             options["srpm_name"] = self.srpm
         else:
