@@ -69,12 +69,18 @@ class Build:
             else:
                 print("No srpm specified", file=sys.stderr)
                 self.fail()
+
             if results is None:
-                print("No results available", file=sys.stderr)
+                print("Task did not produce any results", file=sys.stderr)
                 self.fail()
-            base_results = os.path.basename(results)
-            with open(results, "rb") as f:
-                self.hub.upload_task_log(f, self.task_id, base_results)
+
+            try:
+                base_results = os.path.basename(results)
+                with open(results, "rb") as f:
+                    self.hub.upload_task_log(f, self.task_id, base_results)
+            except OSError as e:
+                print("Reading task logs failed:", e, file=sys.stderr)
+                self.fail()
 
         # first finish task, then fail if needed, so tarball gets unpacked
         self.hub.worker.finish_task(self.task_id)

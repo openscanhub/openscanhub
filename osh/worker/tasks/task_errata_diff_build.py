@@ -77,10 +77,19 @@ class ErrataDiffBuild(TaskBase):
                                                    koji_profile=koji_profile,
                                                    su_user=su_user)
             print('Retcode:', retcode)
-            if results is not None:
+            if results is None:
+                print("Task did not produce any results", file=sys.stderr)
+                self.hub.worker.fail_scan(scan_id, 'Empty task results')
+                self.fail()
+
+            try:
                 base_results = os.path.basename(results)
                 with open(results, 'rb') as f:
                     self.hub.upload_task_log(f, self.task_id, base_results)
+            except OSError as e:
+                print("Reading task logs failed:", e, file=sys.stderr)
+                self.hub.worker.fail_scan(scan_id, f'Reading tak logs failed: {e}')
+                self.fail()
 
         if retcode > 0:
             print(f"Scanning has not completed successfully ({retcode})",

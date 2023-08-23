@@ -44,10 +44,17 @@ class AnalyzerVersionRetriever(TaskBase):
             print('Retcode:', retcode)
 
             # upload results back to hub
-            if results is not None:
+            if results is None:
+                print("Task did not produce any results", file=sys.stderr)
+                self.fail()
+
+            try:
                 base_results = os.path.basename(results)
                 with open(results, "rb") as f:
                     self.hub.upload_task_log(f, self.task_id, base_results)
+            except OSError as e:
+                print("Reading task logs failed:", e, file=sys.stderr)
+                self.fail()
 
         if retcode > 0:
             print(f"Analyzer version retrieval has not completed successfully ({retcode})",
