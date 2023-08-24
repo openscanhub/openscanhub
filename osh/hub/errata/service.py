@@ -65,6 +65,10 @@ Unsupported.')
             raise ScanException(f'It looks like that any of base scans of {scan.base.nvr} \
 did not finish successfully; reschedule base (latest base: {latest_failed_base_binding})')
 
+        if ETMapping.objects.filter(latest_run=latest_binding).exists():
+            raise ScanException(
+                f'ScanBinding {latest_binding} is not attached to any ETMapping!')
+
         task_id = latest_task.clone_task(
             user,
             state=TASK_STATES["CREATED"],
@@ -99,7 +103,9 @@ did not finish successfully; reschedule base (latest base: {latest_failed_base_b
     sb.save()
 
     if scan.is_errata_scan():
-        ETMapping.objects.filter(
-            latest_run=latest_binding).update(latest_run=sb)
+        # FIXME: Is it possible to have a scan attached to more than one ET mapping?
+        etm = ETMapping.objects.get(latest_run=latest_binding)
+        etm.latest_run = sb
+        etm.save()
 
     return sb
