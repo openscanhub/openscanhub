@@ -158,6 +158,7 @@ XMLRPC_METHODS = {
         ('kobo.hub.xmlrpc.client', 'client'),
         ('kobo.hub.xmlrpc.system', 'system'),
         ('kobo.django.upload.xmlrpc', 'upload'),
+        ('osh.hub.osh_xmlrpc.client', 'client'),
         ('osh.hub.osh_xmlrpc.mock_config', 'mock_config'),
         ('osh.hub.osh_xmlrpc.scan', 'scan'),
     ),

@@ -17,6 +17,7 @@ from osh.hub.errata.scanner import (BaseNotValidException, obtain_base,
 from osh.hub.scan.models import (SCAN_STATES, AnalyzerVersion, AppSettings,
                                  Scan, ScanBinding)
 from osh.hub.scan.notify import send_task_notification
+from osh.hub.scan.xmlrpc_helper import cancel_scan
 from osh.hub.scan.xmlrpc_helper import fail_scan as h_fail_scan
 from osh.hub.scan.xmlrpc_helper import finish_scan as h_finish_scan
 from osh.hub.scan.xmlrpc_helper import (prepare_version_retriever,
@@ -180,6 +181,18 @@ def ensure_base_is_scanned_properly(request, scan_id, task_id):
             scan.set_base(base_scan)
     else:
         logger.info('Scan %s does not need base' % scan)
+
+
+@validate_worker
+def cancel_task(request, task_id):
+    response = kobo_xmlrpc_worker.cancel_task(request, task_id)
+
+    # cancel the corresponding scan
+    sb = ScanBinding.objects.filter(task=task_id).first()
+    if sb is not None:
+        cancel_scan(sb)
+
+    return response
 
 
 @validate_worker
