@@ -36,14 +36,22 @@ class AnalyzerVersionRetriever(TaskBase):
         csmock_args = self.args.pop("csmock_args", None)
 
         with CsmockRunner() as runner:
-            path, err_code = runner.no_scan(analyzers, profile=mock_config, su_user=su_user,
-                                            additional_arguments=csmock_args)
+            results, retcode = runner.no_scan(analyzers,
+                                              profile=mock_config,
+                                              su_user=su_user,
+                                              additional_arguments=csmock_args)
+
+            print('Retcode:', retcode)
 
             # upload results back to hub
-            if not os.path.exists(path):
-                print("Tarball with results does not exist:", path, file=sys.stderr)
-            base_path = os.path.basename(path)
-            with open(path, "rb") as f:
-                self.hub.upload_task_log(f, self.task_id, base_path)
+            if results is not None:
+                base_results = os.path.basename(results)
+                with open(results, "rb") as f:
+                    self.hub.upload_task_log(f, self.task_id, base_results)
 
-        self.hub.worker.finish_analyzers_version_retrieval(self.task_id, base_path)
+        if retcode > 0:
+            print(f"Analyzer version retrieval has not completed successfully ({retcode})",
+                  file=sys.stderr)
+            self.fail()
+
+        self.hub.worker.finish_analyzers_version_retrieval(self.task_id, base_results)
