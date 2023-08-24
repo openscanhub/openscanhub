@@ -7,7 +7,8 @@ from kobo.hub.models import TASK_STATES, Task
 
 from osh.hub.other.exceptions import ScanException
 from osh.hub.other.shortcuts import check_and_create_dirs
-from osh.hub.scan.models import SCAN_STATES, ETMapping, ScanBinding
+from osh.hub.scan.models import (SCAN_STATES_FINISHED_BAD, ETMapping,
+                                 ScanBinding)
 from osh.hub.scan.service import get_latest_binding
 
 logger = logging.getLogger(__name__)
@@ -32,9 +33,9 @@ def rescan(scan, user):
     latest_scan = latest_binding.scan
     latest_task = latest_binding.task
 
-    if latest_scan.state != SCAN_STATES['FAILED']:
-        raise ScanException(f"Latest scan {latest_scan.id} of {scan.nvr} haven't \
-failed. This is not supported.")
+    if latest_scan.state not in SCAN_STATES_FINISHED_BAD:
+        raise ScanException(f"Latest scan {latest_scan.id} of {scan.nvr} was \
+successful! This is not supported.")
 
     # scan is base scan
     if latest_scan.is_errata_base_scan():
