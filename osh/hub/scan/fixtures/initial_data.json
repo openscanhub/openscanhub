@@ -203,10 +203,10 @@
   "model": "scan.clientanalyzer",
   "fields": {
     "build_append_args": "",
-    "enabled": false,
+    "enabled": true,
     "analyzer": 7,
     "build_append": "smatch",
-    "version": "1.60.1599.g44eeafcf-2",
+    "version": "dist",
     "cli_long_command": "smatch"
   }
 },
@@ -1284,7 +1284,7 @@
       "analyzers": "smatch",
       "koji_profile": "koji"
     },
-    "enabled": false,
+    "enabled": true,
     "name": "smatch",
     "description": "experimental profile for running the smatch static analyzer"
   }
