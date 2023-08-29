@@ -12,6 +12,5 @@ kill -15 "$django_server_coverage_pid"
 wait "$django_server_coverage_pid" 2>/dev/null || :
 
 # Clean up tasks directory in the container. This has to be done here as it may cause issues with
-# starting new jobs in GitLab CI if the user that runs the job in container is different from host
-# user
+# starting new jobs if the user that runs the job in container is different from host user
 rm -rvf osh/hub/tasks

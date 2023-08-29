@@ -31,7 +31,6 @@ def handle_deprecated_options(conf):
         print_warning("HUB_URL")
 
     # Handle URL prefix change from `/covscahub` to `/osh` if client has custom configurations
-    # https://gitlab.cee.redhat.com/covscan/covscan/-/merge_requests/262#note_6216582
     conf["HUB_URL"] = conf["HUB_URL"].replace("/covscanhub/", "/osh/")
 
     # there is no 'krbv' for py3 --> use 'gssapi' instead

@@ -131,9 +131,8 @@ Package was scanned as differential scan:
                 'name': version,
             },
         ],
-        # temporarily using custom field because issues.redhat.com doesn't have
-        # the 'priority' field
-        # see: https://gitlab.cee.redhat.com/covscan/covscan/-/issues/218
+        # FIXME: temporarily using custom field because issues.redhat.com
+        # doesn't have the 'priority' field
         'customfield_12316142': {  # Severity
             'id': '15655',  # Normal
         },

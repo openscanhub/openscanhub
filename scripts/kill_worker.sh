@@ -4,8 +4,7 @@
 
 set -x
 ps -ef
-# Worker coverage reports are inconsistent due to issues with signal handling
-# https://gitlab.cee.redhat.com/covscan/covscan/-/issues/111
+# FIXME: Worker coverage reports are inconsistent due to issues with signal handling
 worker_coverage_pid=$(ps -eo pid,cmd | grep -i osh-worker | grep -v 'grep' | grep 'coverage' | xargs | cut -d' ' -f1)
 kill -15 "$worker_coverage_pid"
 # Wait will print an error if process has been already killed

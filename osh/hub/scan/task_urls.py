@@ -10,7 +10,7 @@ from kobo.hub.views import TaskListView
 urlpatterns.append(
     path("et/",
          TaskListView.as_view(title="Errata Tool Tasks"),
-         # FIXME: https://gitlab.cee.redhat.com/covscan/covscan/-/issues/125
+         # FIXME: `kobo` ignores the kwargs argumentdue to a bug
          kwargs={'method': "ErrataDiffBuild"},
          name="task/et")
 )

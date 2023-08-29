@@ -101,7 +101,6 @@ def _get_pk_func(field):
     return pk_func
 
 
-# https://gitlab.cee.redhat.com/covscan/covscan/-/issues/159
 def autoregister_admin(module, exclude_models=None, model_fields=None, exclude_fields=None,  # noqa: C901
                        admin_fields=None, reversed_relations=None):
     '''

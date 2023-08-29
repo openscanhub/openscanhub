@@ -66,7 +66,6 @@ exist." % self.results_store_file)
             else:
                 self.parser.error("Invalid path to store results.")
 
-    # https://gitlab.cee.redhat.com/covscan/covscan/-/issues/162
     def run(self, *args, **kwargs):  # noqa: C901
         local_conf = get_conf(self.conf)
 
