@@ -80,7 +80,10 @@ prepare_deploy() {
         return 4
     fi
 
-    clean
+    # Bring compose down
+    # The $PROFILE variable may be unset.
+    # shellcheck disable=2086
+    podman-compose -p osh $PROFILE down -v
 }
 
 
