@@ -10,7 +10,6 @@ from django.urls import path
 from django.utils.safestring import mark_safe
 from kobo.hub.models import TASK_STATES, Task
 
-from osh.hub.errata.service import rescan
 from osh.hub.other.autoregister import autoregister_admin
 from osh.hub.other.shortcuts import add_link_field
 from osh.hub.scan.models import SCAN_STATES, Scan, ScanBinding
@@ -55,7 +54,6 @@ class ScanAdmin(admin.ModelAdmin):
             path(f'{slug}/fail/', self.admin_site.admin_view(self.fail_scan)),
             path(f'{slug}/cancel/', self.admin_site.admin_view(self.cancel_scan)),
             path(f'{slug}/finish/', self.admin_site.admin_view(self.finish_scan)),
-            path(f'{slug}/rescan/', self.admin_site.admin_view(self.rescan)),
         ]
         return my_urls + urls
 
@@ -103,23 +101,6 @@ class ScanAdmin(admin.ModelAdmin):
                 scan_id,
                 SCAN_STATES.get_value(scan.state)
             ),
-            'app_label': self.model._meta.app_label,
-        }
-        return render(request, 'admin/scan/scan/state_change.html', context)
-
-    def rescan(self, request, scan_id):
-        scan = Scan.objects.get(id=scan_id)
-        try:
-            new_scan = rescan(scan, request.user)
-        except Exception as e: # noqa
-            result = "Unable to rescan: %s" % e
-        else:
-            result = "New scan #%s submitted." % (new_scan.scan.id)
-        context = {
-            'title': 'Rescan of package: %s' % scan.nvr,
-            'object': scan,
-            'opts': self.model._meta,
-            'result': result,
             'app_label': self.model._meta.app_label,
         }
         return render(request, 'admin/scan/scan/state_change.html', context)

@@ -33,7 +33,6 @@
     <li><a class="historylink" href="notify/">{% trans "Notify" %}</a></li>
     <li><a class="historylink" href="finish/">{% trans "Finish" %}</a></li>
     <li><a class="historylink" href="fail/">{% trans "Fail" %}</a></li>
-    <li><a class="historylink" href="rescan/">{% trans "Rescan" %}</a></li>
     <li><a class="historylink" href="cancel/">{% trans "Cancel" %}</a></li>
     {% if has_absolute_url %}<li><a href="{% url 'admin:view_on_site' content_type_id original.pk %}" class="viewsitelink">{% trans "View on site" %}</a></li>{% endif%}
     {% endblock %}
