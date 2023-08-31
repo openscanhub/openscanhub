@@ -57,6 +57,7 @@ OpenScanHub shared files for client, hub and worker.
 %package worker
 Summary: OpenScanHub worker
 Requires: csmock
+Requires: file
 Requires: koji
 Requires: python3-kobo-client
 Requires: python3-kobo-rpmlib
@@ -91,7 +92,6 @@ Requires: koji
 Requires: xz
 
 Requires: csdiff
-Requires: file
 Requires: python3-bugzilla
 Requires: python3-csdiff
 Requires: python3-jira
