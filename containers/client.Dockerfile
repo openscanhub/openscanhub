@@ -7,8 +7,6 @@ WORKDIR /src
 ENV PYTHONPATH=.:kobo
 ENV OSH_CLIENT_CONFIG_FILE=osh/client/client-local.conf
 
-RUN echo -e "max_parallel_downloads=20\nfastestmirror=True" >> /etc/dnf/dnf.conf
-
 RUN dnf -y --setopt=tsflags=nodocs install \
     koji \
     gzip \

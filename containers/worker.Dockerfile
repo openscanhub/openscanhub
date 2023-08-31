@@ -8,8 +8,6 @@ WORKDIR /src
 ENV PYTHONPATH=.:kobo
 ENV OSH_WORKER_CONFIG_FILE=osh/worker/worker-local.conf
 
-RUN echo -e "max_parallel_downloads=20\nfastestmirror=True" >> /etc/dnf/dnf.conf
-
 RUN dnf -y --setopt=tsflags=nodocs install \
     cppcheck \
     csmock \

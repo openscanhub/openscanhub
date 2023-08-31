@@ -9,8 +9,6 @@ WORKDIR /src
 
 ENV PYTHONPATH=.:kobo
 
-RUN echo -e "max_parallel_downloads=20\nfastestmirror=True" >> /etc/dnf/dnf.conf
-
 # enable installation of gettext message objects
 RUN rm /etc/rpm/macros.image-language-conf
 
