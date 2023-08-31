@@ -9,16 +9,11 @@ ENV PYTHONPATH=.:kobo
 ENV OSH_WORKER_CONFIG_FILE=osh/worker/worker-local.conf
 
 RUN dnf -y --setopt=tsflags=nodocs install \
-    cppcheck \
     csmock \
-    csmock-plugin-unicontrol \
     file \
-    gzip \
     koji \
     python3-coverage \
-    python3-gssapi \
-    python36 \
-    xz
+    python36
 
 RUN adduser csmock -G mock
 

@@ -13,26 +13,18 @@ ENV PYTHONPATH=.:kobo
 RUN rm /etc/rpm/macros.image-language-conf
 
 RUN dnf -y --setopt=tsflags=nodocs install \
-    /usr/bin/krb5-config \
-    cpio \
     csdiff \
-    csmock \
-    gcc \
-    glibc-langpack-en \
     gzip \
     koji \
     python3-bugzilla \
     python3-coverage \
     python3-csdiff \
-    python3-devel \
     python3-django3 \
     python3-gssapi \
     python3-jira \
-    python3-koji \
     python3-psycopg2 \
     python3-qpid-proton \
     python36 \
-    postgresql{,-libs} \
     xz
 
 # store coverage to a separate volume
