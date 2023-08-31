@@ -13,7 +13,7 @@ RUN dnf -y --setopt=tsflags=nodocs install \
     file \
     koji \
     python3-coverage \
-    python36
+    python3
 
 RUN adduser csmock -G mock
 

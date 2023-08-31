@@ -11,7 +11,7 @@ CLI_COV=(
     env
     OSH_CLIENT_CONFIG_FILE=osh/client/client-local.conf
     PYTHONPATH=.:kobo
-    /usr/bin/coverage-3.6 run --parallel-mode '--omit=*site-packages*,*kobo*,' --rcfile=/coveragerc
+    /usr/bin/coverage-3 run --parallel-mode '--omit=*site-packages*,*kobo*,' --rcfile=/coveragerc
     osh/client/osh-cli
 )
 
@@ -19,7 +19,7 @@ CLI_XML=(
     env
     OSH_CLIENT_CONFIG_FILE=osh/client/client-local.conf
     PYTHONPATH=.:kobo
-    /usr/bin/coverage-3.6 run --parallel-mode '--omit=*site-packages*,*kobo*,' --rcfile=/coveragerc
+    /usr/bin/coverage-3 run --parallel-mode '--omit=*site-packages*,*kobo*,' --rcfile=/coveragerc
     osh/hub/scripts/osh-xmlrpc-client.py
 )
 
@@ -130,7 +130,7 @@ main() {
     podman exec osh-client "${CLI_XML[@]}" --hub http://osh-hub:8000/xmlrpc/kerbauth/ --username=user --password=xxxxxx create-scan -b units-2.18-3.fc30 -t units-2.22-5.fc39 --et-scan-id=1 --release=Fedora-37 --owner=admin --advisory-id=1
 
     # test generation of usage statistics
-    podman exec osh-hub /usr/bin/coverage-3.6 run --parallel-mode '--omit=*site-packages*,*kobo*,' --rcfile=/coveragerc osh/hub/scripts/osh-stats
+    podman exec osh-hub /usr/bin/coverage-3 run --parallel-mode '--omit=*site-packages*,*kobo*,' --rcfile=/coveragerc osh/hub/scripts/osh-stats
 
     set +e; set +o pipefail
 
@@ -139,18 +139,18 @@ main() {
     podman exec -i osh-hub scripts/kill_django_server.sh
 
     # Combine coverage report for hub, worker and client
-    podman exec -it osh-client /usr/bin/coverage-3.6 combine --rcfile=/coveragerc
+    podman exec -it osh-client /usr/bin/coverage-3 combine --rcfile=/coveragerc
     podman cp osh-client:/cov/coverage .
 
     # Avoid generating html reports in GitHub Actions CI
     if [[ "$GITHUB_ACTIONS" = "true" ]];
     then
         # We use codecov in GitHub Actions CI. Upload xml reports to it.
-        podman exec -it osh-client /usr/bin/coverage-3.6 xml --rcfile=/coveragerc
+        podman exec -it osh-client /usr/bin/coverage-3 xml --rcfile=/coveragerc
         podman cp osh-client:/cov/coverage.xml .
     else
         # Convert test coverage to html
-        podman exec -it osh-client /usr/bin/coverage-3.6 html --rcfile=/coveragerc -d /cov/htmlcov
+        podman exec -it osh-client /usr/bin/coverage-3 html --rcfile=/coveragerc -d /cov/htmlcov
         podman cp osh-client:/cov/htmlcov .
     fi
 

@@ -10,7 +10,7 @@ ENV OSH_CLIENT_CONFIG_FILE=osh/client/client-local.conf
 RUN dnf -y --setopt=tsflags=nodocs install \
     koji \
     python3-coverage \
-    python36
+    python3
 
 # store coverage to a separate volume
 RUN printf '[run]\ndata_file = /cov/coverage\n' > /coveragerc

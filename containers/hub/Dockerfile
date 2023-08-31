@@ -24,7 +24,7 @@ RUN dnf -y --setopt=tsflags=nodocs install \
     python3-jira \
     python3-psycopg2 \
     python3-qpid-proton \
-    python36 \
+    python3 \
     xz
 
 # store coverage to a separate volume
