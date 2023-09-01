@@ -1,8 +1,6 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 # SPDX-FileCopyrightText: Copyright contributors to the OpenScanHub project.
 
-import os
-
 from django.urls import reverse
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe
@@ -31,12 +29,3 @@ def add_link_field(target_model=None, field='', field_label=''):
             [field_name]
         return cls
     return add_link
-
-
-def check_and_create_dirs(directory):
-    if not os.path.isdir(directory):
-        try:
-            os.makedirs(directory, mode=0o755)
-        except OSError as ex:
-            if ex.errno != 17:
-                raise
