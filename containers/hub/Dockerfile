@@ -21,6 +21,7 @@ RUN printf '[run]\ndata_file = /cov/coverage\n' > /coveragerc
 RUN rm /etc/rpm/macros.image-language-conf
 
 RUN dnf -y --setopt=tsflags=nodocs install \
+    /usr/bin/pg_isready \
     csdiff \
     gzip \
     python3-bugzilla \
