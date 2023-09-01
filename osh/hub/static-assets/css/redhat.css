@@ -782,3 +782,14 @@ div#defects div.events_list div.code {
 }
 
 /**/
+
+/* PAGINATIONS */
+
+/* Override broken style from kobo */
+.paginator {
+    float: unset;
+    margin: -0.75em 0em -1em 0em;
+    text-align: right;
+}
+
+/**/
