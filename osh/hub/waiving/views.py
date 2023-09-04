@@ -257,7 +257,7 @@ class ResultsListView(ListView):
     paginate_by = 50
     template_name = "waiving/list.html"
     context_object_name = "scanbinding_list"
-    title = "List of all results"
+    title = "List of scan results"
 
     def order_scans(self):
         order_by = self.request.GET.get('order_by', None)
@@ -325,6 +325,7 @@ class ResultsListView(ListView):
         context = super().get_context_data(**kwargs)
         context["search_form"] = self.search_form
         context['table_sort'] = self.table_sort
+        context['title'] = self.title
 
         # to make pagination work with filtering
         args = self.request.GET.copy()
