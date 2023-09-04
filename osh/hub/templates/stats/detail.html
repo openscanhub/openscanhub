@@ -54,10 +54,7 @@ document.addEventListener("DOMContentLoaded", function() {
 {% endblock %}
 
 {% block content %}
-{% if release %}
-<h2><a href="{% url 'stats/release/list' release.id %}">{{ release.product }}.{{release.release}}</a></h2>
-{% endif %}
-<h2>{{ type.short_comment }}</h2>
+<h2>{% trans title %}</h2>
 <div>{{ type.comment }}</div>
 
 <table>
