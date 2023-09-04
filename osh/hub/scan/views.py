@@ -5,8 +5,7 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 from django.views.generic.detail import DetailView
-from django.views.generic.list import ListView
-from kobo.django.views.generic import SearchView
+from kobo.django.views.generic import ExtraListView, SearchView
 from kobo.django.xmlrpc.decorators import login_required
 
 from osh.hub.osh_xmlrpc.scan import (create_user_diff_task, diff_build,
@@ -16,10 +15,10 @@ from osh.hub.scan.forms import PackageSearchForm, ScanSubmissionForm
 from .models import MockConfig, Package
 
 
-class MockConfigListView(ListView):
+class MockConfigListView(ExtraListView):
     template_name = "mock_config/list.html"
     context_object_name = "mock_config"
-    title = "List mock configs"
+    title = "Mock config list"
     paginate_by = 50
     allow_empty = True
 
@@ -49,12 +48,14 @@ class PackageDetailView(DetailView):
 
 @login_required
 def scan_submission(request):
+    title = "Create new scan"
+
     if request.method != "POST":
-        return render(request, "scan/new.html", {'form': ScanSubmissionForm()})
+        return render(request, "scan/new.html", {'form': ScanSubmissionForm(), 'title': title})
 
     form = ScanSubmissionForm(request.POST)
     if not form.is_valid():
-        return render(request, "scan/new.html", {'form': form})
+        return render(request, "scan/new.html", {'form': form, 'title': title})
 
     # XXX: only for compatibility with old API
     mock_config = form.cleaned_data['mock']
