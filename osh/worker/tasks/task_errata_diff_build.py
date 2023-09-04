@@ -51,18 +51,8 @@ class ErrataDiffBuild(TaskBase):
             self.hub.worker.set_scan_to_basescanning(scan_id)
             self.hub.worker.assign_task(subtask_id)
             self.hub.worker.create_sb(subtask_id)
-            try:
-                self.wait()
-            except ValueError:
-                # there is a race condition here:
-                #   File "/usr/lib/python2.6/site-packages/osh/worker/tasks/task_errata_diff_build.py", line 60, in run
-                #     self.wait()
-                #   File "/usr/lib/python2.6/site-packages/kobo/worker/task.py", line 153, in wait
-                #     self._subtask_list.remove(i)
-                # ValueError: list.remove(x): x not in list
-                #
-                # FIXME: workaround it here for now
-                pass
+
+            self.wait()
             self.hub.worker.set_scan_to_scanning(scan_id)
 
         scanning_args = self.hub.worker.get_scanning_args(scanning_session_id)

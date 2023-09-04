@@ -36,7 +36,7 @@ report bugs and feature requests on GitHub using the above URL.
 - `koji`
 - `python3-kobo-client`
 - `python3-kobo-rpmlib`
-- `python3-kobo-worker`
+- `python3-kobo-worker >= 0.30.0`
 
 ### client:
 - `koji`
