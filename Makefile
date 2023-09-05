@@ -74,9 +74,9 @@ log:
 
 
 source: clean
-	@python3 setup.py sdist --formats=bztar
+	@python3 setup.py sdist --formats=gztar
 
-VERSION = $(shell echo dist/*.tar.bz2 | sed "s/.*osh-\(.*\).tar.bz2/\1/g")
+VERSION = $(shell echo dist/*.tar.gz | sed "s/.*osh-\(.*\).tar.gz/\1/g")
 
 srpm: source
 	echo "%global version $(VERSION)" > dist/osh.spec
