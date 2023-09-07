@@ -238,15 +238,12 @@ def diff_new_defects_between_releases(scan):
     return diff_defects_between_releases(scan, 'n')
 
 
-def get_latest_binding(scan_nvr, show_failed=False):
+def get_latest_binding(scan_nvr):
     """Return latest binding for specified nvr"""
-    if show_failed:
-        query = ScanBinding.objects.filter(scan__nvr=scan_nvr)
-    else:
-        query = ScanBinding.objects.filter(
-            scan__nvr=scan_nvr,
-            result__isnull=False).exclude(
-                scan__state=SCAN_STATES['FAILED'])
+    query = ScanBinding.objects.filter(
+        scan__nvr=scan_nvr,
+        result__isnull=False).exclude(scan__state=SCAN_STATES['FAILED'])
+
     if query:
         # '-date' -- latest; 'date' -- oldest
         latest_submitted = query.order_by('-scan__date_submitted')[0]
