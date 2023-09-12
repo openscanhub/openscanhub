@@ -47,18 +47,17 @@ def get_recipient(user):
     parameter: django's User model,
     return e-mail address to send e-mail to
     """
-    if "@" not in user.username:
-        if user.username == "admin" or user.username == "test":
-            recipient = None
-        else:
-            if user.email:
-                recipient = user.email
-            else:
-                # XXX: hardcoded
-                recipient = user.username + "@redhat.com"
-    else:
-        recipient = user.username
-    return recipient
+    if "@" in user.username:
+        return user.username
+
+    if user.username in ("admin", "test"):
+        return None
+
+    if user.email:
+        return user.email
+
+    # XXX: hardcoded
+    return user.username + "@redhat.com"
 
 
 def generate_stats(task, diff_task=False, with_defects_in_patches=False):
