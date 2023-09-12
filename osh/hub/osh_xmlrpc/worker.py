@@ -174,35 +174,36 @@ def ensure_base_is_scanned_properly(request, scan_id, task_id):
     return (method, args, label)
     """
     scan = Scan.objects.get(id=scan_id)
-    if scan.can_have_base():
-        task = Task.objects.get(id=task_id)
-        scanning_session = ScanningSession.objects.get(id=task.args['scanning_session'])
-        base_nvr = task.args['base_nvr']
-        mock_config = scan.tag.mock.name
-        if mock_config == 'rhel-9-beta-x86_64':
-            # FIXME: hard-coded at two places for now
-            mock_config = 'rhel-9-alpha-x86_64'
-        logger.debug("Looking for base scan '%s', mock_config: %s", base_nvr, mock_config)
-        try:
-            base_scan = obtain_base(base_nvr, mock_config)
-        except BaseNotValidException:
-            logger.info("Preparing base scan")
-            options = {
-                'mock_config': mock_config,
-                'target': base_nvr,
-                'package': scan.package,
-                'tag': scan.tag,
-                'package_owner': scan.username.username,
-                'parent_scan': scan,
-                'method': task.method,
-            }
-            base_task_args = prepare_base_scan(options, scanning_session)
-            return base_task_args
-        else:
-            logger.info("Using cached base scan '%s'", base_scan)
-            scan.set_base(base_scan)
-    else:
+    if not scan.can_have_base():
         logger.info('Scan %s does not need base' % scan)
+        return
+
+    task = Task.objects.get(id=task_id)
+    scanning_session = ScanningSession.objects.get(id=task.args['scanning_session'])
+    base_nvr = task.args['base_nvr']
+    mock_config = scan.tag.mock.name
+    if mock_config == 'rhel-9-beta-x86_64':
+        # FIXME: hard-coded at two places for now
+        mock_config = 'rhel-9-alpha-x86_64'
+    logger.debug("Looking for base scan '%s', mock_config: %s", base_nvr, mock_config)
+    try:
+        base_scan = obtain_base(base_nvr, mock_config)
+    except BaseNotValidException:
+        logger.info("Preparing base scan")
+        options = {
+            'mock_config': mock_config,
+            'target': base_nvr,
+            'package': scan.package,
+            'tag': scan.tag,
+            'package_owner': scan.username.username,
+            'parent_scan': scan,
+            'method': task.method,
+        }
+        base_task_args = prepare_base_scan(options, scanning_session)
+        return base_task_args
+    else:
+        logger.info("Using cached base scan '%s'", base_scan)
+        scan.set_base(base_scan)
 
 
 @validate_worker
