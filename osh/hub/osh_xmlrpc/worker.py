@@ -201,9 +201,9 @@ def ensure_base_is_scanned_properly(request, scan_id, task_id):
         }
         base_task_args = prepare_base_scan(options, scanning_session)
         return base_task_args
-    else:
-        logger.info("Using cached base scan '%s'", base_scan)
-        scan.set_base(base_scan)
+
+    logger.info("Using cached base scan '%s'", base_scan)
+    scan.set_base(base_scan)
 
 
 @validate_worker
