@@ -97,10 +97,10 @@ def get_scan_state(request, etm_id):
         etm = ETMapping.objects.get(id=etm_id)
     except ObjectDoesNotExist:
         response['status'] = 'ERROR'
-        response['message'] = "Scan %s does not exist." % etm_id
+        response['message'] = f'Scan {etm_id} does not exist.'
     except Exception as ex:  # noqa: B902
         response['status'] = 'ERROR'
-        response['message'] = "Unable to retrieve scan's state, error: %s" % ex
+        response['message'] = f'Unable to retrieve scan state, error: {ex}'
     else:
         message = getattr(etm, 'comment', '')
         if message:
