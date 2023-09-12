@@ -2,7 +2,6 @@
 # SPDX-FileCopyrightText: Copyright contributors to the OpenScanHub project.
 
 import os
-from glob import glob
 from pathlib import Path
 
 from setuptools import PEP420PackageFinder, setup
@@ -54,8 +53,7 @@ for folder in (
     "errata/fixtures",
 ):
 
-    for path in glob(str(hub_path / folder / "**"), recursive=True):
-        path = Path(path)
+    for path in (hub_path / folder).rglob("*"):
         if path.is_file():
             package_data["osh"].append(str(path.relative_to("osh")))
 
