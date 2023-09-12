@@ -100,12 +100,11 @@ def check_srpm(upload_id, build_nvr, task_user, is_tarball=False):
 
     if upload_id:
         cu_response = check_upload(upload_id, task_user, is_tarball)
-        response = {
+        return {
             'type': 'upload',
             'nvr': cu_response[0],
             'srpm_name': cu_response[1],
             'srpm_path': cu_response[2],
         }
-    else:
-        raise RuntimeError('No source RPM specified.')
-    return response
+
+    raise RuntimeError('No source RPM specified.')
