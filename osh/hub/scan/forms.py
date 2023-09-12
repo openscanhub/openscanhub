@@ -41,9 +41,12 @@ def validate_brew_build(value):
 
 class ScanSubmissionForm(forms.Form):
     nvr = forms.CharField(validators=[validate_brew_build])
-    base = forms.CharField(required=False, help_text="Required only when \
-VersionDiffBuild is selected")
-    scan_type = forms.ChoiceField(label="Type of scan", choices=(('DiffBuild', 'DiffBuild'), ('MockBuild', 'MockBuild'), ('VersionDiffBuild', 'VersionDiffBuild')))
+    base = forms.CharField(required=False,
+                           help_text="Required only when VersionDiffBuild is selected")
+    scan_type = forms.ChoiceField(label="Type of scan",
+                                  choices=(('DiffBuild', 'DiffBuild'),
+                                           ('MockBuild', 'MockBuild'),
+                                           ('VersionDiffBuild', 'VersionDiffBuild')))
     mock = forms.ChoiceField(label="Mock profile")
     comment = forms.CharField(required=False, widget=forms.Textarea())
 
