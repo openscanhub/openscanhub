@@ -58,7 +58,7 @@ def check_build(nvr):
             raise PackageBlockedException(
                 'Module metadata builds are not eligible for scanning.')
 
-        return {'nvr': nvr, 'koji_profile': config}
+        return {'type': 'build', 'nvr': nvr, 'koji_profile': config}
 
     raise RuntimeError(f"Build '{nvr}' does not exist")
 
@@ -96,9 +96,7 @@ def check_upload(upload_id, task_user, is_tarball=False):
 
 def check_srpm(upload_id, build_nvr, task_user, is_tarball=False):
     if build_nvr:
-        response = check_build(build_nvr, check_additional=True)
-        response['type'] = 'build'
-        return response
+        return check_build(build_nvr)
 
     if upload_id:
         cu_response = check_upload(upload_id, task_user, is_tarball)
