@@ -22,8 +22,7 @@ class Conf:
         return full path to conf dir ( ~/.config/osh/ )
         """
         config_dir = os.path.join(os.path.expanduser('~'), CONFIG_PATH_PREFIX)
-        if not os.path.exists(config_dir):
-            os.makedirs(config_dir)
+        os.makedirs(config_dir, exist_ok=True)
         return config_dir
 
     def get_config_file(self):
