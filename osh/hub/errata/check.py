@@ -79,7 +79,7 @@ def check_upload(upload_id, task_user, is_tarball=False):
     """
     try:
         upload = FileUpload.objects.get(id=upload_id)
-    except:  # noqa: B901, E722
+    except ObjectDoesNotExist:
         raise ObjectDoesNotExist("Can't find uploaded file with id: %s" % upload_id)
 
     if upload.owner.username != task_user:
