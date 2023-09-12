@@ -64,10 +64,9 @@ def check_build(nvr):
 
 
 def check_analyzers(analyzers_chain):
+    a_list = []
     if analyzers_chain:
         a_list = ClientAnalyzer.chain_to_list(analyzers_chain)
-    else:
-        a_list = []
     logger.debug("Analyzers specified by client: %s", a_list)
     return ClientAnalyzer.objects.verify_in_bulk(a_list)
 
