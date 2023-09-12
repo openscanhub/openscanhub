@@ -107,4 +107,4 @@ def check_srpm(upload_id, build_nvr, task_user, is_tarball=False):
             'srpm_path': cu_response[2],
         }
 
-    raise RuntimeError('No source RPM specified.')
+    raise RuntimeError('No source RPM or tarball specified.')
