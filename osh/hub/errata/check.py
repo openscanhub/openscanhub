@@ -40,10 +40,8 @@ def check_obsolete_scan(package, release):
             cancel_scan(binding)
 
 
-def check_build(nvr, check_additional=False):
-    configs = ['brew']
-    if check_additional:
-        configs.append('koji')
+def check_build(nvr):
+    configs = ['brew', 'koji']
 
     for config in configs:
         try:

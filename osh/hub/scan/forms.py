@@ -34,7 +34,7 @@ class PackageSearchForm(forms.Form):
 def validate_brew_build(value):
     try:
         check_nvr(value)
-        check_build(value, check_additional=True)
+        check_build(value)
     except RuntimeError as e:
         raise forms.ValidationError(e)
 
