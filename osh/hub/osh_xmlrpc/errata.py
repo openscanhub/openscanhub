@@ -59,7 +59,7 @@ function.'
         logger.info('User %s tried to submit scan.', request.user.username)
         return response
 
-    if kwargs == {}:
+    if not kwargs:
         response = {}
         response['status'] = 'ERROR'
         response['message'] = 'Provided dictionary (map/Hash) is empty.'
