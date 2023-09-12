@@ -52,18 +52,13 @@ def create_errata_diff_scan(request, kwargs):
     # submit scans
     if AppSettings.setting_check_user_can_submit() and \
             not request.user.has_perm('scan.errata_xmlrpc_scan'):
-        response = {}
-        response['status'] = 'ERROR'
-        response['message'] = 'You are not authorized to execute this \
-function.'
         logger.info('User %s tried to submit scan.', request.user.username)
-        return response
+        return {'status': 'ERROR',
+                'message': 'You are not authorized to execute this function.'}
 
     if not kwargs:
-        response = {}
-        response['status'] = 'ERROR'
-        response['message'] = 'Provided dictionary (map/Hash) is empty.'
-        return response
+        return {'status': 'ERROR',
+                'message': 'Provided dictionary (map/Hash) is empty.'}
 
     kwargs['task_user'] = request.user.username
 
@@ -92,21 +87,18 @@ def get_scan_state(request, etm_id):
     """
 
     logger.info('[SCAN_STATE] %s', etm_id)
-    response = {}
     try:
         etm = ETMapping.objects.get(id=etm_id)
     except ObjectDoesNotExist:
-        response['status'] = 'ERROR'
-        response['message'] = f'Scan {etm_id} does not exist.'
+        response = {'status': 'ERROR', 'message': f'Scan {etm_id} does not exist.'}
     except Exception as ex:  # noqa: B902
-        response['status'] = 'ERROR'
-        response['message'] = f'Unable to retrieve scan state, error: {ex}'
+        response = {'status': 'ERROR', 'message': f'Unable to retrieve scan state, error: {ex}'}
     else:
+        status_number = getattr(etm, 'state', REQUEST_STATES.get_num("OK"))
+        response = {'status': REQUEST_STATES.get_value(status_number)}
         message = getattr(etm, 'comment', '')
         if message:
             response['message'] = message
-        status_number = getattr(etm, 'state', REQUEST_STATES.get_num("OK"))
-        response['status'] = REQUEST_STATES.get_value(status_number)
         if etm.latest_run:
             response['state'] = SCAN_STATES.get_value(
                 etm.latest_run.scan.state)
