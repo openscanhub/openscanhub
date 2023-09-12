@@ -175,7 +175,7 @@ def ensure_base_is_scanned_properly(request, scan_id, task_id):
     """
     scan = Scan.objects.get(id=scan_id)
     if not scan.can_have_base():
-        logger.info('Scan %s does not need base' % scan)
+        logger.info('Scan %s does not need base', scan)
         return
 
     task = Task.objects.get(id=task_id)
