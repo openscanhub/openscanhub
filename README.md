@@ -23,7 +23,7 @@ report bugs and feature requests on GitHub using the above URL.
 - `python3-jira`
 - `python3-kobo-client`
 - `python3-kobo-django`
-- `python3-kobo-hub`
+- `python3-kobo-hub >= 0.26.0`
 - `python3-kobo-rpmlib`
 - `python3-mod_wsgi`
 - `python3-psycopg2`

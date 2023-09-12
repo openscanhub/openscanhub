@@ -79,7 +79,7 @@ Requires: mod_ssl
 Requires: python3-django >= %{min_required_version_django}
 Requires: python3-kobo-client
 Requires: python3-kobo-django
-Requires: python3-kobo-hub
+Requires: python3-kobo-hub >= 0.26.0
 Requires: python3-kobo-rpmlib
 Requires: python3-mod_wsgi
 # PostgreSQL adapter for python
