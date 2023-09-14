@@ -107,17 +107,21 @@ Obsoletes: covscan-hub < %{version}
 %description hub
 OpenScanHub xml-rpc interface and web application
 
-# define osh-{worker,hub}-conf-devel subpackages
-%(for sub in worker hub; do
-cat << EOF
-%package ${sub}-conf-devel
-Summary: OpenScanHub ${sub} devel configuration
-Provides: osh-${sub}-conf = %{version}-%{release}
-Conflicts: osh-${sub}-conf
-%description ${sub}-conf-devel
-OpenScanHub ${sub} devel configuration
-EOF
-done)
+%package hub-conf-devel
+Summary: OpenScanHub hub devel configuration
+Provides: osh-hub-conf = %{version}-%{release}
+Conflicts: osh-hub-conf
+
+%description hub-conf-devel
+OpenScanHub hub devel configuration
+
+%package worker-conf-devel
+Summary: OpenScanHub worker devel configuration
+Provides: osh-worker-conf = %{version}-%{release}
+Conflicts: osh-worker-conf
+
+%description worker-conf-devel
+OpenScanHub worker devel configuration
 
 %prep
 %setup -q
