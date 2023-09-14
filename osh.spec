@@ -111,6 +111,7 @@ OpenScanHub xml-rpc interface and web application
 Summary: OpenScanHub hub devel configuration
 Provides: osh-hub-conf = %{version}-%{release}
 Conflicts: osh-hub-conf
+Requires: osh-hub
 
 %description hub-conf-devel
 OpenScanHub hub devel configuration
