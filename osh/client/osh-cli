@@ -3,6 +3,7 @@
 # SPDX-FileCopyrightText: Copyright contributors to the OpenScanHub project.
 
 import inspect
+import os
 import sys
 
 import kobo.cli
@@ -21,6 +22,12 @@ class OshCommandContainer(kobo.client.ClientCommandContainer):
 
 
 def handle_deprecated_options(conf):
+    # warn when using deprecated client binary name
+    argv0_base = os.path.basename(sys.argv[0])
+    if argv0_base == 'covscan':
+        print(f"warning: using {argv0_base} executable instead of osh-cli is deprecated!",
+              file=sys.stderr)
+
     def print_warning(opt):
         print(f"warning: forcing {conf[opt]} as {opt}, please update client configuration!",
               file=sys.stderr)
