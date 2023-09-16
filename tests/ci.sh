@@ -49,4 +49,11 @@ systemctl start osh-worker
 # Test OpenScanHub
 /usr/bin/osh-cli mock-build --config=fedora-37-x86_64 --nvr units-2.21-5.fc37
 /usr/bin/osh-cli task-info 1 | grep "is_failed = False"
+
 osh/hub/scripts/osh-xmlrpc-client.py --hub "https://localhost/osh/xmlrpc/kerbauth/" --username=user --password=xxxxxx create-scan -b expat-2.5.0-1.fc37 -t expat-2.5.0-2.fc38 --et-scan-id=1 --release=Fedora-37 --owner=admin --advisory-id=1
+SCAN_STATUS=$(osh/hub/scripts/osh-xmlrpc-client.py --hub https://localhost/osh/xmlrpc/kerbauth/ --username=user --password=xxxxxx get-scan-state 1 2>&1)
+while [[ $SCAN_STATUS == *"QUEUED"* ]] || [[ $SCAN_STATUS == *"SCANNING"* ]]; do
+    sleep 10;
+    SCAN_STATUS=$(osh/hub/scripts/osh-xmlrpc-client.py --hub https://localhost/osh/xmlrpc/kerbauth/ --username=user --password=xxxxxx get-scan-state 1 2>&1)
+done;
+[[ $SCAN_STATUS == *"PASSED"* ]]
