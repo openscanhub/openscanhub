@@ -38,8 +38,11 @@ def send_mail(message, subject, recipients, headers, bcc=None):
     headers["X-Application-ID"] = "OpenScanHub"
     headers["X-Hostname"] = socket.gethostname()
 
-    return EmailMessage(subject, message, from_addr, recipients, bcc=bcc,
-                        headers=headers, connection=connection).send()
+    logger.debug('Sending e-mail to %s ...', ", ".join(recipients))
+    result = EmailMessage(subject, message, from_addr, recipients, bcc=bcc,
+                          headers=headers, connection=connection).send()
+    logger.debug("result: %d", result)
+    return result
 
 
 def get_recipient(user):

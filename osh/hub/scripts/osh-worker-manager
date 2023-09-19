@@ -1,0 +1,250 @@
+#!/usr/bin/env python3
+# SPDX-License-Identifier: GPL-3.0-or-later
+# SPDX-FileCopyrightText: Copyright contributors to the OpenScanHub project.
+
+"""
+This script was originally written for the resalloc agent spawner daemon.
+But it may be used by any other resource allocation mechanism.
+This script modifies the database. We would like to avoid using separate admin user for that.
+This should be run as exactly the same user and group as the webserver. For example, `apache`.
+"""
+
+import os
+import socket
+import subprocess
+import sys
+import tempfile
+
+# TODO: We may use python3 logger instead of `print()` statements for debugging.
+
+
+# On AWS, public hostname is accessible through this command on the vm:
+# `curl http://169.254.169.254/latest/meta-data/public-hostname`
+# TODO: Shall we use that instead of using ip address?
+def get_hostname_from_ip(ip_address):
+    print(f"Getting hostname for {ip_address}", file=sys.stderr)
+    hostname = socket.gethostbyaddr(ip_address)[0]
+    return hostname
+
+
+def delete_kobo_worker(kobo_worker):
+    from django.core.exceptions import ObjectDoesNotExist
+
+    try:
+        from django.contrib.auth import get_user_model
+        User = get_user_model()
+        kobo_worker_user = User.objects.get(username="worker/" + kobo_worker.name)
+        kobo_worker_user.delete()
+    except ObjectDoesNotExist:
+        print(f"User for {kobo_worker.name} does not exist.", file=sys.stderr)
+    finally:
+        kobo_worker.delete()
+
+
+def create_worker_in_kobo(worker_name):
+    from django.core.exceptions import ObjectDoesNotExist
+    from kobo.hub import models
+
+    # Check if a worker with this name already exists
+    try:
+        kobo_worker = models.Worker.objects.get(name=worker_name)
+    except ObjectDoesNotExist:
+        # If not, create a new one
+        kobo_worker = models.Worker.create_worker(worker_name)
+
+    # TODO: Detect worker architecture automatically.
+    try:
+        kobo_worker.arches.add(models.Arch.objects.get(name="x86_64"))
+        kobo_worker.arches.add(models.Arch.objects.get(name="noarch"))
+    except ObjectDoesNotExist:
+        print("x86_64 or noarch do not exist in Arch model.", file=sys.stderr)
+        delete_kobo_worker(kobo_worker)
+        sys.exit(1)
+
+    try:
+        kobo_worker.channels.add(models.Channel.objects.get(name="default"))
+    except ObjectDoesNotExist:
+        print("Default channel does not exist.", file=sys.stderr)
+        delete_kobo_worker(kobo_worker)
+        sys.exit(1)
+
+    # Each single use virtual machine allocated should get exactly one task
+    # and it should be deleted after that.
+    kobo_worker.max_load = 1
+
+    kobo_worker.save()
+    print(f"Created kobo worker for hostname {worker_name}", file=sys.stderr)
+    return kobo_worker
+
+
+def run_ssh_cmd(cmd, error_message, kobo_worker):
+    print(cmd, file=sys.stderr)
+    status = subprocess.call(cmd, shell=True)
+    if status != 0:
+        print(error_message, file=sys.stderr)
+        delete_kobo_worker(kobo_worker)
+        sys.exit(status)
+
+
+def start_worker(kobo_worker):
+    """
+    This function works in below steps:
+    1. Generate a `worker.conf` with the newly generated `worker_key`.
+    2. Copy the `worker.conf` to the worker.
+    3. Move the file to `/etc/osh/worker.conf` and change it's permissions to `root:root`.
+    4. Start the `osh-worker` service on the virtual machine.
+    """
+    # This function looks like a hack and we should investigate if it could be done better.
+    # For example, through ansible or paramiko.
+
+    from django.conf import settings
+    from django.template.loader import render_to_string
+
+    # Generate /etc/osh/worker.conf through jinja template
+    worker_conf = render_to_string("worker.conf.j2",
+                                   {"SINGLE_USE_WORKER_OSH_HUB_URL": settings.SINGLE_USE_WORKER_OSH_HUB_URL,
+                                    "OSH_WORKER_KEY": kobo_worker.worker_key})
+    SSH_CMD_OPTS = f"-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ConnectTimeout=20 -i {settings.SINGLE_USE_WORKER_SSH_PRIVATE_KEY}"
+    # Create a temporary file and save the template
+    # Set the parameter to `delete_on_close=False` on python3.12 update
+    # https://docs.python.org/3.12/whatsnew/3.12.html#tempfile
+    # with tempfile.NamedTemporaryFile(delete_on_close=False) as temporary_file:
+    with tempfile.NamedTemporaryFile() as temporary_file:
+        temporary_file.write(worker_conf.strip().encode())
+        # TODO: Uncomment below line on update to python 3.12
+        # when we start using `delete_on_close` attribute.
+        # File is closed, but not removed if `delete_on_close` is False.
+        # temporary_file.close()
+        temporary_file.flush()
+        # and transfer it to new worker.
+        # Copy worker.conf to ec2-user user's home directory
+        # This requires the hub to have ssh access to the new worker
+        scp_cmd = f"scp {SSH_CMD_OPTS} {temporary_file.name} {settings.SINGLE_USE_WORKER_SSH_USER}@{kobo_worker.name}:worker.conf"
+        print(scp_cmd, file=sys.stderr)
+        scp_exit_status = subprocess.call(scp_cmd, shell=True)
+        if scp_exit_status != 0:
+            print(f"Failed to copy worker.conf to new worker {kobo_worker.name}", file=sys.stderr)
+            delete_kobo_worker(kobo_worker)
+            sys.exit(scp_exit_status)
+
+    # /etc/osh/hub/id_rsa.worker
+    move_worker_conf_cmd = f"ssh {SSH_CMD_OPTS} {settings.SINGLE_USE_WORKER_SSH_USER}@{kobo_worker.name} 'sudo mv worker.conf /etc/osh/worker.conf && sudo chown root:root /etc/osh/worker.conf'"
+    run_ssh_cmd(move_worker_conf_cmd, f"Failed to move worker.conf to new worker {kobo_worker.name}", kobo_worker)
+
+    # Start the worker after this is finished
+    start_worker_cmd = f"ssh {SSH_CMD_OPTS} {settings.SINGLE_USE_WORKER_SSH_USER}@{kobo_worker.name} 'sudo systemctl restart osh-worker'"
+    run_ssh_cmd(start_worker_cmd, f"Failed to start worker worker at {kobo_worker.name}", kobo_worker)
+
+
+def create_worker(ip_address):
+    # Worker name should be set to hostname of the worker
+    worker_name = get_hostname_from_ip(ip_address)
+    try:
+        kobo_worker = create_worker_in_kobo(worker_name)
+        start_worker(kobo_worker)
+    except Exception as ex:  # noqa: B902
+        import traceback
+
+        # Ensure kobo worker is deleted in case of an exception.
+        # This would avoid spamming the database in a case continuous failures.
+        delete_kobo_worker(kobo_worker)
+
+        traceback.print_exception(ex, file=sys.stderr)
+        sys.exit(1)
+
+
+def delete_worker(ip_address):
+    from kobo.hub import models
+
+    # TODO: This may be called from agent spawner if the worker does not respond to liveness probes.
+    # and the resalloc-server deletes it.
+    # In that case, task should be probably set to failed state.
+    # Verify if `enabled` field in worker object is still true, set the task to failed then.
+    # Worker name should be set to hostname of the worker
+    worker_name = get_hostname_from_ip(ip_address)
+    kobo_worker = models.Worker.objects.get(name=worker_name)
+    delete_kobo_worker(kobo_worker)
+
+
+def workers_needed():
+    import kobo.hub.models
+    from django.conf import settings
+
+    # Tasks in opened or assigned state, skip counting subtasks
+    # TODO: Check for only `mockbuild`, `diff-build` and `version-diff-build` tasks.
+    running_tasks = kobo.hub.models.Task.objects.running().filter(parent=None).count()
+
+    # Tasks waiting to be assigned, skip counting subtasks
+    # TODO: Check for only `mockbuild`, `diff-build` and `version-diff-build` tasks.
+    free_tasks = kobo.hub.models.Task.objects.free().filter(parent=None).count()
+
+    running_and_free_tasks = running_tasks + free_tasks
+
+    print(min(running_and_free_tasks, settings.MAX_SINGLE_USE_WORKERS))
+
+
+def check_finished(ip_address):
+    from kobo.hub import models
+
+    # Worker name should be set to hostname of the worker
+    worker_name = get_hostname_from_ip(ip_address)
+    kobo_worker = models.Worker.objects.get(name=worker_name)
+
+    # TODO: Check for stale workers that have max_load above 0, but do not have arch
+    # or channel set. They would never be used.
+
+    # TODO: Shall we perform further health checks here? For example, if `osh-worker`
+    # service is running on the worker machine?
+    if kobo_worker.max_load > 0:
+        print(f"{worker_name} is new.", file=sys.stderr)
+        sys.exit(1)
+
+    if kobo_worker.running_tasks().count() > 0:
+        print(f"{worker_name} is running a task.", file=sys.stderr)
+        sys.exit(1)
+
+    if kobo_worker.enabled:
+        print(f"{worker_name} is enabled.", file=sys.stderr)
+        sys.exit(1)
+
+    print(f"{worker_name} should be deleted.", file=sys.stderr)
+    sys.exit(0)
+
+
+def main():
+    import django
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "osh.hub.settings")
+    django.setup()
+
+    import argparse
+    parser = argparse.ArgumentParser()
+
+    # These options are used by resalloc-agent-spawner.
+    # https://github.com/praiskup/resalloc/blob/151bd591ca2426b8a6b99253d88761c6e4be9f8c/config/agent-spawner/config.yaml
+    parser.add_argument("--create-worker", metavar="IP", help="""try to create worker with specified
+                        hostname""")
+    parser.add_argument("--delete-worker", metavar="IP", help="""delete worker with specified IP""")
+    parser.add_argument("--workers-needed", action="store_true", help="""count number of queued tasks
+                        and print number of workers needed on standard output""")
+    parser.add_argument("--check-finished", metavar="IP", help="""exit with zero status if it has
+                        has been already used and can be removed""")
+
+    args = parser.parse_args()
+
+    if args.create_worker:
+        print(f"Creating {args.create_worker}", file=sys.stderr)
+        create_worker(args.create_worker)
+
+    if args.delete_worker:
+        print(f"Deleting {args.delete_worker}", file=sys.stderr)
+        delete_worker(args.delete_worker)
+
+    if args.workers_needed:
+        workers_needed()
+
+    if args.check_finished:
+        check_finished(args.check_finished)
+
+
+if __name__ == '__main__':
+    main()

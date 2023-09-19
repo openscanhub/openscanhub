@@ -193,6 +193,9 @@ DEFAULT_EMAIL_DOMAIN = "redhat.com"
 
 NOTIFICATION_EMAIL_FOOTER = ""
 
+# If this setting is enabled, a worker is only used to perform a single task.
+ENABLE_SINGLE_USE_WORKERS = False
+
 # override default values with custom ones from local settings
 try:
     from .settings_local import *  # noqa
