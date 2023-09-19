@@ -145,4 +145,22 @@ NOTIFICATION_EMAIL_FOOTER = "This is a test footer."
 # MOCK_AUTO_EXTRA_REPOS = {r'f\d+': '[repo]\n...'}
 MOCK_AUTO_EXTRA_REPOS = {}
 
+# If this setting is enabled, a worker is only used to perform a single task.
+ENABLE_SINGLE_USE_WORKERS = False
+
+# This number should be same as the `max` field in the `/etc/resallocserver/pools.yaml`
+# on the resalloc server. Otherwise, we may end up with too few or too many tickets
+# being opened.
+MAX_SINGLE_USE_WORKERS = 8
+
+# This user is used to ssh to newly created worker.
+SINGLE_USE_WORKER_SSH_USER = ""
+
+# TODO: What should we use here if we want to deploy across multiple clouds?
+# May be, related public key should be copied when a new worker is set up.
+SINGLE_USE_WORKER_SSH_PRIVATE_KEY = ""
+
+# This url is used to dynamically generate worker configuration files.
+SINGLE_USE_WORKER_OSH_HUB_URL = ""
+
 ALLOWED_HOSTS = ['*']
