@@ -6,10 +6,12 @@ import os
 import shutil
 
 import kobo.hub.xmlrpc.worker as kobo_xmlrpc_worker
+from django.conf import settings
 from kobo.client.constants import TASK_STATES
 from kobo.django.upload.models import FileUpload
 from kobo.hub.decorators import validate_worker
 from kobo.hub.models import Task
+from kobo.hub.xmlrpc.worker import open_task as kobo_open_task
 
 from osh.hub.scan.mock import generate_mock_configs
 from osh.hub.scan.models import (SCAN_STATES, AnalyzerVersion, AppSettings,
@@ -46,6 +48,7 @@ __all__ = [
     'get_su_user',
     'interrupt_tasks',
     'move_upload',
+    'open_task',
     'set_scan_to_basescanning',
     'set_scan_to_scanning',
 ]
@@ -77,8 +80,15 @@ def create_mock_configs(request, task_id):
 
 @validate_worker
 def email_task_notification(request, task_id):
-    logger.debug('email_task_notification for %s', task_id)
-    return send_task_notification(request, task_id)
+    try:
+        logger.debug('email_task_notification for %s', task_id)
+        return send_task_notification(request, task_id)
+    finally:
+        if settings.ENABLE_SINGLE_USE_WORKERS:
+            task = Task.objects.get(id=task_id)
+            logger.debug('Disable worker %s', task.worker.name)
+            task.worker.enabled = False
+            task.worker.save()
 
 
 @validate_worker
@@ -100,11 +110,52 @@ def finish_task(request, task_id):
                 task.fail_task()
 
 
+@validate_worker
+def open_task(request, task_id):
+    response = kobo_open_task(request, task_id)
+
+    if settings.ENABLE_SINGLE_USE_WORKERS:
+        task = Task.objects.get(id=task_id)
+
+        # TODO: Check if we should create shutdown tasks before deleting a worker.
+        # This would spam the tasks view with `ShutdownWorker` tasks.
+        # It would also require changes in `osh-worker-manager --workers-needed` command.
+        # if task.parent is not None:
+        #     Task.create_shutdown_task("worker/" + task.worker.name, task.worker.name, kill=False)
+
+        # `VersionDiffBuild` tasks have a subtask (base scan) that is run before the task.
+        # Subtasks have `task.parent` field set.
+        # If `max_load` is set to 0, when `VersionDiffBuild` moves to open state,
+        # base scan would get assigned but never start as `max_load` has been set to 0.
+        # Only set `max_load` to 0 when subtask has moved to open state.
+        if task.method != "VersionDiffBuild" or task.parent is not None:
+            # TODO: This condition would not execute if the subtask fails to reach `open` state.
+            # That would cause the main task to fail.
+            # And the worker would pick up another task, so it would not be a single use worker.
+            # Check if we can workaround such situation by overriding `assign_task` method.
+            # Look for `task_count > 0` condition there.
+
+            # Set the worker load to 0. This should avoid getting any new tasks assigned to the worker.
+            # Each single use worker should be destroyed once a task completes.
+            task.worker.max_load = 0
+            task.worker.save()
+
+    return response
+
+
 # ET SCANS
 
 @validate_worker
 def email_scan_notification(request, scan_id):
-    scan_notification_email(request, scan_id)
+    try:
+        logger.debug('email_scan_notification for %s', scan_id)
+        scan_notification_email(request, scan_id)
+    finally:
+        if settings.ENABLE_SINGLE_USE_WORKERS:
+            task = ScanBinding.objects.get(scan__id=scan_id).task
+            logger.debug('Disable worker %s', task.worker.name)
+            task.worker.enabled = False
+            task.worker.save()
 
 
 @validate_worker
