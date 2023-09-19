@@ -181,6 +181,12 @@ LOGOUT_REDIRECT_URL = 'index'
 
 VALID_TASK_LOG_EXTENSIONS = ['.log', '.ini', '.err', '.out', '.js', '.txt']
 
+# If this setting is enabled, a worker is only used to perform a single task.
+ENABLE_SINGLE_USE_WORKERS = False
+
+# TODO: REMOVE THIS BEFORE MERGING PULL REQUEST.
+SINGLE_USE_WORKER_SSH_USER = "ec2-user"
+
 # override default values with custom ones from local settings
 try:
     from .settings_local import *  # noqa
