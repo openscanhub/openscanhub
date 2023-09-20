@@ -34,7 +34,6 @@ adduser csmock -G mock
 cp /etc/httpd/conf/localhost.crt /etc/pki/ca-trust/source/anchors/ && update-ca-trust
 
 # Set up httpd
-cp osh/hub/osh-hub-httpd.conf /etc/httpd/conf.d/osh-hub-httpd.conf
 touch /var/log/osh/hub/hub.log && chown apache:apache /var/log/osh/hub/hub.log
 systemctl start httpd
 

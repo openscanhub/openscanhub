@@ -111,6 +111,7 @@ OpenScanHub xml-rpc interface and web application
 Summary: OpenScanHub hub devel configuration
 Provides: osh-hub-conf = %{version}-%{release}
 Conflicts: osh-hub-conf
+Requires: httpd-filesystem
 Requires: osh-hub
 
 %description hub-conf-devel
@@ -168,6 +169,9 @@ chmod 0755 %{buildroot}%{python3_sitelib}/osh/hub/manage.py
 
 # scripts are needed for setup.py, no longer needed
 rm -rf %{buildroot}%{python3_sitelib}/scripts
+
+# install example httpd config
+install -D {osh/hub,%{buildroot}%{_sysconfdir}/httpd/conf.d}/osh-hub-httpd.conf
 
 %files client
 %defattr(644,root,root,755)
@@ -259,6 +263,7 @@ pg_isready -h localhost && %{python3_sitelib}/osh/hub/manage.py migrate
 %files hub-conf-devel
 %attr(640,root,apache) %config(noreplace) %{python3_sitelib}/osh/hub/settings_local.py
 %attr(640,root,apache) %config(noreplace) %{python3_sitelib}/osh/hub/__pycache__/settings_local*.pyc
+%attr(640,root,apache) %config(noreplace) %{_sysconfdir}/httpd/conf.d/osh-hub-httpd.conf
 
 
 %changelog
