@@ -139,6 +139,9 @@ OpenScanHub worker devel configuration
 # collect static files from Django itself
 PYTHONPATH=. osh/hub/manage.py collectstatic --noinput
 
+# set path to python sitelib in the example httpd config
+sed 's|@PYTHON3_SITELIB@|%{python3_sitelib}|' osh/hub/osh-hub-httpd.conf.in > osh/hub/osh-hub-httpd.conf
+
 %py3_build
 
 

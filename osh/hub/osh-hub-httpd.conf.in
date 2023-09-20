@@ -20,17 +20,17 @@ WSGISocketPrefix /var/run/wsgi
     # WSGI handler
     WSGIDaemonProcess osh display-name=%{GROUP} locale='C.UTF-8'
     WSGIProcessGroup osh
-    WSGIScriptAlias /osh /usr/lib/python3.6/site-packages/osh/hub/osh-hub.wsgi process-group=osh
+    WSGIScriptAlias /osh @PYTHON3_SITELIB@/osh/hub/osh-hub.wsgi process-group=osh
 
 
     # needed for Apache 2.4
-    <Directory "/usr/lib/python3.6/site-packages/osh/hub">
+    <Directory "@PYTHON3_SITELIB@/osh/hub">
         Require all granted
     </Directory>
 
     # static stuff
-    Alias /osh/static/ "/usr/lib/python3.6/site-packages/osh/hub/static/"
-    <Directory "/usr/lib/python3.6/site-packages/osh/hub/static/">
+    Alias /osh/static/ "@PYTHON3_SITELIB@/osh/hub/static/"
+    <Directory "@PYTHON3_SITELIB@/osh/hub/static/">
         Options Indexes
         IndexOptions FancyIndexing
     </Directory>
