@@ -123,10 +123,11 @@ class CsmockRunner:
             cmd += " --force-global-cleanup-on-exit"
         else:
             cmd = "csmock"
-            if analyzers:
-                cmd += ' -t ' + shlex.quote(analyzers)
             if profile:
                 cmd += ' -r ' + shlex.quote(profile)
+
+        if analyzers:
+            cmd += ' -t ' + shlex.quote(analyzers)
 
         if output_path:
             cmd += ' -o ' + shlex.quote(output_path)
