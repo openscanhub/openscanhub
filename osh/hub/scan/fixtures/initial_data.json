@@ -1188,7 +1188,7 @@
   "fields": {
     "command_arguments": {
       "analyzers": "gcc,clang,cppcheck,shellcheck",
-      "csmock_args": "--use-host-cppcheck --gcc-analyze",
+      "csmock_args": "--gcc-analyze",
       "koji_profile": "koji"
     },
     "enabled": true,
@@ -1202,7 +1202,7 @@
   "fields": {
     "command_arguments": {
       "analyzers": "gcc,clang,cppcheck,shellcheck",
-      "csmock_args": "--use-host-cppcheck --gcc-analyze",
+      "csmock_args": "--gcc-analyze",
       "koji_profile": "koji"
     },
     "enabled": true,
