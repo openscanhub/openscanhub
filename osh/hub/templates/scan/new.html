@@ -4,9 +4,12 @@
 {% block content %}
 <h2>{% trans title %}</h2>
 
-<form action="{% url 'scan/new' %}" method="post">{% csrf_token %}
-{{ form.as_p }}
-<input type="submit" value="Submit" />
+<form action="{% url 'scan/new' %}" method="post">
+  {% csrf_token %}
+  <table class="details">
+    {{ form.as_table }}
+  </table>
+  <input type="submit" value="Submit" />
 </form>
 
 {% endblock %}
