@@ -14,7 +14,7 @@ setenforce 0
 dnf install -y openssl postgresql-server
 
 # Setup OpenScanHub settings
-cp osh/hub/settings_local.ci.py /usr/lib/python3.6/site-packages/osh/hub/settings_local.py
+cp osh/hub/settings_local.ci.py /usr/lib/python3.*/site-packages/osh/hub/settings_local.py
 sed "s|http://osh-hub:8000|https://localhost/osh|g" osh/client/client-local.conf > /etc/osh/client.conf
 
 # Setup postgresql
