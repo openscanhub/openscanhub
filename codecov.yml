@@ -4,3 +4,9 @@ comment: false
 coverage:
   status:
     patch: off
+    # https://github.com/openscanhub/openscanhub/issues/136#issuecomment-1766096310
+    # Unit tests usually finish first and have a coverage of above 40%.
+    # Avoid CI failures if overall coverage stays above 40%.
+    project:
+      default:
+        target: 40%
