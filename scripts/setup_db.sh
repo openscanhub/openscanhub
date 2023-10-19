@@ -1,4 +1,4 @@
-#!/bin/sh -ex
+#!/bin/bash -ex
 su - postgres -c psql <<EOF
     CREATE USER "openscanhub" WITH PASSWORD 'velryba';
     CREATE DATABASE "openscanhub" WITH OWNER "openscanhub";
