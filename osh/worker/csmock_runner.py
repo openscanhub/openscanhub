@@ -201,10 +201,7 @@ class CsmockRunner:
         execute csmock command for listing analyzers and versions
         returns path to dir with results
         """
-        if self.tmpdir:
-            output_path = os.path.join(self.tmpdir, 'output.tar.xz')
-        else:
-            output_path = os.path.join(os.getcwd(), 'csmock-output')
+        output_path = os.path.join(self.tmpdir or os.getcwd(), 'output.tar.xz')
 
         if profile == "cspodman":
             cmd = "cspodman"
