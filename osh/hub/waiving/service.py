@@ -156,11 +156,7 @@ def get_scans_new_defects_count(scan_id):
     """Return number of newly introduced bugs for particular scan"""
     rgs = ResultGroup.objects.filter(result__scanbinding__scan__id=scan_id,
                                      defect_type=DEFECT_STATES['NEW'])
-    try:
-        count = rgs.aggregate(Sum("defects_count"))['defects_count__sum']
-    except KeyError:
-        count = 0
-    return count
+    return rgs.aggregate(sum=Sum("defects_count"))['sum'] or 0
 
 
 def get_waivers_for_rg(rg):
