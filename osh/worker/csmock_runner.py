@@ -210,10 +210,10 @@ class CsmockRunner:
             cmd = "cspodman"
         else:
             cmd = "csmock"
-            cmd += ' -t ' + shlex.quote(analyzers)
             if profile:
                 cmd += ' -r ' + shlex.quote(profile)
 
+        cmd += ' -t ' + shlex.quote(analyzers)
         cmd += ' --no-scan'
         if additional_arguments:
             cmd += ' ' + additional_arguments
