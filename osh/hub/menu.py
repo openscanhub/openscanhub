@@ -39,6 +39,7 @@ menu = (
     MenuItem("Tasks", "task/index", menu=(
         MenuItem("All", "task/index"),
         MenuItem("Running", "task/running"),
+        MenuItem("Failed", "task/failed"),
         MenuItem("Finished", "task/finished"),
         MenuItem("Errata Tool Tasks", "task/et"),
     )),
