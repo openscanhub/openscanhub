@@ -104,6 +104,7 @@ def _get_result_filename(task_args):
       for an SRPM build or the 'build/nvr' key for Brew builds.
     * ErrataDiffBuild uses the 'build' key and used 'brew_build' key in
       the past.
+    * AnalyzerVersionRetriever always uses 'output' as the filename.
     """
     if 'result_filename' in task_args:
         return task_args['result_filename']
@@ -114,10 +115,14 @@ def _get_result_filename(task_args):
     if "brew_build" in task_args:
         return task_args["brew_build"]
 
-    nvr = task_args['build']
-    if isinstance(nvr, dict):
-        nvr = nvr['nvr']
-    return nvr
+    if 'build' in task_args:
+        nvr = task_args['build']
+        if isinstance(nvr, dict):
+            nvr = nvr['nvr']
+        return nvr
+
+    # default filename for `csmock --no-scan` tasks
+    return 'output'
 
 
 def fetch_results(hub, dest, task_id):
