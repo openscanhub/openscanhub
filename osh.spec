@@ -270,6 +270,9 @@ pg_isready -h localhost && %{python3_sitelib}/osh/hub/manage.py migrate
 
 
 %changelog
+* Tue Oct 24 2023 Kamil Dudka <kdudka@redhat.com> - 0.9.5-1
+- stabilize a new version of osh-client
+
 * Tue Sep 05 2023 Kamil Dudka <kdudka@redhat.com> - 0.9.4-1
 - stabilize a new version of osh-client
 
