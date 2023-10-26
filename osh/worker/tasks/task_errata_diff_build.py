@@ -40,17 +40,16 @@ class ErrataDiffBuild(TaskBase):
         # update analyzers version cache if needed
         cache_task_args = self.hub.worker.ensure_cache(mock_config, scanning_session_id)
         if cache_task_args is not None:
-            cache_subtask_id = self.spawn_subtask(*cache_task_args)
-            self.hub.worker.assign_task(cache_subtask_id)
+            self.spawn_subtask(*cache_task_args, inherit_worker=True)
             self.wait()
 
         # (re)scan base if needed
         base_task_args = self.hub.worker.ensure_base_is_scanned_properly(scan_id, self.task_id)
         if base_task_args is not None:
             self.hub.worker.set_scan_to_basescanning(scan_id)
-            subtask_id = self.spawn_subtask(*base_task_args)
+
+            subtask_id = self.spawn_subtask(*base_task_args, inherit_worker=True)
             self.hub.worker.create_sb(subtask_id)
-            self.hub.worker.assign_task(subtask_id)
 
             self.wait()
             self.hub.worker.set_scan_to_scanning(scan_id)

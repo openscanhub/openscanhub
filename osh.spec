@@ -63,7 +63,7 @@ Requires: file
 Requires: koji
 Requires: python3-kobo-client
 Requires: python3-kobo-rpmlib
-Requires: python3-kobo-worker >= 0.30.0
+Requires: python3-kobo-worker >= 0.32.0
 Requires: %{name}-common = %{version}-%{release}
 Requires: osh-worker-conf
 
@@ -80,7 +80,7 @@ Requires: mod_ssl
 Requires: python3-django >= %{min_required_version_django}
 Requires: python3-kobo-client
 Requires: python3-kobo-django
-Requires: python3-kobo-hub >= 0.26.0
+Requires: python3-kobo-hub >= 0.32.0
 Requires: python3-kobo-rpmlib
 Requires: python3-mod_wsgi
 # PostgreSQL adapter for python
