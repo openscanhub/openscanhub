@@ -17,7 +17,9 @@ from osh.hub.scan.models import SCAN_STATES, ClientAnalyzer, Profile, Scan
 
 logger = logging.getLogger(__name__)
 
-__all__ = (
+# DO NOT REMOVE!  The __all__ list contains all publicly exported XML-RPC
+# methods from this module.
+__all__ = [
     "check_analyzers",
     "create_user_diff_task",
     "diff_build",
@@ -27,7 +29,7 @@ __all__ = (
     "list_analyzers",
     "list_profiles",
     "mock_build",
-)
+]
 
 
 def __client_build(request, options, Scheduler):

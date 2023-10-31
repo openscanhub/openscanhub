@@ -5,10 +5,12 @@ from django.core.exceptions import ObjectDoesNotExist
 
 from osh.hub.scan.models import MockConfig
 
-__all__ = (
+# DO NOT REMOVE!  The __all__ list contains all publicly exported XML-RPC
+# methods from this module.
+__all__ = [
     "all",
     "get",
-)
+]
 
 
 def all(request):

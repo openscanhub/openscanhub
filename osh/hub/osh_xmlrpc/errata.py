@@ -10,10 +10,12 @@ from osh.hub.errata.scanner import handle_scan
 from osh.hub.scan.models import (REQUEST_STATES, SCAN_STATES, AppSettings,
                                  ETMapping)
 
-__all__ = (
+# DO NOT REMOVE!  The __all__ list contains all publicly exported XML-RPC
+# methods from this module.
+__all__ = [
     "create_errata_diff_scan",
     "get_scan_state",
-)
+]
 
 logger = logging.getLogger(__name__)
 
