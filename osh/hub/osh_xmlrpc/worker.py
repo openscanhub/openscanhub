@@ -27,6 +27,28 @@ from osh.hub.waiving.results_loader import TaskResultsProcessor
 
 logger = logging.getLogger(__name__)
 
+# DO NOT REMOVE!  The __all__ list contains all publicly exported XML-RPC
+# methods from this module.
+__all__ = [
+    'cancel_task',
+    'create_sb',
+    'email_scan_notification',
+    'email_task_notification',
+    'ensure_base_is_scanned_properly',
+    'ensure_cache',
+    'fail_scan',
+    'fail_task',
+    'finish_analyzers_version_retrieval',
+    'finish_scan',
+    'finish_task',
+    'get_scanning_args',
+    'get_su_user',
+    'interrupt_tasks',
+    'move_upload',
+    'set_scan_to_basescanning',
+    'set_scan_to_scanning',
+]
+
 
 # REGULAR TASKS
 

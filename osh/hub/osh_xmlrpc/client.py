@@ -7,6 +7,12 @@ from kobo.django.xmlrpc.decorators import login_required
 from osh.hub.scan.models import ScanBinding
 from osh.hub.scan.xmlrpc_helper import cancel_scan
 
+# DO NOT REMOVE!  The __all__ list contains all publicly exported XML-RPC
+# methods from this module.
+__all__ = [
+    'cancel_task',
+]
+
 
 @login_required
 def cancel_task(request, task_id):
