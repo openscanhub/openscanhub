@@ -18,15 +18,15 @@ from osh.hub.scan.models import SCAN_STATES, ClientAnalyzer, Profile, Scan
 logger = logging.getLogger(__name__)
 
 __all__ = (
-    "diff_build",
-    "mock_build",
+    "check_analyzers",
     "create_user_diff_task",
-    "get_task_info",
+    "diff_build",
     "find_tasks",
+    "get_filtered_scan_list",
+    "get_task_info",
     "list_analyzers",
     "list_profiles",
-    "check_analyzers",
-    "get_filtered_scan_list",
+    "mock_build",
 )
 
 
