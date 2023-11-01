@@ -91,7 +91,7 @@ main() {
     # priority offset feature testing
 
     # verify that main task has the right priority
-    podman exec osh-client "${CLI_COV[@]}" task-info 5 | grep "priority = 20"
+    podman exec osh-client "${CLI_COV[@]}" task-info 5 | grep "priority = 10"
 
     # insert priority offset setting into the database
     podman exec -it db psql -h localhost -U openscanhub -d openscanhub -c "INSERT INTO scan_package (name, blocked, priority_offset) VALUES ('expat', false, 1);"
@@ -108,11 +108,11 @@ main() {
     [[ $SCAN_STATUS == *"PASSED"* ]]
 
     # verify that main task has the right priority
-    podman exec osh-client "${CLI_COV[@]}" task-info 8 | grep "priority = 21"
+    podman exec osh-client "${CLI_COV[@]}" task-info 8 | grep "priority = 11"
 
     # verify subtask priority inheritance if we have recent enough Kobo
     if [ $(git -C kobo log --tags --oneline --grep='0\.26\.0' | wc -l) == 1 ]; then
-        podman exec osh-client "${CLI_COV[@]}" task-info 9 | grep "priority = 21"
+        podman exec osh-client "${CLI_COV[@]}" task-info 9 | grep "priority = 11"
     fi
 
     podman exec osh-client "${CLI_COV[@]}" mock-build --config="fedora-$FEDORA_VERSION-$ARCH" --nvr expat-2.5.0-1.fc$FEDORA_VERSION | grep http://osh-hub:8000/task/10

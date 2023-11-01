@@ -195,7 +195,7 @@ class AbstractTargetScheduler(AbstractScheduler):
         self.task_args['method'] = 'ErrataDiffBuild'
         self.task_args['comment'] = f'errata process scan of {self.options["target"]}'
         self.task_args['state'] = TASK_STATES['CREATED']
-        self.task_args['priority'] = max(0, 20 + self.priority_offset)
+        self.task_args['priority'] = max(0, 10 + self.priority_offset)
         self.scan_args['enabled'] = True
 
     def store(self):
