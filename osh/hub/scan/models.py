@@ -760,6 +760,7 @@ counted in statistics.")
 
         scans = Scan.objects.filter(
             package=self.package,
+            scan_type__in=SCAN_TYPES_TARGET,
             tag__release=self.tag.release
         ).exclude(
             state__in=SCAN_STATES_FINISHED_BAD
