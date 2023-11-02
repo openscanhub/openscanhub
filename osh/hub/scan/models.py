@@ -105,17 +105,6 @@ REQUEST_STATES = Enum(
 )
 
 
-class Permissions(models.Model):
-    """
-    Custom permissions
-    """
-    class Meta:
-        permissions = (
-            ('errata_xmlrpc_scan',
-             'Can submit ET scan via XML-RPC'),
-        )
-
-
 class MockConfigMixin:
     def verify_by_name(self, name):
         try:
@@ -584,6 +573,9 @@ counted in statistics.")
 
     class Meta:
         get_latest_by = "date_submitted"
+        permissions = [
+            ('errata_xmlrpc_scan', 'Can submit ET scan via XML-RPC'),
+        ]
 
     def __str__(self):
         prefix = "#%s %s %s" % (self.id,
