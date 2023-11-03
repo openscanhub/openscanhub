@@ -20,7 +20,7 @@ from osh.common.constants import (ERROR_DIFF_FILE, ERROR_HTML_FILE,
 from osh.hub.other.exceptions import ScanException
 from osh.hub.service.processing import add_title_to_json
 
-from .models import (SCAN_STATES, SCAN_STATES_FINISHED_WELL, SCAN_TYPES_TARGET,
+from .models import (SCAN_STATES, SCAN_STATES_FINISHED_BAD, SCAN_TYPES_TARGET,
                      Scan, ScanBinding)
 
 logger = logging.getLogger(__name__)
@@ -186,8 +186,9 @@ def get_latest_sb_by_package(release, package):
     bindings = ScanBinding.objects.filter(
         scan__package=package,
         scan__tag__release=release,
-        scan__state__in=SCAN_STATES_FINISHED_WELL,
         scan__scan_type__in=SCAN_TYPES_TARGET,
+    ).exclude(
+        scan__state__in=SCAN_STATES_FINISHED_BAD,
     )
     if bindings:
         return bindings.latest()
