@@ -143,7 +143,7 @@ one)."
         context['scan_order'] = '#'
     else:
         context['scan_order'] = ids.index(sb.scan.id) + 1
-    context['scans_count'] = sb.scan.all_scans_in_release().count()
+    context['scans_count'] = len(ids)
 
     return context
 
