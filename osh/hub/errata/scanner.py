@@ -18,7 +18,6 @@ from kobo.django.upload.models import FileUpload
 from kobo.hub.models import TASK_STATES, Task
 
 from osh.hub.errata.check import check_analyzers, check_srpm, check_upload
-from osh.hub.errata.models import ScanningSession
 from osh.hub.errata.utils import get_or_fail, is_rebase
 from osh.hub.other.exceptions import PackageBlockedException
 from osh.hub.scan.models import (REQUEST_STATES, SCAN_TYPES, AppSettings,
@@ -37,14 +36,13 @@ class AbstractScheduler:
     """
 
     """
-    def __init__(self, options, scanning_session, *args, **kwargs):
+    def __init__(self, options, *args, **kwargs):
         """ """
         self.task_args = {}
         self.scan_args = {}
 
         # provided options
         self.options = options
-        self.scanning_session = scanning_session
 
         # {'name': 'foo', 'version':...}
         self.target_nvre_dict = {}
@@ -194,12 +192,10 @@ class AbstractTargetScheduler(AbstractScheduler):
         self.task_args['args']['base_nvr'] = self.base_nvr
         self.task_args['owner_name'] = self.options['task_user']
         self.task_args['label'] = self.options['target']
-        self.task_args['method'] = self.scanning_session.get_option('method')
-        self.task_args['comment'] = self.scanning_session.get_option('comment_template') % {'target': self.options['target']}
+        self.task_args['method'] = 'ErrataDiffBuild'
+        self.task_args['comment'] = f'errata process scan of {self.options["target"]}'
         self.task_args['state'] = TASK_STATES['CREATED']
-        self.task_args['priority'] = self.scanning_session.get_option('task_priority')
-        self.task_args['priority'] += self.priority_offset
-
+        self.task_args['priority'] = 20 + self.priority_offset
         self.scan_args['enabled'] = True
 
     def store(self):
@@ -575,11 +571,11 @@ class ClientDiffScanScheduler(ClientScanScheduler):
         return self.task_args['method'], args, label
 
 
-def prepare_base_scan(options, scanning_session):
+def prepare_base_scan(options):
     """
     subtasks are meant to be created with kobo.worker.task.TaskBase.spawn_subtask
     """
-    bs = BaseScheduler(options, scanning_session)
+    bs = BaseScheduler(options)
     bs.prepare_args()
     spawn_subtask_args = bs.get_spawn_subtask_args()
     return spawn_subtask_args
@@ -618,13 +614,12 @@ def obtain_base(base_nvr, mock_config):
 
 
 def create_errata_scan(options, etm):
-    scanning_session = ScanningSession.objects.get_by_name("ERRATA")
     if options['base'].lower() == 'new_package':
-        sb = NewPkgScheduler(options, scanning_session).spawn()
+        sb = NewPkgScheduler(options).spawn()
     elif is_rebase(options['base'], options['target']):
-        sb = RebaseScheduler(options, scanning_session).spawn()
+        sb = RebaseScheduler(options).spawn()
     else:
-        sb = ClassicScheduler(options, scanning_session).spawn()
+        sb = ClassicScheduler(options).spawn()
     etm.set_latest_run(sb)
     sb.scan.set_state_queued()
     return etm

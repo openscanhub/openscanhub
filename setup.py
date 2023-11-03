@@ -49,7 +49,6 @@ for folder in (
     "templates",
     "static-assets",
     "scan/fixtures",
-    "errata/fixtures",
     "waiving/fixtures",
 ):
 

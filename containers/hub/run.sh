@@ -19,8 +19,7 @@ osh/hub/manage.py migrate
 # In this case, we load the initial data into the database to make the OSH
 # hub work.
 if [ "$(osh/hub/manage.py dumpdata scan.MockConfig)" = "[]" ]; then
-    osh/hub/manage.py loaddata \
-        osh/hub/{errata,scan,waiving}/fixtures/initial_data.json
+    osh/hub/manage.py loaddata osh/hub/{scan,waiving}/fixtures/initial_data.json
 fi
 
 # Run a dummy SMTP server in background

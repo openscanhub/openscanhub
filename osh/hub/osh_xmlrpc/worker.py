@@ -11,7 +11,6 @@ from kobo.django.upload.models import FileUpload
 from kobo.hub.decorators import validate_worker
 from kobo.hub.models import Task
 
-from osh.hub.errata.models import ScanningSession
 from osh.hub.errata.scanner import (BaseNotValidException, obtain_base,
                                     prepare_base_scan)
 from osh.hub.scan.models import (SCAN_STATES, AnalyzerVersion, AppSettings,
@@ -180,7 +179,6 @@ def ensure_base_is_scanned_properly(request, scan_id, task_id):
         return
 
     task = Task.objects.get(id=task_id)
-    scanning_session = ScanningSession.objects.get(id=task.args['scanning_session'])
     base_nvr = task.args['base_nvr']
     mock_config = scan.tag.mock.name
     if mock_config == 'rhel-9-beta-x86_64':
@@ -200,7 +198,7 @@ def ensure_base_is_scanned_properly(request, scan_id, task_id):
             'parent_scan': scan,
             'method': task.method,
         }
-        base_task_args = prepare_base_scan(options, scanning_session)
+        base_task_args = prepare_base_scan(options)
         return base_task_args
 
     logger.info("Using cached base scan '%s'", base_scan)
