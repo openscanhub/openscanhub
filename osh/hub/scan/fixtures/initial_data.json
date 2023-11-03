@@ -226,212 +226,12 @@
   "pk": 1,
   "model": "scan.mockconfig",
   "fields": {
-    "enabled": false,
-    "name": "epel-6-x86_64"
+    "enabled": true,
+    "name": "fedora-rawhide-aarch64"
   }
 },
 {
   "pk": 2,
-  "model": "scan.mockconfig",
-  "fields": {
-    "enabled": false,
-    "name": "fedora-devel-x86_64"
-  }
-},
-{
-  "pk": 3,
-  "model": "scan.mockconfig",
-  "fields": {
-    "enabled": false,
-    "name": "fedora-17-x86_64"
-  }
-},
-{
-  "pk": 5,
-  "model": "scan.mockconfig",
-  "fields": {
-    "enabled": false,
-    "name": "fedora-rawhide-cscan"
-  }
-},
-{
-  "pk": 15,
-  "model": "scan.mockconfig",
-  "fields": {
-    "enabled": false,
-    "name": "epel-5-x86_64"
-  }
-},
-{
-  "pk": 16,
-  "model": "scan.mockconfig",
-  "fields": {
-    "enabled": false,
-    "name": "fedora-rawhide-abrt"
-  }
-},
-{
-  "pk": 19,
-  "model": "scan.mockconfig",
-  "fields": {
-    "enabled": false,
-    "name": "fedora-15-x86_64"
-  }
-},
-{
-  "pk": 21,
-  "model": "scan.mockconfig",
-  "fields": {
-    "enabled": false,
-    "name": "fedora-4-x86_64-epel"
-  }
-},
-{
-  "pk": 22,
-  "model": "scan.mockconfig",
-  "fields": {
-    "enabled": false,
-    "name": "fedora-rawhide-x86_64-pwouters"
-  }
-},
-{
-  "pk": 25,
-  "model": "scan.mockconfig",
-  "fields": {
-    "enabled": false,
-    "name": "fedora-16-cscan"
-  }
-},
-{
-  "pk": 29,
-  "model": "scan.mockconfig",
-  "fields": {
-    "enabled": false,
-    "name": "epel-4-x86_64"
-  }
-},
-{
-  "pk": 30,
-  "model": "scan.mockconfig",
-  "fields": {
-    "enabled": false,
-    "name": "fedora-16-xscan"
-  }
-},
-{
-  "pk": 31,
-  "model": "scan.mockconfig",
-  "fields": {
-    "enabled": false,
-    "name": "fedora-5-x86_64-epel"
-  }
-},
-{
-  "pk": 32,
-  "model": "scan.mockconfig",
-  "fields": {
-    "enabled": false,
-    "name": "fedora-16-abrt"
-  }
-},
-{
-  "pk": 34,
-  "model": "scan.mockconfig",
-  "fields": {
-    "enabled": false,
-    "name": "fedora-17-x86_64-pwouters"
-  }
-},
-{
-  "pk": 38,
-  "model": "scan.mockconfig",
-  "fields": {
-    "enabled": false,
-    "name": "rhel-7-alpha2-x86_64-cscan"
-  }
-},
-{
-  "pk": 40,
-  "model": "scan.mockconfig",
-  "fields": {
-    "enabled": false,
-    "name": "rhel-5-test-x86_64-xscan"
-  }
-},
-{
-  "pk": 41,
-  "model": "scan.mockconfig",
-  "fields": {
-    "enabled": false,
-    "name": "fedora-18-xscan2"
-  }
-},
-{
-  "pk": 43,
-  "model": "scan.mockconfig",
-  "fields": {
-    "enabled": false,
-    "name": "rhel-7-x86_64-nightly-cscan"
-  }
-},
-{
-  "pk": 49,
-  "model": "scan.mockconfig",
-  "fields": {
-    "enabled": false,
-    "name": "rhel-7-x86_64-cscan"
-  }
-},
-{
-  "pk": 55,
-  "model": "scan.mockconfig",
-  "fields": {
-    "enabled": false,
-    "name": "fedora-17-cscan"
-  }
-},
-{
-  "pk": 58,
-  "model": "scan.mockconfig",
-  "fields": {
-    "enabled": false,
-    "name": "fedora-16-x86_64"
-  }
-},
-{
-  "pk": 62,
-  "model": "scan.mockconfig",
-  "fields": {
-    "enabled": false,
-    "name": "fedora-rawhide-xscan"
-  }
-},
-{
-  "pk": 63,
-  "model": "scan.mockconfig",
-  "fields": {
-    "enabled": false,
-    "name": "rhel-7-alpha2-x86_64-xscan"
-  }
-},
-{
-  "pk": 64,
-  "model": "scan.mockconfig",
-  "fields": {
-    "enabled": false,
-    "name": "fedora-17-xscan"
-  }
-},
-{
-  "pk": 65,
-  "model": "scan.mockconfig",
-  "fields": {
-    "enabled": false,
-    "name": "rhel-7-x86_64-nightly-xscan"
-  }
-},
-{
-  "pk": 66,
   "model": "scan.mockconfig",
   "fields": {
     "enabled": true,
@@ -439,719 +239,23 @@
   }
 },
 {
-  "pk": 67,
-  "model": "scan.mockconfig",
-  "fields": {
-    "enabled": false,
-    "name": "fedora-rawhide-xscan2"
-  }
-},
-{
-  "pk": 70,
-  "model": "scan.mockconfig",
-  "fields": {
-    "enabled": false,
-    "name": "fedora-18-cscan"
-  }
-},
-{
-  "pk": 72,
-  "model": "scan.mockconfig",
-  "fields": {
-    "enabled": false,
-    "name": "fedora-rawhide-x86_64-cscan"
-  }
-},
-{
-  "pk": 73,
-  "model": "scan.mockconfig",
-  "fields": {
-    "enabled": false,
-    "name": "fedora-14-x86_64"
-  }
-},
-{
-  "pk": 75,
-  "model": "scan.mockconfig",
-  "fields": {
-    "enabled": false,
-    "name": "fedora-18-xscan"
-  }
-},
-{
-  "pk": 80,
-  "model": "scan.mockconfig",
-  "fields": {
-    "enabled": false,
-    "name": "rhel-5.6-x86_64-cscan"
-  }
-},
-{
-  "pk": 81,
-  "model": "scan.mockconfig",
-  "fields": {
-    "enabled": false,
-    "name": "rhel-5.7-x86_64-cscan"
-  }
-},
-{
-  "pk": 87,
-  "model": "scan.mockconfig",
-  "fields": {
-    "enabled": false,
-    "name": "rhel-6-abrt-x86_64"
-  }
-},
-{
-  "pk": 88,
-  "model": "scan.mockconfig",
-  "fields": {
-    "enabled": false,
-    "name": "rhel-5.9-x86_64-cscan"
-  }
-},
-{
-  "pk": 89,
-  "model": "scan.mockconfig",
-  "fields": {
-    "enabled": false,
-    "name": "fedora-19-cscan"
-  }
-},
-{
-  "pk": 90,
+  "pk": 3,
   "model": "scan.mockconfig",
   "fields": {
     "enabled": true,
-    "name": "rhel-5-x86_64"
+    "name": "fedora-eln-aarch64"
   }
 },
 {
-  "pk": 91,
+  "pk": 4,
   "model": "scan.mockconfig",
   "fields": {
     "enabled": true,
-    "name": "rhel-6-x86_64"
+    "name": "fedora-eln-x86_64"
   }
 },
 {
-  "pk": 92,
-  "model": "scan.mockconfig",
-  "fields": {
-    "enabled": true,
-    "name": "rhel-7-x86_64"
-  }
-},
-{
-  "pk": 93,
-  "model": "scan.mockconfig",
-  "fields": {
-    "enabled": false,
-    "name": "rhel-6-rebuild-x86_64"
-  }
-},
-{
-  "pk": 94,
-  "model": "scan.mockconfig",
-  "fields": {
-    "enabled": false,
-    "name": "rhel-5-rebuild-x86_64"
-  }
-},
-{
-  "pk": 95,
-  "model": "scan.mockconfig",
-  "fields": {
-    "enabled": false,
-    "name": "fedora-20-xscan"
-  }
-},
-{
-  "pk": 96,
-  "model": "scan.mockconfig",
-  "fields": {
-    "enabled": false,
-    "name": "fedora-20-cockpit"
-  }
-},
-{
-  "pk": 97,
-  "model": "scan.mockconfig",
-  "fields": {
-    "enabled": false,
-    "name": "fedora-18-x86_64"
-  }
-},
-{
-  "pk": 98,
-  "model": "scan.mockconfig",
-  "fields": {
-    "enabled": false,
-    "name": "fedora-19-x86_64"
-  }
-},
-{
-  "pk": 99,
-  "model": "scan.mockconfig",
-  "fields": {
-    "enabled": false,
-    "name": "fedora-20-x86_64"
-  }
-},
-{
-  "pk": 100,
-  "model": "scan.mockconfig",
-  "fields": {
-    "enabled": false,
-    "name": "fedora-21-x86_64"
-  }
-},
-{
-  "pk": 101,
-  "model": "scan.mockconfig",
-  "fields": {
-    "enabled": false,
-    "name": "rhel-6-x86_64-jfilak"
-  }
-},
-{
-  "pk": 102,
-  "model": "scan.mockconfig",
-  "fields": {
-    "enabled": false,
-    "name": "fedora-22-x86_64"
-  }
-},
-{
-  "pk": 103,
-  "model": "scan.mockconfig",
-  "fields": {
-    "enabled": false,
-    "name": "rhel-7-x86_64-kdudka"
-  }
-},
-{
-  "pk": 104,
-  "model": "scan.mockconfig",
-  "fields": {
-    "enabled": false,
-    "name": "rhel-6-x86_64-kdudka"
-  }
-},
-{
-  "pk": 105,
-  "model": "scan.mockconfig",
-  "fields": {
-    "enabled": true,
-    "name": "rhel-7-x86_64-basescan"
-  }
-},
-{
-  "pk": 106,
-  "model": "scan.mockconfig",
-  "fields": {
-    "enabled": true,
-    "name": "rhel-6-x86_64-basescan"
-  }
-},
-{
-  "pk": 107,
-  "model": "scan.mockconfig",
-  "fields": {
-    "enabled": false,
-    "name": "fedora-23-x86_64"
-  }
-},
-{
-  "pk": 108,
-  "model": "scan.mockconfig",
-  "fields": {
-    "enabled": false,
-    "name": "rhel-6-x86_64-basescan-62"
-  }
-},
-{
-  "pk": 109,
-  "model": "scan.mockconfig",
-  "fields": {
-    "enabled": false,
-    "name": "fedora-24-x86_64"
-  }
-},
-{
-  "pk": 110,
-  "model": "scan.mockconfig",
-  "fields": {
-    "enabled": false,
-    "name": "fedora-25-x86_64"
-  }
-},
-{
-  "pk": 111,
-  "model": "scan.mockconfig",
-  "fields": {
-    "enabled": true,
-    "name": "rhel-7.1.z-x86_64"
-  }
-},
-{
-  "pk": 112,
-  "model": "scan.mockconfig",
-  "fields": {
-    "enabled": true,
-    "name": "rhel-7.2.z-x86_64"
-  }
-},
-{
-  "pk": 113,
-  "model": "scan.mockconfig",
-  "fields": {
-    "enabled": true,
-    "name": "rhel-7.3.z-x86_64"
-  }
-},
-{
-  "pk": 114,
-  "model": "scan.mockconfig",
-  "fields": {
-    "enabled": false,
-    "name": "fedora-26-x86_64"
-  }
-},
-{
-  "pk": 115,
-  "model": "scan.mockconfig",
-  "fields": {
-    "enabled": false,
-    "name": "rhel-7-x86_64-sso"
-  }
-},
-{
-  "pk": 116,
-  "model": "scan.mockconfig",
-  "fields": {
-    "enabled": false,
-    "name": "fedora-27-x86_64"
-  }
-},
-{
-  "pk": 117,
-  "model": "scan.mockconfig",
-  "fields": {
-    "enabled": true,
-    "name": "rhel-7.4.z-x86_64"
-  }
-},
-{
-  "pk": 118,
-  "model": "scan.mockconfig",
-  "fields": {
-    "enabled": true,
-    "name": "ceph-2-rhel-7-x86_64"
-  }
-},
-{
-  "pk": 119,
-  "model": "scan.mockconfig",
-  "fields": {
-    "enabled": true,
-    "name": "ceph-3.0-rhel-7-x86_64"
-  }
-},
-{
-  "pk": 120,
-  "model": "scan.mockconfig",
-  "fields": {
-    "enabled": true,
-    "name": "rhel-6.8.z-x86_64"
-  }
-},
-{
-  "pk": 121,
-  "model": "scan.mockconfig",
-  "fields": {
-    "enabled": true,
-    "name": "rhos-12.0-rhel-7-x86_64"
-  }
-},
-{
-  "pk": 122,
-  "model": "scan.mockconfig",
-  "fields": {
-    "enabled": true,
-    "name": "ceph-1.3-rhel-7-x86_64"
-  }
-},
-{
-  "pk": 123,
-  "model": "scan.mockconfig",
-  "fields": {
-    "enabled": false,
-    "name": "rhel-7-shellcheck-x86_64"
-  }
-},
-{
-  "pk": 124,
-  "model": "scan.mockconfig",
-  "fields": {
-    "enabled": true,
-    "name": "rhel-6.6.z-x86_64"
-  }
-},
-{
-  "pk": 125,
-  "model": "scan.mockconfig",
-  "fields": {
-    "enabled": false,
-    "name": "fedora-28-x86_64"
-  }
-},
-{
-  "pk": 126,
-  "model": "scan.mockconfig",
-  "fields": {
-    "enabled": true,
-    "name": "rhel-7.5.z-x86_64"
-  }
-},
-{
-  "pk": 127,
-  "model": "scan.mockconfig",
-  "fields": {
-    "enabled": false,
-    "name": "rhel-8.0-x86_64"
-  }
-},
-{
-  "pk": 128,
-  "model": "scan.mockconfig",
-  "fields": {
-    "enabled": false,
-    "name": "fedora-29-x86_64"
-  }
-},
-{
-  "pk": 129,
-  "model": "scan.mockconfig",
-  "fields": {
-    "enabled": true,
-    "name": "rhel-8-x86_64"
-  }
-},
-{
-  "pk": 130,
-  "model": "scan.mockconfig",
-  "fields": {
-    "enabled": false,
-    "name": "rhel-8-mod-x86_64"
-  }
-},
-{
-  "pk": 131,
-  "model": "scan.mockconfig",
-  "fields": {
-    "enabled": true,
-    "name": "rhel-7.6.z-x86_64"
-  }
-},
-{
-  "pk": 132,
-  "model": "scan.mockconfig",
-  "fields": {
-    "enabled": false,
-    "name": "fedora-29-x86_64-mcrha"
-  }
-},
-{
-  "pk": 133,
-  "model": "scan.mockconfig",
-  "fields": {
-    "enabled": true,
-    "name": "rhel-8.0.0.z-x86_64"
-  }
-},
-{
-  "pk": 134,
-  "model": "scan.mockconfig",
-  "fields": {
-    "enabled": false,
-    "name": "fedora-30-x86_64"
-  }
-},
-{
-  "pk": 135,
-  "model": "scan.mockconfig",
-  "fields": {
-    "enabled": true,
-    "name": "rhel-8-x86_64-basescan"
-  }
-},
-{
-  "pk": 136,
-  "model": "scan.mockconfig",
-  "fields": {
-    "enabled": false,
-    "name": "rhel-8.0.0.z-mod-x86_64"
-  }
-},
-{
-  "pk": 137,
-  "model": "scan.mockconfig",
-  "fields": {
-    "enabled": true,
-    "name": "rhel-7.7.z-x86_64"
-  }
-},
-{
-  "pk": 138,
-  "model": "scan.mockconfig",
-  "fields": {
-    "enabled": true,
-    "name": "ceph-4.0-rhel-8-x86_64"
-  }
-},
-{
-  "pk": 139,
-  "model": "scan.mockconfig",
-  "fields": {
-    "enabled": false,
-    "name": "fedora-31-x86_64"
-  }
-},
-{
-  "pk": 140,
-  "model": "scan.mockconfig",
-  "fields": {
-    "enabled": false,
-    "name": "fedora-32-x86_64"
-  }
-},
-{
-  "pk": 141,
-  "model": "scan.mockconfig",
-  "fields": {
-    "enabled": true,
-    "name": "rhel-8.1.0.z-x86_64"
-  }
-},
-{
-  "pk": 142,
-  "model": "scan.mockconfig",
-  "fields": {
-    "enabled": true,
-    "name": "rhel-6.9.z-x86_64"
-  }
-},
-{
-  "pk": 143,
-  "model": "scan.mockconfig",
-  "fields": {
-    "enabled": true,
-    "name": "cspodman"
-  }
-},
-{
-  "pk": 144,
-  "model": "scan.mockconfig",
-  "fields": {
-    "enabled": false,
-    "name": "rhel-8.1.0.z-mod-x86_64"
-  }
-},
-{
-  "pk": 145,
-  "model": "scan.mockconfig",
-  "fields": {
-    "enabled": true,
-    "name": "rhaos-a-rhel-7-x86_64"
-  }
-},
-{
-  "pk": 146,
-  "model": "scan.mockconfig",
-  "fields": {
-    "enabled": true,
-    "name": "rhaos-a-rhel-8-x86_64"
-  }
-},
-{
-  "pk": 147,
-  "model": "scan.mockconfig",
-  "fields": {
-    "enabled": true,
-    "name": "rhaos-b-rhel-7-x86_64"
-  }
-},
-{
-  "pk": 148,
-  "model": "scan.mockconfig",
-  "fields": {
-    "enabled": true,
-    "name": "rhaos-b-rhel-8-x86_64"
-  }
-},
-{
-  "pk": 149,
-  "model": "scan.mockconfig",
-  "fields": {
-    "enabled": true,
-    "name": "rhel-8.2.0.z-x86_64"
-  }
-},
-{
-  "pk": 150,
-  "model": "scan.mockconfig",
-  "fields": {
-    "enabled": true,
-    "name": "rhel-7.8.z-x86_64"
-  }
-},
-{
-  "pk": 151,
-  "model": "scan.mockconfig",
-  "fields": {
-    "enabled": false,
-    "name": "rhel-8.2.0.z-mod-x86_64"
-  }
-},
-{
-  "pk": 152,
-  "model": "scan.mockconfig",
-  "fields": {
-    "enabled": false,
-    "name": "fedora-33-x86_64"
-  }
-},
-{
-  "pk": 153,
-  "model": "scan.mockconfig",
-  "fields": {
-    "enabled": true,
-    "name": "eln-x86_64"
-  }
-},
-{
-  "pk": 154,
-  "model": "scan.mockconfig",
-  "fields": {
-    "enabled": false,
-    "name": "fedora-32-x86_64-mcrha"
-  }
-},
-{
-  "pk": 155,
-  "model": "scan.mockconfig",
-  "fields": {
-    "enabled": true,
-    "name": "rhel-8.3.0.z-x86_64"
-  }
-},
-{
-  "pk": 156,
-  "model": "scan.mockconfig",
-  "fields": {
-    "enabled": true,
-    "name": "rhel-9-alpha-x86_64"
-  }
-},
-{
-  "pk": 157,
-  "model": "scan.mockconfig",
-  "fields": {
-    "enabled": true,
-    "name": "fedora-34-x86_64"
-  }
-},
-{
-  "pk": 158,
-  "model": "scan.mockconfig",
-  "fields": {
-    "enabled": true,
-    "name": "rhel-9-beta-x86_64"
-  }
-},
-{
-  "pk": 159,
-  "model": "scan.mockconfig",
-  "fields": {
-    "enabled": true,
-    "name": "rhel-8.4.0.z-x86_64"
-  }
-},
-{
-  "pk": 160,
-  "model": "scan.mockconfig",
-  "fields": {
-    "enabled": false,
-    "name": "rhel-8.3.0.z-mod-x86_64"
-  }
-},
-{
-  "pk": 161,
-  "model": "scan.mockconfig",
-  "fields": {
-    "enabled": false,
-    "name": "rhel-8.4.0.z-mod-x86_64"
-  }
-},
-{
-  "pk": 162,
-  "model": "scan.mockconfig",
-  "fields": {
-    "enabled": true,
-    "name": "rhel-9-x86_64"
-  }
-},
-{
-  "pk": 163,
-  "model": "scan.mockconfig",
-  "fields": {
-    "enabled": true,
-    "name": "rhel-9-x86_64-basescan"
-  }
-},
-{
-  "pk": 164,
-  "model": "scan.mockconfig",
-  "fields": {
-    "enabled": true,
-    "name": "fedora-35-x86_64"
-  }
-},
-{
-  "pk": 165,
-  "model": "scan.mockconfig",
-  "fields": {
-    "enabled": true,
-    "name": "rhel-7-scl-x86_64"
-  }
-},
-{
-  "pk": 166,
-  "model": "scan.mockconfig",
-  "fields": {
-    "enabled": true,
-    "name": "rhel-8.5.0.z-x86_64"
-  }
-},
-{
-  "pk": 167,
-  "model": "scan.mockconfig",
-  "fields": {
-    "enabled": true,
-    "name": "fedora-36-x86_64"
-  }
-},
-{
-  "pk": 168,
-  "model": "scan.mockconfig",
-  "fields": {
-    "enabled": true,
-    "name": "fedora-35-aarch64"
-  }
-},
-{
-  "pk": 169,
+  "pk": 5,
   "model": "scan.mockconfig",
   "fields": {
     "enabled": true,
@@ -1159,15 +263,23 @@
   }
 },
 {
-  "pk": 170,
+  "pk": 6,
   "model": "scan.mockconfig",
   "fields": {
     "enabled": true,
-    "name": "fedora-rawhide-aarch64"
+    "name": "fedora-36-x86_64"
   }
 },
 {
-  "pk": 171,
+  "pk": 7,
+  "model": "scan.mockconfig",
+  "fields": {
+    "enabled": true,
+    "name": "fedora-37-aarch64"
+  }
+},
+{
+  "pk": 8,
   "model": "scan.mockconfig",
   "fields": {
     "enabled": true,
@@ -1175,11 +287,179 @@
   }
 },
 {
-  "pk": 172,
+  "pk": 9,
   "model": "scan.mockconfig",
   "fields": {
     "enabled": true,
-    "name": "fedora-37-aarch64"
+    "name": "fedora-38-aarch64"
+  }
+},
+{
+  "pk": 10,
+  "model": "scan.mockconfig",
+  "fields": {
+    "enabled": true,
+    "name": "fedora-38-x86_64"
+  }
+},
+{
+  "pk": 11,
+  "model": "scan.mockconfig",
+  "fields": {
+    "enabled": true,
+    "name": "fedora-39-aarch64"
+  }
+},
+{
+  "pk": 12,
+  "model": "scan.mockconfig",
+  "fields": {
+    "enabled": true,
+    "name": "fedora-39-x86_64"
+  }
+},
+{
+  "pk": 13,
+  "model": "scan.mockconfig",
+  "fields": {
+    "enabled": true,
+    "name": "centos-7-aarch64"
+  }
+},
+{
+  "pk": 14,
+  "model": "scan.mockconfig",
+  "fields": {
+    "enabled": true,
+    "name": "centos-7-x86_64"
+  }
+},
+{
+  "pk": 15,
+  "model": "scan.mockconfig",
+  "fields": {
+    "enabled": true,
+    "name": "centos-stream-8-aarch64"
+  }
+},
+{
+  "pk": 16,
+  "model": "scan.mockconfig",
+  "fields": {
+    "enabled": true,
+    "name": "centos-stream-8-x86_64"
+  }
+},
+{
+  "pk": 17,
+  "model": "scan.mockconfig",
+  "fields": {
+    "enabled": true,
+    "name": "centos-stream-9-aarch64"
+  }
+},
+{
+  "pk": 18,
+  "model": "scan.mockconfig",
+  "fields": {
+    "enabled": true,
+    "name": "centos-stream-9-x86_64"
+  }
+},
+{
+  "pk": 19,
+  "model": "scan.mockconfig",
+  "fields": {
+    "enabled": true,
+    "name": "rhel-7-aarch64"
+  }
+},
+{
+  "pk": 20,
+  "model": "scan.mockconfig",
+  "fields": {
+    "enabled": true,
+    "name": "rhel-7-x86_64"
+  }
+},
+{
+  "pk": 21,
+  "model": "scan.mockconfig",
+  "fields": {
+    "enabled": true,
+    "name": "rhel-8-aarch64"
+  }
+},
+{
+  "pk": 22,
+  "model": "scan.mockconfig",
+  "fields": {
+    "enabled": true,
+    "name": "rhel-8-x86_64"
+  }
+},
+{
+  "pk": 23,
+  "model": "scan.mockconfig",
+  "fields": {
+    "enabled": true,
+    "name": "rhel-9-aarch64"
+  }
+},
+{
+  "pk": 24,
+  "model": "scan.mockconfig",
+  "fields": {
+    "enabled": true,
+    "name": "rhel-9-x86_64"
+  }
+},
+{
+  "pk": 25,
+  "model": "scan.mockconfig",
+  "fields": {
+    "enabled": true,
+    "name": "epel-7-aarch64"
+  }
+},
+{
+  "pk": 26,
+  "model": "scan.mockconfig",
+  "fields": {
+    "enabled": true,
+    "name": "epel-7-x86_64"
+  }
+},
+{
+  "pk": 27,
+  "model": "scan.mockconfig",
+  "fields": {
+    "enabled": true,
+    "name": "epel-8-aarch64"
+  }
+},
+{
+  "pk": 28,
+  "model": "scan.mockconfig",
+  "fields": {
+    "enabled": true,
+    "name": "epel-8-x86_64"
+  }
+},
+{
+  "pk": 29,
+  "model": "scan.mockconfig",
+  "fields": {
+    "enabled": true,
+    "name": "epel-9-aarch64"
+  }
+},
+{
+  "pk": 30,
+  "model": "scan.mockconfig",
+  "fields": {
+    "enabled": true,
+    "name": "epel-9-x86_64"
   }
 },
 {
@@ -1240,47 +520,6 @@
   "model": "scan.profile",
   "fields": {
     "command_arguments": {
-      "analyzers": "gcc",
-      "koji_profile": "koji"
-    },
-    "enabled": true,
-    "name": "cov-unstable",
-    "description": "experimental profile using the latest release of csmock"
-  }
-},
-{
-  "pk": 6,
-  "model": "scan.profile",
-  "fields": {
-    "command_arguments": {
-      "analyzers": "gcc,clang,cppcheck",
-      "csmock_args": "--cov-analyze-java --use-host-cppcheck",
-      "koji_profile": "koji"
-    },
-    "enabled": false,
-    "name": "errata-el5",
-    "description": "errata profile without ShellCheck, which is currently not available on el5"
-  }
-},
-{
-  "pk": 7,
-  "model": "scan.profile",
-  "fields": {
-    "command_arguments": {
-      "analyzers": "gcc,cppcheck",
-      "csmock_args": "--cov-analyze-java --use-host-cppcheck",
-      "koji_profile": "koji"
-    },
-    "enabled": false,
-    "name": "errata-el8",
-    "description": "errata profile without Clang, which is currently not available on el8"
-  }
-},
-{
-  "pk": 8,
-  "model": "scan.profile",
-  "fields": {
-    "command_arguments": {
       "analyzers": "smatch",
       "koji_profile": "koji"
     },
@@ -1290,21 +529,7 @@
   }
 },
 {
-  "pk": 9,
-  "model": "scan.profile",
-  "fields": {
-    "command_arguments": {
-      "analyzers": "gcc",
-      "csmock_args": "--gcc-add-flag=-Wduplicated-branches --gcc-add-flag=-Wduplicated-cond --gcc-add-flag=-Wlogical-op --gcc-add-flag=-Wjump-misses-init --gcc-add-flag=-Wshadow --gcc-add-flag=-Wformat=2 --gcc-add-flag=-Wfloat-equal",
-      "koji_profile": "koji"
-    },
-    "enabled": false,
-    "name": "gcc-unstable",
-    "description": "experimental profile using non-default GCC warning flags"
-  }
-},
-{
-  "pk": 10,
+  "pk": 6,
   "model": "scan.profile",
   "fields": {
     "command_arguments": {
@@ -1317,7 +542,7 @@
   }
 },
 {
-  "pk": 11,
+  "pk": 7,
   "model": "scan.profile",
   "fields": {
     "command_arguments": {
@@ -1330,7 +555,7 @@
   }
 },
 {
-  "pk": 12,
+  "pk": 8,
   "model": "scan.profile",
   "fields": {
     "command_arguments": {
@@ -1343,7 +568,7 @@
   }
 },
 {
-  "pk": 13,
+  "pk": 9,
   "model": "scan.profile",
   "fields": {
     "command_arguments": {
@@ -1356,20 +581,7 @@
   }
 },
 {
-  "pk": 14,
-  "model": "scan.profile",
-  "fields": {
-    "command_arguments": {
-      "analyzers": "gcc",
-      "csmock_args": "--install csigsafe --gcc-add-c-only-flag=-fplugin=csigsafe"
-    },
-    "enabled": false,
-    "name": "csigsafe",
-    "description": "experimental profile that compiles with -fplugin=csigsafe"
-  }
-},
-{
-  "pk": 15,
+  "pk": 10,
   "model": "scan.profile",
   "fields": {
     "command_arguments": {
@@ -1382,21 +594,7 @@
   }
 },
 {
-  "pk": 16,
-  "model": "scan.profile",
-  "fields": {
-    "command_arguments": {
-      "analyzers": "gcc,clang,cppcheck,shellcheck,unicontrol",
-      "csmock_args": "--use-host-cppcheck --gcc-analyze --unicontrol-notests --unicontrol-bidi-only",
-      "koji_profile": "koji"
-    },
-    "enabled": true,
-    "name": "mass-scan-el9",
-    "description": "profile for RHEL-9 mass scan (currently same as the default profile)"
-  }
-},
-{
-  "pk": 18,
+  "pk": 11,
   "model": "scan.profile",
   "fields": {
     "command_arguments": {
@@ -1409,156 +607,19 @@
   }
 },
 {
-  "pk": 19,
+  "pk": 12,
   "model": "scan.profile",
   "fields": {
     "command_arguments": {
-      "analyzers": "gcc,clang,cppcheck,shellcheck",
-      "csmock_args": "--use-host-cppcheck --gcc-analyze --rpm-build-opts='--define \\\"_target_cpu s390x\\\"' --keep-going",
-      "koji_profile": "koji"
+      "analyzers": "pylint"
     },
-    "enabled": false,
-    "name": "s390x-hack",
-    "description": "profile for emergency scanning of s390x packages in x86_64 buildroot"
+    "enabled": true,
+    "name": "pylint",
+    "description": "profile that runs pylint and captures its results"
   }
 },
 {
   "pk": 1,
-  "model": "scan.releasemapping",
-  "fields": {
-    "priority": 1,
-    "release_tag": "^RHEL-(\\d+)\\.(\\d+)\\.[01].*$",
-    "template": "RHEL-%s.%s"
-  }
-},
-{
-  "pk": 2,
-  "model": "scan.releasemapping",
-  "fields": {
-    "priority": 2,
-    "release_tag": "^FAST(\\d+)\\.(\\d+)$",
-    "template": "RHEL-%s.%s"
-  }
-},
-{
-  "pk": 3,
-  "model": "scan.releasemapping",
-  "fields": {
-    "priority": 3,
-    "release_tag": "^CEPH-(\\d+)\\.(\\d+).*$",
-    "template": "RHEL-7-CEPH-%s-%s"
-  }
-},
-{
-  "pk": 4,
-  "model": "scan.releasemapping",
-  "fields": {
-    "priority": 4,
-    "release_tag": "^RHEL-(\\d+)\\.(\\d+)\\.Z$",
-    "template": "RHEL-%s.%s"
-  }
-},
-{
-  "pk": 5,
-  "model": "scan.releasemapping",
-  "fields": {
-    "priority": 5,
-    "release_tag": "^RHEL-(\\d+)\\.(\\d+)\\.EUS.*$",
-    "template": "RHEL-%s.%s"
-  }
-},
-{
-  "pk": 6,
-  "model": "scan.releasemapping",
-  "fields": {
-    "priority": 6,
-    "release_tag": "^RHEL-(\\d+)\\.(\\d+)\\.z$",
-    "template": "RHEL-%s.%s"
-  }
-},
-{
-  "pk": 7,
-  "model": "scan.releasemapping",
-  "fields": {
-    "priority": 7,
-    "release_tag": "^RHEL-(\\d+)\\.(\\d+)\\.AUS$",
-    "template": "RHEL-%s.%s"
-  }
-},
-{
-  "pk": 8,
-  "model": "scan.releasemapping",
-  "fields": {
-    "priority": 8,
-    "release_tag": "^RHEL-ALT-(\\d+)\\.(\\d+)\\.Z$",
-    "template": "RHEL-%s.%s"
-  }
-},
-{
-  "pk": 9,
-  "model": "scan.releasemapping",
-  "fields": {
-    "priority": 9,
-    "release_tag": "^ceph-(\\d+)\\.(\\d+).*$",
-    "template": "RHEL-7-CEPH-%s-%s"
-  }
-},
-{
-  "pk": 10,
-  "model": "scan.releasemapping",
-  "fields": {
-    "priority": 10,
-    "release_tag": "^rhceph-(\\d+)\\.(\\d+).*$",
-    "template": "RHEL-7-CEPH-%s-%s"
-  }
-},
-{
-  "pk": 11,
-  "model": "scan.releasemapping",
-  "fields": {
-    "priority": 11,
-    "release_tag": "^RHEL-ALT-(\\d+)\\.(\\d+)$",
-    "template": "RHEL-%s.%s"
-  }
-},
-{
-  "pk": 12,
-  "model": "scan.releasemapping",
-  "fields": {
-    "priority": 12,
-    "release_tag": "^RHEL-(\\d+)\\.(\\d+)\\.0.Z.*$",
-    "template": "RHEL-%s.%s"
-  }
-},
-{
-  "pk": 13,
-  "model": "scan.releasemapping",
-  "fields": {
-    "priority": 13,
-    "release_tag": "^XXX_RHOSE .*$",
-    "template": "RHOSE"
-  }
-},
-{
-  "pk": 14,
-  "model": "scan.releasemapping",
-  "fields": {
-    "priority": 14,
-    "release_tag": "RHEL-9.0.0.BETA",
-    "template": "RHEL-9-BETA"
-  }
-},
-{
-  "pk": 15,
-  "model": "scan.releasemapping",
-  "fields": {
-    "priority": 15,
-    "release_tag": "^XXX_OSE-LOGGING$",
-    "template": "RHOSE"
-  }
-},
-{
-  "pk": 16,
   "model": "scan.releasemapping",
   "fields": {
     "priority": 1,
@@ -1568,12 +629,59 @@
 },
 {
   "pk": 2,
+  "model": "scan.releasemapping",
+  "fields": {
+    "priority": 2,
+    "release_tag": "^CentOS-(\\d+)$",
+    "template": "CentOS-%s"
+  }
+},
+{
+  "pk": 3,
+  "model": "scan.releasemapping",
+  "fields": {
+    "priority": 3,
+    "release_tag": "^CentOS-Stream-(\\d+)$",
+    "template": "CentOS-Stream-%s"
+  }
+},
+{
+  "pk": 4,
+  "model": "scan.releasemapping",
+  "fields": {
+    "priority": 4,
+    "release_tag": "^RHEL-(\\d+)$",
+    "template": "RHEL-%s"
+  }
+},
+{
+  "pk": 5,
+  "model": "scan.releasemapping",
+  "fields": {
+    "priority": 5,
+    "release_tag": "^EPEL-(\\d+)$",
+    "template": "EPEL-%s"
+  }
+},
+{
+  "pk": 1,
   "model": "scan.systemrelease",
   "fields": {
-    "release": 0,
-    "active": false,
-    "product": "Red Hat Enterprise Linux 5",
-    "tag": "rhel-5.0",
+    "release": 36,
+    "active": true,
+    "product": "Fedora",
+    "tag": "fedora-36",
+    "parent": null
+  }
+},
+{
+  "pk": 2,
+  "model": "scan.systemrelease",
+  "fields": {
+    "release": 37,
+    "active": true,
+    "product": "Fedora",
+    "tag": "fedora-37",
     "parent": null
   }
 },
@@ -1581,572 +689,130 @@
   "pk": 3,
   "model": "scan.systemrelease",
   "fields": {
-    "release": 1,
-    "active": false,
-    "product": "Red Hat Enterprise Linux 5",
-    "tag": "rhel-5.1",
-    "parent": 2
+    "release": 38,
+    "active": true,
+    "product": "Fedora",
+    "tag": "fedora-38",
+    "parent": null
   }
 },
 {
   "pk": 4,
   "model": "scan.systemrelease",
   "fields": {
-    "release": 2,
-    "active": false,
-    "product": "Red Hat Enterprise Linux 5",
-    "tag": "rhel-5.2",
-    "parent": 3
+    "release": 39,
+    "active": true,
+    "product": "Fedora",
+    "tag": "fedora-39",
+    "parent": null
   }
 },
 {
   "pk": 5,
   "model": "scan.systemrelease",
   "fields": {
-    "release": 3,
-    "active": false,
-    "product": "Red Hat Enterprise Linux 5",
-    "tag": "rhel-5.3",
-    "parent": 4
+    "release": 7,
+    "active": true,
+    "product": "CentOS",
+    "tag": "centos-7",
+    "parent": null
   }
 },
 {
   "pk": 6,
   "model": "scan.systemrelease",
   "fields": {
-    "release": 4,
-    "active": false,
-    "product": "Red Hat Enterprise Linux 5",
-    "tag": "rhel-5.4",
-    "parent": 5
+    "release": 8,
+    "active": true,
+    "product": "CentOS Stream",
+    "tag": "centos-stream-7",
+    "parent": null
   }
 },
 {
   "pk": 7,
   "model": "scan.systemrelease",
   "fields": {
-    "release": 5,
-    "active": false,
-    "product": "Red Hat Enterprise Linux 5",
-    "tag": "rhel-5.5",
-    "parent": 6
+    "release": 9,
+    "active": true,
+    "product": "CentOS Stream",
+    "tag": "centos-stream-9",
+    "parent": null
   }
 },
 {
   "pk": 8,
   "model": "scan.systemrelease",
   "fields": {
-    "release": 6,
-    "active": false,
-    "product": "Red Hat Enterprise Linux 5",
-    "tag": "rhel-5.6",
-    "parent": 7
+    "release": 7,
+    "active": true,
+    "product": "RHEL",
+    "tag": "rhel-7",
+    "parent": null
   }
 },
 {
   "pk": 9,
   "model": "scan.systemrelease",
   "fields": {
-    "release": 7,
-    "active": false,
-    "product": "Red Hat Enterprise Linux 5",
-    "tag": "rhel-5.7",
-    "parent": 8
+    "release": 8,
+    "active": true,
+    "product": "RHEL",
+    "tag": "rhel-8",
+    "parent": null
   }
 },
 {
   "pk": 10,
   "model": "scan.systemrelease",
   "fields": {
-    "release": 8,
-    "active": false,
-    "product": "Red Hat Enterprise Linux 5",
-    "tag": "rhel-5.8",
-    "parent": 9
+    "release": 9,
+    "active": true,
+    "product": "RHEL",
+    "tag": "rhel-9",
+    "parent": null
   }
 },
 {
   "pk": 11,
   "model": "scan.systemrelease",
   "fields": {
-    "release": 9,
-    "active": false,
-    "product": "Red Hat Enterprise Linux 5",
-    "tag": "rhel-5.9",
-    "parent": 10
+    "release": 7,
+    "active": true,
+    "product": "EPEL",
+    "tag": "epel-7",
+    "parent": null
   }
 },
 {
   "pk": 12,
   "model": "scan.systemrelease",
   "fields": {
-    "release": 10,
-    "active": false,
-    "product": "Red Hat Enterprise Linux 5",
-    "tag": "rhel-5.10",
-    "parent": 11
+    "release": 8,
+    "active": true,
+    "product": "EPEL",
+    "tag": "epel-8",
+    "parent": null
   }
 },
 {
   "pk": 13,
   "model": "scan.systemrelease",
   "fields": {
-    "release": 11,
-    "active": false,
-    "product": "Red Hat Enterprise Linux 5",
-    "tag": "rhel-5.11",
-    "parent": 12
-  }
-},
-{
-  "pk": 14,
-  "model": "scan.systemrelease",
-  "fields": {
-    "release": 12,
-    "active": false,
-    "product": "Red Hat Enterprise Linux 5",
-    "tag": "rhel-5.12",
-    "parent": 13
-  }
-},
-{
-  "pk": 15,
-  "model": "scan.systemrelease",
-  "fields": {
-    "release": 13,
-    "active": false,
-    "product": "Red Hat Enterprise Linux 5",
-    "tag": "rhel-5.13",
-    "parent": 14
-  }
-},
-{
-  "pk": 16,
-  "model": "scan.systemrelease",
-  "fields": {
-    "release": 0,
-    "active": false,
-    "product": "Red Hat Enterprise Linux 6",
-    "tag": "rhel-6.0",
-    "parent": null
-  }
-},
-{
-  "pk": 17,
-  "model": "scan.systemrelease",
-  "fields": {
-    "release": 1,
-    "active": false,
-    "product": "Red Hat Enterprise Linux 6",
-    "tag": "rhel-6.1",
-    "parent": 16
-  }
-},
-{
-  "pk": 18,
-  "model": "scan.systemrelease",
-  "fields": {
-    "release": 2,
-    "active": false,
-    "product": "Red Hat Enterprise Linux 6",
-    "tag": "rhel-6.2",
-    "parent": 17
-  }
-},
-{
-  "pk": 19,
-  "model": "scan.systemrelease",
-  "fields": {
-    "release": 3,
-    "active": false,
-    "product": "Red Hat Enterprise Linux 6",
-    "tag": "rhel-6.3",
-    "parent": 18
-  }
-},
-{
-  "pk": 20,
-  "model": "scan.systemrelease",
-  "fields": {
-    "release": 4,
-    "active": false,
-    "product": "Red Hat Enterprise Linux 6",
-    "tag": "rhel-6.4",
-    "parent": 19
-  }
-},
-{
-  "pk": 21,
-  "model": "scan.systemrelease",
-  "fields": {
-    "release": 5,
-    "active": false,
-    "product": "Red Hat Enterprise Linux 6",
-    "tag": "rhel-6.5",
-    "parent": 20
-  }
-},
-{
-  "pk": 22,
-  "model": "scan.systemrelease",
-  "fields": {
-    "release": 6,
-    "active": false,
-    "product": "Red Hat Enterprise Linux 6",
-    "tag": "rhel-6.6",
-    "parent": 21
-  }
-},
-{
-  "pk": 23,
-  "model": "scan.systemrelease",
-  "fields": {
-    "release": 7,
-    "active": true,
-    "product": "Red Hat Enterprise Linux 6",
-    "tag": "rhel-6.7",
-    "parent": 22
-  }
-},
-{
-  "pk": 24,
-  "model": "scan.systemrelease",
-  "fields": {
-    "release": 8,
-    "active": false,
-    "product": "Red Hat Enterprise Linux 6",
-    "tag": "rhel-6.8",
-    "parent": 23
-  }
-},
-{
-  "pk": 25,
-  "model": "scan.systemrelease",
-  "fields": {
     "release": 9,
-    "active": false,
-    "product": "Red Hat Enterprise Linux 6",
-    "tag": "rhel-6.9",
-    "parent": 24
-  }
-},
-{
-  "pk": 26,
-  "model": "scan.systemrelease",
-  "fields": {
-    "release": 10,
-    "active": false,
-    "product": "Red Hat Enterprise Linux 6",
-    "tag": "rhel-6.10",
-    "parent": 25
-  }
-},
-{
-  "pk": 27,
-  "model": "scan.systemrelease",
-  "fields": {
-    "release": 11,
-    "active": false,
-    "product": "Red Hat Enterprise Linux 6",
-    "tag": "rhel-6.11",
-    "parent": 26
-  }
-},
-{
-  "pk": 28,
-  "model": "scan.systemrelease",
-  "fields": {
-    "release": 12,
-    "active": false,
-    "product": "Red Hat Enterprise Linux 6",
-    "tag": "rhel-6.12",
-    "parent": 27
-  }
-},
-{
-  "pk": 29,
-  "model": "scan.systemrelease",
-  "fields": {
-    "release": 13,
-    "active": false,
-    "product": "Red Hat Enterprise Linux 6",
-    "tag": "rhel-6.13",
-    "parent": 28
-  }
-},
-{
-  "pk": 30,
-  "model": "scan.systemrelease",
-  "fields": {
-    "release": 0,
-    "active": false,
-    "product": "Red Hat Enterprise Linux 7",
-    "tag": "rhel-7.0",
+    "active": true,
+    "product": "EPEL",
+    "tag": "epel-9",
     "parent": null
   }
 },
 {
-  "pk": 31,
-  "model": "scan.systemrelease",
+  "pk": 1,
+  "model": "scan.tag",
   "fields": {
     "release": 1,
-    "active": false,
-    "product": "Red Hat Enterprise Linux 7",
-    "tag": "rhel-7.1",
-    "parent": 30
-  }
-},
-{
-  "pk": 32,
-  "model": "scan.systemrelease",
-  "fields": {
-    "release": 2,
-    "active": true,
-    "product": "Red Hat Enterprise Linux 7",
-    "tag": "rhel-7.2",
-    "parent": 31
-  }
-},
-{
-  "pk": 33,
-  "model": "scan.systemrelease",
-  "fields": {
-    "release": 3,
-    "active": false,
-    "product": "Red Hat Enterprise Linux 7",
-    "tag": "rhel-7.3",
-    "parent": 32
-  }
-},
-{
-  "pk": 34,
-  "model": "scan.systemrelease",
-  "fields": {
-    "release": 4,
-    "active": false,
-    "product": "Red Hat Enterprise Linux 7",
-    "tag": "rhel-7.4",
-    "parent": 33
-  }
-},
-{
-  "pk": 35,
-  "model": "scan.systemrelease",
-  "fields": {
-    "release": 5,
-    "active": false,
-    "product": "Red Hat Enterprise Linux 7",
-    "tag": "rhel-7.5",
-    "parent": 34
-  }
-},
-{
-  "pk": 36,
-  "model": "scan.systemrelease",
-  "fields": {
-    "release": 6,
-    "active": false,
-    "product": "Red Hat Enterprise Linux 7",
-    "tag": "rhel-7.6",
-    "parent": 35
-  }
-},
-{
-  "pk": 37,
-  "model": "scan.systemrelease",
-  "fields": {
-    "release": 7,
-    "active": false,
-    "product": "Red Hat Enterprise Linux 7",
-    "tag": "rhel-7.7",
-    "parent": 36
-  }
-},
-{
-  "pk": 38,
-  "model": "scan.systemrelease",
-  "fields": {
-    "release": 8,
-    "active": false,
-    "product": "Red Hat Enterprise Linux 7",
-    "tag": "rhel-7.8",
-    "parent": 37
-  }
-},
-{
-  "pk": 39,
-  "model": "scan.systemrelease",
-  "fields": {
-    "release": 9,
-    "active": false,
-    "product": "Red Hat Enterprise Linux 7",
-    "tag": "rhel-7.9",
-    "parent": 38
-  }
-},
-{
-  "pk": 40,
-  "model": "scan.systemrelease",
-  "fields": {
-    "release": 10,
-    "active": false,
-    "product": "Red Hat Enterprise Linux 7",
-    "tag": "rhel-7.10",
-    "parent": 39
-  }
-},
-{
-  "pk": 41,
-  "model": "scan.systemrelease",
-  "fields": {
-    "release": 11,
-    "active": false,
-    "product": "Red Hat Enterprise Linux 7",
-    "tag": "rhel-7.11",
-    "parent": 40
-  }
-},
-{
-  "pk": 42,
-  "model": "scan.systemrelease",
-  "fields": {
-    "release": 12,
-    "active": false,
-    "product": "Red Hat Enterprise Linux 7",
-    "tag": "rhel-7.12",
-    "parent": 41
-  }
-},
-{
-  "pk": 43,
-  "model": "scan.systemrelease",
-  "fields": {
-    "release": 13,
-    "active": false,
-    "product": "Red Hat Enterprise Linux 7",
-    "tag": "rhel-7.13",
-    "parent": 42
-  }
-},
-{
-  "pk": 44,
-  "model": "scan.systemrelease",
-  "fields": {
-    "release": 0,
-    "active": true,
-    "product": "Red Hat Enterprise Linux 8",
-    "tag": "rhel-8.0",
-    "parent": null
-  }
-},
-{
-  "pk": 45,
-  "model": "scan.systemrelease",
-  "fields": {
-    "release": 1,
-    "active": true,
-    "product": "Red Hat Enterprise Linux 8",
-    "tag": "rhel-8.1",
-    "parent": 44
-  }
-},
-{
-  "pk": 46,
-  "model": "scan.systemrelease",
-  "fields": {
-    "release": 2,
-    "active": true,
-    "product": "Red Hat Enterprise Linux 8",
-    "tag": "rhel-8.2",
-    "parent": 45
-  }
-},
-{
-  "pk": 47,
-  "model": "scan.systemrelease",
-  "fields": {
-    "release": 3,
-    "active": true,
-    "product": "Red Hat Enterprise Linux 8",
-    "tag": "rhel-8.3",
-    "parent": 46
-  }
-},
-{
-  "pk": 48,
-  "model": "scan.systemrelease",
-  "fields": {
-    "release": 0,
-    "active": true,
-    "product": "Red Hat OpenShift Enterprise",
-    "tag": "rhose",
-    "parent": null
-  }
-},
-{
-  "pk": 49,
-  "model": "scan.systemrelease",
-  "fields": {
-    "release": 4,
-    "active": true,
-    "product": "Red Hat Enterprise Linux 8",
-    "tag": "rhel-8.4",
-    "parent": 47
-  }
-},
-{
-  "pk": 50,
-  "model": "scan.systemrelease",
-  "fields": {
-    "release": 5,
-    "active": true,
-    "product": "Red Hat Enterprise Linux 8",
-    "tag": "rhel-8.5",
-    "parent": 49
-  }
-},
-{
-  "pk": 51,
-  "model": "scan.systemrelease",
-  "fields": {
-    "release": -1,
-    "active": true,
-    "product": "Red Hat Enterprise Linux 9",
-    "tag": "rhel-9-beta",
-    "parent": null
-  }
-},
-{
-  "pk": 52,
-  "model": "scan.systemrelease",
-  "fields": {
-    "release": 6,
-    "active": true,
-    "product": "Red Hat Enterprise Linux 8",
-    "tag": "rhel-8.6",
-    "parent": 50
-  }
-},
-{
-  "pk": 53,
-  "model": "scan.systemrelease",
-  "fields": {
-    "release": 0,
-    "active": true,
-    "product": "Red Hat Enterprise Linux 9",
-    "tag": "rhel-9.0",
-    "parent": 51
-  }
-},
-{
-  "pk": 54,
-  "model": "scan.systemrelease",
-  "fields": {
-    "release": 0,
-    "active": true,
-    "product": "Fedora 37",
-    "tag": "fedora-37",
-    "parent": null
+    "name": "Fedora-36",
+    "mock": 6
   }
 },
 {
@@ -2154,8 +820,8 @@
   "model": "scan.tag",
   "fields": {
     "release": 2,
-    "name": "RHEL-5.0",
-    "mock": 90
+    "name": "Fedora-37",
+    "mock": 8
   }
 },
 {
@@ -2163,8 +829,8 @@
   "model": "scan.tag",
   "fields": {
     "release": 3,
-    "name": "RHEL-5.1",
-    "mock": 90
+    "name": "Fedora-38",
+    "mock": 10
   }
 },
 {
@@ -2172,8 +838,8 @@
   "model": "scan.tag",
   "fields": {
     "release": 4,
-    "name": "RHEL-5.2",
-    "mock": 90
+    "name": "Fedora-39",
+    "mock": 12
   }
 },
 {
@@ -2181,8 +847,8 @@
   "model": "scan.tag",
   "fields": {
     "release": 5,
-    "name": "RHEL-5.3",
-    "mock": 90
+    "name": "CentOS-7",
+    "mock": 14
   }
 },
 {
@@ -2190,8 +856,8 @@
   "model": "scan.tag",
   "fields": {
     "release": 6,
-    "name": "RHEL-5.4",
-    "mock": 90
+    "name": "CentOS-Stream-8",
+    "mock": 16
   }
 },
 {
@@ -2199,8 +865,8 @@
   "model": "scan.tag",
   "fields": {
     "release": 7,
-    "name": "RHEL-5.5",
-    "mock": 90
+    "name": "CentOS-Stream-9",
+    "mock": 18
   }
 },
 {
@@ -2208,8 +874,8 @@
   "model": "scan.tag",
   "fields": {
     "release": 8,
-    "name": "RHEL-5.6",
-    "mock": 90
+    "name": "RHEL-7",
+    "mock": 20
   }
 },
 {
@@ -2217,8 +883,8 @@
   "model": "scan.tag",
   "fields": {
     "release": 9,
-    "name": "RHEL-5.7",
-    "mock": 90
+    "name": "RHEL-8",
+    "mock": 22
   }
 },
 {
@@ -2226,8 +892,8 @@
   "model": "scan.tag",
   "fields": {
     "release": 10,
-    "name": "RHEL-5.8",
-    "mock": 90
+    "name": "RHEL-9",
+    "mock": 24
   }
 },
 {
@@ -2235,8 +901,8 @@
   "model": "scan.tag",
   "fields": {
     "release": 11,
-    "name": "RHEL-5.9",
-    "mock": 90
+    "name": "EPEL-7",
+    "mock": 26
   }
 },
 {
@@ -2244,8 +910,8 @@
   "model": "scan.tag",
   "fields": {
     "release": 12,
-    "name": "RHEL-5.10",
-    "mock": 90
+    "name": "EPEL-8",
+    "mock": 28
   }
 },
 {
@@ -2253,440 +919,8 @@
   "model": "scan.tag",
   "fields": {
     "release": 13,
-    "name": "RHEL-5.11",
-    "mock": 90
-  }
-},
-{
-  "pk": 14,
-  "model": "scan.tag",
-  "fields": {
-    "release": 14,
-    "name": "RHEL-5.12",
-    "mock": 90
-  }
-},
-{
-  "pk": 15,
-  "model": "scan.tag",
-  "fields": {
-    "release": 15,
-    "name": "RHEL-5.13",
-    "mock": 90
-  }
-},
-{
-  "pk": 16,
-  "model": "scan.tag",
-  "fields": {
-    "release": 16,
-    "name": "RHEL-6.0",
-    "mock": 91
-  }
-},
-{
-  "pk": 17,
-  "model": "scan.tag",
-  "fields": {
-    "release": 17,
-    "name": "RHEL-6.1",
-    "mock": 91
-  }
-},
-{
-  "pk": 18,
-  "model": "scan.tag",
-  "fields": {
-    "release": 18,
-    "name": "RHEL-6.2",
-    "mock": 91
-  }
-},
-{
-  "pk": 19,
-  "model": "scan.tag",
-  "fields": {
-    "release": 19,
-    "name": "RHEL-6.3",
-    "mock": 91
-  }
-},
-{
-  "pk": 20,
-  "model": "scan.tag",
-  "fields": {
-    "release": 20,
-    "name": "RHEL-6.4",
-    "mock": 91
-  }
-},
-{
-  "pk": 21,
-  "model": "scan.tag",
-  "fields": {
-    "release": 21,
-    "name": "RHEL-6.5",
-    "mock": 91
-  }
-},
-{
-  "pk": 22,
-  "model": "scan.tag",
-  "fields": {
-    "release": 22,
-    "name": "RHEL-6.6",
-    "mock": 91
-  }
-},
-{
-  "pk": 23,
-  "model": "scan.tag",
-  "fields": {
-    "release": 23,
-    "name": "RHEL-6.7",
-    "mock": 91
-  }
-},
-{
-  "pk": 24,
-  "model": "scan.tag",
-  "fields": {
-    "release": 24,
-    "name": "RHEL-6.8",
-    "mock": 91
-  }
-},
-{
-  "pk": 25,
-  "model": "scan.tag",
-  "fields": {
-    "release": 25,
-    "name": "RHEL-6.9",
-    "mock": 91
-  }
-},
-{
-  "pk": 26,
-  "model": "scan.tag",
-  "fields": {
-    "release": 26,
-    "name": "RHEL-6.10",
-    "mock": 91
-  }
-},
-{
-  "pk": 27,
-  "model": "scan.tag",
-  "fields": {
-    "release": 27,
-    "name": "RHEL-6.11",
-    "mock": 91
-  }
-},
-{
-  "pk": 28,
-  "model": "scan.tag",
-  "fields": {
-    "release": 28,
-    "name": "RHEL-6.12",
-    "mock": 91
-  }
-},
-{
-  "pk": 29,
-  "model": "scan.tag",
-  "fields": {
-    "release": 29,
-    "name": "RHEL-6.13",
-    "mock": 91
-  }
-},
-{
-  "pk": 30,
-  "model": "scan.tag",
-  "fields": {
-    "release": 30,
-    "name": "RHEL-7.0",
-    "mock": 92
-  }
-},
-{
-  "pk": 31,
-  "model": "scan.tag",
-  "fields": {
-    "release": 31,
-    "name": "RHEL-7.1",
-    "mock": 92
-  }
-},
-{
-  "pk": 32,
-  "model": "scan.tag",
-  "fields": {
-    "release": 32,
-    "name": "RHEL-7.2",
-    "mock": 137
-  }
-},
-{
-  "pk": 33,
-  "model": "scan.tag",
-  "fields": {
-    "release": 33,
-    "name": "RHEL-7.3",
-    "mock": 137
-  }
-},
-{
-  "pk": 34,
-  "model": "scan.tag",
-  "fields": {
-    "release": 34,
-    "name": "RHEL-7.4",
-    "mock": 137
-  }
-},
-{
-  "pk": 35,
-  "model": "scan.tag",
-  "fields": {
-    "release": 35,
-    "name": "RHEL-7.5",
-    "mock": 92
-  }
-},
-{
-  "pk": 36,
-  "model": "scan.tag",
-  "fields": {
-    "release": 36,
-    "name": "RHEL-7.6",
-    "mock": 137
-  }
-},
-{
-  "pk": 37,
-  "model": "scan.tag",
-  "fields": {
-    "release": 37,
-    "name": "RHEL-7.7",
-    "mock": 137
-  }
-},
-{
-  "pk": 38,
-  "model": "scan.tag",
-  "fields": {
-    "release": 38,
-    "name": "RHEL-7.8",
-    "mock": 150
-  }
-},
-{
-  "pk": 39,
-  "model": "scan.tag",
-  "fields": {
-    "release": 39,
-    "name": "RHEL-7.9",
-    "mock": 92
-  }
-},
-{
-  "pk": 40,
-  "model": "scan.tag",
-  "fields": {
-    "release": 40,
-    "name": "RHEL-7.10",
-    "mock": 92
-  }
-},
-{
-  "pk": 41,
-  "model": "scan.tag",
-  "fields": {
-    "release": 41,
-    "name": "RHEL-7.11",
-    "mock": 92
-  }
-},
-{
-  "pk": 42,
-  "model": "scan.tag",
-  "fields": {
-    "release": 42,
-    "name": "RHEL-7.12",
-    "mock": 92
-  }
-},
-{
-  "pk": 43,
-  "model": "scan.tag",
-  "fields": {
-    "release": 43,
-    "name": "RHEL-7.13",
-    "mock": 92
-  }
-},
-{
-  "pk": 44,
-  "model": "scan.tag",
-  "fields": {
-    "release": 31,
-    "name": "RHEL-7-CEPH-1-3",
-    "mock": 122
-  }
-},
-{
-  "pk": 45,
-  "model": "scan.tag",
-  "fields": {
-    "release": 31,
-    "name": "RHEL-7-CEPH-1-2",
-    "mock": 122
-  }
-},
-{
-  "pk": 46,
-  "model": "scan.tag",
-  "fields": {
-    "release": 23,
-    "name": "RHEL-6-CEPH-1-3",
-    "mock": 91
-  }
-},
-{
-  "pk": 47,
-  "model": "scan.tag",
-  "fields": {
-    "release": 23,
-    "name": "RHEL-6-CEPH-1-2",
-    "mock": 91
-  }
-},
-{
-  "pk": 48,
-  "model": "scan.tag",
-  "fields": {
-    "release": 31,
-    "name": "RHEL-7-CEPH-2-0",
-    "mock": 92
-  }
-},
-{
-  "pk": 49,
-  "model": "scan.tag",
-  "fields": {
-    "release": 35,
-    "name": "RHEL-7-CEPH-2-4",
-    "mock": 118
-  }
-},
-{
-  "pk": 50,
-  "model": "scan.tag",
-  "fields": {
-    "release": 35,
-    "name": "RHEL-7-CEPH-3-0",
-    "mock": 119
-  }
-},
-{
-  "pk": 51,
-  "model": "scan.tag",
-  "fields": {
-    "release": 44,
-    "name": "RHEL-8.0",
-    "mock": 133
-  }
-},
-{
-  "pk": 52,
-  "model": "scan.tag",
-  "fields": {
-    "release": 45,
-    "name": "RHEL-8.1",
-    "mock": 141
-  }
-},
-{
-  "pk": 53,
-  "model": "scan.tag",
-  "fields": {
-    "release": 46,
-    "name": "RHEL-8.2",
-    "mock": 149
-  }
-},
-{
-  "pk": 54,
-  "model": "scan.tag",
-  "fields": {
-    "release": 47,
-    "name": "RHEL-8.3",
-    "mock": 155
-  }
-},
-{
-  "pk": 55,
-  "model": "scan.tag",
-  "fields": {
-    "release": 48,
-    "name": "RHOSE",
-    "mock": 143
-  }
-},
-{
-  "pk": 56,
-  "model": "scan.tag",
-  "fields": {
-    "release": 49,
-    "name": "RHEL-8.4",
-    "mock": 159
-  }
-},
-{
-  "pk": 57,
-  "model": "scan.tag",
-  "fields": {
-    "release": 50,
-    "name": "RHEL-8.5",
-    "mock": 166
-  }
-},
-{
-  "pk": 58,
-  "model": "scan.tag",
-  "fields": {
-    "release": 51,
-    "name": "RHEL-9-BETA",
-    "mock": 158
-  }
-},
-{
-  "pk": 59,
-  "model": "scan.tag",
-  "fields": {
-    "release": 52,
-    "name": "RHEL-8.6",
-    "mock": 129
-  }
-},
-{
-  "pk": 60,
-  "model": "scan.tag",
-  "fields": {
-    "release": 53,
-    "name": "RHEL-9.0",
-    "mock": 162
-  }
-},
-{
-  "pk": 61,
-  "model": "scan.tag",
-  "fields": {
-    "release": 54,
-    "name": "Fedora-37",
-    "mock": 171
+    "name": "EPEL-9",
+    "mock": 30
   }
 },
 {
