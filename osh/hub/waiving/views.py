@@ -139,9 +139,7 @@ one)."
                                      'scanbinding', None)
     context['next_sb'] = getattr(sb.scan.parent, 'scanbinding', None)
     ids = list(sb.scan.all_scans_in_release().values_list('id', flat=True))
-    if sb.scan.id not in ids:
-        context['scan_order'] = '#'
-    else:
+    if sb.scan.id in ids:
         context['scan_order'] = ids.index(sb.scan.id) + 1
     context['scans_count'] = len(ids)
 

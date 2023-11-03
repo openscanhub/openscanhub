@@ -177,9 +177,11 @@
     {% endif %}
     {% endif %}
 
-    <span class="nav_box">
-        Scan {{ scan_order }} of {{ scans_count }}
-    </span>
+    {% if scan_order %}
+        <span class="nav_box">
+            Scan {{ scan_order }} of {{ scans_count }}
+        </span>
+    {% endif %}
 
     {% if previous_sb or next_sb %}
     {% if next_sb %}
