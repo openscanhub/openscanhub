@@ -77,15 +77,6 @@ RESULT_GROUP_PROCESSED = (
     RESULT_GROUP_STATES['CONTAINS_BUG'],
 )
 
-CHECKER_SEVERITIES = Enum(
-    EnumItem("NO_EFFECT", help_text="this test does not affect program, could be style issue"),
-    EnumItem("FALSE_POSITIVE", help_text="test is not reliable & yields many false positives"),
-    EnumItem("UNCLASSIFIED", help_text="the default category"),
-    EnumItem("CONFUSION", help_text="the author is confused; could be logic problems nearby"),
-    EnumItem("SECURITY", help_text="could be exploited"),
-    EnumItem("ROBUSTNESS", help_text="will cause the program to crash or lockup"),
-)
-
 
 class Result(models.Model):
     """
@@ -444,11 +435,6 @@ class Checker(models.Model):
     """
     name = models.CharField("Checker's name", max_length=64,
                             blank=False, null=False)
-    severity = models.PositiveIntegerField(
-        default=CHECKER_SEVERITIES["NO_EFFECT"],
-        choices=CHECKER_SEVERITIES.get_mapping(),
-        help_text="Severity of checker that the defect represents"
-    )
     # if you use get_or_create, it will save it
     group = models.ForeignKey(CheckerGroup, verbose_name="Checker group",
                               blank=True, null=True,
