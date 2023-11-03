@@ -20,7 +20,7 @@ osh/hub/manage.py migrate
 # hub work.
 if [ "$(osh/hub/manage.py dumpdata scan.MockConfig)" = "[]" ]; then
     osh/hub/manage.py loaddata \
-        osh/hub/{errata,scan}/fixtures/initial_data.json
+        osh/hub/{errata,scan,waiving}/fixtures/initial_data.json
 fi
 
 # Run a dummy SMTP server in background

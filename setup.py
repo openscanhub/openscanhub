@@ -51,6 +51,7 @@ for folder in (
     "static-assets",
     "scan/fixtures",
     "errata/fixtures",
+    "waiving/fixtures",
 ):
 
     for path in (hub_path / folder).rglob("*"):

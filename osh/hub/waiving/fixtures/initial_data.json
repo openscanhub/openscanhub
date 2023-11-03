@@ -1,0 +1,121 @@
+[
+{
+  "model": "waiving.checkergroup",
+  "pk": 1,
+  "fields": {
+    "name": "Unsorted",
+    "enabled": true
+  }
+},
+{
+  "model": "waiving.checkergroup",
+  "pk": 2,
+  "fields": {
+    "name": "Hard-coded Secrets",
+    "enabled": true
+  }
+},
+{
+  "model": "waiving.checkergroup",
+  "pk": 3,
+  "fields": {
+    "name": "GCC Analyzer",
+    "enabled": true
+  }
+},
+{
+  "model": "waiving.checkergroup",
+  "pk": 4,
+  "fields": {
+    "name": "Clang",
+    "enabled": true
+  }
+},
+{
+  "model": "waiving.checkergroup",
+  "pk": 5,
+  "fields": {
+    "name": "Compiler Warnings",
+    "enabled": true
+  }
+},
+{
+  "model": "waiving.checkergroup",
+  "pk": 6,
+  "fields": {
+    "name": "Cppcheck Warnings",
+    "enabled": true
+  }
+},
+{
+  "model": "waiving.checkergroup",
+  "pk": 7,
+  "fields": {
+    "name": "Shell",
+    "enabled": true
+  }
+},
+{
+  "model": "waiving.checker",
+  "pk": 1,
+  "fields": {
+    "name": "COMPILER_WARNING",
+    "severity": 0,
+    "group": 5
+  }
+},
+{
+  "model": "waiving.checker",
+  "pk": 2,
+  "fields": {
+    "name": "GCC_ANALYZER_WARNING",
+    "severity": 0,
+    "group": 3
+  }
+},
+{
+  "model": "waiving.checker",
+  "pk": 3,
+  "fields": {
+    "name": "CPPCHECK_WARNING",
+    "severity": 0,
+    "group": 6
+  }
+},
+{
+  "model": "waiving.checker",
+  "pk": 4,
+  "fields": {
+    "name": "CLANG_WARNING",
+    "severity": 0,
+    "group": 4
+  }
+},
+{
+  "model": "waiving.checker",
+  "pk": 5,
+  "fields": {
+    "name": "GITLEAKS_WARNING",
+    "severity": 4,
+    "group": 2
+  }
+},
+{
+  "model": "waiving.checker",
+  "pk": 6,
+  "fields": {
+    "name": "HARDCODED_CREDENTIALS",
+    "severity": 4,
+    "group": 2
+  }
+},
+{
+  "model": "waiving.checker",
+  "pk": 7,
+  "fields": {
+    "name": "SHELLCHECK_WARNING",
+    "severity": 0,
+    "group": 7
+  }
+}
+]
