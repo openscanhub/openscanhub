@@ -5,15 +5,14 @@ import os
 from pathlib import Path
 
 from setuptools import PEP420PackageFinder, setup
-
-from scripts.include import (get_git_date_and_time, get_git_version,
-                             git_check_tag_for_HEAD)
+from setuptools_scm import get_version
 
 find_namespace_packages = PEP420PackageFinder.find
 
 THIS_FILE_PATH = os.path.dirname(os.path.abspath(__file__))
 
-package_version = [0, 9, 5]
+package_version = "0.9.5"
+
 data_files = {
     "/etc/osh": [
         "osh/client/client.conf",
@@ -58,15 +57,12 @@ for folder in (
         if path.is_file():
             package_data["osh"].append(str(path.relative_to("osh")))
 
-if os.path.isdir(".git") and not git_check_tag_for_HEAD(THIS_FILE_PATH):
-    package_version.append("git")
-    git_version = get_git_version(THIS_FILE_PATH)
-    git_date, git_time = get_git_date_and_time(THIS_FILE_PATH)
-    package_version += [git_date, git_time, git_version]
+if os.path.isdir(".git"):
+    package_version = get_version()
 
 setup(
     name="osh",
-    version=".".join(map(str, package_version)),
+    version=package_version,
     url="https://github.com/openscanhub/openscanhub",
     author="Red Hat, Inc.",
     author_email="openscanhub-devel@redhat.com",

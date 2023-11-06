@@ -10,7 +10,7 @@ files_to_sync:
     - .packit.yaml
 
 # Packages need to generate srpm and version info
-srpm_build_deps: [git, make, rpm-build]
+srpm_build_deps: [git, make, python3-setuptools_scm, rpm-build]
 
 # `packit` should not generate a release tag
 update_release: false

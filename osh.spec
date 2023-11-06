@@ -20,6 +20,7 @@ BuildRequires:  python3-kobo-rpmlib
 BuildRequires:  python3-psycopg2
 BuildRequires:  python3-qpid-proton
 BuildRequires:  python3-setuptools
+BuildRequires:  python3-setuptools_scm
 BuildRequires:  systemd-rpm-macros
 
 # make sure that shell completion dir macros are defined in the buildroot
