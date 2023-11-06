@@ -9,7 +9,7 @@ ExecStartPre=test -r /etc/osh/worker.conf
 ExecStart=/usr/sbin/osh-worker -f
 KillMode=process
 Restart=on-failure
-StandardOutput=append:/var/log/osh/worker.log
+StandardOutput=null
 
 [Install]
 WantedBy=multi-user.target
