@@ -76,9 +76,24 @@ log:
 source: clean
 	@python3 setup.py sdist --formats=gztar
 
-VERSION = $(shell echo dist/*.tar.gz | sed "s/.*osh-\(.*\).tar.gz/\1/g")
+# path to the distribution tarball produced by `setup.py dist`
+TGZ_ORIG = $(shell echo dist/*.tar.gz)
+
+# top-level directory in the distribution tarball used by `setup.py dist`
+TGZ_DIR_ORIG = $(shell basename $(TGZ_ORIG) .tar.gz)
+
+# version used by the RPM packaing
+VERSION = $(shell scripts/get-version.sh)
+
+# top-level directory in the distribution tarball used by the source RPM
+TGZ_DIR = osh-$(VERSION)
+
+# path to the distribution tarball used by the source RPM
+TGZ = dist/$(TGZ_DIR).tar.gz
 
 srpm: source
+	tar -xzf $(TGZ_ORIG) -C dist --transform 's/$(TGZ_DIR_ORIG)/$(TGZ_DIR)/'
+	tar -czf $(TGZ) -C dist --remove-files $(TGZ_DIR)
 	echo "%global version $(VERSION)" > dist/osh.spec
 	cat osh.spec >> dist/osh.spec
 	rpmbuild -bs "dist/osh.spec"	\
