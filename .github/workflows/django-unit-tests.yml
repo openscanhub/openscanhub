@@ -33,10 +33,12 @@ jobs:
           podman exec -it osh-hub /usr/bin/coverage-3 xml --rcfile=/coveragerc -o /cov/coverage.xml
           podman cp osh-hub:/cov/coverage.xml .
 
-          # Show logs
-          podman-compose logs db
-          podman-compose logs osh-hub
-          podman-compose logs osh-worker
+      - name: Show logs
+        if: always()
+        run: |
+          podman logs db
+          podman logs osh-hub
+          podman logs osh-worker
 
       - name: "Upload Django Unit Tests Coverage to Codecov"
         uses: codecov/codecov-action@v3
