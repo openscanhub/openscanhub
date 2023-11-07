@@ -65,7 +65,7 @@ Requires: python3-kobo-client
 Requires: python3-kobo-rpmlib
 Requires: python3-kobo-worker >= 0.32.0
 Requires: %{name}-common = %{version}-%{release}
-Requires: osh-worker-conf
+Recommends: osh-worker-conf
 
 Obsoletes: covscan-worker < %{version}
 
@@ -101,7 +101,7 @@ Requires: python3-jira
 Requires(post): %{_bindir}/pg_isready
 
 Requires: %{name}-common = %{version}-%{release}
-Requires: osh-hub-conf
+Recommends: osh-hub-conf
 
 Obsoletes: covscan-hub < %{version}
 
