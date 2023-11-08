@@ -17,6 +17,8 @@ services:
   osh-hub:
     image: osh-hub
     build:
+      args:
+        - "CENTOS_RELEASE"
       context: .
       dockerfile: ./containers/hub/Dockerfile
     container_name: osh-hub
@@ -40,6 +42,8 @@ services:
   osh-worker:
     image: osh-worker
     build:
+      args:
+        - "CENTOS_RELEASE"
       context: .
       dockerfile: ./containers/worker.Dockerfile
     container_name: osh-worker
@@ -58,6 +62,8 @@ services:
   osh-client:
     image: osh-client
     build:
+      args:
+        - "CENTOS_RELEASE"
       context: .
       dockerfile: ./containers/client.Dockerfile
     container_name: osh-client
