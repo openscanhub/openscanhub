@@ -22,4 +22,4 @@ jobs:
           email: ${{ secrets.COVERITY_SCAN_EMAIL }}
           token: ${{ secrets.COVERITY_SCAN_TOKEN }}
           project: openscanhub/openscanhub
-          command: --no-command --fs-capture-search .
+          command: --no-command --fs-capture-search . --fs-capture-search-exclude-regex '/cov-(int|analysis)/'
