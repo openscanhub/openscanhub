@@ -6,6 +6,11 @@ on:
     branches: [main]
 jobs:
   integration-tests:
+    strategy:
+      fail-fast: false
+      matrix:
+        centos-stream: [8, 9]
+
     runs-on: ubuntu-20.04
     steps:
       - name: Install packages required to run job in a container
@@ -26,7 +31,7 @@ jobs:
 
       - name: Run integration tests
         run: |
-          containers/scripts/generate_integration_test_coverage.sh --force
+          CENTOS_RELEASE='${{matrix.centos-stream}}' containers/scripts/generate_integration_test_coverage.sh --force
 
       - name: "Upload Integration Tests Coverage to Codecov"
         uses: codecov/codecov-action@v3

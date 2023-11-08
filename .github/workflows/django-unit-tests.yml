@@ -6,6 +6,11 @@ on:
     branches: [main]
 jobs:
   django-unit-tests:
+    strategy:
+      fail-fast: false
+      matrix:
+        centos-stream: [8, 9]
+
     runs-on: ubuntu-20.04
     steps:
       - name: Install packages required for unit tests
@@ -26,7 +31,7 @@ jobs:
 
       - name: Run unit tests
         run: |
-          containers/scripts/init-db.sh --force --minimal
+          CENTOS_RELEASE='${{matrix.centos-stream}}' containers/scripts/init-db.sh --force --minimal
           podman exec -it osh-hub /usr/bin/coverage-3 run --omit="*site-packages*,*kobo*," --rcfile=/coveragerc osh/hub/manage.py test -v 3 || exit 1
 
           # Generate xml report to be uploaded to codecov
