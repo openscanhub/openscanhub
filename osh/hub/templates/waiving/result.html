@@ -46,6 +46,9 @@
     {% if sb.scan.base %}
     <a id="basetask_link" class="btn margin_right" href="{% url 'task/detail' sb.scan.base.scanbinding.task.id %}">Base Task</a>
     {% endif %}
+    {% if sb.scan.is_errata_base_scan %}
+        <a id="basetask_link" class="btn margin_right" href="{% url 'waiving/result' sb.task.parent.scanbinding.id %}">Parent Scan</a>
+    {% endif %}
 </div>
 
 {% if sb.result %} {# display defects list only if scan finished #}
