@@ -150,6 +150,7 @@
 
 {% endif %}
 
+{% if not sb.scan.is_errata_base_scan %}
 <div id="result_links">
     {% if first_sb %}
         <span class="link">
@@ -221,6 +222,7 @@
         </span>
     {% endif %}
 </div>
+{% endif %}
 
 <div id="legend_wrapper">
     <div id="legend_center_wrapper">
