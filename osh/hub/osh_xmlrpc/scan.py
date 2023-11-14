@@ -245,9 +245,10 @@ def find_tasks(request, query):
     """
     if not isinstance(query, dict):
         return []
-    nvr = query.get('nvr', None)
-    package_name = query.get('package_name', None)
-    regex = query.get('regex', None)
+    nvr = query.get('nvr')
+    package_name = query.get('package_name')
+    regex = query.get('regex')
+    states = query.get('states')
 
     result = []
     tasks = None
@@ -257,6 +258,8 @@ def find_tasks(request, query):
         tasks = Task.objects.filter(label__regex=package_name + r"-\d")
     elif regex:
         tasks = Task.objects.filter(label__regex=regex)
+    if states:
+        tasks = tasks.filter(state__in=states)
     if tasks is not None:
         result = list(tasks.order_by("-dt_finished").values_list(
             "id", flat=True))
