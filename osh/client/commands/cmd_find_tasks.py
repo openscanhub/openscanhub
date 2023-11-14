@@ -3,6 +3,8 @@
 
 import sys
 
+from kobo.client.constants import TASK_STATES
+
 import osh.client
 
 
@@ -47,10 +49,21 @@ these options: --regex, --package, --nvr"
             action="store_true",
             help="query by NVR (default one)"
         )
+        self.parser.add_option(
+            "-s",
+            "--states",
+            action="append",
+            type="string",
+            nargs=1,
+            help=(f"query by task state. This option is used in conjunction with -r, -p, or -n. "
+                  f"Specify multiple states by using it multiple times, like '-s failed -s closed'. "
+                  f"Valid choices include {', '.join([s.lower() for s in TASK_STATES])}.")
+        )
 
     def run(self, *args, **kwargs):
         regex = kwargs.pop("regex")
         package_name = kwargs.pop("package")
+        states = kwargs.get("states")
 
         latest = kwargs.pop("latest")
 
@@ -71,6 +84,8 @@ these options: --regex, --package, --nvr"
         else:
             # nvr is default one, so we don't care if it's specified
             query['nvr'] = query_string
+        if states:
+            query['states'] = [TASK_STATES[state.upper()] for state in states]
         task_ids = self.hub.scan.find_tasks(query)
 
         if not task_ids:

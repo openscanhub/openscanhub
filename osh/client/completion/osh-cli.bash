@@ -69,6 +69,7 @@ _osh_cli()
         COMPREPLY+=( $(compgen -W '-r --regex  ' -- "${cur}") )
         COMPREPLY+=( $(compgen -W '-p --package' -- "${cur}") )
         COMPREPLY+=( $(compgen -W '-n --nvr    ' -- "${cur}") )
+        COMPREPLY+=( $(compgen -W '-s --state  ' -- "${cur}") )
         ;;
 
     list-tasks)
