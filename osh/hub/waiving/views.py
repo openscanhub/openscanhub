@@ -193,10 +193,10 @@ def add_logs_to_context(sb):
                                  (FIXED_HTML_FILE, 'HTML'),
                                  (FIXED_DIFF_FILE, 'JSON')], logs_list))
     logs.append(create_log_dict('All defects', 'Document_content_32.png',
-                                log_prefix + '.html',
-                                [(log_prefix + '.err', 'TXT'),
-                                 (log_prefix + '.html', 'HTML'),
-                                 (log_prefix + '.js', 'JSON')], logs_list))
+                                log_prefix + '-all.html',
+                                [(log_prefix + '-all.err', 'TXT'),
+                                 (log_prefix + '-all.html', 'HTML'),
+                                 (log_prefix + '-all.js', 'JSON')], logs_list))
     logs.append(create_log_dict('Scan Log', 'Message_log_32.png',
                                 'stdout.log',
                                 [('stdout.log', 'TXT')], logs_list))
