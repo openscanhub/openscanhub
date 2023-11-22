@@ -56,9 +56,18 @@ these options: --regex, --package, --nvr"
             type="string",
             nargs=1,
             help=(f"query by task state. This option is used in conjunction with -r, -p, or -n. "
-                  f"Specify multiple states by using it multiple times, like '-s failed -s closed'. "
-                  f"Valid choices include {', '.join([s.lower() for s in TASK_STATES])}.")
+                  f"Specify multiple states by using it multiple times, like '-s FAILED -s CLOSED'. "
+                  f"Valid choices include {', '.join(TASK_STATES)}.")
         )
+
+    def _validate_states(self, states):
+        """
+        State validator, raise error in case user specifies invalid task states
+        """
+        valid_states = list(TASK_STATES)
+        invalid_states = [s for s in states if s.upper() not in valid_states]
+        if invalid_states:
+            self.parser.error(f"Invalid state(s) specified: {', '.join(invalid_states)}.")
 
     def run(self, *args, **kwargs):
         regex = kwargs.pop("regex")
@@ -85,6 +94,7 @@ these options: --regex, --package, --nvr"
             # nvr is default one, so we don't care if it's specified
             query['nvr'] = query_string
         if states:
+            self._validate_states(states)
             query['states'] = [TASK_STATES[state.upper()] for state in states]
         task_ids = self.hub.scan.find_tasks(query)
 
