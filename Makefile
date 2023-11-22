@@ -6,12 +6,12 @@ help:
 	@echo
 	@echo "Available targets are:"
 	@echo " help                    show this text"
-	@echo " build			builds basic development environment"
+	@echo " build                   builds basic development environment"
 	@echo " clean                   remove python bytecode and temp files"
 	@echo " clean-dev               also cleans up development environment"
-	@echo " full-dev		builds full development environment"
+	@echo " full-dev                builds full development environment"
 	@echo " install                 install program on current system"
-	@echo " lint			run pre-commit linters on branch"
+	@echo " lint                    run pre-commit linters on branch"
 	@echo " lint-all                run pre-commit linters on all files"
 	@echo " source                  create source tarball"
 
@@ -76,10 +76,10 @@ srpm: source
 	tar -czf $(TGZ) -C dist --remove-files $(TGZ_DIR)
 	echo "%global version $(VERSION)" > dist/osh.spec
 	cat osh.spec >> dist/osh.spec
-	rpmbuild -bs "dist/osh.spec"	\
-		--define "_sourcedir ./dist"	\
-		--define "_specdir ."		\
-		--define "_srcrpmdir ."
+	rpmbuild -bs "dist/osh.spec"     \
+	    --define "_sourcedir ./dist" \
+	    --define "_specdir ."        \
+	    --define "_srcrpmdir ."
 
 REPO = origin
 BRANCH = main
