@@ -9,7 +9,6 @@ help:
 	@echo " build			builds basic development environment"
 	@echo " clean                   remove python bytecode and temp files"
 	@echo " clean-dev               also cleans up development environment"
-	@echo " cli-test		run cli sanity tests"
 	@echo " full-dev		builds full development environment"
 	@echo " install                 install program on current system"
 	@echo " lint			run pre-commit linters on branch"
@@ -36,20 +35,6 @@ deploy:
 
 full-deploy:
 	@./containers/scripts/deploy.sh --full-dev
-
-
-IS_LINUX = $(shell source containers/scripts/utils.sh; echo $$IS_LINUX)
-
-ifeq ($(IS_LINUX), 1)
-	PREREQ =
-else
-	PREREQ = full-deploy
-endif
-
-cli-test: $(PREREQ)
-	@[ "$(IS_LINUX)" = "1" ] && \
-		./scripts/cli_sanity_test.sh || \
-		docker exec -it osh-client scripts/cli_sanity_test.sh
 
 
 clean-local-python:
