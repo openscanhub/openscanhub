@@ -13,7 +13,6 @@ help:
 	@echo " install                 install program on current system"
 	@echo " lint			run pre-commit linters on branch"
 	@echo " lint-all                run pre-commit linters on all files"
-	@echo " log                     prepare changelog for spec file"
 	@echo " source                  create source tarball"
 
 
@@ -52,10 +51,6 @@ clean: clean-local-python clean-local-files
 
 clean-dev: clean-local-files
 	@./containers/scripts/deploy.sh --clean
-
-
-log:
-	@(LC_ALL=C date +"* %a %b %e %Y `git config --get user.name` <`git config --get user.email`> - VERSION"; git log --pretty="format:- %s (%an)") | less
 
 
 source: clean
