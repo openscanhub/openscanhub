@@ -29,11 +29,11 @@ full-build:
 
 
 deploy:
-	@containers/scripts/deploy.sh
+	@containers/scripts/init-db.sh --minimal
 
 
 full-deploy:
-	@containers/scripts/deploy.sh --full-dev
+	@containers/scripts/init-db.sh --minimal --full-dev
 
 
 clean-local-python:
