@@ -6,14 +6,17 @@ help:
 	@echo
 	@echo "Available targets are:"
 	@echo " help                    show this text"
-	@echo " build                   builds basic development environment"
+	@echo " build                   builds development environment without the client"
 	@echo " clean                   remove python bytecode and temp files"
 	@echo " clean-dev               also cleans up development environment"
-	@echo " full-dev                builds full development environment"
+	@echo " deploy                  builds and starts development environment without the client"
+	@echo " full-build              builds development environment with the client"
+	@echo " full-deploy             builds and starts development environment with the client"
 	@echo " install                 install program on current system"
 	@echo " lint                    run pre-commit linters on branch"
 	@echo " lint-all                run pre-commit linters on all files"
 	@echo " source                  create source tarball"
+	@echo " srpm                    craete source RPM"
 
 
 install:
