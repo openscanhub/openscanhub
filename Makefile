@@ -21,19 +21,19 @@ install:
 
 
 build:
-	@./containers/scripts/deploy.sh --no-start
+	@containers/scripts/deploy.sh --no-start
 
 
 full-build:
-	@./containers/scripts/deploy.sh --no-start --full-dev
+	@containers/scripts/deploy.sh --no-start --full-dev
 
 
 deploy:
-	@./containers/scripts/deploy.sh
+	@containers/scripts/deploy.sh
 
 
 full-deploy:
-	@./containers/scripts/deploy.sh --full-dev
+	@containers/scripts/deploy.sh --full-dev
 
 
 clean-local-python:
@@ -50,7 +50,7 @@ clean: clean-local-python clean-local-files
 
 
 clean-dev: clean-local-files
-	@./containers/scripts/deploy.sh --clean
+	@containers/scripts/deploy.sh --clean
 
 
 source: clean
