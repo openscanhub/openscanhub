@@ -84,11 +84,11 @@ srpm: source
 	    --define "_specdir ."        \
 	    --define "_srcrpmdir ."
 
-REPO = origin
-BRANCH = main
+REMOTE ?= origin
+BRANCH ?= main
 
 lint:
-	pre-commit run --show-diff-on-failure --color=always --from-ref $(REPO)/$(BRANCH) --to-ref HEAD
+	pre-commit run --show-diff-on-failure --color=always --from-ref $(REMOTE)/$(BRANCH) --to-ref HEAD
 
 
 lint-all:

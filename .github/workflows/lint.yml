@@ -22,13 +22,11 @@ jobs:
         run: |
           # This is here to suppress a warning from GitHub
           git config --global --add safe.directory /__w/openscanhub/openscanhub
-          # TODO: This should be moved to `make lint` once we migrate to GitHub
-          REPO=origin
-          BRANCH=main
+
           # Check if we are running CI in a fork
           if ! git remote -v | grep -q 'origin.*openscanhub/openscanhub'; then
-            REPO=openscanhub
-            git remote add ${REPO} https://github.com/openscanhub/openscanhub.git
+            REMOTE=openscanhub
+            git remote add ${REMOTE} https://github.com/openscanhub/openscanhub.git
+            git fetch ${REMOTE}
           fi
-          git fetch ${REPO} ${BRANCH}
-          pre-commit run --show-diff-on-failure --color=always --from-ref ${REPO}/${BRANCH} --to-ref HEAD
+          make lint
