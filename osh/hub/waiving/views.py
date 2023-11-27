@@ -18,8 +18,9 @@ from osh.common.constants import (ERROR_DIFF_FILE, ERROR_HTML_FILE,
                                   FIXED_HTML_FILE, FIXED_TXT_FILE)
 from osh.hub.other import get_or_none
 from osh.hub.scan.compare import get_compare_title
-from osh.hub.scan.models import (SCAN_STATES, SCAN_TYPES_TARGET, ETMapping,
-                                 Package, Scan, ScanBinding, SystemRelease)
+from osh.hub.scan.models import (SCAN_STATES, SCAN_TYPES, SCAN_TYPES_TARGET,
+                                 ETMapping, Package, Scan, ScanBinding,
+                                 SystemRelease)
 from osh.hub.scan.notify import send_notif_new_comment
 from osh.hub.scan.service import get_latest_sb_by_package
 from osh.hub.scan.xmlrpc_helper import scan_notification_email
@@ -142,6 +143,10 @@ one)."
     if sb.scan.id in ids:
         context['scan_order'] = ids.index(sb.scan.id) + 1
     context['scans_count'] = len(ids)
+
+    # only show the type for non-regular scans
+    if sb.scan.scan_type != SCAN_TYPES['ERRATA']:
+        context['scan_type'] = SCAN_TYPES.get_item_help_text(sb.scan.scan_type)
 
     return context
 
