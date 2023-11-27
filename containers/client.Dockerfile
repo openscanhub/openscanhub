@@ -22,6 +22,5 @@ RUN printf '[run]\ndata_file = /cov/coverage\n' > /coveragerc
 ### END OF COMMON PART
 
 ENV OSH_CLIENT_CONFIG_FILE=osh/client/client-local.conf
-RUN touch /CLIENT_IS_READY
 
 CMD sleep inf

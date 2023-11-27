@@ -28,6 +28,5 @@ RUN dnf -y --setopt=tsflags=nodocs install \
 RUN adduser csmock -G mock
 
 ENV OSH_WORKER_CONFIG_FILE=osh/worker/worker-local.conf
-RUN touch /WORKER_IS_READY
 
 CMD coverage-3 run --parallel-mode --omit="*site-packages*,*kobo*," --rcfile=/coveragerc osh/worker/osh-worker -f
