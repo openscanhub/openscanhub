@@ -31,14 +31,14 @@ class ErrataDiffBuild(TaskBase):
     def run(self):
         scan_id = self.args.pop('scan_id')
         mock_config = self.args.pop("mock_config")
-        scanning_session_id = self.args.pop("scanning_session")
+        profile = self.args.pop("profile")
         build = self.args.pop("build")
         su_user = self.args.pop("su_user", None)
 
         self.hub.worker.set_scan_to_scanning(scan_id)
 
         # update analyzers version cache if needed
-        cache_task_args = self.hub.worker.ensure_cache(mock_config, scanning_session_id)
+        cache_task_args = self.hub.worker.ensure_cache(mock_config, profile)
         if cache_task_args is not None:
             self.spawn_subtask(*cache_task_args, inherit_worker=True)
             self.wait()
@@ -54,7 +54,7 @@ class ErrataDiffBuild(TaskBase):
             self.wait()
             self.hub.worker.set_scan_to_scanning(scan_id)
 
-        scanning_args = self.hub.worker.get_scanning_args(scanning_session_id)
+        scanning_args = self.hub.worker.get_scanning_args(profile)
         add_args = scanning_args.get('csmock_args', '')
         koji_profile = scanning_args.get('koji_profile', 'koji')
 
