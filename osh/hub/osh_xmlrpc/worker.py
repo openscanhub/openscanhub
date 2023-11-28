@@ -128,8 +128,7 @@ def fail_scan(request, scan_id, reason=None):
 
 @validate_worker
 def get_scanning_args(request, profile):
-    # TODO: remove the `or` expression
-    return Profile.objects.get(name=(profile or 'errata')).command_arguments
+    return Profile.objects.get(name=profile).command_arguments
 
 
 @validate_worker
@@ -157,8 +156,7 @@ def ensure_cache(request, mock_config, profile):
         # FIXME: hard-coded at two places for now
         mock_config = 'rhel-9-alpha-x86_64'
     if not AnalyzerVersion.objects.is_cache_uptodate(mock_config):
-        # TODO: remove the `or` expression
-        profile = Profile.objects.get(name=(profile or 'errata'))
+        profile = Profile.objects.get(name=profile)
         analyzers = profile.analyzers
         csmock_args = profile.csmock_args
         su_user = AppSettings.setting_get_su_user()

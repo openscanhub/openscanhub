@@ -69,8 +69,6 @@ class AbstractScheduler:
         self.task_args['args'] = {}
         self.task_args['args']['build'] = self.nvr
         self.task_args['args']['profile'] = 'errata'
-        # TODO: remove the 'scanning_session' argument when workers are updated
-        self.task_args['args']['scanning_session'] = None
         self.task_args['args']['su_user'] = AppSettings.setting_get_su_user()
         self.scan_args['nvr'] = self.nvr
         self.scan_args['username'] = self.package_owner
