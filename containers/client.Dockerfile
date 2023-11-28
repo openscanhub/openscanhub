@@ -21,6 +21,9 @@ RUN printf '[run]\ndata_file = /cov/coverage\n' > /coveragerc
 
 ### END OF COMMON PART
 
+RUN adduser --uid 1000 osh
+
 ENV OSH_CLIENT_CONFIG_FILE=osh/client/client-local.conf
 
+USER osh
 CMD sleep inf
