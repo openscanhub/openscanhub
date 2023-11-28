@@ -23,6 +23,18 @@ CLI_XML=(
     osh/hub/scripts/osh-xmlrpc-client.py
 )
 
+check_results() {
+    local task_id="$1" tar_filename untar_dir_name
+
+    tar_filename=$(podman exec -it osh-client "${CLI_COV[@]}" download-results -d~ "$task_id" | grep -oE '[^ ]+\.tar\.xz')
+    podman cp "osh-client:/home/osh/$tar_filename" .
+
+    tar xvf "$tar_filename"
+    untar_dir_name="${tar_filename%%.*}"
+    [[ -f "$untar_dir_name/scan-results.js" ]] && [[ -f "$untar_dir_name/scan-results.html" ]] && [[ -f "$untar_dir_name/scan.log" ]]
+    rm -rf "$tar_filename" "$untar_dir_name"
+}
+
 main() {
     set -ex
 
@@ -49,34 +61,23 @@ main() {
     podman exec -it osh-client "${CLI_COV[@]}" list-mock-configs | grep fedora
     podman exec osh-client "${CLI_COV[@]}" mock-build --profile default --config="fedora-$FEDORA_VERSION-$ARCH" --nvr units-2.21-5.fc$FEDORA_VERSION | grep http://osh-hub:8000/task/1
     podman exec osh-client "${CLI_COV[@]}" task-info 1 | grep "is_failed = False"
-    podman exec -it osh-client "${CLI_COV[@]}" download-results 1
-    untar_output=$(tar xvf units*.tar.xz)
-    untar_dir_name=$(echo $untar_output | cut -d' ' -f1)
-    [[ -f "$untar_dir_name/scan-results.js" ]] && [[ -f "$untar_dir_name/scan-results.html" ]] && [[ -f "$untar_dir_name/scan.log" ]]
-    rm -rf units*.tar.xz "$untar_dir_name"
+    check_results 1
 
     [[ $(podman exec osh-client "${CLI_COV[@]}" find-tasks -p units) -eq 1 ]]
 
     podman exec osh-client "${CLI_COV[@]}" diff-build --config="fedora-$FEDORA_VERSION-$ARCH" --nvr units-2.21-5.fc$FEDORA_VERSION | grep http://osh-hub:8000/task/2
     podman exec osh-client "${CLI_COV[@]}" task-info 2 | grep "is_failed = False"
-    podman exec -it osh-client "${CLI_COV[@]}" download-results 2
-    untar_output=$(tar xvf units*.tar.xz)
-    untar_dir_name=$(echo $untar_output | cut -d' ' -f1)
-    [[ -f "$untar_dir_name/scan-results.js" ]] && [[ -f "$untar_dir_name/scan-results.html" ]] && [[ -f "$untar_dir_name/scan.log" ]]
-    rm -rf units*.tar.xz "$untar_dir_name"
+    check_results 2
 
     # `version-diff-build` needs worker to run in background
     podman exec -i osh-worker scripts/kill_worker.sh
     sed "s/RUN_TASKS_IN_FOREGROUND = 1/RUN_TASKS_IN_FOREGROUND = 0/g" osh/worker/worker-local.conf > osh/worker/worker-local.conf.new
     mv osh/worker/worker-local.conf{.new,}
     podman start osh-worker
+
     podman exec osh-client "${CLI_COV[@]}" version-diff-build --config="fedora-$FEDORA_VERSION-$ARCH" --nvr units-2.21-5.fc$FEDORA_VERSION --base-config="fedora-$FEDORA_VERSION-$ARCH" --base-nvr units-2.21-5.fc$FEDORA_VERSION | grep http://osh-hub:8000/task/3
     podman exec osh-client "${CLI_COV[@]}" task-info 3 | grep "is_failed = False"
-    podman exec -it osh-client "${CLI_COV[@]}" download-results 3
-    untar_output=$(tar xvf units*.tar.xz)
-    untar_dir_name=$(echo $untar_output | cut -d' ' -f1)
-    [[ -f "$untar_dir_name/scan-results.js" ]] && [[ -f "$untar_dir_name/scan-results.html" ]] && [[ -f "$untar_dir_name/scan.log" ]]
-    rm -rf units*.tar.xz "$untar_dir_name"
+    check_results 3
 
     podman exec osh-client "${CLI_XML[@]}" --hub http://osh-hub:8000/xmlrpc/kerbauth/ --username=user --password=xxxxxx create-scan -b libssh2-1.10.0-5.fc37 -t libssh2-1.10.0-7.fc38 --et-scan-id=1 --release=Fedora-37 --owner=admin --advisory-id=1
 
@@ -146,7 +147,7 @@ main() {
     if [[ "$GITHUB_ACTIONS" = "true" ]];
     then
         # We use codecov in GitHub Actions CI. Upload xml reports to it.
-        podman exec -it osh-client /usr/bin/coverage-3 xml --rcfile=/coveragerc
+        podman exec -it osh-client /usr/bin/coverage-3 xml --rcfile=/coveragerc -o /cov/coverage.xml
         podman cp osh-client:/cov/coverage.xml .
     else
         # Convert test coverage to html
