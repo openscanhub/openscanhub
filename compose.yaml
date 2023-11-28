@@ -73,7 +73,7 @@ services:
     networks:
       - internal-network
     volumes:
-      - ./:/src:z
+      - ./:/src:ro,z
       - coverage:/cov
     stdin_open: true
     tty: true
