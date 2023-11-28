@@ -15,7 +15,7 @@ from osh.hub.errata.models import ScanningSession
 from osh.hub.errata.scanner import (BaseNotValidException, obtain_base,
                                     prepare_base_scan)
 from osh.hub.scan.models import (SCAN_STATES, AnalyzerVersion, AppSettings,
-                                 Scan, ScanBinding)
+                                 Profile, Scan, ScanBinding)
 from osh.hub.scan.notify import send_task_notification
 from osh.hub.scan.xmlrpc_helper import cancel_scan
 from osh.hub.scan.xmlrpc_helper import fail_scan as h_fail_scan
@@ -128,9 +128,9 @@ def fail_scan(request, scan_id, reason=None):
 
 
 @validate_worker
-def get_scanning_args(request, scanning_session_id):
-    scanning_session = ScanningSession.objects.get(id=scanning_session_id)
-    return scanning_session.profile.command_arguments
+def get_scanning_args(request, profile):
+    # TODO: remove the `or` expression
+    return Profile.objects.get(name=(profile or 'errata')).command_arguments
 
 
 @validate_worker
@@ -150,7 +150,7 @@ def create_sb(request, task_id):
 
 
 @validate_worker
-def ensure_cache(request, mock_config, scanning_session_id):
+def ensure_cache(request, mock_config, profile):
     """
     make sure that cache with version of analyzers is not stale
     """
@@ -158,9 +158,10 @@ def ensure_cache(request, mock_config, scanning_session_id):
         # FIXME: hard-coded at two places for now
         mock_config = 'rhel-9-alpha-x86_64'
     if not AnalyzerVersion.objects.is_cache_uptodate(mock_config):
-        session = ScanningSession.objects.get(id=scanning_session_id)
-        analyzers = session.profile.analyzers
-        csmock_args = session.profile.csmock_args
+        # TODO: remove the `or` expression
+        profile = Profile.objects.get(name=(profile or 'errata'))
+        analyzers = profile.analyzers
+        csmock_args = profile.csmock_args
         su_user = AppSettings.setting_get_su_user()
         return prepare_version_retriever(mock_config, analyzers, su_user, csmock_args)
 
