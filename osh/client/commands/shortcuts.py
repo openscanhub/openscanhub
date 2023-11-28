@@ -134,7 +134,7 @@ def fetch_results(hub, dest, task_id):
     tarball = _get_result_filename(task_info['args']) + '.tar.xz'
 
     # get absolute path
-    dest_dir = os.path.abspath(dest if dest is not None else os.curdir)
+    dest_dir = os.path.abspath(os.path.expanduser(dest) if dest is not None else os.curdir)
     local_path = os.path.join(dest_dir, tarball)
 
     # task_url is url to task with trailing '/'

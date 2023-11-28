@@ -34,7 +34,7 @@ class Download_Results(osh.client.OshCommand):
                 self.parser.error(f"'{task_id}' is not a number")
 
         results_dir = kwargs.pop("dir", None)
-        if results_dir is not None and not os.path.isdir(results_dir):
+        if results_dir is not None and not os.path.isdir(os.path.expanduser(results_dir)):
             self.parser.error("provided directory does not exist")
 
         # login to the hub

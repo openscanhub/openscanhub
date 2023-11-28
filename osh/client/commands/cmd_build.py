@@ -159,7 +159,7 @@ is not even one in your user configuration file \
         task_id_file = kwargs.get("task_id_file")
         options = self.prepare_task_options(args, kwargs)
 
-        if results_dir is not None and not os.path.isdir(results_dir):
+        if results_dir is not None and not os.path.isdir(os.path.expanduser(results_dir)):
             self.parser.error(f"{results_dir} is not a valid directory!")
 
         # submit the task
