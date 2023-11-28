@@ -39,7 +39,7 @@ RUN dnf -y --setopt=tsflags=nodocs install \
 
 EXPOSE 8000
 
-RUN adduser --system --no-create-home osh
+RUN adduser --uid 1000 --no-create-home osh
 
 COPY containers/hub/run.sh /run.sh
 RUN chmod +x /run.sh

@@ -35,7 +35,7 @@ services:
       - hub-tasks:/src/osh/hub/tasks
       - hub-upload:/src/osh/hub/upload
       - hub-worker:/src/osh/hub/worker
-      - coverage:/cov
+      - coverage:/cov:U
     stdin_open: true
     tty: true
 
