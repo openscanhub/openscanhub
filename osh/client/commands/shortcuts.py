@@ -4,6 +4,7 @@
 import os
 import re
 import sys
+from http import HTTPStatus
 from urllib.error import HTTPError
 from urllib.request import urlretrieve
 from xmlrpc.client import Fault
@@ -154,8 +155,11 @@ def fetch_results(hub, dest, task_id):
 def upload_file(hub, srpm, target_dir, parser):
     """Upload file to hub, catch PermDenied exception"""
     try:
-        # returns (upload_id, err_code, err_msg)
-        return hub.upload_file(os.path.expanduser(srpm), target_dir)
+        upload_id, err_code, err_msg = hub.upload_file(os.path.expanduser(srpm), target_dir)
+        if err_code != HTTPStatus.OK:
+            raise RuntimeError(f'Uploading {srpm} failed: {err_code}: {err_msg.decode()}')
+
+        return upload_id
     except Fault as e:
         handle_perm_denied(e, parser)
 

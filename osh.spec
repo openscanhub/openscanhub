@@ -79,7 +79,7 @@ Requires: mod_auth_gssapi
 Requires: mod_ssl
 Requires: python3-django >= %{min_required_version_django}
 Requires: python3-kobo-client
-Requires: python3-kobo-django
+Requires: python3-kobo-django >= 0.34.0
 Requires: python3-kobo-hub >= 0.33.0
 Requires: python3-kobo-rpmlib
 Requires: python3-mod_wsgi

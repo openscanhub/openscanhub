@@ -89,8 +89,8 @@ is not even one in your user configuration file \
                 options['tarball_build_script'] = tarball_build_script
 
             target_dir = random_string(32)
-            upload_id, *_ = upload_file(self.hub, srpm, target_dir, self.parser)
-            options[prefix + "upload_id"] = upload_id
+            options[prefix + "upload_id"] = upload_file(self.hub, srpm,
+                                                        target_dir, self.parser)
 
         return options
 
@@ -143,9 +143,8 @@ is not even one in your user configuration file \
 
         if cov_custom_model:
             target_dir = random_string(32)
-            upload_model_id, *_ = upload_file(self.hub, cov_custom_model,
-                                              target_dir, self.parser)
-            options["upload_model_id"] = upload_model_id
+            options["upload_model_id"] = upload_file(self.hub, cov_custom_model,
+                                                     target_dir, self.parser)
 
         if packages_to_install:
             options['install_to_chroot'] = packages_to_install

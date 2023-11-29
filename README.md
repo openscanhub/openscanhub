@@ -24,7 +24,7 @@ report bugs and feature requests on GitHub using the above URL.
 - `python3-django >= 3.2.0`
 - `python3-jira`
 - `python3-kobo-client`
-- `python3-kobo-django`
+- `python3-kobo-django >= 0.34.0`
 - `python3-kobo-hub >= 0.33.0`
 - `python3-kobo-rpmlib`
 - `python3-mod_wsgi`
