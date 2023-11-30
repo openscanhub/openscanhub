@@ -10,6 +10,8 @@ ExecStart=/usr/sbin/osh-worker -f
 KillMode=process
 Restart=on-failure
 StandardOutput=null
+MemoryHigh=95%
+MemoryMax=95%
 
 [Install]
 WantedBy=multi-user.target
