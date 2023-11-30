@@ -78,6 +78,7 @@ srpm: source
 	tar -xzf $(TGZ_ORIG) -C dist --transform 's/$(TGZ_DIR_ORIG)/$(TGZ_DIR)/'
 	tar -czf $(TGZ) -C dist --remove-files $(TGZ_DIR)
 	echo "%global version $(VERSION)" > dist/osh.spec
+	cp osh-worker.sysusers dist/osh-worker.sysusers
 	cat osh.spec >> dist/osh.spec
 	rpmbuild -bs "dist/osh.spec"     \
 	    --define "_sourcedir ./dist" \

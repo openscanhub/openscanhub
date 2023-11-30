@@ -1,0 +1,4 @@
+# Type  Name        ID     GECOS
+  u     osh-worker  -      "OpenScanHub Worker"
+# Type  User        Group
+  m     osh-worker  mock

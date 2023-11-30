@@ -6,7 +6,8 @@ Release:        1%{?dist}
 License:        GPL-3.0-or-later
 Summary:        Static and Dynamic Analysis as a Service
 URL:            https://github.com/openscanhub/openscanhub/
-Source:         https://github.com/openscanhub/openscanhub/archive/refs/tags/%{name}-%{version}.tar.gz
+Source0:        https://github.com/openscanhub/openscanhub/archive/refs/tags/%{name}-%{version}.tar.gz
+Source1:        osh-worker.sysusers
 BuildArch:      noarch
 
 BuildRequires:  koji
@@ -65,6 +66,7 @@ Requires: python3-kobo-client
 Requires: python3-kobo-rpmlib
 Requires: python3-kobo-worker >= 0.32.0
 Requires: %{name}-common = %{version}-%{release}
+%{?sysusers_requires_compat}
 Recommends: osh-worker-conf
 
 Obsoletes: covscan-worker < %{version}
@@ -177,6 +179,9 @@ rm -rf %{buildroot}%{python3_sitelib}/scripts
 # install example httpd config
 install -D {osh/hub,%{buildroot}%{_sysconfdir}/httpd/conf.d}/osh-hub-httpd.conf
 
+# install sysusers configuration for the worker
+install -p -D -m 0644 %{SOURCE1} %{buildroot}%{_sysusersdir}/osh-worker.conf
+
 %files client
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_bindir}/osh-cli
@@ -199,8 +204,9 @@ install -D {osh/hub,%{buildroot}%{_sysconfdir}/httpd/conf.d}/osh-hub-httpd.conf
 %files worker
 %defattr(644,root,root,755)
 %{python3_sitelib}/osh/worker
+%{_sysusersdir}/osh-worker.conf
 %{_unitdir}/osh-worker.service
-%attr(754,root,root) %{_sbindir}/osh-worker
+%attr(754,osh-worker,osh-worker) %{_sbindir}/osh-worker
 %dir %attr(775,root,root) %{_localstatedir}/log/osh
 
 %post client
@@ -211,6 +217,9 @@ fi
 %post worker
 %systemd_post osh-worker.service
 
+%pre worker
+%sysusers_create_compat %{SOURCE1}
+
 %preun worker
 %systemd_preun osh-worker.service
 
@@ -218,7 +227,7 @@ fi
 %systemd_postun_with_restart osh-worker.service
 
 %files worker-conf-devel
-%attr(640,root,root) %config(noreplace) %{_sysconfdir}/osh/worker.conf
+%attr(640,osh-worker,osh-worker) %config(noreplace) %{_sysconfdir}/osh/worker.conf
 
 %files hub
 %defattr(-,root,apache,-)

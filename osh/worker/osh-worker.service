@@ -10,6 +10,7 @@ ExecStart=/usr/sbin/osh-worker -f
 KillMode=process
 Restart=on-failure
 StandardOutput=null
+User=osh-worker
 
 [Install]
 WantedBy=multi-user.target
