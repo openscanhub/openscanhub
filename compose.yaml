@@ -53,7 +53,7 @@ services:
     networks:
       - internal-network
     volumes:
-      - ./:/src:z
+      - ./:/src:ro,z
       - coverage:/cov
     privileged: true
     stdin_open: true
