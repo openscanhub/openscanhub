@@ -176,6 +176,10 @@ XMLRPC_METHODS = {
 LOGIN_URL_NAME = 'auth/krb5login'
 LOGIN_EXEMPT_URLS = ['.*xmlrpc/.*']
 
+# Default redirect targets for unsafe or invalid ?next URLs
+LOGIN_REDIRECT_URL = 'index'
+LOGOUT_REDIRECT_URL = 'index'
+
 VALID_TASK_LOG_EXTENSIONS = ['.log', '.ini', '.err', '.out', '.js', '.txt']
 
 # override default values with custom ones from local settings
