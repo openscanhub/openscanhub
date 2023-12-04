@@ -48,7 +48,7 @@ See [development docs](docs/development.md) for instructions.
 
 ## RPM-based Installation
 
-TODO
+Latest development RPM packages can be found in [Copr](https://copr.fedorainfracloud.org/coprs/g/openscanhub/devel/).
 
 ## Documentation
 
