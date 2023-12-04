@@ -107,10 +107,6 @@ MIDDLEWARE = (
 
 INTERNAL_IPS = ('127.0.0.1',)
 
-
-LOGIN_URL_NAME = 'auth/krb5login'
-LOGIN_EXEMPT_URLS = ('.*xmlrpc/.*')
-
 INSTALLED_APPS = (
     'django.contrib.auth',
     'kobo.django.auth.apps.AuthConfig',
@@ -179,8 +175,6 @@ XMLRPC_METHODS = {
 
 LOGIN_URL_NAME = 'auth/krb5login'
 LOGIN_EXEMPT_URLS = ['.*xmlrpc/.*']
-
-ET_SCAN_PRIORITY = 20
 
 VALID_TASK_LOG_EXTENSIONS = ['.log', '.ini', '.err', '.out', '.js', '.txt']
 
