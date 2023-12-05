@@ -62,7 +62,7 @@ _osh-cli_args()
 
     case "${words[1]}" in
         cancel-tasks|list-analyzers|list-mock-configs|list-profiles|help*|\
-        task-info|watch-tasks)
+        watch-tasks)
             # these do not have any extra options
             ;;
 
@@ -90,6 +90,10 @@ _osh-cli_args()
 
         list-workers)
             args+=('--show-disabled[show disabled workers]')
+            ;;
+
+        task-info)
+            args+=('--json[print the task info in JSON format]')
             ;;
 
         resubmit-tasks)

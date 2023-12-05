@@ -48,8 +48,7 @@ _osh_cli()
         ;;
 
     # these do not have any extra options
-    cancel-tasks|list-analyzers|list-mock-configs|list-profiles|help*|\
-    task-info|watch-tasks)
+    cancel-tasks|list-analyzers|list-mock-configs|list-profiles|help*|watch-tasks)
         ;;
 
     download-results)
@@ -91,6 +90,10 @@ _osh_cli()
             COMPREPLY+=( $(compgen -W '--force --nowait --priority=' -- "${cur}") )
             ;;
         esac
+        ;;
+
+    task-info)
+        COMPREPLY+=( $(compgen -W '--json' -- "${cur}") )
         ;;
 
     watch-log)
