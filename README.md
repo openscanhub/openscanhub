@@ -1,3 +1,5 @@
+[![Copr build status](https://copr.fedorainfracloud.org/coprs/g/openscanhub/devel/package/osh/status_image/last_build.png)](https://copr.fedorainfracloud.org/coprs/g/openscanhub/devel/)
+
 # OpenScanHub
 
 OpenScanHub is a service for static and dynamic analysis. You can find the
