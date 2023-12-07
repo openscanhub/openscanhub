@@ -6,9 +6,9 @@ import logging
 from django.core.exceptions import ObjectDoesNotExist
 from kobo.django.xmlrpc.decorators import login_required
 
-from osh.hub.errata.scanner import handle_scan
 from osh.hub.scan.models import (REQUEST_STATES, SCAN_STATES, AppSettings,
                                  ETMapping)
+from osh.hub.scan.scanner import handle_scan
 
 # DO NOT REMOVE!  The __all__ list contains all publicly exported XML-RPC
 # methods from this module.

@@ -10,10 +10,9 @@ from kobo.django.xmlrpc.decorators import login_required
 from kobo.hub.models import Task
 
 from osh.common.constants import DEFAULT_SCAN_LIMIT
-from osh.hub.errata.scanner import (ClientDiffPatchesScanScheduler,
-                                    ClientDiffScanScheduler,
-                                    ClientScanScheduler)
 from osh.hub.scan.models import SCAN_STATES, ClientAnalyzer, Profile, Scan
+from osh.hub.scan.scanner import (ClientDiffPatchesScanScheduler,
+                                  ClientDiffScanScheduler, ClientScanScheduler)
 
 logger = logging.getLogger(__name__)
 

@@ -17,17 +17,16 @@ from django.core.exceptions import ObjectDoesNotExist
 from kobo.django.upload.models import FileUpload
 from kobo.hub.models import TASK_STATES, Task
 
-from osh.hub.errata.check import check_analyzers, check_srpm, check_upload
-from osh.hub.errata.utils import get_or_fail, is_rebase
 from osh.hub.other.exceptions import PackageBlockedException
+from osh.hub.scan.check import (check_analyzers, check_build, check_nvr,
+                                check_obsolete_scan, check_package_is_blocked,
+                                check_srpm, check_upload)
 from osh.hub.scan.models import (REQUEST_STATES, SCAN_TYPES, AppSettings,
                                  ClientAnalyzer, ETMapping, MockConfig,
                                  Package, Profile, Scan, ScanBinding, Tag)
 from osh.hub.scan.service import get_latest_binding
+from osh.hub.scan.utils import get_or_fail, is_rebase
 from osh.hub.service.processing import task_has_results
-
-from .check import (check_build, check_nvr, check_obsolete_scan,
-                    check_package_is_blocked)
 
 logger = logging.getLogger(__name__)
 

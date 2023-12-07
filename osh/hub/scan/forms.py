@@ -4,7 +4,7 @@
 from django import forms
 from django.db.models import Q
 
-from osh.hub.errata.check import check_build, check_nvr
+from osh.hub.scan.check import check_build, check_nvr
 from osh.hub.scan.models import MockConfig, Package, PackageAttribute
 
 
