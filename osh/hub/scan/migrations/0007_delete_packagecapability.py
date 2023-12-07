@@ -6,7 +6,6 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('errata', '0003_auto_20230403_1830'),
         ('scan', '0006_auto_20230329_1348'),
     ]
 
