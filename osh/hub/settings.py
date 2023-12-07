@@ -127,7 +127,6 @@ INSTALLED_APPS = (
     'kobo.hub',
 
     # OpenScanHub
-    'osh.hub.errata',
     'osh.hub.scan',
     'osh.hub.waiving',
     'osh.hub.stats',
