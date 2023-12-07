@@ -1,4 +1,5 @@
 import os
+import sys
 from xmlrpc.client import Fault
 
 from kobo.shortcuts import random_string
@@ -63,7 +64,8 @@ class Base_Build(OshCommand):
 is not even one in your user configuration file \
 (~/.config/osh/client.conf) nor in system configuration file \
 (/etc/osh/client.conf)")
-            print(prefix + "config not specified, using default one:", config)
+            print(prefix + "config not specified, using default one:", config,
+                  file=sys.stderr)
 
         result = verify_mock(config, self.hub)
         if result is not None:
