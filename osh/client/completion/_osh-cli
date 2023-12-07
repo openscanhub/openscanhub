@@ -122,6 +122,7 @@ _osh-cli_args()
                 '--cov-custom-model=[path to custom Coverity model file for C/C++ code]:filename:_files'
                 '--config=[specify mock config name]:osh:->configs'
                 '--comment=[a task description]'
+                '--json[print created task info in JSON]'
                 '--task-id-file=[task id is written to this file]:filename:_files'
                 "--nowait[don't wait until tasks finish]"
                 # '*' enables repetition

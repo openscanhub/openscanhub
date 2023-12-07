@@ -67,6 +67,14 @@ def add_comment_option(parser):
     )
 
 
+def add_json_option(parser):
+    parser.add_option(
+        "--json",
+        action="store_true",
+        help="print created task info in JSON"
+    )
+
+
 def add_task_id_file_option(parser):
     parser.add_option(
         "--task-id-file",

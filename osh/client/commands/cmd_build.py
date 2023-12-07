@@ -14,8 +14,8 @@ from osh.client.commands.common import (add_analyzers_option,
                                         add_download_results_option,
                                         add_email_to_option,
                                         add_install_to_chroot_option,
-                                        add_nowait_option, add_nvr_option,
-                                        add_priority_option,
+                                        add_json_option, add_nowait_option,
+                                        add_nvr_option, add_priority_option,
                                         add_profile_option,
                                         add_task_id_file_option)
 from osh.client.commands.shortcuts import (check_analyzers, fetch_results,
@@ -43,6 +43,7 @@ class Base_Build(OshCommand):
         add_download_results_option(self.parser)
         add_email_to_option(self.parser)
         add_install_to_chroot_option(self.parser)
+        add_json_option(self.parser)
         add_nowait_option(self.parser)
         add_nvr_option(self.parser)
         add_priority_option(self.parser)
@@ -159,6 +160,7 @@ is not even one in your user configuration file \
         nowait = kwargs.get("nowait")
         results_dir = kwargs.get("results_dir")
         task_id_file = kwargs.get("task_id_file")
+        use_json = kwargs.get("json")
         options = self.prepare_task_options(args, kwargs)
 
         if results_dir is not None and not os.path.isdir(os.path.expanduser(results_dir)):
@@ -171,7 +173,12 @@ is not even one in your user configuration file \
             handle_perm_denied(e, self.parser)
 
         self.write_task_id_file(task_id, task_id_file)
-        print("Task info:", self.hub.client.task_url(task_id))
+
+        task_url = self.hub.client.task_url(task_id)
+        if use_json:
+            print('{"id": %d, "url": "%s"}' % (task_id, task_url))
+        else:
+            print("Task info:", task_url)
 
         if not nowait:
             from kobo.client.task_watcher import TaskWatcher
