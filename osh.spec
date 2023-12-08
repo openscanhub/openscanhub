@@ -38,7 +38,7 @@ Summary: OpenScanHub CLI client
 Requires: koji
 Requires: python3-kobo-client >= 0.15.1-100
 Requires: %{name}-common = %{version}-%{release}
-Obsoletes: python3-%{name}-client < %{version}-%{release}
+
 # This is kept here for backward compatibility with old package name
 Provides: covscan-client = %{version}
 Obsoletes: covscan-client < %{version}
