@@ -7,6 +7,7 @@ import pickle
 from datetime import datetime, timedelta
 
 from kobo.client import HubProxy
+from kobo.client.constants import TASK_STATES
 
 from osh.common.conf import get_config_dict
 
@@ -55,6 +56,13 @@ def fetch_mock_configs(hub):
     return [x['name'] for x in hub.mock_config.all() if x['enabled']]
 
 
+def fetch_task_states(hub):
+    """
+    Return all possible task states
+    """
+    return list(TASK_STATES)
+
+
 def load_from_cache(action):
     """
     Try to load up to date data from the cache
@@ -99,7 +107,8 @@ def main(args):
 ACTIONS = {
     'analyzers': fetch_analyzers,
     'mock-configs': fetch_mock_configs,
-    'profiles': fetch_profiles
+    'profiles': fetch_profiles,
+    'task-states': fetch_task_states,
 }
 
 

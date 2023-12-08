@@ -65,11 +65,19 @@ _osh_cli()
         ;;
 
     find-tasks)
-        COMPREPLY+=( $(compgen -W '-l --latest ' -- "${cur}") )
-        COMPREPLY+=( $(compgen -W '-r --regex  ' -- "${cur}") )
-        COMPREPLY+=( $(compgen -W '-p --package' -- "${cur}") )
-        COMPREPLY+=( $(compgen -W '-n --nvr    ' -- "${cur}") )
-        COMPREPLY+=( $(compgen -W '-s --state  ' -- "${cur}") )
+        case "${prev}" in
+        -s|--state)
+            _osh_cli_complete task-states
+            return
+            ;;
+        *)
+            COMPREPLY+=( $(compgen -W '-l --latest ' -- "${cur}") )
+            COMPREPLY+=( $(compgen -W '-r --regex  ' -- "${cur}") )
+            COMPREPLY+=( $(compgen -W '-p --package' -- "${cur}") )
+            COMPREPLY+=( $(compgen -W '-n --nvr    ' -- "${cur}") )
+            COMPREPLY+=( $(compgen -W '-s --state= ' -- "${cur}") )
+            ;;
+        esac
         ;;
 
     list-tasks)

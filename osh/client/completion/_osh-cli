@@ -76,8 +76,7 @@ _osh-cli_args()
                 '(-r --regex)'{-r,--regex}'[query by regular expression (python, module: re)]'
                 '(-p --pacakge)'{-p,--package}'[query by package name]'
                 '(-n --nvr)'{-n,--nvr}'[query by NVR (default one)]'
-                '(-s --state)'{-s,--state}'[query by task state. This option is used \
-in conjunction with -r, -p, or -n.]'
+                '*'{-s+,--state=}'[query by task state. This option is used in conjunction with -r, -p, or -n.]:osh:->states'
             )
             ;;
 
@@ -171,6 +170,10 @@ in conjunction with -r, -p, or -n.]'
 
         profiles)
             _osh-cli_complete profiles
+            ;;
+
+        states)
+            _osh-cli_complete task-states
             ;;
 
         warn)
