@@ -39,6 +39,11 @@ Requires: koji
 Requires: python3-kobo-client >= 0.15.1-100
 Requires: %{name}-common = %{version}-%{release}
 
+# Although the package is named `osh-client`, users know it as `osh-cli`
+# because of how the executable is named.  This makes it easier for them
+# to install it.
+Provides: osh-cli = %{version}-%{release}
+
 # This is kept here for backward compatibility with old package name
 Provides: covscan-client = %{version}
 Obsoletes: covscan-client < %{version}
