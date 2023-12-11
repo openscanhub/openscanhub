@@ -139,7 +139,7 @@ _osh-cli_args()
         diff-build|mock-build)
             args+=(
                 '(-d --download-results)'{-d+,--download-results=}'[directory for storing results (leave blank for working directory)]:filename:_files -/'
-                '--install=[install packages into chroot wehan scanning tarballs]:filename:_files'
+                '--install=[install packages into chroot when scanning tarballs]:filename:_files'
             )
 
             if [[ "${words[1]}" == 'mock-build' ]]; then
