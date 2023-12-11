@@ -185,6 +185,9 @@ _osh-cli_args()
             )
             _describe -t warn-level 'warn-level' warn_levels
             ;;
+        *)
+            _files
+            ;;
     esac
 }
 
