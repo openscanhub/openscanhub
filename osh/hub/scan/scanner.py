@@ -527,7 +527,8 @@ class ClientDiffScanScheduler(ClientScanScheduler):
         # base srpm
         self.base_build_nvr = self.options.get('base_brew_build', None)
         self.base_upload_id = self.options.get('base_upload_id', None)
-        base_check_srpm_response = check_srpm(self.base_upload_id, self.base_build_nvr, self.username)
+        self.base_is_tarball = 'base_tarball_build_script' in self.options
+        base_check_srpm_response = check_srpm(self.base_upload_id, self.base_build_nvr, self.username, self.base_is_tarball)
         if base_check_srpm_response['type'] == 'build':
             self.base_build_koji_profile = base_check_srpm_response['koji_profile']
         elif base_check_srpm_response['type'] == 'upload':
@@ -557,7 +558,7 @@ class ClientDiffScanScheduler(ClientScanScheduler):
             'csmock_args': self.task_args['args']['csmock_args'],
             'su_user': self.task_args['args']['su_user'],
             'custom_model_name': self.task_args['args']['custom_model_name'],
-            'result_filename': self.determine_result_filename(self.base_build_nvr, label, is_tarball=False)
+            'result_filename': self.determine_result_filename(self.base_build_nvr, label, self.base_is_tarball)
         }
         if self.base_build_nvr:
             args['build'] = {
@@ -567,6 +568,12 @@ class ClientDiffScanScheduler(ClientScanScheduler):
         else:
             args['srpm_name'] = self.base_srpm_name
             args['upload_id'] = self.base_upload_id
+
+        # FIXME: ideally rewrite the code to stuff all input-related info to "source" (e.g. builds,
+        #        nvrs, srpm filenames etc.)
+        if self.base_is_tarball:
+            args['source'] = {"type": "tar"}
+
         return self.task_args['method'], args, label
 
 
