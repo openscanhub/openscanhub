@@ -64,10 +64,6 @@ class Version_Diff_Build(Base_Build):
         if not nvr and not srpm:
             self.parser.error("You haven't specified target.")
 
-        if srpm and not srpm.endswith(".src.rpm"):
-            self.parser.error("provided target file doesn't appear to be \
-a SRPM")
-
         if not base_config and config:
             kwargs["base_config"] = config
         if base_config and not config:

@@ -82,11 +82,14 @@ is not even one in your user configuration file \
                 self.parser.error(result)
             options[prefix + "brew_build"] = nvr
         else:
+            if not os.path.exists(srpm):
+                self.parser.error(f"file does not exist: {srpm}")
+
             # we are analyzing tarball with build script
             if tarball_build_script:
-                if not os.path.exists(srpm):
-                    self.parser.error("Tarball does not exist.")
                 options['tarball_build_script'] = tarball_build_script
+            elif not srpm.endswith(".src.rpm"):
+                self.parser.error(f"provided file doesn't appear to be an SRPM: {srpm}")
 
             target_dir = random_string(32)
             options[prefix + "upload_id"] = upload_file(self.hub, srpm,
