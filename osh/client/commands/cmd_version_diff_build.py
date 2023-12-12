@@ -2,6 +2,7 @@
 # SPDX-FileCopyrightText: Copyright contributors to the OpenScanHub project.
 
 from osh.client.commands.cmd_build import Base_Build
+from osh.client.commands.common import add_tarball_option
 
 
 class Version_Diff_Build(Base_Build):
@@ -24,12 +25,21 @@ class Version_Diff_Build(Base_Build):
 
         self.parser.add_option(
             "--base-srpm",
-            help="path to SRPM used as base"
+            help="path to sources used as base"
         )
 
         self.parser.add_option(
             "--srpm",
-            help="path to SRPM used as target"
+            help="path to sources used as target"
+        )
+
+        add_tarball_option(self.parser)
+        self.parser.add_option(
+            "--base-tarball-build-script",
+            help="With this option osh-cli accepts path to tarball specified via first argument and "
+                 "then the tarball will be scanned. "
+                 "This option sets command which should build the base package, usually this should be just "
+                 "\"make\", in case of packages which doesn't need to be built, just pass \"true\".",
         )
 
         # Deprecated aliases:

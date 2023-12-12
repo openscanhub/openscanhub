@@ -56,7 +56,7 @@ class Base_Build(OshCommand):
         config = kwargs.get(prefix + "config")
         nvr = kwargs.get(prefix + "nvr")
         srpm = kwargs.get(prefix + "srpm")
-        tarball_build_script = kwargs.get("tarball_build_script")
+        tarball_build_script = kwargs.get(prefix + "tarball_build_script")
 
         if not config:
             config = local_conf.get_default_mockconfig()
@@ -87,7 +87,7 @@ is not even one in your user configuration file \
 
             # we are analyzing tarball with build script
             if tarball_build_script:
-                options['tarball_build_script'] = tarball_build_script
+                options[prefix + 'tarball_build_script'] = tarball_build_script
             elif not srpm.endswith(".src.rpm"):
                 self.parser.error(f"provided file doesn't appear to be an SRPM: {srpm}")
 
