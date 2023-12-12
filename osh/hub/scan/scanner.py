@@ -557,6 +557,7 @@ class ClientDiffScanScheduler(ClientScanScheduler):
             'csmock_args': self.task_args['args']['csmock_args'],
             'su_user': self.task_args['args']['su_user'],
             'custom_model_name': self.task_args['args']['custom_model_name'],
+            'result_filename': self.determine_result_filename(self.base_build_nvr, label, is_tarball=False)
         }
         if self.base_build_nvr:
             args['build'] = {
