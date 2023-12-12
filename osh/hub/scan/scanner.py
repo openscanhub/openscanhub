@@ -368,6 +368,19 @@ class AbstractClientScanScheduler:
         # the priority must be non-negative
         return max(0, 10 + priority_offset)
 
+    def determine_result_filename(self, nvr, filename, is_tarball):
+        if nvr:
+            return nvr
+
+        if filename.endswith(".src.rpm"):
+            return os.path.basename(filename)[:-8]
+
+        if is_tarball:
+            f = os.path.basename(filename)
+            return f.rsplit(".", 2 if ".tar." in f else 1)[0]
+
+        raise RuntimeError("unknown input format of sources")
+
 
 class ClientScanScheduler(AbstractClientScanScheduler):
     """
@@ -447,19 +460,7 @@ class ClientScanScheduler(AbstractClientScanScheduler):
         else:
             self.task_args['args']['srpm_name'] = self.srpm_name
 
-        if self.build_nvr:
-            result_filename = self.build_nvr
-        elif input_pkg.endswith(".src.rpm"):
-            result_filename = os.path.basename(input_pkg)[:-8]
-        elif self.is_tarball:
-            f = os.path.basename(input_pkg)
-            if ".tar." in f:
-                result_filename = f.rsplit(".", 2)[0]
-            else:
-                result_filename = f.rsplit(".", 1)[0]
-        else:
-            raise RuntimeError("unknown input format of sources")
-        self.task_args['args']['result_filename'] = result_filename
+        self.task_args['args']['result_filename'] = self.determine_result_filename(self.build_nvr, input_pkg, self.is_tarball)
         # FIXME: ideally rewrite the code to stuff all input-related info to "source" (e.g. builds,
         #        nvrs, srpm filenames etc.)
         if self.is_tarball:
