@@ -44,8 +44,8 @@ class ScanSubmissionForm(forms.Form):
     base = forms.CharField(required=False,
                            help_text="Required only when VersionDiffBuild is selected")
     scan_type = forms.ChoiceField(label="Type of scan",
-                                  choices=(('DiffBuild', 'DiffBuild'),
-                                           ('MockBuild', 'MockBuild'),
+                                  choices=(('MockBuild', 'MockBuild'),
+                                           ('DiffBuild', 'DiffBuild'),
                                            ('VersionDiffBuild', 'VersionDiffBuild')))
     mock = forms.ChoiceField(label="Mock profile")
     comment = forms.CharField(required=False, widget=forms.Textarea())
