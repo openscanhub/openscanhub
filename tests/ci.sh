@@ -5,13 +5,8 @@ set -exo pipefail
 # `TMT_TREE` variable references path that contains clone of git repository to be tested
 cd "$TMT_TREE"
 
-# We are making lots of tweaks in configurations while setting up this job, which may cause
-# issues with SELinux. Keep SELinux in permissive mode and fix any SELinux warnings before
-# enabling it in future.
-setenforce 0
-
 # Install test dependencies
-dnf install -y openssl postgresql-server
+dnf install -y openssl postgresql-server /usr/sbin/semanage
 
 # Setup OpenScanHub settings
 cp osh/hub/settings_local.ci.py /usr/lib/python3.*/site-packages/osh/hub/settings_local.py
@@ -26,8 +21,10 @@ scripts/setup_db.sh
 # csmock user is required to run builds
 adduser csmock -G mock
 
-# Enable below line if SELinux is in restrictive mode
-# setsebool -P httpd_can_network_connect 1
+# Configure SELinux
+setsebool -P httpd_can_network_connect 1
+semanage fcontext -a -t httpd_sys_rw_content_t '/var/log/osh/hub(/.*)?'
+restorecon -R /var/log/osh/hub
 
 # Set up self signed certificate before starting httpd
 (cd /etc/httpd/conf && openssl req -newkey rsa:4096 -nodes -keyout localhost.key -x509 -sha256 -days 365 -addext "subjectAltName = DNS:localhost, DNS:localhost, DNS:127.0.0.1" -subj "/C=CZ/ST=/L=/O=Red Hat/OU=Plumbers/CN=localhost" -out localhost.crt)
