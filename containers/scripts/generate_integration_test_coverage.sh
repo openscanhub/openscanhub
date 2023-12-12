@@ -65,7 +65,8 @@ main() {
 
     [[ $(podman exec osh-client "${CLI_COV[@]}" find-tasks -p units) -eq 1 ]]
 
-    podman exec osh-client "${CLI_COV[@]}" diff-build --config="fedora-$FEDORA_VERSION-$ARCH" --nvr units-2.21-5.fc$FEDORA_VERSION | grep http://osh-hub:8000/task/2
+    podman exec osh-client bash -c "cd /tmp && koji download-build -a src units-2.21-5.fc$FEDORA_VERSION"
+    podman exec osh-client "${CLI_COV[@]}" diff-build --config="fedora-$FEDORA_VERSION-$ARCH" /tmp/units-2.21-5.fc$FEDORA_VERSION.src.rpm | grep http://osh-hub:8000/task/2
     podman exec osh-client "${CLI_COV[@]}" task-info 2 | grep "is_failed = False"
     check_results 2
 
