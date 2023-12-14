@@ -139,7 +139,6 @@ def send_task_notification(request, task_id):
     subject = "Task [#%s] %s finished, state: %s" % (task_id, package, state)
 
     to = task.args.get("email_to", []) or []
-    bcc = task.args.get("email_bcc", []) or []
     recipients = set()
     if recipient:
         recipients.add(recipient)
@@ -149,7 +148,7 @@ def send_task_notification(request, task_id):
     if task.is_failed():
         recipients.add(settings.DEVEL_EMAIL_ADDRESS)
 
-    if not recipients and not bcc:
+    if not recipients:
         return
 
     headers = {
@@ -159,7 +158,7 @@ def send_task_notification(request, task_id):
         "X-Scan-Build": package,
     }
 
-    return send_mail(message, recipient, subject, recipients, headers, bcc)
+    return send_mail(message, recipient, subject, recipients, headers)
 
 
 class MailGenerator:
