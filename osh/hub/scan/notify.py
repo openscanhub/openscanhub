@@ -145,6 +145,10 @@ def send_task_notification(request, task_id):
         recipients.add(recipient)
     if to:
         recipients.update(to)
+
+    if task.is_failed():
+        recipients.add(settings.DEVEL_EMAIL_ADDRESS)
+
     if not recipients and not bcc:
         return
 
