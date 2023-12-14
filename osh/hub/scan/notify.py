@@ -26,7 +26,7 @@ __all__ = (
 logger = logging.getLogger(__name__)
 
 
-def send_mail(message, recipient, subject, recipients, headers, bcc=None):
+def send_mail(message, subject, recipients, headers, bcc=None):
     connection = get_connection(fail_silently=False)
 
     if not AppSettings.setting_send_mail():
@@ -158,7 +158,7 @@ def send_task_notification(request, task_id):
         "X-Scan-Build": package,
     }
 
-    return send_mail(message, recipient, subject, recipients, headers)
+    return send_mail(message, subject, recipients, headers)
 
 
 class MailGenerator:
@@ -291,7 +291,7 @@ def send_scan_notification(request, scan_id):
         "X-Scan-Package": scan.package.name,
         "X-Scan-Build": scan.nvr,
     }
-    return send_mail(message, recipient, subject, [recipient], headers=headers)
+    return send_mail(message, subject, [recipient], headers)
 
 
 def send_notif_new_comment(request, scan, wl):
@@ -311,4 +311,4 @@ def send_notif_new_comment(request, scan, wl):
         "X-Scan-Package": scan.package.name,
         "X-Scan-Build": scan.nvr,
     }
-    return send_mail(message, recipient, subject, [recipient], headers=headers)
+    return send_mail(message, subject, [recipient], headers)
