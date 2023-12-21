@@ -220,7 +220,8 @@ fi
 %systemd_preun osh-worker.service
 
 %postun worker
-%systemd_postun_with_restart osh-worker.service
+# osh-worker does not implement reload and restart would interrupt running tasks
+%systemd_postun osh-worker.service
 
 %files worker-conf-devel
 %attr(640,root,root) %config(noreplace) %{_sysconfdir}/osh/worker.conf
