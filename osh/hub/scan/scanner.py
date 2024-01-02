@@ -15,7 +15,7 @@ import shutil
 
 from django.core.exceptions import ObjectDoesNotExist
 from kobo.django.upload.models import FileUpload
-from kobo.hub.models import TASK_STATES, Task
+from kobo.hub.models import TASK_STATES, Arch, Task
 
 from osh.hub.other.exceptions import PackageBlockedException
 from osh.hub.scan.check import (check_analyzers, check_build, check_nvr,
@@ -29,6 +29,13 @@ from osh.hub.scan.utils import get_or_fail, is_rebase
 from osh.hub.service.processing import task_has_results
 
 logger = logging.getLogger(__name__)
+
+
+def dig_arch(mock_config):
+    for arch in Arch.objects.all():
+        if mock_config.endswith(arch.name):
+            return arch.name
+    return 'noarch'
 
 
 class AbstractScheduler:
@@ -126,6 +133,7 @@ class BaseScheduler(AbstractScheduler):
         self.scan_args['tag'] = self.tag
         self.scan_args['enabled'] = False
 
+        self.task_args['arch_name'] = dig_arch(self.mock_config)
         self.task_args['label'] = self.nvr
         self.task_args['method'] = self.method
         self.task_args['args']['mock_config'] = self.mock_config
@@ -206,6 +214,7 @@ class AbstractTargetScheduler(AbstractScheduler):
         self.tag = Tag.objects.for_release_str(self.options['release'])
         mock_config = self.tag.mock.name
 
+        self.task_args['arch_name'] = dig_arch(mock_config)
         self.task_args['args']['mock_config'] = mock_config
         self.scan_args['tag'] = self.tag
         self.scan_args['package'] = self.package
@@ -443,6 +452,7 @@ class ClientScanScheduler(AbstractClientScanScheduler):
 
     def prepare_args(self):
         """ prepare dicts -- arguments for task and scan """
+        self.task_args['arch_name'] = dig_arch(self.mock_config)
         self.task_args['owner_name'] = self.username
         input_pkg = self.build_nvr or self.srpm_name
         self.task_args['label'] = input_pkg
