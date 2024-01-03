@@ -185,7 +185,7 @@ LOGOUT_REDIRECT_URL = 'index'
 # "staff" = Staff (admin) users only
 USERS_ACL_PERMISSION = "staff"
 
-VALID_TASK_LOG_EXTENSIONS = ['.log', '.ini', '.err', '.out', '.js', '.txt']
+VALID_TASK_LOG_EXTENSIONS = ['.log', '.ini', '.err', '.out', '.js', '.txt', '.cfg']
 
 # This is kept here for backward compatibility.
 # https://github.com/openscanhub/openscanhub/pull/256#pullrequestreview-2001187953
