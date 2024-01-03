@@ -101,7 +101,7 @@ class CsmockRunner:
         return glob_results[-1], retcode
 
     def analyze(self, analyzers, srpm_path, profile=None, su_user=None, additional_arguments=None,
-                result_filename=None, **kwargs):
+                result_filename=None, profile_url=None, **kwargs):
         if result_filename is None:
             result_filename = os.path.basename(srpm_path)[:-8]
         if self.tmpdir:
@@ -119,6 +119,10 @@ class CsmockRunner:
             cmd += " --force-global-cleanup-on-exit"
         else:
             cmd = "csmock"
+            if profile_url:
+                profile = self.download_file(profile_url, 'mock.cfg')
+                # do not cache anything when custom mock profiles are used
+                cmd += ' --scrub-on-exit'
             if profile:
                 cmd += ' -r ' + shlex.quote(profile)
 
@@ -188,7 +192,7 @@ class CsmockRunner:
         return self.analyze(analyzers, srpm_path, profile, su_user, additional_arguments, result_filename=nvr, **kwargs)
 
     def no_scan(self, analyzers, profile=None, su_user=None, additional_arguments=None,
-                **kwargs):
+                profile_url=None, **kwargs):
         """
         execute csmock command for listing analyzers and versions
         returns path to dir with results
@@ -199,6 +203,10 @@ class CsmockRunner:
             cmd = "cspodman"
         else:
             cmd = "csmock"
+            if profile_url:
+                profile = self.download_file(profile_url, 'mock.cfg')
+                # do not cache anything when custom mock profiles are used
+                cmd += ' --scrub-on-exit'
             if profile:
                 cmd += ' -r ' + shlex.quote(profile)
 
