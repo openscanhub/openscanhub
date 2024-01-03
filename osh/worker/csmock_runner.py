@@ -162,15 +162,15 @@ class CsmockRunner:
         if profile == "cspodman":
             return self.analyze(analyzers, nvr, profile, su_user, additional_arguments, result_filename=nvr, **kwargs)
 
-        download_cmd = ["koji", "-p", koji_profile, "download-build", "--quiet", "--arch=src", nvr]
+        download_cmd = f"koji -p {shlex.quote(koji_profile)} download-build --noprogress --arch=src {shlex.quote(nvr)}"
         try:
-            work_dir = self.tmpdir or os.getcwd()
-            subprocess.check_call(download_cmd, cwd=work_dir)
-            srpm_path = os.path.join(work_dir, nvr + '.src.rpm')
-
-        except (OSError, subprocess.CalledProcessError) as ex:
-            print(f"command '{download_cmd}' failed to execute: {ex}",
-                  file=sys.stderr)
+            workdir = self.tmpdir or os.getcwd()
+            run(download_cmd, stdout=True, return_stdout=False, buffer_size=2,
+                show_cmd=True, universal_newlines=True, workdir=workdir,
+                errors="backslashreplace")
+            srpm_path = os.path.join(workdir, nvr + '.src.rpm')
+        except RuntimeError as ex:
+            print(ex, file=sys.stderr)
             return None, 2
 
         if not os.path.exists(srpm_path):
