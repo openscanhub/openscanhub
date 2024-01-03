@@ -179,7 +179,7 @@ LOGIN_EXEMPT_URLS = ['.*xmlrpc/.*']
 LOGIN_REDIRECT_URL = 'index'
 LOGOUT_REDIRECT_URL = 'index'
 
-VALID_TASK_LOG_EXTENSIONS = ['.log', '.ini', '.err', '.out', '.js', '.txt']
+VALID_TASK_LOG_EXTENSIONS = ['.log', '.ini', '.err', '.out', '.js', '.txt', '.cfg']
 
 # override default values with custom ones from local settings
 try:
