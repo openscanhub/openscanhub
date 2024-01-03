@@ -103,7 +103,12 @@ Requires: python3-bugzilla
 Requires: python3-csdiff
 Requires: python3-jira
 
-Requires(post): %{_bindir}/pg_isready
+# Workaround for https://bugzilla.redhat.com/show_bug.cgi?id=2255013
+%if 0%{?fedora} < 40 && 0%{?rhel} < 10
+Requires(post): postgresql < 16
+%else
+Requires(post): postgresql
+%endif
 
 Requires: %{name}-common = %{version}-%{release}
 Recommends: osh-hub-conf
