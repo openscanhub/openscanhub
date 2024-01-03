@@ -44,14 +44,10 @@ class CsmockRunner:
                 # could be erased with rm -rf self.tmpdir
                 pass
 
-    def download_csmock_model(self, model_url, model_name):
-        if self.tmpdir:
-            model_path = os.path.join(self.tmpdir, model_name)
-        else:
-            model_path = os.path.join(os.getcwd(), model_name)
-
-        urllib.request.urlretrieve(model_url, model_path)
-        return model_path
+    def download_file(self, source_url, target_filename):
+        target_path = os.path.join(self.tmpdir or os.getcwd(), target_filename)
+        urllib.request.urlretrieve(source_url, target_path)
+        return target_path
 
     def do(self, command, output_path=None, su_user=None, **kwargs):
         """ we are expecting that csmock will produce and output """
@@ -150,11 +146,7 @@ class CsmockRunner:
                               su_user=None, additional_arguments=None, **kwargs):
         """ download srpm from remote location and analyze it"""
         logger.debug("additional args = %s, kwargs = %s", additional_arguments, kwargs)
-        if self.tmpdir:
-            srpm_path = os.path.join(self.tmpdir, srpm_name)
-        else:
-            srpm_path = os.path.join(os.getcwd(), srpm_name)
-        urllib.request.urlretrieve(srpm_url, srpm_path)
+        srpm_path = self.download_file(srpm_url, srpm_name)
         return self.analyze(analyzers, srpm_path, profile, su_user, additional_arguments, **kwargs)
 
     def koji_analyze(self, analyzers, nvr, profile=None, su_user=None,
