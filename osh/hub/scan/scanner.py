@@ -61,14 +61,18 @@ class AbstractScheduler:
         self.package_owner = get_or_fail('package_owner', self.options)
         self.nvr = get_or_fail('target', self.options)
         self.target_nvre_dict = check_nvr(self.nvr)
-        check_build(self.nvr)
+        self.koji_profile = check_build(self.nvr)['koji_profile']
 
     def prepare_args(self):
         """ prepare dicts -- arguments for task and scan """
-        self.task_args['args'] = {}
-        self.task_args['args']['build'] = self.nvr
-        self.task_args['args']['profile'] = 'errata'
-        self.task_args['args']['su_user'] = AppSettings.setting_get_su_user()
+        self.task_args['args'] = {
+            'build': {
+                'nvr': self.nvr,
+                'koji_profile': self.koji_profile
+            },
+            'profile': 'errata',
+            'su_user': AppSettings.setting_get_su_user(),
+        }
         self.scan_args['nvr'] = self.nvr
         self.scan_args['username'] = self.package_owner
         self.package = Package.objects.get_or_create_by_name(self.target_nvre_dict['name'])

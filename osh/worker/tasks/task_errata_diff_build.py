@@ -56,14 +56,13 @@ class ErrataDiffBuild(TaskBase):
 
         scanning_args = self.hub.worker.get_scanning_args(profile)
         add_args = scanning_args.get('csmock_args', '')
-        koji_profile = scanning_args.get('koji_profile', 'koji')
 
         with CsmockRunner() as runner:
             results, retcode = runner.koji_analyze(scanning_args['analyzers'],
-                                                   build,
+                                                   build['nvr'],
                                                    profile=mock_config,
                                                    additional_arguments=add_args,
-                                                   koji_profile=koji_profile,
+                                                   koji_profile=build['koji_profile'],
                                                    su_user=su_user)
             print('Retcode:', retcode)
             if results is None:
