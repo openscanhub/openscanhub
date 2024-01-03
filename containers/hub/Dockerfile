@@ -41,8 +41,5 @@ EXPOSE 8000
 
 RUN adduser --uid 1000 --no-create-home osh
 
-COPY containers/hub/run.sh /run.sh
-RUN chmod +x /run.sh
-
 USER osh
-CMD /run.sh
+CMD containers/hub/run.sh
