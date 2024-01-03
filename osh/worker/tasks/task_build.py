@@ -60,7 +60,7 @@ class Build(OSHTaskBase):
         with CsmockRunner() as runner:
             if custom_model_name:
                 model_url = urljoin(task_url, f'log/{custom_model_name}?format=raw')
-                model_path = runner.download_csmock_model(model_url, custom_model_name)
+                model_path = runner.download_file(model_url, custom_model_name)
                 csmock_args += " --cov-custom-model " + model_path
 
             if build:
