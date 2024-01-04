@@ -932,6 +932,22 @@
   }
 },
 {
+  "pk": 2,
+  "model": "hub.arch",
+  "fields": {
+    "pretty_name": "aarch64",
+    "name": "aarch64"
+  }
+},
+{
+  "pk": 3,
+  "model": "hub.arch",
+  "fields": {
+    "pretty_name": "x86_64",
+    "name": "x86_64"
+  }
+},
+{
   "pk": 1,
   "model": "hub.channel",
   "fields": {

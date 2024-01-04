@@ -18,7 +18,7 @@ class OSHTaskBase(TaskBase):
     enabled = False
 
     # list of supported architectures
-    arches = ["noarch"]
+    arches = ["noarch", "aarch64", "x86_64"]
 
     # list of channels
     channels = ["default"]

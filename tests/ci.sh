@@ -34,6 +34,9 @@ cp /etc/httpd/conf/localhost.crt /etc/pki/ca-trust/source/anchors/ && update-ca-
 touch /var/log/osh/hub/hub.log && chown apache:apache /var/log/osh/hub/hub.log
 systemctl start httpd
 
+# Assign native architecture to the worker
+python3 scripts/add-worker-arch.py
+
 # Start worker
 systemctl start osh-worker
 
