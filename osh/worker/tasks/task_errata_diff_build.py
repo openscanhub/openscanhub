@@ -25,7 +25,6 @@ class ErrataDiffBuild(TaskBase):
     # if True the task is not forked and runs in the worker process
     # (no matter you run worker without -f)
     foreground = False
-    priority = 20
     weight = 1.0
 
     def run(self):
