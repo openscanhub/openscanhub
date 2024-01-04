@@ -10,15 +10,32 @@ from kobo.worker import TaskBase
 from osh.worker.csmock_runner import CsmockRunner
 
 
-class Build:
-    enabled = True
+class OSHTaskBase(TaskBase):
+    """
+    Default task settings
+    """
+    # each final class should set this to true
+    enabled = False
 
-    arches = ["noarch"]     # list of supported architectures
-    channels = ["default"]  # list of channels
-    exclusive = False       # leave False here unless you really know what you're doing
-    foreground = False      # if True the task is not forked and runs in the worker process (no matter you run worker without -f)
+    # list of supported architectures
+    arches = ["noarch"]
+
+    # list of channels
+    channels = ["default"]
+
+    # exclusive tasks have the highest possible priority
+    # leave False unless you really know what you're doing
+    exclusive = False
+
+    # if True the task is not forked and runs in the worker process
+    # (no matter you run worker without -f)
+    foreground = False
+
+    # determines how many resources is used when processing the task
     weight = 1.0
 
+
+class Build(OSHTaskBase):
     def run(self):
         mock_config = self.args.pop("mock_config")
         build = self.args.pop("build", {})
@@ -92,19 +109,13 @@ class Build:
         hub.worker.email_task_notification(task_info["id"])
 
 
-class DiffBuild(Build, TaskBase):
-    def __init__(self, *args, **kwargs):
-        Build.__init__(self)
-        TaskBase.__init__(self, *args, **kwargs)
+class DiffBuild(Build):
+    enabled = True
 
 
-class MockBuild(Build, TaskBase):
-    def __init__(self, *args, **kwargs):
-        Build.__init__(self)
-        TaskBase.__init__(self, *args, **kwargs)
+class MockBuild(Build):
+    enabled = True
 
 
-class VersionDiffBuild(Build, TaskBase):
-    def __init__(self, *args, **kwargs):
-        Build.__init__(self)
-        TaskBase.__init__(self, *args, **kwargs)
+class VersionDiffBuild(Build):
+    enabled = True

@@ -4,28 +4,16 @@
 import os
 import sys
 
-from kobo.worker import TaskBase
-
 from osh.worker.csmock_runner import CsmockRunner
+from osh.worker.tasks.task_build import OSHTaskBase
 
 
-class AnalyzerVersionRetriever(TaskBase):
+class AnalyzerVersionRetriever(OSHTaskBase):
     """
         Execute diff scan between two versions/releases of a package for
         Errata Tool
     """
     enabled = True
-
-    # list of supported architectures
-    arches = ["noarch"]
-    # list of channels
-    channels = ["default"]
-    # leave False here unless you really know what you're doing
-    exclusive = False
-    # if True the task is not forked and runs in the worker process
-    # (no matter you run worker without -f)
-    foreground = False
-    weight = 1.0
 
     def run(self):
         # string, comma separated list of analyzers
