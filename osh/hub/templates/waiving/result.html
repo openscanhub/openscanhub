@@ -69,7 +69,7 @@
 <div id="tab1Content" style="display:none;">
 {% if output_new %}
 <table class="summary">
-  <th class="light_grey_bg" colspan="{{ output_new.1|length }}"> </th>
+  <th class="light_grey_bg" colspan="5"> </th>
 {% for five in output_new %}
   <tr>
     {% for group, data in five.items %}
@@ -95,7 +95,7 @@
 <div id="tab2Content" style="display:none;">
 {% if output_fixed %}
 <table class="summary">
-  <th class="light_grey_bg" colspan="{{ output_fixed.1|length }}"> </th>
+  <th class="light_grey_bg" colspan="5"> </th>
 {% for five in output_fixed %}
   <tr>
     {% for group, data in five.items %}
@@ -121,7 +121,7 @@
 <div id="tab3Content" style="display:none;">
 {% if output_old %}
 <table class="summary">
-  <th class="light_grey_bg" colspan="{{ output_old.1|length }}"> </th>
+  <th class="light_grey_bg" colspan="5"> </th>
 {% for five in output_old %}
   <tr>
     {% for group, data in five.items %}
