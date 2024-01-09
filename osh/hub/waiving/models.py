@@ -381,21 +381,19 @@ associated with this group.")
         return state for CSS class
         """
         if self.defect_type == DEFECT_STATES['FIXED']:
-            if self.defects_count > 0:
-                return 'INFO'
-            else:
+            return 'INFO' if self.defects_count > 0 else 'PASSED'
+
+        if self.defect_type in (DEFECT_STATES["NEW"], DEFECT_STATES["PREVIOUSLY_WAIVED"]):
+            if self.defects_count == 0:
                 return 'PASSED'
-        elif self.defect_type == DEFECT_STATES["NEW"] or \
-                self.defect_type == DEFECT_STATES["PREVIOUSLY_WAIVED"]:
-            if self.defects_count > 0:
-                if self.is_marked_as_bug() and self.is_waived():
-                    return 'IS_A_BUG'
-                elif self.has_fix_later_waiver():
-                    return 'FIX_LATER'
-                else:
-                    return self.get_state_display()
-            else:
-                return 'PASSED'
+
+            if self.is_marked_as_bug() and self.is_waived():
+                return 'IS_A_BUG'
+
+            if self.has_fix_later_waiver():
+                return 'FIX_LATER'
+
+            return self.get_state_display()
 
     def previous_waivers(self):
         """Return every past waiver associated with this rg"""
