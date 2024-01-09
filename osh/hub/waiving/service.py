@@ -11,7 +11,6 @@ import json
 import logging
 
 import pycsdiff
-from django.db.models import Sum
 
 from .models import (DEFECT_STATES, RESULT_GROUP_STATES, Defect, ResultGroup,
                      Waiver, WaivingLog)
@@ -156,7 +155,7 @@ def get_scans_new_defects_count(scan_id):
     """Return number of newly introduced bugs for particular scan"""
     rgs = ResultGroup.objects.filter(result__scanbinding__scan__id=scan_id,
                                      defect_type=DEFECT_STATES['NEW'])
-    return rgs.aggregate(sum=Sum("defects_count"))['sum'] or 0
+    return Defect.objects.filter(result_group__in=rgs).count()
 
 
 def get_waivers_for_rg(rg):

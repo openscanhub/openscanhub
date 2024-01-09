@@ -103,10 +103,7 @@ class Result(models.Model):
     def get_defects_count(self, defect_type):
         rgs = ResultGroup.objects.filter(result=self,
                                          defect_type=defect_type)
-        count = 0
-        for rg in rgs:
-            count += rg.defects_count
-        return count
+        return Defect.objects.filter(result_group__in=rgs).count()
 
     def new_defects_count(self):
         return self.get_defects_count(DEFECT_STATES['NEW'])
@@ -311,9 +308,6 @@ class ResultGroup(models.Model):
         default=DEFECT_STATES["UNKNOWN"],
         choices=DEFECT_STATES.get_mapping(),
         help_text="Type of defects that are associated with this group.")
-    defects_count = models.PositiveSmallIntegerField(
-        default=0, blank=True, null=True, verbose_name="Number of defects \
-associated with this group.")
 
     objects = ResultGroupManager()
 
@@ -375,6 +369,10 @@ associated with this group.")
             return w.is_bug()
         else:
             return False
+
+    @property
+    def defects_count(self):
+        return Defect.objects.filter(result_group=self).count()
 
     def get_state_to_display(self):
         """

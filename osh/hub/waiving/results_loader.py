@@ -171,7 +171,6 @@ class ResultsLoader:
                 elif defect_state == DEFECT_STATES['FIXED']:
                     rg.state = RESULT_GROUP_STATES['INFO']
 
-            rg.defects_count += 1
             rg.save()
 
             d.checker = checker
