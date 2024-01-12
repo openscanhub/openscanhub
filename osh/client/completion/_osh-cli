@@ -74,7 +74,7 @@ _osh-cli_args()
             args+=(
                 '(-l --latest)'{-l,--latest}'[display only latest task]'
                 '(-r --regex)'{-r,--regex}'[query by regular expression (python, module: re)]'
-                '(-p --pacakge)'{-p,--package}'[query by package name]'
+                '(-p --package)'{-p,--package}'[query by package name]'
                 '(-n --nvr)'{-n,--nvr}'[query by NVR (default one)]'
                 '*'{-s+,--state=}'[query by task state. This option is used in conjunction with -r, -p, or -n.]:osh:->states'
             )
