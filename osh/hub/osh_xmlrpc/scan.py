@@ -246,6 +246,7 @@ def find_tasks(request, query):
         return []
     nvr = query.get('nvr')
     package_name = query.get('package_name')
+    comment = query.get('comment')
     regex = query.get('regex')
     states = query.get('states')
 
@@ -255,6 +256,8 @@ def find_tasks(request, query):
         tasks = Task.objects.filter(label=nvr)
     if package_name:
         tasks = Task.objects.filter(label__regex=package_name + r"-\d")
+    elif comment:
+        tasks = Task.objects.filter(comment__regex=comment)
     elif regex:
         tasks = Task.objects.filter(label__regex=regex)
     if states:
