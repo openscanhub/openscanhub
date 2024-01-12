@@ -20,7 +20,7 @@ class Find_Tasks(osh.client.OshCommand):
         self.parser.usage = f"%prog {self.normalized_name} [options] <query_string>"
         self.parser.epilog = "without '-l' option, newest task is at the \
 beginning of a list, unfinished tasks are at the end; you should pick one of \
-these options: --regex, --package, --nvr"
+these options: --regex, --package, --comment, --nvr"
         self.parser.add_option(
             "-l",
             "--latest",
@@ -43,19 +43,27 @@ these options: --regex, --package, --nvr"
             help="query by package name",
         )
         self.parser.add_option(
+            "-c",
+            "--comment",
+            default=False,
+            action="store_true",
+            help="query by comment"
+        )
+        self.parser.add_option(
             "-n",
             "--nvr",
             default=False,
             action="store_true",
             help="query by NVR (default one)"
         )
+
         self.parser.add_option(
             "-s",
             "--states",
             action="append",
             type="string",
             nargs=1,
-            help=(f"query by task state. This option is used in conjunction with -r, -p, or -n. "
+            help=(f"query by task state. This option is used in conjunction with -r, -p, -c or -n. "
                   f"Specify multiple states by using it multiple times, like '-s FAILED -s CLOSED'. "
                   f"Valid choices include {', '.join(TASK_STATES)}.")
         )
@@ -73,6 +81,7 @@ these options: --regex, --package, --nvr"
         regex = kwargs.pop("regex")
         package_name = kwargs.pop("package")
         states = kwargs.get("states")
+        comment = kwargs.get("comment")
 
         latest = kwargs.pop("latest")
 
@@ -90,6 +99,8 @@ these options: --regex, --package, --nvr"
             query['regex'] = query_string
         elif package_name:
             query['package_name'] = query_string
+        elif comment:
+            query['comment'] = query_string
         else:
             # nvr is default one, so we don't care if it's specified
             query['nvr'] = query_string
