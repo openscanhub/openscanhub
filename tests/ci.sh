@@ -45,15 +45,20 @@ systemctl start osh-worker
 # firewall-cmd --zone=public --add-port=443/tcp --permanent
 # firewall-cmd --reload
 
+# Variables setting packages for testing
+FEDORA_VERSION=39
+EXPAT_NVR="expat-2.5.0-3.fc$FEDORA_VERSION"
+UNITS_NVR="units-2.22-6.fc$FEDORA_VERSION"
+
 # Test OpenScanHub
-/usr/bin/osh-cli mock-build --config=fedora-37-x86_64 --nvr units-2.21-5.fc37
+/usr/bin/osh-cli mock-build --config=fedora-$FEDORA_VERSION-x86_64 --nvr $UNITS_NVR
 /usr/bin/osh-cli task-info 1 | grep "is_failed = False"
 
-(cd /tmp && koji download-build -a src units-2.21-5.fc37)
-/usr/bin/osh-cli diff-build --config=fedora-37-x86_64 /tmp/units-2.21-5.fc37.src.rpm
+(cd /tmp && koji download-build -a src $UNITS_NVR)
+/usr/bin/osh-cli diff-build --config=fedora-$FEDORA_VERSION-x86_64 /tmp/$UNITS_NVR.src.rpm
 /usr/bin/osh-cli task-info 2 | grep "is_failed = False"
 
-osh/hub/scripts/osh-xmlrpc-client.py --hub "https://localhost/osh/xmlrpc/kerbauth/" --username=user --password=xxxxxx create-scan -b expat-2.5.0-1.fc37 -t expat-2.5.0-2.fc38 --et-scan-id=1 --release=Fedora-37 --owner=admin --advisory-id=1
+osh/hub/scripts/osh-xmlrpc-client.py --hub "https://localhost/osh/xmlrpc/kerbauth/" --username=user --password=xxxxxx create-scan -b $EXPAT_NVR -t $EXPAT_NVR --et-scan-id=1 --release=Fedora-$FEDORA_VERSION --owner=admin --advisory-id=1
 SCAN_STATUS=$(osh/hub/scripts/osh-xmlrpc-client.py --hub https://localhost/osh/xmlrpc/kerbauth/ --username=user --password=xxxxxx get-scan-state 1 2>&1)
 while [[ $SCAN_STATUS == *"QUEUED"* ]] || [[ $SCAN_STATUS == *"SCANNING"* ]]; do
     sleep 10;
