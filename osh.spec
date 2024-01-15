@@ -224,8 +224,15 @@ fi
 %systemd_preun osh-worker.service
 
 %postun worker
-# osh-worker does not implement reload and restart would interrupt running tasks
-%systemd_postun osh-worker.service
+%if 0%{?fedora} || 0%{?rhel} > 9
+%systemd_postun_with_reload osh-worker.service
+%else
+# Reload service on package upgrade.
+if [ $1 -ge 1 ]; then
+    # Service reloads using systemd-update-helper are broken on RHEL 9.
+    systemctl reload osh-worker.service || :
+fi
+%endif
 
 %files worker-conf-devel
 %attr(640,root,root) %config(noreplace) %{_sysconfdir}/osh/worker.conf
