@@ -271,22 +271,6 @@
   }
 },
 {
-  "pk": 7,
-  "model": "scan.mockconfig",
-  "fields": {
-    "enabled": true,
-    "name": "fedora-37-aarch64"
-  }
-},
-{
-  "pk": 8,
-  "model": "scan.mockconfig",
-  "fields": {
-    "enabled": true,
-    "name": "fedora-37-x86_64"
-  }
-},
-{
   "pk": 9,
   "model": "scan.mockconfig",
   "fields": {
@@ -675,17 +659,6 @@
   }
 },
 {
-  "pk": 2,
-  "model": "scan.systemrelease",
-  "fields": {
-    "release": 37,
-    "active": true,
-    "product": "Fedora",
-    "tag": "fedora-37",
-    "parent": null
-  }
-},
-{
   "pk": 3,
   "model": "scan.systemrelease",
   "fields": {
@@ -813,15 +786,6 @@
     "release": 1,
     "name": "Fedora-40",
     "mock": 6
-  }
-},
-{
-  "pk": 2,
-  "model": "scan.tag",
-  "fields": {
-    "release": 2,
-    "name": "Fedora-37",
-    "mock": 8
   }
 },
 {
