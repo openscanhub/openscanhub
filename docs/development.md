@@ -13,7 +13,7 @@ git clone https://github.com/release-engineering/kobo.git
 containers/scripts/init-db.sh --full-dev --minimal
 # Get arch name and remove trailing carriage return or new line
 OSH_ARCH_UNAME=$(podman exec -it osh-client uname -m 2>/dev/null | tr -d '\n\r')
-podman exec -it osh-client env OSH_CLIENT_CONFIG_FILE=osh/client/client-local.conf PYTHONPATH=.:kobo python3 osh/client/osh-cli mock-build --config="fedora-37-$OSH_ARCH_UNAME" --nvr units-2.21-5.fc37 --nowait
+podman exec -it osh-client env OSH_CLIENT_CONFIG_FILE=osh/client/client-local.conf PYTHONPATH=.:kobo python3 osh/client/osh-cli mock-build --config="fedora-39-$OSH_ARCH_UNAME" --nvr units-2.22-6.fc39 --nowait
 ```
 
 If the last command is successful, there should be a task accessible at http://localhost:8000/task/1/.
@@ -128,7 +128,7 @@ As pointed above, all of these dependencies are automatically set up in the clie
 
   ```bash
   OSH_CLIENT_CONFIG_FILE=osh/client/client-local.conf PYTHONPATH=.:kobo python3 osh/client/osh-cli list-mock-configs
-  OSH_CLIENT_CONFIG_FILE=osh/client/client-local.conf PYTHONPATH=.:kobo python3 osh/client/osh-cli mock-build --config=fedora-37-x86_64 --nvr units-2.21-5.fc37 --nowait
+  OSH_CLIENT_CONFIG_FILE=osh/client/client-local.conf PYTHONPATH=.:kobo python3 osh/client/osh-cli mock-build --config=fedora-39-x86_64 --nvr units-2.22-6.fc39 --nowait
   OSH_CLIENT_CONFIG_FILE=osh/client/client-local.conf PYTHONPATH=.:kobo python3 osh/client/osh-cli watch-log 1 #Replace 1 with task id
   ```
 
@@ -138,7 +138,7 @@ As pointed above, all of these dependencies are automatically set up in the clie
 
   ```bash
   podman exec -i osh-client python3 osh/client/osh-cli list-mock-configs
-  podman exec -i osh-client python3 osh/client/osh-cli mock-build --config=fedora-37-x86_64 --nvr units-2.21-5.fc37
+  podman exec -i osh-client python3 osh/client/osh-cli mock-build --config=fedora-39-x86_64 --nvr units-2.22-6.fc39
   ```
 
 ## XML-RPC interface used by Errata Tool
@@ -147,16 +147,16 @@ As pointed above, all of these dependencies are automatically set up in the clie
 ```sh
 osh/hub/scripts/osh-xmlrpc-client.py \
     --hub http://osh-hub:8000/xmlrpc/kerbauth/ --username=user --password=xxxxxx \
-    create-scan -b NEW_PACKAGE -t libssh2-1.10.0-7.fc38 --et-scan-id=1 \
-    --release=Fedora-37 --owner=admin --advisory-id=1
+    create-scan -b NEW_PACKAGE -t libssh2-1.11.0-2.fc39 --et-scan-id=1 \
+    --release=Fedora-39 --owner=admin --advisory-id=1
 ```
 
 * create Errata Scan using password authentication - update:
 ```sh
 osh/hub/scripts/osh-xmlrpc-client.py \
     --hub http://osh-hub:8000/xmlrpc/kerbauth/ --username=user --password=xxxxxx \
-    create-scan -b libssh2-1.10.0-5.fc37 -t libssh2-1.10.0-7.fc38 --et-scan-id=1 \
-    --release=Fedora-37 --owner=admin --advisory-id=1
+    create-scan -b libssh2-1.11.0-1.fc39 -t libssh2-1.11.0-2.fc39 --et-scan-id=1 \
+    --release=Fedora-39 --owner=admin --advisory-id=1
 ```
 
 * create Errata Scan using Kerberos authentication (will not work in a local development environment):
