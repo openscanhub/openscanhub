@@ -259,7 +259,7 @@
   "model": "scan.mockconfig",
   "fields": {
     "enabled": true,
-    "name": "fedora-36-aarch64"
+    "name": "fedora-40-aarch64"
   }
 },
 {
@@ -267,7 +267,7 @@
   "model": "scan.mockconfig",
   "fields": {
     "enabled": true,
-    "name": "fedora-36-x86_64"
+    "name": "fedora-40-x86_64"
   }
 },
 {
@@ -667,10 +667,10 @@
   "pk": 1,
   "model": "scan.systemrelease",
   "fields": {
-    "release": 36,
+    "release": 40,
     "active": true,
     "product": "Fedora",
-    "tag": "fedora-36",
+    "tag": "fedora-40",
     "parent": null
   }
 },
@@ -811,7 +811,7 @@
   "model": "scan.tag",
   "fields": {
     "release": 1,
-    "name": "Fedora-36",
+    "name": "Fedora-40",
     "mock": 6
   }
 },
