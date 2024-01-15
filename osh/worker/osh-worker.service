@@ -5,6 +5,7 @@ After=network-online.target
 
 [Service]
 Type=exec
+ExecReload=kill -HUP $MAINPID
 ExecStartPre=test -r /etc/osh/worker.conf
 ExecStart=/usr/sbin/osh-worker -f
 KillMode=process
