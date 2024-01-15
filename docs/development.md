@@ -11,9 +11,9 @@ git clone https://github.com/openscanhub/openscanhub.git
 cd openscanhub
 git clone https://github.com/release-engineering/kobo.git
 containers/scripts/init-db.sh --full-dev --minimal
-# Get arch name and remove trailing carriage return or new line
-OSH_ARCH_UNAME=$(podman exec -it osh-client uname -m 2>/dev/null | tr -d '\n\r')
-podman exec -it osh-client env OSH_CLIENT_CONFIG_FILE=osh/client/client-local.conf PYTHONPATH=.:kobo python3 osh/client/osh-cli mock-build --config="fedora-39-$OSH_ARCH_UNAME" --nvr units-2.22-6.fc39 --nowait
+# Get arch name
+OSH_ARCH_UNAME=$(podman exec osh-client uname -m)
+podman exec -it osh-client python3 osh/client/osh-cli mock-build --config="fedora-39-$OSH_ARCH_UNAME" --nvr units-2.22-6.fc39 --nowait
 ```
 
 If the last command is successful, there should be a task accessible at http://localhost:8000/task/1/.
@@ -128,8 +128,7 @@ As pointed above, all of these dependencies are automatically set up in the clie
 
   ```bash
   OSH_CLIENT_CONFIG_FILE=osh/client/client-local.conf PYTHONPATH=.:kobo python3 osh/client/osh-cli list-mock-configs
-  OSH_CLIENT_CONFIG_FILE=osh/client/client-local.conf PYTHONPATH=.:kobo python3 osh/client/osh-cli mock-build --config=fedora-39-x86_64 --nvr units-2.22-6.fc39 --nowait
-  OSH_CLIENT_CONFIG_FILE=osh/client/client-local.conf PYTHONPATH=.:kobo python3 osh/client/osh-cli watch-log 1 #Replace 1 with task id
+  OSH_CLIENT_CONFIG_FILE=osh/client/client-local.conf PYTHONPATH=.:kobo python3 osh/client/osh-cli mock-build --config=fedora-39-x86_64 --nvr units-2.22-6.fc39
   ```
 
   Note: You can also set these variables permanently to your bashrc.
