@@ -11,6 +11,7 @@ from kobo.django.upload.models import FileUpload
 from kobo.hub.decorators import validate_worker
 from kobo.hub.models import Task
 
+from osh.hub.scan.mock import generate_mock_configs
 from osh.hub.scan.models import (SCAN_STATES, AnalyzerVersion, AppSettings,
                                  Profile, Scan, ScanBinding)
 from osh.hub.scan.notify import send_task_notification
@@ -31,6 +32,7 @@ logger = logging.getLogger(__name__)
 __all__ = [
     'cancel_task',
     'create_sb',
+    'create_subtask',
     'email_scan_notification',
     'email_task_notification',
     'ensure_base_is_scanned_properly',
@@ -74,6 +76,25 @@ def finish_task(request, task_id):
             logger.error("Can't diff tasks %s %s: %s", base_task, task, ex)
             if not task.is_failed():
                 task.fail_task()
+
+
+@validate_worker
+def create_subtask(*args, **kwargs):
+    subtask_id = kobo_xmlrpc_worker.create_subtask(*args, **kwargs)
+    task = Task.objects.get(id=subtask_id)
+
+    # generate mock configs for the subtask if needed
+    if task.args['mock_config'] == 'auto':
+        # FIXME: Yuck!  Remove when ET tasks use the unified argument format
+        if task.method == 'ErrataDiffBuild':
+            nvr = task.args['build']
+            koji_profile = Profile.objects.get(name=task.args['profile']).command_arguments.get('koji_profile', 'koji')
+        else:
+            nvr = task.args['build']['nvr']
+            koji_profile = task.args['build']['koji_profile']
+        generate_mock_configs(nvr, koji_profile, task.task_dir(create=True))
+
+    return subtask_id
 
 
 # ET SCANS

@@ -21,6 +21,7 @@ from osh.hub.other.exceptions import PackageBlockedException
 from osh.hub.scan.check import (check_analyzers, check_build, check_nvr,
                                 check_obsolete_scan, check_package_is_blocked,
                                 check_srpm, check_upload)
+from osh.hub.scan.mock import generate_mock_configs
 from osh.hub.scan.models import (REQUEST_STATES, SCAN_TYPES, AppSettings,
                                  ClientAnalyzer, ETMapping, MockConfig,
                                  Package, Profile, Scan, ScanBinding, Tag)
@@ -68,7 +69,7 @@ class AbstractScheduler:
         self.package_owner = get_or_fail('package_owner', self.options)
         self.nvr = get_or_fail('target', self.options)
         self.target_nvre_dict = check_nvr(self.nvr)
-        check_build(self.nvr)
+        self.koji_profile = check_build(self.nvr)['koji_profile']
 
     def prepare_args(self):
         """ prepare dicts -- arguments for task and scan """
@@ -247,8 +248,10 @@ class AbstractTargetScheduler(AbstractScheduler):
         self.store()
         task_id = Task.create_task(**self.task_args)
         task = Task.objects.get(id=task_id)
-        Task.get_task_dir(task_id, create=True)
+        task_dir = Task.get_task_dir(task_id, create=True)
         sb = ScanBinding.create_sb(task=task, scan=self.scan)
+        if self.task_args['args']['mock_config'] == 'auto':
+            generate_mock_configs(self.nvr, self.koji_profile, task_dir)
         task.free_task()
 
         child = ScanBinding.objects.latest_scan_of_package(self.package, self.tag.release)
@@ -505,6 +508,9 @@ class ClientScanScheduler(AbstractClientScanScheduler):
         if self.upload_model_id:
             shutil.move(self.model_path, os.path.join(task_dir, self.model_name))
             FileUpload.objects.get(id=self.upload_model_id).delete()
+
+        if self.mock_config == 'auto':
+            generate_mock_configs(self.build_nvr, self.build_koji_profile, task_dir)
 
         task.free_task()
         return task_id
