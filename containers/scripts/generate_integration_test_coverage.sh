@@ -75,10 +75,11 @@ main() {
     check_results 2
 
     # `version-diff-build` needs worker to run in background
-    podman exec -i osh-worker scripts/kill_worker.sh
     sed "s/RUN_TASKS_IN_FOREGROUND = 1/RUN_TASKS_IN_FOREGROUND = 0/g" osh/worker/worker-local.conf > osh/worker/worker-local.conf.new
     mv osh/worker/worker-local.conf{.new,}
-    podman start osh-worker
+
+    # wait for the worker to restart
+    podman restart --time='-1' osh-worker
 
     podman exec osh-client "${CLI_COV[@]}" version-diff-build --config="fedora-$FEDORA_VERSION-$ARCH" --nvr $UNITS_NVR --base-config="fedora-$FEDORA_VERSION-$ARCH" --base-nvr $UNITS_NVR | grep http://osh-hub:8000/task/3
     podman exec osh-client "${CLI_COV[@]}" task-info 3 | grep "is_failed = False"
@@ -140,9 +141,11 @@ main() {
 
     set +e; set +o pipefail
 
-    # We have to kill django server and worker to generate coverage files
-    podman exec -i osh-worker scripts/kill_worker.sh
-    podman exec -i osh-hub scripts/kill_django_server.sh
+    # stop worker to generate coverage files
+    podman stop --time='-1' osh-worker
+
+    # restart the hub to generate coverage files
+    podman restart --time='-1' osh-hub
 
     # Combine coverage report for hub, worker and client
     podman exec -it osh-client /usr/bin/coverage-3 combine --rcfile=/coveragerc
