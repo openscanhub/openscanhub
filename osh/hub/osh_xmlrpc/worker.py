@@ -11,11 +11,12 @@ from kobo.django.upload.models import FileUpload
 from kobo.hub.decorators import validate_worker
 from kobo.hub.models import Task
 
+from osh.hub.scan.mock import generate_mock_configs
 from osh.hub.scan.models import (SCAN_STATES, AnalyzerVersion, AppSettings,
                                  Profile, Scan, ScanBinding)
 from osh.hub.scan.notify import send_task_notification
-from osh.hub.scan.scanner import (BaseNotValidException, obtain_base,
-                                  prepare_base_scan)
+from osh.hub.scan.scanner import (BaseNotValidException, move_mock_configs,
+                                  obtain_base, prepare_base_scan)
 from osh.hub.scan.xmlrpc_helper import cancel_scan
 from osh.hub.scan.xmlrpc_helper import fail_scan as h_fail_scan
 from osh.hub.scan.xmlrpc_helper import finish_scan as h_finish_scan
@@ -29,6 +30,7 @@ logger = logging.getLogger(__name__)
 # DO NOT REMOVE!  The __all__ list contains all publicly exported XML-RPC
 # methods from this module.
 __all__ = [
+    'create_mock_configs',
     'cancel_task',
     'create_sb',
     'email_scan_notification',
@@ -50,6 +52,28 @@ __all__ = [
 
 
 # REGULAR TASKS
+
+# FIXME: The configs should be created before the subtask is scheduled!
+@validate_worker
+def create_mock_configs(request, task_id):
+    task = Task.objects.get(id=task_id)
+    task_dir = Task.get_task_dir(task_id, create=True)
+
+    # skip if not a subtask
+    if task.parent_id is None:
+        return
+
+    # FIXME: Yuck!  Remove when ET tasks use the unified argument format
+    if task.method == 'ErrataDiffBuild':
+        nvr = task.args['build']
+        koji_profile = Profile.objects.get(name=task.args['profile']).command_arguments.get('koji_profile', 'koji')
+    else:
+        nvr = task.args['build']['nvr']
+        koji_profile = task.args['build']['koji_profile']
+
+    tmpdir = generate_mock_configs(nvr, koji_profile)
+    move_mock_configs(tmpdir, task_dir)
+
 
 @validate_worker
 def email_task_notification(request, task_id):
