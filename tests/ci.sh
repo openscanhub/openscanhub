@@ -51,7 +51,7 @@ EXPAT_NVR="expat-2.5.0-3.fc$FEDORA_VERSION"
 UNITS_NVR="units-2.22-6.fc$FEDORA_VERSION"
 
 # Test OpenScanHub
-/usr/bin/osh-cli mock-build --config=fedora-$FEDORA_VERSION-x86_64 --nvr $UNITS_NVR
+/usr/bin/osh-cli mock-build --config=auto --nvr $UNITS_NVR
 /usr/bin/osh-cli task-info 1 | grep "is_failed = False"
 
 (cd /tmp && koji download-build -a src $UNITS_NVR)

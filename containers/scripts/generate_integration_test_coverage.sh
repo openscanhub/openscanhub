@@ -63,7 +63,7 @@ main() {
     podman exec -it osh-client "${CLI_COV[@]}" list-analyzers | grep gcc
     podman exec -it osh-client "${CLI_COV[@]}" list-profiles | grep default
     podman exec -it osh-client "${CLI_COV[@]}" list-mock-configs | grep fedora
-    podman exec osh-client "${CLI_COV[@]}" mock-build --profile default --config="fedora-$FEDORA_VERSION-$ARCH" --nvr $UNITS_NVR | grep http://osh-hub:8000/task/1
+    podman exec osh-client "${CLI_COV[@]}" mock-build --profile default --config=auto --nvr $UNITS_NVR | grep http://osh-hub:8000/task/1
     podman exec osh-client "${CLI_COV[@]}" task-info 1 | grep "is_failed = False"
     check_results 1
 
@@ -127,7 +127,7 @@ main() {
     # verify that mock build task has the right priority
     podman exec osh-client "${CLI_COV[@]}" task-info 10 | grep "priority = 11"
 
-    podman exec osh-client "${CLI_COV[@]}" version-diff-build --config="fedora-$FEDORA_VERSION-$ARCH" --nvr $EXPAT_NVR --base-config="fedora-$FEDORA_VERSION-$ARCH" --base-nvr $EXPAT_NVR | grep http://osh-hub:8000/task/11
+    podman exec osh-client "${CLI_COV[@]}" version-diff-build --config=auto --nvr $EXPAT_NVR --base-config=auto --base-nvr $EXPAT_NVR | grep http://osh-hub:8000/task/11
     podman exec osh-client "${CLI_COV[@]}" task-info 11 | grep "is_failed = False"
     # verify main tasks priority
     podman exec osh-client "${CLI_COV[@]}" task-info 11 | grep "priority = 11"
