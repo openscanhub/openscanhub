@@ -271,6 +271,14 @@
   }
 },
 {
+  "pk": 7,
+  "model": "scan.mockconfig",
+  "fields": {
+    "enabled": true,
+    "name": "auto"
+  }
+},
+{
   "pk": 9,
   "model": "scan.mockconfig",
   "fields": {
