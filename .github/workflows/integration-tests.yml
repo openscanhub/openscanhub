@@ -34,7 +34,7 @@ jobs:
           CENTOS_RELEASE='${{matrix.centos-stream}}' containers/scripts/generate_integration_test_coverage.sh --force
 
       - name: "Upload Integration Tests Coverage to Codecov"
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v4
         with:
           name: "Archive Integration Tests Coverage"
           files: coverage.xml
