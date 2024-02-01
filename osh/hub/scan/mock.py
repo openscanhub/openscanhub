@@ -30,6 +30,23 @@ def _get_available_parent_target(koji_proxy, target):
     return None
 
 
+def _get_build_method_build_tag(koji_proxy, target):
+    """
+    returns build tag name of the irst usable parent build target for given
+    task, otherwise returns None
+    """
+    # handle the case if the target repo is no longer available
+    if target is not None and koji_proxy.getBuildTarget(target) is None:
+        # try to use the closest available parent (e.g. for merged side tags)
+        target = _get_available_parent_target(koji_proxy, target)
+
+    if target is None:
+        return
+
+    # get build tag name (build tag seems to always contain the release version)
+    return koji_proxy.getBuildTarget(target)['build_tag_name']
+
+
 def _get_build_arches(koji_proxy, task_id):
     """
     returns all arches available for given build
@@ -72,32 +89,29 @@ def _get_tag_specific_config(target):
 
 
 def generate_mock_configs(nvr, koji_profile, task_dir):
-    # retrieve the original build target
+    # retrieve the build
     cfg = koji.read_config(koji_profile)
-    proxy_object = koji.ClientSession(cfg['server'])
-    build = proxy_object.getBuild(nvr)
-    task = proxy_object.getTaskInfo(build['task_id'], request=True)
-    params = koji.parse_task_params(task['method'], task['request'])
-    target = params['target']
+    koji_proxy = koji.ClientSession(cfg['server'])
+    build = koji_proxy.getBuild(nvr)
 
-    # handle the case if the target repo is no longer available
-    if target is not None and proxy_object.getBuildTarget(target) is None:
-        logger.debug(f'"{nvr}" was built in target "{target}" which is no longer available')
+    # retrieve task parameters
+    task = koji_proxy.getTaskInfo(build['task_id'], request=True)
+    method = task['method']
+    params = koji.parse_task_params(method, task['request'])
 
-        # try to use the closes available parent (e.g. for merged side tags)
-        target = _get_available_parent_target(proxy_object, target)
-
-    if target is None:
+    # parse build tag name from task parameters
+    if method == 'build':
+        tag = _get_build_method_build_tag(koji_proxy, params['target'])
+    elif method == 'wrapperRPM':
+        tag = params['build_target']['build_tag_name']
+    else:
         # FIXME: add actual error handling
-        logger.error(f'No build target for "{nvr}" available')
+        logger.error(f'No build target for "{nvr}" available!')
         return
 
-    # get build tag name (build tag seems to always contain the release version)
-    tag = proxy_object.getBuildTarget(target)['build_tag_name']
-
     # generate a config for every built arch
-    logger.debug(f'Generating mock configs for build target "{target}"')
-    for arch in _get_build_arches(proxy_object, task['id']):
+    logger.debug(f'Generating mock configs for build tag "{tag}"')
+    for arch in _get_build_arches(koji_proxy, task['id']):
         p = subprocess.run(['koji', '-p', koji_profile, 'mock-config',
                             '--arch', arch, '--latest', '--tag', tag],
                            check=True, stdout=subprocess.PIPE)
