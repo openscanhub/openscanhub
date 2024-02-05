@@ -233,9 +233,11 @@ fi
 
 %files hub
 %defattr(-,root,apache,-)
+%{_sbindir}/osh-retention
 %{_sbindir}/osh-stats
 %{_sysconfdir}/osh/hub
 %{python3_sitelib}/osh/hub
+%{_unitdir}/osh-retention.*
 %{_unitdir}/osh-stats.*
 %exclude %{python3_sitelib}/osh/hub/settings_local.py*
 %exclude %{python3_sitelib}/osh/hub/__pycache__/settings_local.*
@@ -267,12 +269,15 @@ fi
 # this only takes an effect if PostgreSQL is running and the database exists
 pg_isready -h localhost && %{python3_sitelib}/osh/hub/manage.py migrate
 
+%systemd_post osh-retention.service osh-retention.timer
 %systemd_post osh-stats.service osh-stats.timer
 
 %preun hub
+%systemd_preun osh-retention.service osh-retention.timer
 %systemd_preun osh-stats.service osh-stats.timer
 
 %postun hub
+%systemd_postun_with_restart osh-retention.service osh-retention.timer
 %systemd_postun_with_restart osh-stats.service osh-stats.timer
 
 %files hub-conf-devel

@@ -1,0 +1,12 @@
+[Unit]
+Description=OpenScanHub retention policy enforcer
+StartLimitBurst=3
+StartLimitIntervalSec=12h
+
+[Service]
+ExecStart=/usr/sbin/osh-retention
+Restart=on-failure
+Type=oneshot
+
+[Install]
+WantedBy=multi-user.target

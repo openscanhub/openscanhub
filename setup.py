@@ -19,6 +19,8 @@ data_files = {
         "osh/worker/worker.conf",
     ],
     "/usr/lib/systemd/system": [
+        "osh/hub/osh-retention.service",
+        "osh/hub/osh-retention.timer",
         "osh/hub/osh-stats.service",
         "osh/hub/osh-stats.timer",
         "osh/worker/osh-worker.service",
@@ -33,6 +35,7 @@ data_files = {
         "osh/client/osh-cli",
     ],
     "/usr/sbin": [
+        "osh/hub/scripts/osh-retention",
         "osh/hub/scripts/osh-stats",
         "osh/worker/osh-worker",
     ],

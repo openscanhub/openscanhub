@@ -2,7 +2,7 @@
 Description=Run OpenScanHub statistics collection every day
 
 [Timer]
-OnCalendar=*-*-* 2:00:00
+OnCalendar=*-*-* 5:00:00
 
 [Install]
 WantedBy=timers.target

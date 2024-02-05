@@ -138,6 +138,9 @@ main() {
     # test generation of usage statistics
     podman exec osh-hub /usr/bin/coverage-3 run --parallel-mode '--omit=*site-packages*,*kobo*,' --rcfile=/coveragerc osh/hub/scripts/osh-stats
 
+    # test osh-retention policy enforcer
+    podman exec osh-hub /usr/bin/coverage-3 run --parallel-mode '--omit=*site-packages*,*kobo*,' --rcfile=/coveragerc osh/hub/scripts/osh-retention
+
     set +e; set +o pipefail
 
     # We have to kill django server and worker to generate coverage files

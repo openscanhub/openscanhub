@@ -1276,3 +1276,19 @@ class Profile(models.Model):
             # there are no arguments, this is not an error
             logger.info("No csmock arguments for profile '%s'", self)
             return ''
+
+
+class RetentionPolicySetting(models.Model):
+    category = models.CharField(max_length=128, blank=False, null=False)
+    days = models.PositiveIntegerField(
+        default=365,
+        help_text="Number of days before the task is deleted."
+    )
+
+
+class TaskResultsRemoval(models.Model):
+    task = models.ForeignKey(Task, on_delete=models.CASCADE,
+                             help_text="Task with the retention policy applied")
+    reason = models.ForeignKey(RetentionPolicySetting, on_delete=models.CASCADE,
+                               help_text="Reason why the retention was applied to the task")
+    date_retention_applied = models.DateTimeField(auto_now_add=True)
