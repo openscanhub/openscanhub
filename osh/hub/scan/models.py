@@ -1279,10 +1279,10 @@ class Profile(models.Model):
 
 
 class RetentionPolicySetting(models.Model):
-    category = models.CharField(max_length=128, blank=False, null=False)
+    name = models.CharField(max_length=128, blank=False, null=False, unique=True)
     days = models.PositiveIntegerField(
-        default=365,
-        help_text="Number of days before the task is deleted."
+        default=365, null=True, blank=True,
+        help_text="Number of days before the task is deleted.",
     )
 
 

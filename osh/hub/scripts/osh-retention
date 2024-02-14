@@ -5,12 +5,11 @@
 """
 Script for cron that performs the retention policy
 """
-import datetime
 import logging
 import os
+import re
 import shutil
-import sys
-from datetime import date
+from datetime import datetime, timedelta
 
 import django
 from django.db import DatabaseError
@@ -26,96 +25,86 @@ from osh.hub.scan.models import TaskResultsRemoval  # noqa: E402
 
 logger = logging.getLogger("osh.hub.scripts.osh-retention")
 
-tasks_to_delete = []
-today = date.today()
+
+# Functions to determine membership for given retention setting
+
+def is_failed(task):
+    return task.is_failed()
 
 
-def delete_tasks_results(task_list):
-    for task, retention_policy_setting in task_list:
-        try:
-            path_to_delete = Task.get_task_dir(task.id)
-            # if directory exists, we delete it. if not, we mark it as deleted as
-            # the directory already doesn't exist
-            if os.path.isdir(path_to_delete):
-                shutil.rmtree(path_to_delete)
-                logger.debug('The following directory was deleted: %s', path_to_delete)
-        except OSError as e:
-            logger.error("Error deleting task's directory: %s", e)
-            continue
-
-        # if the tasks results are deleted, we update the database field,
-        # so we don't try to delete them again.
-        TaskResultsRemoval.objects.create(task=task, reason=retention_policy_setting)
+def is_personal(task):
+    # If the username does not contain /, @ or -, assume that the task is personal.
+    return not re.search('[/@-]', task.owner.username)
 
 
-# in order to identify personal tasks, we are using the owner field. If the owner doesn't
-# contain any /, @ and - we assume that it is a personal task.
-def identify_personal_task(owner):
-    # we could use regexps here if we want to make this more complex but for this specific case
-    # built-in string methods are enough
-    return "/" not in owner and "@" not in owner and "-" not in owner
+ELIGIBILITY_FUNCTIONS = {
+    # "setting name": function(task),
+    "FailedStatus": is_failed,
+    "PersonalScan": is_personal,
+}
 
 
-# if the retention time of the task has passed, we add the task to the be-deleted list
-def add_task_to_deletion_list(task, retention_policy_setting, calculated_time):
-    if retention_policy_setting is not None and calculated_time is not None and calculated_time <= today:
-        tasks_to_delete.append([task, retention_policy_setting])
-        logger.debug('The following task results will be deleted: %s', task.id)
-
-
-# we obtain the different retention policy settings from the database
-def get_retention_policy_parameter(parameter):
+def delete_task_results(task, reason):
     try:
-        obtained_parameter = RetentionPolicySetting.objects.get(category=parameter)
+        task_dir = Task.get_task_dir(task.id)
+        shutil.rmtree(task_dir)
+        logger.debug('The following directory was deleted: %s', task_dir)
+    except FileNotFoundError:
+        # proceed silently when the task directory is missing
+        pass
+
+    except OSError as e:
+        logger.error("Error deleting task directory: %s", e)
+        return
+
+    # mark the task as processed
+    TaskResultsRemoval.objects.create(task=task, reason=reason)
+
+
+def get_setting(name):
+    try:
+        return RetentionPolicySetting.objects.get(name=name)
     except RetentionPolicySetting.DoesNotExist:
-        logger.warning(f"Retention policy setting ({parameter}) object does not exist. "
+        logger.warning(f"Retention policy setting ({name}) does not exist. "
                        "The affected tasks results will not be deleted.")
         return None
     except DatabaseError as e:
-        logger.error(f"Error obtaining {parameter} value %s.", e)
-        sys.exit(1)
-
-    return obtained_parameter
+        logger.error("Error obtaining %s value: %s", name, e)
+        raise
 
 
-def calculate_eligible_retention_time(task, parameter):
-    if parameter is not None and task.dt_finished is not None:
-        calculated_date = (task.dt_finished + datetime.timedelta(days=parameter.days)).date()
-        return calculated_date
-    else:
-        return None
+def has_eligible_time(task, days_delta):
+    if task.dt_finished is None:
+        logger.warning('Task %d is in state %s and the finish time is not set!',
+                       task.id, task.get_state_display())
+        return False
+
+    return task.dt_finished + timedelta(days=days_delta) <= datetime.now()
 
 
 def main():
-    logger.info("Starting Retention Policy Enforcement")
+    logger.info("Start Retention Policy Enforcement")
 
-    # retrieval of finished tasks that has not been applied to retention policy to be applied
-    tasks = Task.objects.filter(state__in=FINISHED_STATES).filter(taskresultsremoval__isnull=True)
+    # get tasks eligible for the retention policy
+    eligible_tasks = Task.objects.filter(state__in=FINISHED_STATES,
+                                         taskresultsremoval__isnull=True)
 
-    # get parameters from DB
-    retention_personal_tasks_setting = get_retention_policy_parameter("PersonalScan")
-    retention_failed_status_setting = get_retention_policy_parameter("FailedStatus")
+    # get settings from the database
+    retention_settings = map(get_setting, ELIGIBILITY_FUNCTIONS.keys())
 
-    for t in tasks:
+    # filter out unset settings
+    retention_settings = [s for s in retention_settings if s and s.days]
 
-        # tasks without dt_finished can't get the retention date calculated
-        if t.dt_finished is None:
-            logger.warning(f"Task {t.id} doesn't contain a finished datetime value (dt_finished). "
-                           f"It will be skipped.")
-            continue
+    # process the tasks
+    for task in eligible_tasks:
+        for setting in retention_settings:
+            # decide if the task should be deleted
+            if has_eligible_time(task, setting.days) and \
+                    ELIGIBILITY_FUNCTIONS[setting.name](task):
+                delete_task_results(task, setting)
+                break
 
-        # calculate when task should be deleted
-        calculated_date_personal_task = calculate_eligible_retention_time(t, retention_personal_tasks_setting)
-        calculated_date_status_failed = calculate_eligible_retention_time(t, retention_failed_status_setting)
-
-        if identify_personal_task(t.owner.username):
-            add_task_to_deletion_list(t, retention_personal_tasks_setting, calculated_date_personal_task)
-
-        elif t.is_failed():
-            add_task_to_deletion_list(t, retention_failed_status_setting, calculated_date_status_failed)
-
-    delete_tasks_results(tasks_to_delete)
-    logger.info("Finishing Retention Policy Enforcement")
+    logger.info("Finish Retention Policy Enforcement")
 
 
 if __name__ == '__main__':

@@ -943,16 +943,16 @@
   "pk": 1,
   "model": "scan.retentionpolicysetting",
   "fields": {
-    "category": "PersonalScan",
-    "days": 365
+    "days": null,
+    "name": "PersonalScan"
   }
 },
 {
   "pk": 2,
   "model": "scan.retentionpolicysetting",
   "fields": {
-    "category": "FailedStatus",
-    "days": 365
+    "days": null,
+    "name": "FailedStatus"
   }
 }
 ]
