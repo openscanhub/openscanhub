@@ -9,6 +9,7 @@ import logging
 import os
 import re
 import subprocess
+import uuid
 
 import koji
 from django.conf import settings
@@ -32,7 +33,7 @@ def _get_available_parent_target(koji_proxy, target):
 
 def _get_build_method_build_tag(koji_proxy, target):
     """
-    returns build tag name of the irst usable parent build target for given
+    returns build tag name of the first usable parent build target for given
     task, otherwise returns None
     """
     # handle the case if the target repo is no longer available
@@ -127,6 +128,11 @@ def generate_mock_configs(nvr, koji_profile, task_dir):
         # FIXME: remove when dnf5 is usable with mock
         if 'dnf5' in contents:
             contents = contents.replace('dnf5', 'dnf')
+
+        # use randomly generated root directory name
+        contents = re.sub(r"(config_opts\['root'\] = '[^']*)'",
+                          fr"\1-{uuid.uuid4()}'",
+                          contents)
 
         with open(os.path.join(task_dir, f'mock-{arch}.cfg'), 'w') as f:
             f.write(contents)
