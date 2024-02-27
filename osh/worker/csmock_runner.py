@@ -121,6 +121,8 @@ class CsmockRunner:
             cmd = "csmock"
             if profile_url:
                 profile = self.download_file(profile_url, 'mock.cfg')
+                # do not cache anything when custom mock profiles are used
+                cmd += ' --scrub-on-exit '
             if profile:
                 cmd += ' -r ' + shlex.quote(profile)
 
@@ -203,6 +205,8 @@ class CsmockRunner:
             cmd = "csmock"
             if profile_url:
                 profile = self.download_file(profile_url, 'mock.cfg')
+                # do not cache anything when custom mock profiles are used
+                cmd += ' --scrub-on-exit '
             if profile:
                 cmd += ' -r ' + shlex.quote(profile)
 
