@@ -16,7 +16,7 @@ class OshCommand(ClientCommand):
 
         # For compatibility with older kobo releases
         sig = inspect.signature(self.set_hub)
-        if len(sig.parameters) == 4:
+        if 'hub' in sig.parameters:
             params.append(hub)
 
         self.set_hub(*params)
