@@ -22,10 +22,10 @@ osh/hub/manage.py migrate
 # hub work.
 if [ "$(osh/hub/manage.py dumpdata scan.MockConfig)" = "[]" ]; then
     osh/hub/manage.py loaddata osh/hub/{scan,waiving}/fixtures/initial_data.json
-fi
 
-# Assign native arch to the worker
-python3 scripts/add-worker-arch.py
+    # Assign native arch to the worker
+    python3 scripts/add-worker-arch.py
+fi
 
 # Run a dummy SMTP server in background
 python3 -m smtpd -n -c DebuggingServer localhost:8025 >> /tmp/emails.log &
