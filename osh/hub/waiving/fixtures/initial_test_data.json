@@ -2302,14 +2302,6 @@
     }
   },
   {
-    "model": "scan.appsettings",
-    "pk": 14,
-    "fields": {
-      "key": "SU_USER",
-      "value": "csmock"
-    }
-  },
-  {
     "model": "scan.clientanalyzer",
     "pk": 2,
     "fields": {

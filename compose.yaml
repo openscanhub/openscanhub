@@ -35,7 +35,7 @@ services:
       - hub-tasks:/src/osh/hub/tasks
       - hub-upload:/src/osh/hub/upload
       - hub-worker:/src/osh/hub/worker
-      - coverage:/cov:U
+      - coverage:/cov
     stdin_open: true
     tty: true
 
@@ -53,7 +53,7 @@ services:
     networks:
       - internal-network
     volumes:
-      - ./:/src:z
+      - ./:/src:ro,z
       - coverage:/cov
     privileged: true
     stdin_open: true
