@@ -179,6 +179,13 @@ LOGIN_EXEMPT_URLS = ['.*xmlrpc/.*']
 LOGIN_REDIRECT_URL = 'index'
 LOGOUT_REDIRECT_URL = 'index'
 
+# Denote whether the access to user list/detail view is restricted
+# Possible values:
+# "" (empty string) = Anonymous access (default)
+# "authenticated" = Authenticated users
+# "staff" = Staff (admin) users only
+USERS_ACL_PERMISSION = "staff"
+
 VALID_TASK_LOG_EXTENSIONS = ['.log', '.ini', '.err', '.out', '.js', '.txt']
 
 # This is kept here for backward compatibility.
@@ -203,12 +210,6 @@ def _get_secret(name):
 BZ_API_KEY = _get_secret('bugzilla_secret')
 JIRA_API_KEY = _get_secret('jira_secret')
 
-# Denote whether the access to user list/detail view is restricted
-# Possible values:
-# "" (empty string) = Anonymous access (default)
-# "authenticated" = Authenticated users
-# "staff" = Staff (admin) users only
-USERS_ACL_PERMISSION = "staff"
 
 # read the real SECRET_KEY from SECRET_KEY_FILE if availble
 try:
