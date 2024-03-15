@@ -16,8 +16,8 @@ PROJECT_DIR = os.path.dirname(__file__)
 
 URL_PREFIX = "/osh"
 
-# file to read the real SECRET_KEY from
-SECRET_KEY_FILE = "/var/lib/osh/hub/secret_key"
+# directory to read the real SECRET_KEY from
+SECRET_KEY_DIR = "/var/lib/osh/hub/"
 
 # where to read API keys from
 SECRETS_DIR = "/etc/osh/hub/secrets"
@@ -81,9 +81,6 @@ TEMPLATES = [
 ROOT_URLCONF = 'osh.hub.urls'
 ROOT_MENUCONF = 'osh.hub.menu'
 
-# dummy secret key
-# (will be overridden by the content of SECRET_KEY_FILE if available)
-SECRET_KEY = 'x' * 50
 
 AUTHENTICATION_BACKENDS = (
     'kobo.django.auth.krb5.Krb5RemoteUserBackend',
@@ -199,22 +196,21 @@ except ImportError:
     pass
 
 
-def _get_secret(name):
+###############################################################################
+# Secrets
+###############################################################################
+
+def _get_secret(name, directory=SECRETS_DIR):
     try:
-        with open(os.path.join(SECRETS_DIR, name)) as f:
+        with open(os.path.join(directory, name)) as f:
             return f.read().strip()
     except OSError:
         return None
 
 
+# Issue trackers
 BZ_API_KEY = _get_secret('bugzilla_secret')
 JIRA_API_KEY = _get_secret('jira_secret')
 
-
-# read the real SECRET_KEY from SECRET_KEY_FILE if availble
-try:
-    with open(SECRET_KEY_FILE) as f:
-        key = f.readline()
-        SECRET_KEY = key.strip()
-except OSError:
-    pass
+# Secret key (will be overridden by the content of SECRET_KEY_FILE if available)
+SECRET_KEY = _get_secret('secret_key', directory=SECRET_KEY_DIR) or 'x' * 50
