@@ -32,7 +32,8 @@ def verify_build_exists(nvr, profile):
     try:
         # getBuild XML-RPC call is defined here: ./hub/kojihub.py:3206
         build = proxy_object.getBuild(nvr)
-    except koji.GenericError:
+    except Exception as e:  # noqa: B902
+        print('koji:', e, file=sys.stderr)
         return False
 
     if build is None:
@@ -73,8 +74,9 @@ def verify_koji_build(build, profiles):
     if any(verify_build_exists(build, p) for p in koji_profiles):
         return None
 
-    return f"Build {build} does not exist in {koji_profiles}, is a module " +\
-        "metadata build, has its files deleted, or did not finish successfully."
+    return (f"Build {build} does not exist in {koji_profiles}, is a module "
+            f"metadata build, has its files deleted, did not finish successfully, "
+            f"or client has network connection issue with {koji_profiles}.")
 
 
 def verify_mock(mock, hub):
