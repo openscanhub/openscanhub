@@ -16,7 +16,7 @@ urlpatterns = [
     # path('admin/doc/', include('django.contrib.admindocs.urls')),
 
     path("auth/", include("kobo.hub.urls.auth")),
-    path("task/", include("osh.hub.scan.task_urls")),
+    path("task/", include("kobo.hub.urls.task")),
     path("info/arch/", include("kobo.hub.urls.arch")),
     path("info/channel/", include("kobo.hub.urls.channel")),
     path("info/user/", include("kobo.hub.urls.user")),

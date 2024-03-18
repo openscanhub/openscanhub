@@ -45,10 +45,6 @@ class BasicWebTestCase(TestCase):
         r = self.client.get('/task/finished/')
         self.assertEqual(r.status_code, 200)
 
-    def test_et_task_list(self):
-        r = self.client.get('/task/et/')
-        self.assertEqual(r.status_code, 200)
-
     def test_stats(self):
         r = self.client.get('/stats/')
         self.assertEqual(r.status_code, 200)

@@ -41,7 +41,6 @@ menu = (
         MenuItem("Running", "task/running"),
         MenuItem("Failed", "task/failed"),
         MenuItem("Finished", "task/finished"),
-        MenuItem("Errata Tool Tasks", "task/et"),
     )),
     MenuItem("Info", "worker/list", menu=(
         include("kobo.hub.menu"),
