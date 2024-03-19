@@ -94,7 +94,7 @@ these options: --regex, --package, --comment, --nvr"
         # login to the hub
         self.connect_to_hub(kwargs)
 
-        query = {}
+        query = {"latest": latest}
         if regex:
             query['regex'] = query_string
         elif package_name:
