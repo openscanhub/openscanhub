@@ -249,6 +249,7 @@ def find_tasks(request, query):
     comment = query.get('comment')
     regex = query.get('regex')
     states = query.get('states')
+    latest = query.get('latest')
 
     result = []
     tasks = None
@@ -263,8 +264,15 @@ def find_tasks(request, query):
     if states:
         tasks = tasks.filter(state__in=states)
     if tasks is not None:
-        result = list(tasks.order_by("-dt_finished").values_list(
-            "id", flat=True))
+        result = tasks.order_by("-dt_finished").values_list("id", flat=True)
+        # truncate the result in case `latest` is specified, this reduces the amount of
+        # data transferred over the network
+        if latest:
+            first_elem = result.first()
+            result = [first_elem] if first_elem is not None else []
+        else:
+            result = list(result)
+
     return result
 
 
