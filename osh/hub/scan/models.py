@@ -1285,6 +1285,9 @@ class RetentionPolicySetting(models.Model):
         help_text="Number of days before the task is deleted.",
     )
 
+    def __str__(self):
+        return self.name
+
 
 class TaskResultsRemoval(models.Model):
     task = models.ForeignKey(Task, on_delete=models.CASCADE,
