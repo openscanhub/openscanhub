@@ -1145,6 +1145,9 @@ class ClientAnalyzer(models.Model):
 class Analyzer(models.Model):
     name = models.CharField(max_length=64)
 
+    class Meta():
+        ordering = ['name']
+
     def __str__(self):
         return "%s" % (self.name)
 
