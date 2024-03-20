@@ -237,6 +237,10 @@ def find_tasks(request, query):
      * 'nvr': search by specific NVR
      * 'regex': find by provided regex (this is not match, but find, if you
                 want match, change your regex to "^<regex>$")
+     * 'comment': string, search by comment
+
+    Query also supports following optional keys:
+     * 'states': list, search by task states
 
     Returned list is ordered by date, when task finished -- latest task is
     first. Unfinished tasks are at the tail. If there is any problem with
@@ -244,34 +248,35 @@ def find_tasks(request, query):
     """
     if not isinstance(query, dict):
         return []
-    nvr = query.get('nvr')
     package_name = query.get('package_name')
-    comment = query.get('comment')
+    nvr = query.get('nvr')
     regex = query.get('regex')
+    comment = query.get('comment')
     states = query.get('states')
     latest = query.get('latest')
 
     result = []
-    tasks = None
+    tasks = Task.objects.none()
     if nvr:
         tasks = Task.objects.filter(label=nvr)
-    if package_name:
+    elif package_name:
         tasks = Task.objects.filter(label__regex=package_name + r"-\d")
-    elif comment:
-        tasks = Task.objects.filter(comment__regex=comment)
     elif regex:
         tasks = Task.objects.filter(label__regex=regex)
+    elif comment:
+        tasks = Task.objects.filter(comment__regex=comment)
+
     if states:
         tasks = tasks.filter(state__in=states)
-    if tasks is not None:
-        result = tasks.order_by("-dt_finished").values_list("id", flat=True)
-        # truncate the result in case `latest` is specified, this reduces the amount of
-        # data transferred over the network
-        if latest:
-            first_elem = result.first()
-            result = [first_elem] if first_elem is not None else []
-        else:
-            result = list(result)
+
+    result = tasks.order_by("-dt_finished").values_list("id", flat=True)
+    # truncate the result in case `latest` is specified, this reduces the amount of
+    # data transferred over the network
+    if latest:
+        first_elem = result.first()
+        result = [first_elem] if first_elem is not None else []
+    else:
+        result = list(result)
 
     return result
 
