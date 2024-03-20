@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 # SPDX-FileCopyrightText: Copyright contributors to the OpenScanHub project.
 
-from osh.hub.other.autoregister import autoregister_admin
+from osh.hub.other.autoregister import autoregister_app_admin
 
-autoregister_admin('osh.hub.stats.models')
+autoregister_app_admin('stats')
