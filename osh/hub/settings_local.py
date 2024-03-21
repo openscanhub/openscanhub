@@ -25,6 +25,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'openscanhub',
         'USER': 'openscanhub',
+        # Use osh.hub.other.settings_util.get_secret to load the secret from file.
         'PASSWORD': 'velryba',
         'HOST': 'db',
         'PORT': '5432',
