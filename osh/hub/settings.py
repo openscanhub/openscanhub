@@ -10,6 +10,8 @@ import os
 
 import kobo
 
+from osh.hub.other.settings_util import get_secret
+
 # Definition of PROJECT_DIR, just for convenience:
 # you can use it instead of specifying the full path
 PROJECT_DIR = os.path.dirname(__file__)
@@ -200,17 +202,9 @@ except ImportError:
 # Secrets
 ###############################################################################
 
-def _get_secret(name, directory=SECRETS_DIR):
-    try:
-        with open(os.path.join(directory, name)) as f:
-            return f.read().strip()
-    except OSError:
-        return None
-
-
 # Issue trackers
-BZ_API_KEY = _get_secret('bugzilla_secret')
-JIRA_API_KEY = _get_secret('jira_secret')
+BZ_API_KEY = get_secret('bugzilla_secret', SECRETS_DIR)
+JIRA_API_KEY = get_secret('jira_secret', SECRETS_DIR)
 
 # Secret key (will be overridden by the content of SECRET_KEY_FILE if available)
-SECRET_KEY = _get_secret('secret_key', directory=SECRET_KEY_DIR) or 'x' * 50
+SECRET_KEY = get_secret('secret_key', SECRET_KEY_DIR) or 'x' * 50
