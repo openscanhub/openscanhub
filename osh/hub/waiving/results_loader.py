@@ -45,10 +45,18 @@ class TaskResultsProcessor:
         if task_has_results(self.target_task):
             logger.info("Results are already unpacked for task %s", self.target_task)
             return
-        else:
-            logger.debug('Unpacking %s', tb_path)
-            rex = ResultsExtractor(tb_path, output_dir=self.target_task_dir, unpack_in_temp=False)
-            rex.extract_tarball(self.exclude_dirs)
+
+        logger.debug('Unpacking %s', tb_path)
+        rex = ResultsExtractor(tb_path, output_dir=self.target_task_dir, unpack_in_temp=False)
+        rex.extract_tarball(self.exclude_dirs)
+
+        try:
+            with open(self.target_paths.get_txt_summary()) as f:
+                self.target_task.result = f.read().rstrip()
+                self.target_task.save()
+        except (OSError, RuntimeError):
+            # skip if summary is not available
+            pass
 
     def generate_diffs(self):
         if self.base_task:
