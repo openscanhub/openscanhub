@@ -129,9 +129,10 @@ def _create_mock_config(tag, arch, koji_profile, dest_dir):
 
 def generate_mock_configs(nvr, koji_profile):
     """
-    returns a temporary directory with generated mock configs for given NVR
+    returns a path to temporary directory with generated mock configs
+    for given NVR
     """
-    tmpdir = tempfile.TemporaryDirectory()
+    tmpdir = tempfile.mkdtemp()
 
     # retrieve the build
     cfg = koji.read_config(koji_profile)
@@ -153,6 +154,6 @@ def generate_mock_configs(nvr, koji_profile):
     # generate a config for every built arch
     logger.debug(f'Generating mock configs for build tag "{tag}"')
     for arch in _get_build_arches(koji_proxy, task['id']):
-        _create_mock_config(tag, arch, koji_profile, tmpdir.name)
+        _create_mock_config(tag, arch, koji_profile, tmpdir)
 
     return tmpdir

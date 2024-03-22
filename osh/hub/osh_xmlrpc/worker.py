@@ -71,9 +71,8 @@ def create_mock_configs(request, task_id):
         nvr = task.args['build']['nvr']
         koji_profile = task.args['build']['koji_profile']
 
-    with generate_mock_configs(nvr, koji_profile) as tmpdir:
-        shutil.copytree(tmpdir, os.path.join(task_dir, 'mock'),
-                        copy_function=shutil.copy)
+    tmpdir = generate_mock_configs(nvr, koji_profile)
+    shutil.move(tmpdir, os.path.join(task_dir, 'mock'), copy_function=shutil.copy)
 
 
 @validate_worker
