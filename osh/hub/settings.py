@@ -202,5 +202,5 @@ from osh.hub.other.settings_util import get_secret  # noqa: E402
 BZ_API_KEY = get_secret('bugzilla_secret', SECRETS_DIR)
 JIRA_API_KEY = get_secret('jira_secret', SECRETS_DIR)
 
-# Secret key ((will be overridden by the content of SECRET_KEY_FILE if available)
+# Secret key (will be overridden by the content of SECRET_KEY_FILE if available)
 SECRET_KEY = get_secret('secret_key', SECRET_KEY_DIR) or 'x' * 50
