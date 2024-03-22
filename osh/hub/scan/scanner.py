@@ -254,8 +254,9 @@ class AbstractTargetScheduler(AbstractScheduler):
 
         if self.task_args['args']['mock_config'] == 'auto':
             task_dir = Task.get_task_dir(task_id, create=True)
-            with self.mock_config_tmpdir as tmp:
-                shutil.copytree(tmp, os.path.join(task_dir, 'mock'))
+            with self.mock_config_tmpdir as tmpdir:
+                shutil.copytree(tmpdir, os.path.join(task_dir, 'mock'),
+                                copy_function=shutil.copy)
 
         sb = ScanBinding.create_sb(task=task, scan=self.scan)
         task.free_task()
@@ -522,7 +523,8 @@ class ClientScanScheduler(AbstractClientScanScheduler):
 
         if self.mock_config == 'auto':
             with self.mock_config_tmpdir as tmpdir:
-                shutil.copytree(tmpdir, os.path.join(task_dir, 'mock'))
+                shutil.copytree(tmpdir, os.path.join(task_dir, 'mock'),
+                                copy_function=shutil.copy)
 
         task.free_task()
         return task_id
