@@ -58,8 +58,9 @@ class Build(OSHTaskBase):
         # download custom mock config from the hub
         mock_config_url = None
         if mock_config == 'auto':
+            self.hub.worker.create_mock_configs(self.task_id)
             arch = platform.uname().machine
-            mock_config_url = urljoin(task_url, f'log/mock-{arch}.cfg?format=raw')
+            mock_config_url = urljoin(task_url, f'log/mock/mock-{arch}.cfg?format=raw')
 
         if upload_id:
             self.hub.worker.move_upload(self.task_id, upload_id)

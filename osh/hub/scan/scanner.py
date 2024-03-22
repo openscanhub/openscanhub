@@ -217,6 +217,9 @@ class AbstractTargetScheduler(AbstractScheduler):
 
         self.task_args['arch_name'] = dig_arch(mock_config)
         self.task_args['args']['mock_config'] = mock_config
+        if self.task_args['args']['mock_config'] == 'auto':
+            self.mock_config_tmpdir = generate_mock_configs(self.nvr, self.koji_profile)
+
         self.scan_args['tag'] = self.tag
         self.scan_args['package'] = self.package
 
@@ -248,10 +251,13 @@ class AbstractTargetScheduler(AbstractScheduler):
         self.store()
         task_id = Task.create_task(**self.task_args)
         task = Task.objects.get(id=task_id)
-        task_dir = Task.get_task_dir(task_id, create=True)
-        sb = ScanBinding.create_sb(task=task, scan=self.scan)
+
         if self.task_args['args']['mock_config'] == 'auto':
-            generate_mock_configs(self.nvr, self.koji_profile, task_dir)
+            task_dir = Task.get_task_dir(task_id, create=True)
+            with self.mock_config_tmpdir as tmp:
+                shutil.copytree(tmp, os.path.join(task_dir, 'mock'))
+
+        sb = ScanBinding.create_sb(task=task, scan=self.scan)
         task.free_task()
 
         child = ScanBinding.objects.latest_scan_of_package(self.package, self.tag.release)
@@ -440,6 +446,8 @@ class ClientScanScheduler(AbstractClientScanScheduler):
         # mock profile
         self.mock_config = get_or_fail('mock_config', self.options)
         MockConfig.objects.verify_by_name(self.mock_config)
+        if self.mock_config == 'auto' and not self.build_nvr:
+            raise RuntimeError("'auto' mock config is only compatible with '--nvr'")
 
         self.comment = self.options.get('comment', '')
 
@@ -494,6 +502,9 @@ class ClientScanScheduler(AbstractClientScanScheduler):
         if self.email_to:
             self.task_args['args']['email_to'] = self.email_to
 
+        if self.mock_config == 'auto':
+            self.mock_config_tmpdir = generate_mock_configs(self.build_nvr, self.build_koji_profile)
+
     def spawn(self):
         task_id = Task.create_task(**self.task_args)
         task = Task.objects.get(id=task_id)
@@ -510,7 +521,8 @@ class ClientScanScheduler(AbstractClientScanScheduler):
             FileUpload.objects.get(id=self.upload_model_id).delete()
 
         if self.mock_config == 'auto':
-            generate_mock_configs(self.build_nvr, self.build_koji_profile, task_dir)
+            with self.mock_config_tmpdir as tmpdir:
+                shutil.copytree(tmpdir, os.path.join(task_dir, 'mock'))
 
         task.free_task()
         return task_id
@@ -558,6 +570,9 @@ class ClientDiffScanScheduler(ClientScanScheduler):
             self.base_mock_config = self.mock_config
         else:
             MockConfig.objects.verify_by_name(self.base_mock_config)
+
+        if self.base_mock_config == 'auto' and not self.base_build_nvr:
+            raise RuntimeError("'auto' base mock config is only compatible with '--base-nvr'")
 
     def prepare_args(self):
         super().prepare_args()

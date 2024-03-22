@@ -30,9 +30,9 @@ logger = logging.getLogger(__name__)
 # DO NOT REMOVE!  The __all__ list contains all publicly exported XML-RPC
 # methods from this module.
 __all__ = [
+    'create_mock_configs',
     'cancel_task',
     'create_sb',
-    'create_subtask',
     'email_scan_notification',
     'email_task_notification',
     'ensure_base_is_scanned_properly',
@@ -52,6 +52,28 @@ __all__ = [
 
 
 # REGULAR TASKS
+
+# FIXME: The configs should be created before the subtask is scheduled!
+@validate_worker
+def create_mock_configs(request, task_id):
+    task = Task.objects.get(id=task_id)
+    task_dir = Task.get_task_dir(task_id, create=True)
+
+    # skip if not a subtask
+    if task.parent_id is None:
+        return
+
+    # FIXME: Yuck!  Remove when ET tasks use the unified argument format
+    if task.method == 'ErrataDiffBuild':
+        nvr = task.args['build']
+        koji_profile = Profile.objects.get(name=task.args['profile']).command_arguments.get('koji_profile', 'koji')
+    else:
+        nvr = task.args['build']['nvr']
+        koji_profile = task.args['build']['koji_profile']
+
+    with generate_mock_configs(nvr, koji_profile) as tmpdir:
+        shutil.copytree(tmpdir, os.path.join(task_dir, 'mock'))
+
 
 @validate_worker
 def email_task_notification(request, task_id):
@@ -76,25 +98,6 @@ def finish_task(request, task_id):
             logger.error("Can't diff tasks %s %s: %s", base_task, task, ex)
             if not task.is_failed():
                 task.fail_task()
-
-
-@validate_worker
-def create_subtask(*args, **kwargs):
-    subtask_id = kobo_xmlrpc_worker.create_subtask(*args, **kwargs)
-    task = Task.objects.get(id=subtask_id)
-
-    # generate mock configs for the subtask if needed
-    if task.args['mock_config'] == 'auto':
-        # FIXME: Yuck!  Remove when ET tasks use the unified argument format
-        if task.method == 'ErrataDiffBuild':
-            nvr = task.args['build']
-            koji_profile = Profile.objects.get(name=task.args['profile']).command_arguments.get('koji_profile', 'koji')
-        else:
-            nvr = task.args['build']['nvr']
-            koji_profile = task.args['build']['koji_profile']
-        generate_mock_configs(nvr, koji_profile, task.task_dir(create=True))
-
-    return subtask_id
 
 
 # ET SCANS

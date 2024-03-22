@@ -29,9 +29,10 @@ class ErrataDiffBuild(OSHTaskBase):
         # download custom mock config from the hub
         mock_config_url = None
         if mock_config == 'auto':
+            self.hub.worker.create_mock_configs(self.task_id)
             arch = platform.uname().machine
             task_url = self.hub.client.task_url(self.task_id)
-            mock_config_url = urljoin(task_url, f'log/mock-{arch}.cfg?format=raw')
+            mock_config_url = urljoin(task_url, f'log/mock/mock-{arch}.cfg?format=raw')
         else:
             # update analyzers version cache if needed
             cache_task_args = self.hub.worker.ensure_cache(mock_config, profile)
