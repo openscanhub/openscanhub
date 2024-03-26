@@ -2,7 +2,9 @@
 # SPDX-FileCopyrightText: Copyright contributors to the OpenScanHub project.
 
 import os
+import platform
 import sys
+from urllib.parse import urljoin
 
 from osh.worker.csmock_runner import CsmockRunner
 from osh.worker.tasks.task_build import OSHTaskBase
@@ -24,11 +26,19 @@ class ErrataDiffBuild(OSHTaskBase):
 
         self.hub.worker.set_scan_to_scanning(scan_id)
 
-        # update analyzers version cache if needed
-        cache_task_args = self.hub.worker.ensure_cache(mock_config, profile)
-        if cache_task_args is not None:
-            self.spawn_subtask(*cache_task_args, inherit_worker=True)
-            self.wait()
+        # download custom mock config from the hub
+        mock_config_url = None
+        if mock_config == 'auto':
+            self.hub.worker.create_mock_configs(self.task_id)
+            arch = platform.uname().machine
+            task_url = self.hub.client.task_url(self.task_id)
+            mock_config_url = urljoin(task_url, f'log/mock/mock-{arch}.cfg?format=raw')
+        else:
+            # update analyzers version cache if needed
+            cache_task_args = self.hub.worker.ensure_cache(mock_config, profile)
+            if cache_task_args is not None:
+                self.spawn_subtask(*cache_task_args, inherit_worker=True)
+                self.wait()
 
         # (re)scan base if needed
         base_task_args = self.hub.worker.ensure_base_is_scanned_properly(scan_id, self.task_id)
@@ -49,6 +59,7 @@ class ErrataDiffBuild(OSHTaskBase):
             results, retcode = runner.koji_analyze(scanning_args['analyzers'],
                                                    build,
                                                    profile=mock_config,
+                                                   profile_url=mock_config_url,
                                                    additional_arguments=add_args,
                                                    koji_profile=koji_profile,
                                                    su_user=su_user)

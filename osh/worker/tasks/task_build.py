@@ -2,6 +2,7 @@
 # SPDX-FileCopyrightText: Copyright contributors to the OpenScanHub project.
 
 import os
+import platform
 import sys
 from urllib.parse import urljoin
 
@@ -54,13 +55,20 @@ class Build(OSHTaskBase):
             self.spawn_subtask(*base_task_args, inherit_worker=True)
             self.wait()
 
+        # download custom mock config from the hub
+        mock_config_url = None
+        if mock_config == 'auto':
+            self.hub.worker.create_mock_configs(self.task_id)
+            arch = platform.uname().machine
+            mock_config_url = urljoin(task_url, f'log/mock/mock-{arch}.cfg?format=raw')
+
         if upload_id:
             self.hub.worker.move_upload(self.task_id, upload_id)
 
         with CsmockRunner() as runner:
             if custom_model_name:
                 model_url = urljoin(task_url, f'log/{custom_model_name}?format=raw')
-                model_path = runner.download_csmock_model(model_url, custom_model_name)
+                model_path = runner.download_file(model_url, custom_model_name)
                 csmock_args += " --cov-custom-model " + model_path
 
             if build:
@@ -68,6 +76,7 @@ class Build(OSHTaskBase):
                     analyzers,
                     build['nvr'],
                     profile=mock_config,
+                    profile_url=mock_config_url,
                     additional_arguments=csmock_args,
                     koji_profile=build['koji_profile'],
                     su_user=su_user)
@@ -78,6 +87,7 @@ class Build(OSHTaskBase):
                     srpm_name,
                     url,
                     profile=mock_config,
+                    profile_url=mock_config_url,
                     additional_arguments=csmock_args,
                     result_filename=result_filename,
                     su_user=su_user)

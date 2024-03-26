@@ -26,6 +26,8 @@ setsebool -P httpd_can_network_connect 1
 semanage fcontext -a -t httpd_sys_rw_content_t '/var/log/osh/hub(/.*)?'
 restorecon -R /var/log/osh/hub
 
+setenforce 0
+
 # Set up self signed certificate before starting httpd
 (cd /etc/httpd/conf && openssl req -newkey rsa:4096 -nodes -keyout localhost.key -x509 -sha256 -days 365 -addext "subjectAltName = DNS:localhost, DNS:localhost, DNS:127.0.0.1" -subj "/C=CZ/ST=/L=/O=Red Hat/OU=Plumbers/CN=localhost" -out localhost.crt)
 cp /etc/httpd/conf/localhost.crt /etc/pki/ca-trust/source/anchors/ && update-ca-trust
@@ -51,7 +53,7 @@ EXPAT_NVR="expat-2.5.0-3.fc$FEDORA_VERSION"
 UNITS_NVR="units-2.22-6.fc$FEDORA_VERSION"
 
 # Test OpenScanHub
-/usr/bin/osh-cli mock-build --config=fedora-$FEDORA_VERSION-x86_64 --nvr $UNITS_NVR
+/usr/bin/osh-cli mock-build --config=auto --nvr $UNITS_NVR
 /usr/bin/osh-cli task-info 1 | grep "is_failed = False"
 
 (cd /tmp && koji download-build -a src $UNITS_NVR)
