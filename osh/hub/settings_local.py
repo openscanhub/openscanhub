@@ -9,6 +9,8 @@ Devel instance
 
 import os
 
+from osh.hub.other.settings_util import get_secret
+
 DEBUG = True
 
 # where to read API keys from
@@ -25,7 +27,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'openscanhub',
         'USER': 'openscanhub',
-        'PASSWORD': 'velryba',
+        'PASSWORD': get_secret('db_password', SECRETS_DIR) or 'velryba',
         'HOST': 'db',
         'PORT': '5432',
         'TEST': {

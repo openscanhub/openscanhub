@@ -16,8 +16,8 @@ PROJECT_DIR = os.path.dirname(__file__)
 
 URL_PREFIX = "/osh"
 
-# file to read the real SECRET_KEY from
-SECRET_KEY_FILE = "/var/lib/osh/hub/secret_key"
+# directory to read the real SECRET_KEY from
+SECRET_KEY_DIR = "/var/lib/osh/hub/"
 
 # where to read API keys from
 SECRETS_DIR = "/etc/osh/hub/secrets"
@@ -81,9 +81,6 @@ TEMPLATES = [
 ROOT_URLCONF = 'osh.hub.urls'
 ROOT_MENUCONF = 'osh.hub.menu'
 
-# dummy secret key
-# (will be overridden by the content of SECRET_KEY_FILE if available)
-SECRET_KEY = 'x' * 50
 
 AUTHENTICATION_BACKENDS = (
     'kobo.django.auth.krb5.Krb5RemoteUserBackend',
@@ -179,6 +176,13 @@ LOGIN_EXEMPT_URLS = ['.*xmlrpc/.*']
 LOGIN_REDIRECT_URL = 'index'
 LOGOUT_REDIRECT_URL = 'index'
 
+# Denote whether the access to user list/detail view is restricted
+# Possible values:
+# "" (empty string) = Anonymous access (default)
+# "authenticated" = Authenticated users
+# "staff" = Staff (admin) users only
+USERS_ACL_PERMISSION = "staff"
+
 VALID_TASK_LOG_EXTENSIONS = ['.log', '.ini', '.err', '.out', '.js', '.txt']
 
 # override default values with custom ones from local settings
@@ -188,28 +192,15 @@ except ImportError:
     pass
 
 
-def _get_secret(name):
-    try:
-        with open(os.path.join(SECRETS_DIR, name)) as f:
-            return f.read().strip()
-    except OSError:
-        return None
+###############################################################################
+# Secrets
+###############################################################################
 
+from osh.hub.other.settings_util import get_secret  # noqa: E402
 
-BZ_API_KEY = _get_secret('bugzilla_secret')
-JIRA_API_KEY = _get_secret('jira_secret')
+# Issue trackers
+BZ_API_KEY = get_secret('bugzilla_secret', SECRETS_DIR)
+JIRA_API_KEY = get_secret('jira_secret', SECRETS_DIR)
 
-# Denote whether the access to user list/detail view is restricted
-# Possible values:
-# "" (empty string) = Anonymous access (default)
-# "authenticated" = Authenticated users
-# "staff" = Staff (admin) users only
-USERS_ACL_PERMISSION = "staff"
-
-# read the real SECRET_KEY from SECRET_KEY_FILE if availble
-try:
-    with open(SECRET_KEY_FILE) as f:
-        key = f.readline()
-        SECRET_KEY = key.strip()
-except OSError:
-    pass
+# Secret key (will be overridden by the content of SECRET_KEY_FILE if available)
+SECRET_KEY = get_secret('secret_key', SECRET_KEY_DIR) or 'x' * 50
