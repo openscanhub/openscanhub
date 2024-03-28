@@ -2,7 +2,7 @@
 
 Name:           osh
 Version:        %{version}
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPL-3.0-or-later
 Summary:        Static and Dynamic Analysis as a Service
 URL:            https://github.com/openscanhub/openscanhub/
@@ -118,6 +118,14 @@ Obsoletes: covscan-hub < %{version}
 %description hub
 OpenScanHub xml-rpc interface and web application
 
+%package worker-manager
+Summary: OpenScanHub worker manager
+Requires: %{name}-hub = %{version}-%{release}
+Requires: openssh-clients
+
+%description worker-manager
+OpenScanHub worker manager to dynamically create and destroy workers.
+
 %package hub-conf-devel
 Summary: OpenScanHub hub devel configuration
 Provides: osh-hub-conf = %{version}-%{release}
@@ -167,6 +175,9 @@ ln -s osh-cli %{buildroot}%{_bindir}/covscan
 
 # create /etc/osh/hub/secrets directory
 mkdir -p %{buildroot}%{_sysconfdir}/osh/hub/secrets
+
+# create /etc/osh/worker-manager directory
+mkdir -p %{buildroot}%{_sysconfdir}/osh/worker-manager
 
 # create /var/lib dirs
 mkdir -p %{buildroot}%{_sharedstatedir}/osh/hub/{tasks,upload,worker}
@@ -277,6 +288,11 @@ pg_isready -h localhost && %{python3_sitelib}/osh/hub/manage.py migrate
 %postun hub
 %systemd_postun osh-{retention,stats}.{service,timer}
 
+%files worker-manager
+%defattr(-,root,apache,-)
+%{_bindir}/osh-worker-manager
+%{_sysconfdir}/osh/worker-manager
+
 %files hub-conf-devel
 %attr(640,root,apache) %config(noreplace) %{python3_sitelib}/osh/hub/settings_local.py
 %attr(640,root,apache) %config(noreplace) %{python3_sitelib}/osh/hub/__pycache__/settings_local*.pyc
@@ -284,6 +300,9 @@ pg_isready -h localhost && %{python3_sitelib}/osh/hub/manage.py migrate
 
 
 %changelog
+* Tue Mar 05 2024 Siteshwar Vashisht <svashisht@redhat.com> - 0.9.7-2
+- Add subpackage for osh-worker-manager
+
 * Tue Feb 13 2024 Kamil Dudka <kdudka@redhat.com> - 0.9.7-1
 - stabilize a new version of osh-client
 
