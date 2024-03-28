@@ -225,7 +225,15 @@ fi
 %systemd_preun osh-worker.service
 
 %postun worker
+%if 0%{?fedora} || 0%{?rhel} > 9
 %systemd_postun_with_reload osh-worker.service
+%else
+# Needs systemd 248 or newer
+if [ $1 -ge 1 ] && [ -x "/usr/lib/systemd/systemd-update-helper" ]; then
+    # Package upgrade, not uninstall
+    systemctl set-property osh-worker.service Markers=+needs-reload || :
+fi
+%endif
 
 %files worker-conf-devel
 %attr(640,root,root) %config(noreplace) %{_sysconfdir}/osh/worker.conf
