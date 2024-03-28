@@ -68,7 +68,7 @@ Requires: file
 Requires: koji
 Requires: python3-kobo-client
 Requires: python3-kobo-rpmlib
-Requires: python3-kobo-worker >= 0.32.0
+Requires: python3-kobo-worker >= 0.36.0
 Requires: %{name}-common = %{version}-%{release}
 Recommends: osh-worker-conf
 
@@ -225,8 +225,15 @@ fi
 %systemd_preun osh-worker.service
 
 %postun worker
-# osh-worker does not implement reload and restart would interrupt running tasks
-%systemd_postun osh-worker.service
+%if 0%{?fedora} || 0%{?rhel} > 9
+%systemd_postun_with_reload osh-worker.service
+%else
+# Needs systemd 248 or newer
+if [ $1 -ge 1 ] && [ -x "/usr/lib/systemd/systemd-update-helper" ]; then
+    # Package upgrade, not uninstall
+    systemctl set-property osh-worker.service Markers=+needs-reload || :
+fi
+%endif
 
 %files worker-conf-devel
 %attr(640,root,root) %config(noreplace) %{_sysconfdir}/osh/worker.conf
