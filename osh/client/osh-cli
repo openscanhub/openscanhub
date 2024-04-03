@@ -4,7 +4,10 @@
 
 import inspect
 import os
+import socket
 import sys
+from http.client import HTTPException
+from xmlrpc.client import ProtocolError
 
 import kobo.cli
 import kobo.client
@@ -79,6 +82,9 @@ def main():
     except kobo.exceptions.ImproperlyConfigured as ex:
         print(f"\n\nError: Improperly configured: {ex}", file=sys.stderr)
         sys.exit(3)
+    except (HTTPException, ProtocolError, socket.herror, socket.gaierror, socket.timeout) as ex:
+        print(f"\n\nError: {ex}", file=sys.stderr)
+        sys.exit(1)
 
 
 if __name__ == "__main__":
