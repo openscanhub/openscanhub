@@ -115,8 +115,6 @@ class CsmockRunner:
 
         if profile == "cspodman":
             cmd = "cspodman"
-            # XXX: this destroys all containers we have access to, related or not
-            cmd += " --force-global-cleanup-on-exit"
         else:
             cmd = "csmock"
             if profile_url:
