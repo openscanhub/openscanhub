@@ -136,4 +136,6 @@ DEVEL_EMAIL_ADDRESS = "no-reply@example.org"
 # It is used when `email` field in the user model is not set.
 DEFAULT_EMAIL_DOMAIN = "example.org"
 
+NOTIFICATION_EMAIL_FOOTER = "This is a test footer."
+
 ALLOWED_HOSTS = ['*']

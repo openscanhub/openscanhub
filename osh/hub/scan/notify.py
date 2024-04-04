@@ -196,10 +196,8 @@ next build)
     Fix later -- defect is true positive, but fix is postponed to next release
     Not a bug -- issue is false positive, so you are waiving it
             """
-        message += """
-You can find documentation of OpenScanHub's workflow at \
-https://cov01.lab.eng.brq2.redhat.com/covscan_documentation.html .
-"""
+        message += settings.NOTIFICATION_EMAIL_FOOTER
+
         return message
 
     def generate_rebase_scan_text(self):
