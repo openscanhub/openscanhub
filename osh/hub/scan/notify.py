@@ -135,6 +135,9 @@ def send_task_notification(request, task_id):
     ]
     message = "\n".join(message)
 
+    if settings.NOTIFICATION_EMAIL_FOOTER:
+        message += f"\n{settings.NOTIFICATION_EMAIL_FOOTER}"
+    
     subject = "Task [#%s] %s finished, state: %s" % (task_id, package, state)
 
     to = task.args.get("email_to", []) or []
@@ -196,7 +199,9 @@ next build)
     Fix later -- defect is true positive, but fix is postponed to next release
     Not a bug -- issue is false positive, so you are waiving it
             """
-        message += settings.NOTIFICATION_EMAIL_FOOTER
+
+        if settings.NOTIFICATION_EMAIL_FOOTER:
+            message += f"\n{settings.NOTIFICATION_EMAIL_FOOTER}"
 
         return message
 
