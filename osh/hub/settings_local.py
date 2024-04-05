@@ -138,4 +138,11 @@ DEFAULT_EMAIL_DOMAIN = "example.org"
 
 NOTIFICATION_EMAIL_FOOTER = "This is a test footer."
 
+# Dictionary with extra yum repositories for the special `auto` mock config.
+# The keys are regular expressions that will match the given build tag, e.g.
+# r'f\d+' for Fedora X.  The value is a corresponding repofile which will be
+# then appended to all generated mock configs, e.g.:
+# MOCK_AUTO_EXTRA_REPOS = {r'f\d+': '[repo]\n...'}
+MOCK_AUTO_EXTRA_REPOS = {}
+
 ALLOWED_HOSTS = ['*']
