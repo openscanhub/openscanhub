@@ -130,4 +130,8 @@ NOTIFICATION_EMAIL_ADDRESS = "no-reply@example.org"
 # E-mail address where notifications about failed/cancelled tasks are sent
 DEVEL_EMAIL_ADDRESS = "no-reply@example.org"
 
+# Default e-mail domain name for sending notifications to the user.
+# It is used when `email` field in the user model is not set.
+DEFAULT_EMAIL_DOMAIN = "example.org"
+
 ALLOWED_HOSTS = ['*']

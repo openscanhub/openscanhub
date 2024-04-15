@@ -56,8 +56,7 @@ def get_recipient(user):
     if user.email:
         return user.email
 
-    # XXX: hardcoded
-    return user.username + "@redhat.com"
+    return f"{user.username}@{settings.DEFAULT_EMAIL_DOMAIN}"
 
 
 def generate_stats(task, diff_task=False, with_defects_in_patches=False):

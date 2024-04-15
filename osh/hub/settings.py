@@ -181,6 +181,10 @@ LOGOUT_REDIRECT_URL = 'index'
 
 VALID_TASK_LOG_EXTENSIONS = ['.log', '.ini', '.err', '.out', '.js', '.txt']
 
+# This is kept here for backward compatibility.
+# https://github.com/openscanhub/openscanhub/pull/256#pullrequestreview-2001187953
+DEFAULT_EMAIL_DOMAIN = "@redhat.com"
+
 # override default values with custom ones from local settings
 try:
     from .settings_local import *  # noqa
