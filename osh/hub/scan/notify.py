@@ -137,7 +137,7 @@ def send_task_notification(request, task_id):
 
     if settings.NOTIFICATION_EMAIL_FOOTER:
         message += f"\n{settings.NOTIFICATION_EMAIL_FOOTER}"
-    
+
     subject = "Task [#%s] %s finished, state: %s" % (task_id, package, state)
 
     to = task.args.get("email_to", []) or []
@@ -147,7 +147,7 @@ def send_task_notification(request, task_id):
     if to:
         recipients.update(to)
 
-    if task.is_failed():
+    if task.is_failed() and settings.DEVEL_EMAIL_ADDRESS:
         recipients.add(settings.DEVEL_EMAIL_ADDRESS)
 
     if not recipients:
@@ -264,11 +264,10 @@ def send_scan_notification(request, scan_id):
     mg = MailGenerator(request, scan)
 
     # recipient setting
-    recipient = get_recipient(scan.username)
+    recipient_list = [get_recipient(scan.username)]
 
-    # message setting
     if scan.is_failed() or scan.is_canceled():
-        recipient = settings.DEVEL_EMAIL_ADDRESS
+        recipient_list.append(settings.DEVEL_EMAIL_ADDRESS)
         message = mg.generate_failed_scan_text()
     elif scan.is_disputed():
         message = mg.generate_disputed_scan_text()
@@ -293,7 +292,11 @@ def send_scan_notification(request, scan_id):
         "X-Scan-Package": scan.package.name,
         "X-Scan-Build": scan.nvr,
     }
-    return send_mail(message, subject, [recipient], headers)
+
+    # Remove empty entries
+    recipient_list = [r for r in recipient_list if r]
+
+    return send_mail(message, subject, recipient_list, headers)
 
 
 def send_notif_new_comment(request, scan, wl):
