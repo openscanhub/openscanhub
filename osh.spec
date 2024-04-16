@@ -284,6 +284,9 @@ pg_isready -h localhost && %{python3_sitelib}/osh/hub/manage.py migrate
 
 
 %changelog
+* Mon Apr 15 2024 Siteshwar Vashisht <svashisht@redhat.com> - 1.0.0-1
+- use Fedora production deployment as the default hub URL
+
 * Tue Feb 13 2024 Kamil Dudka <kdudka@redhat.com> - 0.9.7-1
 - stabilize a new version of osh-client
 
