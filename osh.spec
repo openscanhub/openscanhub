@@ -6,6 +6,7 @@ Release:        1%{?dist}
 License:        GPL-3.0-or-later
 Summary:        Static and Dynamic Analysis as a Service
 URL:            https://github.com/openscanhub/openscanhub/
+# Sources are available at https://github.com/openscanhub/openscanhub/tags
 Source:         https://github.com/openscanhub/openscanhub/archive/refs/tags/%{name}-%{version}.tar.gz
 BuildArch:      noarch
 
@@ -29,7 +30,7 @@ BuildRequires:  systemd-rpm-macros
 
 
 %description
-OpenScanHub is a service for static and dynamic analysis.
+OpenScanHub is a service for static and dynamic analysis of RPM packages.
 It consists of central hub, workers and cli client.
 
 
@@ -47,10 +48,10 @@ Provides: osh-cli = %{version}-%{release}
 # This is kept here for backward compatibility with old package name
 Provides: covscan-client = %{version}
 Obsoletes: covscan-client < %{version}
-Conflicts: covscan-client < %{version}
 
 %description client
-OpenScanHub CLI client
+OpenScanHub CLI client.
+It is used to submit, query and download scans.
 
 
 %package common
@@ -75,7 +76,8 @@ Recommends: osh-worker-conf
 Obsoletes: covscan-worker < %{version}
 
 %description worker
-OpenScanHub worker
+OpenScanHub worker.
+It is used to process tasks submitted to the hub.
 
 %package hub
 Summary: OpenScanHub xml-rpc interface and web application
@@ -116,7 +118,7 @@ Recommends: osh-hub-conf
 Obsoletes: covscan-hub < %{version}
 
 %description hub
-OpenScanHub xml-rpc interface and web application
+OpenScanHub xml-rpc interface and web application.
 
 %package hub-conf-devel
 Summary: OpenScanHub hub devel configuration
@@ -126,7 +128,7 @@ Requires: httpd-filesystem
 Requires: osh-hub
 
 %description hub-conf-devel
-OpenScanHub hub devel configuration
+OpenScanHub hub devel configurations.
 
 %package worker-conf-devel
 Summary: OpenScanHub worker devel configuration
@@ -134,7 +136,7 @@ Provides: osh-worker-conf = %{version}-%{release}
 Conflicts: osh-worker-conf
 
 %description worker-conf-devel
-OpenScanHub worker devel configuration
+OpenScanHub worker devel configurations.
 
 %prep
 %setup -q
@@ -188,7 +190,6 @@ rm -rf %{buildroot}%{python3_sitelib}/scripts
 install -D {osh/hub,%{buildroot}%{_sysconfdir}/httpd/conf.d}/osh-hub-httpd.conf
 
 %files client
-%defattr(644,root,root,755)
 %attr(755,root,root) %{_bindir}/osh-cli
 %{_bindir}/covscan
 %attr(644,root,root) %config(noreplace) %{_sysconfdir}/osh/client.conf
@@ -198,7 +199,6 @@ install -D {osh/hub,%{buildroot}%{_sysconfdir}/httpd/conf.d}/osh-hub-httpd.conf
 %{python3_sitelib}/osh-*-py%{python3_version}.egg-info
 
 %files common
-%defattr(644,root,root,755)
 %dir %{_sysconfdir}/osh
 %{python3_sitelib}/osh/common
 %{python3_sitelib}/osh/__init__.py*
@@ -207,7 +207,6 @@ install -D {osh/hub,%{buildroot}%{_sysconfdir}/httpd/conf.d}/osh-hub-httpd.conf
 %dir %{_sharedstatedir}/osh
 
 %files worker
-%defattr(644,root,root,755)
 %{python3_sitelib}/osh/worker
 %{_unitdir}/osh-worker.service
 %attr(754,root,root) %{_sbindir}/osh-worker
@@ -232,7 +231,6 @@ fi
 %attr(640,root,root) %config(noreplace) %{_sysconfdir}/osh/worker.conf
 
 %files hub
-%defattr(-,root,apache,-)
 %{_sbindir}/osh-retention
 %{_sbindir}/osh-stats
 %{_sysconfdir}/osh/hub
