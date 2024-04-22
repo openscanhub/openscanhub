@@ -19,6 +19,10 @@ actions:
     post-upstream-clone: ./make-srpm.sh --generate-spec
     # Get current version from generated spec file
     get-current-version: "sed -n 's|^%global version *||p' dist/osh.spec"
+    # By default, only spec filename is kept in the Source field
+    # Keep complete URL path to the sources
+    fix-spec-file:
+    - 'sed -i "s|^Source:.*|Source:         https://github.com/openscanhub/openscanhub/archive/refs/tags/%{name}-%{version}.tar.gz|" dist/osh.spec'
 
 # Do not automatically merge the PR to the target branch
 merge_pr_in_ci: false

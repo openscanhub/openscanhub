@@ -6,7 +6,6 @@ Release:        1%{?dist}
 License:        GPL-3.0-or-later
 Summary:        Static and Dynamic Analysis as a Service
 URL:            https://github.com/openscanhub/openscanhub/
-# Sources are available at https://github.com/openscanhub/openscanhub/tags
 Source:         https://github.com/openscanhub/openscanhub/archive/refs/tags/%{name}-%{version}.tar.gz
 BuildArch:      noarch
 
@@ -178,7 +177,7 @@ mkdir -p %{buildroot}%{_localstatedir}/log/osh/hub
 touch %{buildroot}%{_localstatedir}/log/osh/hub/hub.log
 
 # copy checker_groups.txt
-cp -R osh/hub/scripts/checker_groups.txt %{buildroot}%{python3_sitelib}/osh/hub/scripts/
+cp -a osh/hub/scripts/checker_groups.txt %{buildroot}%{python3_sitelib}/osh/hub/scripts/
 
 # make manage.py executable
 chmod 0755 %{buildroot}%{python3_sitelib}/osh/hub/manage.py
@@ -205,12 +204,13 @@ install -D {osh/hub,%{buildroot}%{_sysconfdir}/httpd/conf.d}/osh-hub-httpd.conf
 %{python3_sitelib}/osh/__pycache__
 %dir %{python3_sitelib}/osh
 %dir %{_sharedstatedir}/osh
+%license LICENSE
 
 %files worker
 %{python3_sitelib}/osh/worker
 %{_unitdir}/osh-worker.service
-%attr(754,root,root) %{_sbindir}/osh-worker
-%dir %attr(775,root,root) %{_localstatedir}/log/osh
+%attr(755,root,root) %{_sbindir}/osh-worker
+%dir %{_localstatedir}/log/osh
 
 %post client
 if test -f %{_sysconfdir}/covscan/covscan.conf; then
@@ -234,18 +234,23 @@ fi
 %{_sbindir}/osh-retention
 %{_sbindir}/osh-stats
 %{_sysconfdir}/osh/hub
+%exclude %{python3_sitelib}/osh/hub/scripts/osh-xmlrpc-client.py
+%exclude %{python3_sitelib}/osh/hub/scripts/umb-emit.py
 %{python3_sitelib}/osh/hub
 %{_unitdir}/osh-retention.*
 %{_unitdir}/osh-stats.*
 %exclude %{python3_sitelib}/osh/hub/settings_local.py*
 %exclude %{python3_sitelib}/osh/hub/__pycache__/settings_local.*
-%dir %attr(775,root,root) %{_localstatedir}/log/osh
+%dir %{_localstatedir}/log/osh
+# These files should be readable and writable by respective groups.
 %dir %attr(775,root,apache) %{_localstatedir}/log/osh/hub
-%ghost %attr(640,apache,apache) %{_localstatedir}/log/osh/hub/hub.log
 %attr(775,root,apache) %{_sharedstatedir}/osh/hub
-%ghost %attr(640,root,apache) %{_sharedstatedir}/osh/hub/secret_key
-%ghost %attr(640,root,apache) %{_sysconfdir}/osh/hub/secrets/jira_secret
-%ghost %attr(640,root,apache) %{_sysconfdir}/osh/hub/secrets/bugzilla_secret
+%ghost %attr(644,apache,apache) %{_localstatedir}/log/osh/hub/hub.log
+# These files contain secrets and should not be readable by others.
+%defattr(640,root,apache)
+%ghost %{_sharedstatedir}/osh/hub/secret_key
+%ghost %{_sysconfdir}/osh/hub/secrets/jira_secret
+%ghost %{_sysconfdir}/osh/hub/secrets/bugzilla_secret
 
 %post hub
 exec &>> %{_localstatedir}/log/osh/hub/post-install-%{name}-%{version}-%{release}.log
@@ -276,9 +281,10 @@ pg_isready -h localhost && %{python3_sitelib}/osh/hub/manage.py migrate
 %systemd_postun osh-{retention,stats}.{service,timer}
 
 %files hub-conf-devel
-%attr(640,root,apache) %config(noreplace) %{python3_sitelib}/osh/hub/settings_local.py
-%attr(640,root,apache) %config(noreplace) %{python3_sitelib}/osh/hub/__pycache__/settings_local*.pyc
-%attr(640,root,apache) %config(noreplace) %{_sysconfdir}/httpd/conf.d/osh-hub-httpd.conf
+%defattr(644,root,apache)
+%config(noreplace) %{python3_sitelib}/osh/hub/settings_local.py
+%config(noreplace) %{python3_sitelib}/osh/hub/__pycache__/settings_local*.pyc
+%config(noreplace) %{_sysconfdir}/httpd/conf.d/osh-hub-httpd.conf
 
 
 %changelog
