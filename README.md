@@ -54,4 +54,4 @@ Latest development RPM packages can be found in [Copr](https://copr.fedorainfrac
 
 ## Documentation
 
-TODO
+User documentation can be found on the [Fedora wiki](https://fedoraproject.org/wiki/OpenScanHub).
