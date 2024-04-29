@@ -58,7 +58,7 @@ TEMPLATES = [
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
             # `/etc/osh/hub/templates` overrides `index-content.html`
-            os.path.join("/etc/osh/hub/templates"),
+            "/etc/osh/hub/templates",
             os.path.join(PROJECT_DIR, "templates"),
             os.path.join(os.path.dirname(kobo.__file__), "hub", "templates"),
         ],
