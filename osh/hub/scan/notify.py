@@ -100,7 +100,6 @@ def send_task_notification(request, task_id):
         logger.warning("Not sending e-mail for task %d with state '%s'", task_id, state)
         return
     recipient = get_recipient(task.owner)
-    hostname = socket.gethostname()
     task_url = kobo.hub.xmlrpc.client.task_url(request, task_id)
 
     try:
@@ -121,7 +120,6 @@ def send_task_notification(request, task_id):
         return
 
     message = [
-        "Hostname: %s" % hostname,
         "Task ID: %s" % task_id,
         "%s: %s" % (source, package),
         "Task state: %s" % state,
@@ -137,7 +135,7 @@ def send_task_notification(request, task_id):
 
     if settings.NOTIFICATION_EMAIL_FOOTER:
         message += f"\n{settings.NOTIFICATION_EMAIL_FOOTER}"
-    
+
     subject = "Task [#%s] %s finished, state: %s" % (task_id, package, state)
 
     to = task.args.get("email_to", []) or []
