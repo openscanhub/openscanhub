@@ -71,6 +71,20 @@ def check_analyzers(analyzers_chain):
     return ClientAnalyzer.objects.verify_in_bulk(a_list)
 
 
+def is_container_build(nvr, koji_profile):
+    """
+    checks whether the provided NVR corresponds to a container build
+    """
+
+    # retrieve the build task
+    cfg = koji.read_config(koji_profile)
+    koji_proxy = koji.ClientSession(cfg['server'])
+    build = koji_proxy.getBuild(nvr)
+    task = koji_proxy.getTaskInfo(build['task_id'], request=True)
+
+    return task['method'] == 'buildContainer'
+
+
 def check_upload(upload_id, task_user, is_tarball=False):
     """
     srpm was uploaded via FileUpload, lets fetch it and check it
