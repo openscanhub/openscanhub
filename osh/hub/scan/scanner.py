@@ -256,8 +256,7 @@ class AbstractTargetScheduler(AbstractScheduler):
                 raise PackageBlockedException('kpatch-patch is not eligible for scanning.')
 
             if is_container:
-                raise PackageBlockedException(
-                    'Container %s is not eligible for scanning.' % (self.package.name))
+                raise PackageBlockedException(f'Container {pkg_name} is not eligible for scanning.')
 
         check_package_is_blocked(self.package, self.tag.release)
         check_obsolete_scan(self.package, self.tag.release)
