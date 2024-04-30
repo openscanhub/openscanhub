@@ -234,7 +234,8 @@ class AbstractTargetScheduler(AbstractScheduler):
         mock_config = self.tag.mock.name
 
         # scan all 'auto' container builds using cspodman
-        if mock_config == 'auto' and is_container_build(self.nvr, self.koji_profile):
+        is_container = is_container_build(self.nvr, self.koji_profile)
+        if mock_config == 'auto' and is_container:
             mock_config = 'cspodman'
 
         self.task_args['arch_name'] = dig_arch(mock_config)
@@ -253,7 +254,8 @@ class AbstractTargetScheduler(AbstractScheduler):
             # TODO: make this configurable
             if pkg_name.startswith("kpatch-patch"):
                 raise PackageBlockedException('kpatch-patch is not eligible for scanning.')
-            elif pkg_name.endswith("-container"):
+
+            if is_container:
                 raise PackageBlockedException(
                     'Container %s is not eligible for scanning.' % (self.package.name))
 
