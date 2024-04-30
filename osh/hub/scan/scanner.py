@@ -20,7 +20,7 @@ from kobo.hub.models import TASK_STATES, Arch, Task
 from osh.hub.other.exceptions import PackageBlockedException
 from osh.hub.scan.check import (check_analyzers, check_build, check_nvr,
                                 check_obsolete_scan, check_package_is_blocked,
-                                check_srpm, check_upload)
+                                check_srpm, check_upload, is_container_build)
 from osh.hub.scan.mock import generate_mock_configs
 from osh.hub.scan.models import (REQUEST_STATES, SCAN_TYPES, AppSettings,
                                  ClientAnalyzer, ETMapping, MockConfig,
@@ -151,6 +151,10 @@ class BaseScheduler(AbstractScheduler):
         self.task_args['arch_name'] = dig_arch(self.mock_config)
         self.task_args['label'] = self.nvr
         self.task_args['method'] = self.method
+
+        # scan all 'auto' container builds using cspodman
+        if self.mock_config == 'auto' and is_container_build(self.nvr, self.koji_profile):
+            self.mock_config = 'cspodman'
         self.task_args['args']['mock_config'] = self.mock_config
 
     def store(self):
@@ -228,6 +232,10 @@ class AbstractTargetScheduler(AbstractScheduler):
 
         self.tag = Tag.objects.for_release_str(self.options['release'])
         mock_config = self.tag.mock.name
+
+        # scan all 'auto' container builds using cspodman
+        if mock_config == 'auto' and is_container_build(self.nvr, self.koji_profile):
+            mock_config = 'cspodman'
 
         self.task_args['arch_name'] = dig_arch(mock_config)
         self.task_args['args']['mock_config'] = mock_config
@@ -458,9 +466,11 @@ class ClientScanScheduler(AbstractClientScanScheduler):
 
         # mock profile
         self.mock_config = get_or_fail('mock_config', self.options)
-        MockConfig.objects.verify_by_name(self.mock_config)
         if self.mock_config == 'auto' and not self.build_nvr:
             raise RuntimeError("'auto' mock config is only compatible with '--nvr'")
+        if self.mock_config == 'auto' and is_container_build(self.build_nvr, self.build_koji_profile):
+            self.mock_config = 'cspodman'
+        MockConfig.objects.verify_by_name(self.mock_config)
 
         self.comment = self.options.get('comment', '')
 
@@ -581,6 +591,9 @@ class ClientDiffScanScheduler(ClientScanScheduler):
         except KeyError:
             self.base_mock_config = self.mock_config
         else:
+            if self.base_mock_config == 'auto' and is_container_build(self.base_build_nvr, self.base_build_koji_profile):
+                self.base_mock_config = 'cspodman'
+
             MockConfig.objects.verify_by_name(self.base_mock_config)
 
         if self.base_mock_config == 'auto' and not self.base_build_nvr:
