@@ -249,8 +249,8 @@ fi
 # These files contain secrets and should not be readable by others.
 %defattr(640,root,apache)
 %ghost %{_sharedstatedir}/osh/hub/secret_key
-%ghost %{_sysconfdir}/osh/hub/secrets/jira_secret
 %ghost %{_sysconfdir}/osh/hub/secrets/bugzilla_secret
+%ghost %{_sysconfdir}/osh/hub/secrets/jira_secret
 
 %post hub
 exec &>> %{_localstatedir}/log/osh/hub/post-install-%{name}-%{version}-%{release}.log
@@ -285,6 +285,7 @@ pg_isready -h localhost && %{python3_sitelib}/osh/hub/manage.py migrate
 %config(noreplace) %{python3_sitelib}/osh/hub/settings_local.py
 %config(noreplace) %{python3_sitelib}/osh/hub/__pycache__/settings_local*.pyc
 %config(noreplace) %{_sysconfdir}/httpd/conf.d/osh-hub-httpd.conf
+%ghost %attr(640,root,apache) %{_sysconfdir}/osh/hub/secrets/db_password
 
 
 %changelog
