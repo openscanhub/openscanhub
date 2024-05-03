@@ -68,7 +68,7 @@ Requires: file
 Requires: koji
 Requires: python3-kobo-client
 Requires: python3-kobo-rpmlib
-Requires: python3-kobo-worker >= 0.32.0
+Requires: python3-kobo-worker >= 0.36.1
 Requires: %{name}-common = %{version}-%{release}
 Recommends: osh-worker-conf
 
