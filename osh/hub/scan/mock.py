@@ -149,6 +149,8 @@ def generate_mock_configs(nvr, koji_profile):
         tag = _get_build_method_build_tag(koji_proxy, nvr, params['target'])
     elif method == 'buildContainer':
         raise RuntimeError('Generation of mock configs is unsupported for container builds!')
+    elif method == 'wrapperRPM':
+        tag = params['build_target']['build_tag_name']
     # TODO: add other methods
     else:
         raise RuntimeError(f'No build target for "{nvr}" available!')
