@@ -188,6 +188,10 @@ rm -rf %{buildroot}%{python3_sitelib}/scripts
 # install example httpd config
 install -D {osh/hub,%{buildroot}%{_sysconfdir}/httpd/conf.d}/osh-hub-httpd.conf
 
+# keep configuration in `/etc` so that it can be overridden if /usr is read-only
+mv %{buildroot}%{python3_sitelib}/osh/hub/settings_local.py %{buildroot}%{_sysconfdir}/osh/hub
+ln -s %{_sysconfdir}/osh/hub/settings_local.py %{buildroot}%{python3_sitelib}/osh/hub/settings_local.py
+
 %files client
 %attr(755,root,root) %{_bindir}/osh-cli
 %{_bindir}/covscan
@@ -241,13 +245,15 @@ fi
 %{_sbindir}/osh-retention
 %{_sbindir}/osh-stats
 %{_sysconfdir}/osh/hub
-%exclude %{python3_sitelib}/osh/hub/scripts/osh-xmlrpc-client.py
-%exclude %{python3_sitelib}/osh/hub/scripts/umb-emit.py
 %{python3_sitelib}/osh/hub
 %{_unitdir}/osh-retention.*
 %{_unitdir}/osh-stats.*
+%exclude %{python3_sitelib}/osh/hub/scripts/osh-xmlrpc-client.py*
+%exclude %{python3_sitelib}/osh/hub/scripts/umb-emit.py*
 %exclude %{python3_sitelib}/osh/hub/settings_local.py*
+%exclude %{python3_sitelib}/osh/hub/settings_local.ci.py*
 %exclude %{python3_sitelib}/osh/hub/__pycache__/settings_local.*
+%exclude %{_sysconfdir}/osh/hub/settings_local.py*
 %dir %{_localstatedir}/log/osh
 # These files should be readable and writable by respective groups.
 %dir %attr(775,root,apache) %{_localstatedir}/log/osh/hub
@@ -289,8 +295,8 @@ pg_isready -h localhost && %{python3_sitelib}/osh/hub/manage.py migrate
 
 %files hub-conf-devel
 %defattr(644,root,apache)
-%config(noreplace) %{python3_sitelib}/osh/hub/settings_local.py
-%config(noreplace) %{python3_sitelib}/osh/hub/__pycache__/settings_local*.pyc
+%{python3_sitelib}/osh/hub/settings_local.py
+%config(noreplace) %{_sysconfdir}/osh/hub/settings_local.py
 %config(noreplace) %{_sysconfdir}/httpd/conf.d/osh-hub-httpd.conf
 %ghost %attr(640,root,apache) %{_sysconfdir}/osh/hub/secrets/db_password
 
