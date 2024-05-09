@@ -67,7 +67,7 @@ setup(
     version=package_version,
     url="https://github.com/openscanhub/openscanhub",
     author="Red Hat, Inc.",
-    author_email="openscanhub-devel@redhat.com",
+    author_email="openscanhub@lists.fedoraproject.org",
     description="OpenScanHub is a service for static and dynamic analysis.",
     packages=find_namespace_packages(exclude=["kobo*"]),
     package_data=package_data,
