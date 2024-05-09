@@ -33,6 +33,7 @@ jobs:
         run: |
           CENTOS_RELEASE='${{matrix.centos-stream}}' containers/scripts/init-db.sh --force --minimal
           podman exec -it osh-hub /usr/bin/coverage-3 run --omit="*site-packages*,*kobo*," --rcfile=/coveragerc osh/hub/manage.py test -v 3 || exit 1
+          podman exec -it osh-hub /usr/bin/coverage-3 run --omit="*site-packages*,*kobo*," --rcfile=/coveragerc -m unittest discover -s osh/client/tests -v || exit 1
 
           # Generate xml report to be uploaded to codecov
           podman exec -it osh-hub /usr/bin/coverage-3 xml --rcfile=/coveragerc -o /cov/coverage.xml
