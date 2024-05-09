@@ -269,7 +269,7 @@ def find_tasks(request, query):
     if states:
         tasks = tasks.filter(state__in=states)
 
-    result = tasks.order_by("-dt_finished").values_list("id", flat=True)
+    result = tasks.order_by("-id").values_list("id", flat=True)
     # truncate the result in case `latest` is specified, this reduces the amount of
     # data transferred over the network
     if latest:
