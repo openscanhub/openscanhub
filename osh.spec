@@ -196,6 +196,7 @@ install -D {osh/hub,%{buildroot}%{_sysconfdir}/httpd/conf.d}/osh-hub-httpd.conf
 %{zsh_completions_dir}
 %{python3_sitelib}/osh/client
 %{python3_sitelib}/osh-*-py%{python3_version}.egg-info
+%exclude %{python3_sitelib}/osh/client/tests
 
 %files common
 %dir %{_sysconfdir}/osh
