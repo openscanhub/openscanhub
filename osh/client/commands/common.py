@@ -125,6 +125,14 @@ def add_nvr_option(parser):
     )
 
 
+def add_dist_git_url_option(parser):
+    parser.add_option(
+        "--git-url",
+        metavar="DIST_GIT_URL",
+        help="use a dist-git URL(specified by git-url) instead of a local file"
+    )
+
+
 def add_custom_model_option(parser):
     parser.add_option(
         "--cov-custom-model",
