@@ -99,6 +99,17 @@ is not even one in your user configuration file \
 
         return options
 
+    def _process_srpm_option(self, args, kwargs):
+        """Validate the srpm option and update kwargs in place."""
+        if not args:
+            # do nothing if no args are provided
+            return
+
+        if len(args) != 1:
+            self.parser.error("please specify exactly one SRPM")
+
+        kwargs["srpm"] = os.path.abspath(os.path.expanduser(args[0]))
+
     def prepare_task_options(self, args, kwargs):
         # optparser output is passed via args (args) and kwargs (opts)
         analyzers = kwargs.get('analyzers', '')
