@@ -1,8 +1,6 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 # SPDX-FileCopyrightText: Copyright contributors to the OpenScanHub project.
 
-import os
-
 from osh.client.commands.cmd_build import Base_Build
 
 
@@ -15,10 +13,7 @@ class Diff_Build(Base_Build):
         if bool(args) == bool(kwargs.get("nvr")):
             self.parser.error("please specify either SRPM or NVR")
 
-        if args:
-            if len(args) != 1:
-                self.parser.error("please specify exactly one SRPM")
-            kwargs["srpm"] = os.path.abspath(os.path.expanduser(args[0]))
+        self._process_srpm_option(args, kwargs)
 
         return super().prepare_task_options(args, kwargs)
 
