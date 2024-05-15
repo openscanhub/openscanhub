@@ -452,16 +452,20 @@ class ClientScanScheduler(AbstractClientScanScheduler):
 
         # srpm
         self.build_nvr = self.options.get('brew_build', None)
+        self.dist_git_url = self.options.get('dist_git_url')
         self.upload_id = self.options.get('upload_id', None)
         self.srpm_name = None
         self.srpm_path = None
         self.is_tarball = bool(self.options.get("tarball_build_script", None))
-        check_srpm_response = check_srpm(self.upload_id, self.build_nvr, self.username, self.is_tarball)
-        if check_srpm_response['type'] == 'build':
-            self.build_koji_profile = check_srpm_response['koji_profile']
-        elif check_srpm_response['type'] == 'upload':
-            self.srpm_path = check_srpm_response['srpm_path']
-            self.srpm_name = check_srpm_response['srpm_name']
+        if any((self.build_nvr, self.upload_id)):
+            check_srpm_response = check_srpm(self.upload_id, self.build_nvr, self.username, self.is_tarball)
+            if check_srpm_response['type'] == 'build':
+                self.build_koji_profile = check_srpm_response['koji_profile']
+            elif check_srpm_response['type'] == 'upload':
+                self.srpm_path = check_srpm_response['srpm_path']
+                self.srpm_name = check_srpm_response['srpm_name']
+        elif self.dist_git_url is None:
+            raise RuntimeError('No source RPM or tarball or dist-git URL specified.')
 
         # analyzers
         self.analyzers = self.options.get('analyzers', '')
@@ -591,7 +595,10 @@ class ClientDiffScanScheduler(ClientScanScheduler):
         self.base_build_nvr = self.options.get('base_brew_build', None)
         self.base_upload_id = self.options.get('base_upload_id', None)
         self.base_is_tarball = 'base_tarball_build_script' in self.options
-        base_check_srpm_response = check_srpm(self.base_upload_id, self.base_build_nvr, self.username, self.base_is_tarball)
+        if any((self.base_upload_id, self.base_build_nvr)):
+            base_check_srpm_response = check_srpm(self.base_upload_id, self.base_build_nvr, self.username, self.base_is_tarball)
+        else:
+            raise RuntimeError("No source RPM or tarball specified.")
         if base_check_srpm_response['type'] == 'build':
             self.base_build_koji_profile = base_check_srpm_response['koji_profile']
         elif base_check_srpm_response['type'] == 'upload':
