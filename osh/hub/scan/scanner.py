@@ -412,16 +412,19 @@ class AbstractClientScanScheduler:
         # the priority must be non-negative
         return max(0, 10 + priority_offset)
 
-    def determine_result_filename(self, nvr, filename, is_tarball):
+    def determine_result_filename(self, nvr, filename, is_tarball, git_url=None):
         if nvr:
             return nvr
 
-        if filename.endswith(".src.rpm"):
+        if filename and filename.endswith(".src.rpm"):
             return os.path.basename(filename)[:-8]
 
         if is_tarball:
             f = os.path.basename(filename)
             return f.rsplit(".", 2 if ".tar." in f else 1)[0]
+        # FIXME: resolve result_filename later
+        if git_url is not None:
+            return None
 
         raise RuntimeError("unknown input format of sources")
 
@@ -514,10 +517,14 @@ class ClientScanScheduler(AbstractClientScanScheduler):
                 'nvr': self.build_nvr,
                 'koji_profile': self.build_koji_profile,
             }
+        elif self.dist_git_url is not None:
+            self.task_args['args']['dist_git_url'] = self.dist_git_url
+            # FIXME: parse the dist_git_url and populate self.task_args['label']
         else:
             self.task_args['args']['srpm_name'] = self.srpm_name
 
-        self.task_args['args']['result_filename'] = self.determine_result_filename(self.build_nvr, input_pkg, self.is_tarball)
+        self.task_args['args']['result_filename'] = self.determine_result_filename(
+            self.build_nvr, input_pkg, self.is_tarball, self.dist_git_url)
         # FIXME: ideally rewrite the code to stuff all input-related info to "source" (e.g. builds,
         #        nvrs, srpm filenames etc.)
         if self.is_tarball:
