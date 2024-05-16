@@ -100,19 +100,18 @@ class CsmockRunner:
         # ending -results.tar.xz, which appears second in the glob results
         return glob_results[-1], retcode
 
-    def analyze(self, analyzers, srpm_path, profile=None, su_user=None, additional_arguments=None,
-                result_filename=None, profile_url=None, **kwargs):
+    def determine_output_path(self, srpm_path, result_filename):
         if result_filename is None:
             result_filename = os.path.basename(srpm_path)[:-8]
-        if self.tmpdir:
-            output_path = os.path.join(self.tmpdir, result_filename + '.tar.xz')
-        else:
-            output_path = os.path.join(os.getcwd(), result_filename + '.tar.xz')
+        output_path = os.path.join(self.tmpdir if self.tmpdir else os.getcwd(),
+                                   result_filename + '.tar.xz')
 
         if output_path == srpm_path:
             # use a different output path to avoid overwriting the input tarball
             output_path = re.sub(r'\.tar\.xz$', '-results.tar.xz', output_path)
+        return output_path
 
+    def construct_cmd(self, analyzers, profile, profile_url, output_path):
         if profile == "cspodman":
             cmd = "cspodman"
         else:
@@ -130,16 +129,32 @@ class CsmockRunner:
         if output_path:
             cmd += ' -o ' + shlex.quote(output_path)
 
+        return cmd
+
+    def handle_additional_arguments(self, additional_arguments):
+        cmd_args = ""
         if additional_arguments:
             # split/quote/rejoin to avoid shell injection
             try:
                 split_args = shlex.split(additional_arguments)
 
                 # starting with Python 3.8, one can use + shlex.join(split_args)
-                cmd += ' ' + ' '.join(shlex.quote(arg) for arg in split_args)
+                cmd_args = ' ' + ' '.join(shlex.quote(arg) for arg in split_args)
             except ValueError as e:
                 logger.error("failed to parse csmock arguments: %s", e)
-                return None, 2
+                raise
+        return cmd_args
+
+    def analyze(self, analyzers, srpm_path, profile=None, su_user=None, additional_arguments=None,
+                result_filename=None, profile_url=None, **kwargs):
+
+        output_path = self.determine_output_path(srpm_path, result_filename)
+        cmd = self.construct_cmd(analyzers, profile, profile_url, output_path)
+
+        try:
+            cmd += self.handle_additional_arguments(additional_arguments)
+        except ValueError:
+            return None, 2
 
         cmd += ' ' + srpm_path
         return self.do(cmd, su_user=su_user, **kwargs)
