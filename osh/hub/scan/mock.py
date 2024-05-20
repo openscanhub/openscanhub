@@ -78,19 +78,22 @@ def _get_tag_specific_config(target):
     # CentOS Stream
     match = re.search(r'c(\d+)s', target)
     if match is not None:
-        return f"config_opts['releasever'] = '{match[1]}'\n" \
+        return "config_opts['use_bootstrap_image'] = True\n" \
+               f"config_opts['releasever'] = '{match[1]}'\n" \
                f"config_opts['bootstrap_image'] = 'quay.io/centos/centos:stream{match[1]}'\n"
 
     # Fedora
     match = re.search(r'f(\d+)', target)
     if match is not None:
-        return f"config_opts['releasever'] = '{match[1]}'\n" \
+        return "config_opts['use_bootstrap_image'] = True\n" \
+               f"config_opts['releasever'] = '{match[1]}'\n" \
                f"config_opts['bootstrap_image'] = 'registry.fedoraproject.org/fedora:{match[1]}'\n"
 
     # RHEL
     match = re.search(r'rhel-?(\d+)', target)
     if match is not None:
-        return f"config_opts['releasever'] = '{match[1]}'\n" \
+        return "config_opts['use_bootstrap_image'] = True\n" \
+               f"config_opts['releasever'] = '{match[1]}'\n" \
                f"config_opts['bootstrap_image'] = 'registry.access.redhat.com/ubi{match[1]}/ubi'\n"
 
     # fallback
