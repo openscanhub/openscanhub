@@ -148,10 +148,6 @@ def _create_mock_config(tag, arch, koji_profile, dest_dir):
                        check=True, stdout=subprocess.PIPE)
     contents = p.stdout.decode()
 
-    # FIXME: remove when dnf5 is usable with mock
-    if 'dnf5' in contents:
-        contents = contents.replace('dnf5', 'dnf')
-
     # add extra repos
     matched_repos = [repo for regex, repo
                      in getattr(settings, 'MOCK_AUTO_EXTRA_REPOS', {}).items()
