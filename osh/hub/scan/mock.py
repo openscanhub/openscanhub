@@ -56,6 +56,44 @@ def _get_build_method_build_tag(koji_proxy, nvr, target):
     return koji_proxy.getBuildTarget(target)['build_tag_name']
 
 
+def _get_module_build_tag(koji_proxy, task_id):
+    """
+    returns build tag name of the first regular external build target for given
+    modular task
+    """
+    buildtag_id = None
+    for child_id in koji_proxy.getTaskDescendents(task_id, request=True):
+        child = koji_proxy.getTaskInfo(child_id, request=True)
+
+        # skip non-buildArch tasks
+        if child['method'] != 'buildArch':
+            continue
+
+        # parse buildtag_id from task parameters
+        params = koji.parse_task_params(child['method'], child['request'])
+        if 'root' not in params:
+            # should not happen
+            continue
+
+        buildtag_id = params['root']
+        break
+
+    # get buildtag
+    if buildtag_id is None:
+        raise RuntimeError(f'Could not determine buildroot ID for task "{task_id}"')
+    buildtag = koji_proxy.getTag(buildtag_id)
+
+    # get external build repo
+    repos = koji_proxy.getExternalRepoList(buildtag)
+    if len(repos) != 1:
+        raise RuntimeError('FIXME: Module builds with more or none external repos not implemented!')
+    ext_repo_name = repos[0]['external_repo_name']
+
+    # convert external repo to regular build tag
+    assert ext_repo_name.endswith('-repo'), f'External repo name "{ext_repo_name}" does not end with "-repo"!'
+    return ext_repo_name[:-5]
+
+
 def _get_build_arches(koji_proxy, task_id):
     """
     returns all arches available for given build
@@ -149,7 +187,11 @@ def generate_mock_configs(nvr, koji_profile):
 
     # parse build tag name from task parameters
     if method == 'build':
-        tag = _get_build_method_build_tag(koji_proxy, nvr, params['target'])
+        # obtain module build target
+        if 'mbs_module_target' in params['opts']:
+            tag = _get_module_build_tag(koji_proxy, task['id'])
+        else:
+            tag = _get_build_method_build_tag(koji_proxy, nvr, params['target'])
     elif method == 'buildContainer':
         raise RuntimeError('Generation of mock configs is unsupported for container builds!')
     elif method == 'wrapperRPM':
