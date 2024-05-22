@@ -283,7 +283,12 @@ print(get_random_secret_key())" > %{_sharedstatedir}/osh/hub/secret_key
 fi
 
 # this only takes an effect if PostgreSQL is running and the database exists
-pg_isready -h localhost && %{python3_sitelib}/osh/hub/manage.py migrate
+if pg_isready -h localhost; then
+    # run `manage.py` as the `apache` user to improve security and to prevent
+    # the Python interpreter from creating an unowned byte-compiled module for
+    # `settings_local.py`
+    runuser -u apache -- %{python3_sitelib}/osh/hub/manage.py migrate
+fi
 
 %systemd_post osh-{retention,stats}.{service,timer}
 
