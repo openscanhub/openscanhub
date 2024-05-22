@@ -166,6 +166,15 @@ class CsmockRunner:
         srpm_path = self.download_file(srpm_url, srpm_name)
         return self.analyze(analyzers, srpm_path, profile, su_user, additional_arguments, **kwargs)
 
+    def dist_git_url_analyze(self, analyzers, dist_git_url, profile=None,
+                             su_user=None, additional_arguments=None, **kwargs):
+        if profile != "cspodman":
+            print("dist-git URL scan is incompatible with profile:", profile, file=sys.stderr)
+            return None, 2
+        # sanitize the URL before appending to the shell command
+        sanitized_url = shlex.quote(dist_git_url)
+        return self.analyze(analyzers, sanitized_url, profile, su_user, additional_arguments, **kwargs)
+
     def koji_analyze(self, analyzers, nvr, profile=None, su_user=None,
                      additional_arguments=None, koji_profile="koji", **kwargs):
         if profile == "cspodman":
