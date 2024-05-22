@@ -294,7 +294,6 @@ pg_isready -h localhost && %{python3_sitelib}/osh/hub/manage.py migrate
 %systemd_postun osh-{retention,stats}.{service,timer}
 
 %files hub-conf-devel
-%defattr(644,root,apache)
 %{python3_sitelib}/osh/hub/settings_local.py
 %config(noreplace) %{_sysconfdir}/osh/hub/settings_local.py
 %config(noreplace) %{_sysconfdir}/httpd/conf.d/osh-hub-httpd.conf
