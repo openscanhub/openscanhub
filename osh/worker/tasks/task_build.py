@@ -41,6 +41,7 @@ class Build(OSHTaskBase):
         mock_config = self.args.pop("mock_config")
         build = self.args.pop("build", {})
         srpm_name = self.args.pop("srpm_name", None)
+        dist_git_url = self.args.pop("dist_git_url", None)
         csmock_args = self.args.pop("csmock_args", None)
         analyzers = self.args.pop('analyzers')
         base_task_args = self.args.pop('base_task_args', None)
@@ -91,8 +92,16 @@ class Build(OSHTaskBase):
                     additional_arguments=csmock_args,
                     result_filename=result_filename,
                     su_user=su_user)
+            elif dist_git_url:
+                results, retcode = runner.dist_git_url_analyze(
+                    analyzers,
+                    dist_git_url,
+                    profile=mock_config,
+                    su_user=su_user,
+                    result_filename=result_filename,
+                    additional_arguments=csmock_args)
             else:
-                print("No srpm specified", file=sys.stderr)
+                print("No srpm or dist-git URL specified", file=sys.stderr)
                 self.fail()
 
             if results is None:
