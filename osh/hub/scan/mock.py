@@ -44,6 +44,13 @@ def _get_build_method_build_tag(koji_proxy, nvr, target):
         # use lowest 'f*' tag
         target = tags[0] if tags else None
 
+    # try to handle removed side tags
+    if target is not None and '-side' in target and koji_proxy.getTag(target) is None:
+        target = target[:target.index('-side')]
+        if koji_proxy.getTag(target):
+            return target
+        raise RuntimeError(f"Tag '{target}' of '{nvr}' is not available!")
+
     # handle the case if the target repo is no longer available
     if target is not None and koji_proxy.getBuildTarget(target) is None:
         # try to use the closest available parent (e.g. for merged side tags)
