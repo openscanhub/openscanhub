@@ -82,7 +82,8 @@ logger.addHandler(ch)
 def create_scan_cmd(options):
     c = Client(options.hub, options.username, options.password, options.verbose)
     response = c.create_et_scan(options.base, options.target, options.advisory_id,
-                                options.et_scan_id, options.owner, options.release)
+                                options.et_scan_id, options.owner, options.release,
+                                options.rhel_version)
     logger.info(json.dumps(response, indent=2))
     if response['status'] == 'ERROR':
         raise RuntimeError(response['message'])
@@ -143,6 +144,7 @@ def set_options():
     create_scan_parser.add_argument("-t", "--target", help="nvr of target package to scan",)
     create_scan_parser.add_argument("--et-scan-id", help="database ID of run in ET")
     create_scan_parser.add_argument("--release", help="release ID")
+    create_scan_parser.add_argument("--rhel-version", help="rhel version ID")
     create_scan_parser.add_argument("--advisory-id", help="ID of advisory")
     create_scan_parser.add_argument("--owner", help="package owner")
 
@@ -219,11 +221,15 @@ class Client:
             logger.info("performing username/password login")
             self.hub.auth.login_password(self.username, self.password)
 
-    def create_et_scan(self, base, target, advisory_id, et_id, owner, release):
+    def create_et_scan(self, base, target, advisory_id, et_id, owner, release, rhel_version):
         """
         Create scan, uses same method as Errata Tool
         """
         self.login()
+
+        # Use release as rhel_version if unset
+        if rhel_version is None:
+            rhel_version = release
 
         scan_args = {
             'package_owner': owner,
@@ -231,7 +237,7 @@ class Client:
             'target': target,
             'id': et_id,
             'errata_id': advisory_id,
-            'rhel_version': release,
+            'rhel_version': rhel_version,
             'release': release,
         }
         return self.hub.errata.create_errata_diff_scan(scan_args)
