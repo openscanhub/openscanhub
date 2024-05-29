@@ -233,6 +233,9 @@ class AbstractTargetScheduler(AbstractScheduler):
         self.tag = Tag.objects.for_release_str(self.options['release'])
         mock_config = self.tag.mock.name
 
+        if self.tag.name == 'ASYNC':
+            self.tag = Tag.objects.for_release_str(self.options['rhel_version'])
+
         # scan all 'auto' container builds using cspodman
         is_container = is_container_build(self.nvr, self.koji_profile)
         if mock_config == 'auto' and is_container:

@@ -17,9 +17,9 @@ Here's a scan request from Errata Tool:
 }
 ```
 
-Let me explain what it means: OSH is supposed to scan package `ceph-10.1.0-1.el7cp`, which is a newly added package (base is `NEW_PACKAGE`). It's part of product `CEPH-2.0` and is built on top of RHEL 7. The bad thing is that OSH ignores `rhel_version`.
+Let me explain what it means: OSH is supposed to scan package `ceph-10.1.0-1.el7cp`, which is a newly added package (base is `NEW_PACKAGE`). It's part of product `CEPH-2.0` and is built on top of RHEL 7.
 
-In order to scan this, OSH translates the `release` field. Translation rules can be found in the **Release mappings** table:
+In order to scan this, OSH translates the `release` and `rhel_version` fields, respectively. Translation rules can be found in the **Release mappings** table:
 
 ```
 Id   Release tag              Template            Priority
