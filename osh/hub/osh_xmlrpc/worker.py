@@ -206,8 +206,15 @@ def ensure_base_is_scanned_properly(request, scan_id, task_id):
     if mock_config == 'rhel-9-beta-x86_64':
         # FIXME: hard-coded at two places for now
         mock_config = 'rhel-9-alpha-x86_64'
-    logger.debug("Looking for base scan '%s', mock_config: %s", base_nvr, mock_config)
-    base_scan = obtain_base(base_nvr, mock_config)
+
+    # Inherit `auto` mock config if parent used it
+    if task.args['mock_config'] == 'auto':
+        mock_config = 'auto'
+        base_scan = None
+    else:
+        logger.debug("Looking for base scan '%s', mock_config: %s", base_nvr, mock_config)
+        base_scan = obtain_base(base_nvr, mock_config)
+
     if base_scan is None:
         logger.info("Preparing base scan")
         options = {
