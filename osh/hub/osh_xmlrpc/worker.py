@@ -15,8 +15,8 @@ from osh.hub.scan.mock import generate_mock_configs
 from osh.hub.scan.models import (SCAN_STATES, AnalyzerVersion, AppSettings,
                                  Profile, Scan, ScanBinding)
 from osh.hub.scan.notify import send_task_notification
-from osh.hub.scan.scanner import (BaseNotValidException, move_mock_configs,
-                                  obtain_base, prepare_base_scan)
+from osh.hub.scan.scanner import (move_mock_configs, obtain_base,
+                                  prepare_base_scan)
 from osh.hub.scan.xmlrpc_helper import cancel_scan
 from osh.hub.scan.xmlrpc_helper import fail_scan as h_fail_scan
 from osh.hub.scan.xmlrpc_helper import finish_scan as h_finish_scan
@@ -207,9 +207,8 @@ def ensure_base_is_scanned_properly(request, scan_id, task_id):
         # FIXME: hard-coded at two places for now
         mock_config = 'rhel-9-alpha-x86_64'
     logger.debug("Looking for base scan '%s', mock_config: %s", base_nvr, mock_config)
-    try:
-        base_scan = obtain_base(base_nvr, mock_config)
-    except BaseNotValidException:
+    base_scan = obtain_base(base_nvr, mock_config)
+    if base_scan is None:
         logger.info("Preparing base scan")
         options = {
             'mock_config': mock_config,

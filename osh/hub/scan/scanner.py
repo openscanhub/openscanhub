@@ -644,10 +644,6 @@ def prepare_base_scan(options):
     return spawn_subtask_args
 
 
-class BaseNotValidException(Exception):
-    pass
-
-
 def obtain_base(base_nvr, mock_config):
     """
     @param base_nvr - nvr of base to fetch
@@ -657,22 +653,26 @@ def obtain_base(base_nvr, mock_config):
     """
     binding = get_latest_binding(base_nvr)
     logger.debug("Latest binding is '%s'", binding)
-    if binding:
-        if binding.scan.is_in_progress() and binding.result is None:
-            logger.debug("Scan is in progress")
-            return binding.scan
-        elif binding.result is None:
-            # safe handling: there should be result but it's not there actually -- reschedule
-            logger.warning("Scan %s is not in progress and has no result.", binding)
-            raise BaseNotValidException()
-        elif not binding.is_actual(mock_config):
-            # is it scanned with up-to-date analysers?
-            logger.debug("Configuration of analysers changed, rescan base")
-            raise BaseNotValidException()
-        elif not task_has_results(binding.task):
-            raise BaseNotValidException()
-    else:
-        raise BaseNotValidException()
+    if not binding:
+        return None
+
+    if binding.scan.is_in_progress() and binding.result is None:
+        logger.debug("Scan is in progress")
+        return binding.scan
+
+    if binding.result is None:
+        # safe handling: there should be result but it's not there actually -- reschedule
+        logger.warning("Scan %s is not in progress and has no result.", binding)
+        return None
+
+    if not binding.is_actual(mock_config):
+        # is it scanned with up-to-date analysers?
+        logger.debug("Configuration of analysers changed, rescan base")
+        return None
+
+    if not task_has_results(binding.task):
+        return None
+
     return binding.scan
 
 
