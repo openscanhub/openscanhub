@@ -10,6 +10,7 @@ import os
 import re
 import subprocess
 import tempfile
+import urllib.parse
 import uuid
 
 import koji
@@ -94,11 +95,21 @@ def _get_module_build_tag(koji_proxy, task_id):
     repos = koji_proxy.getExternalRepoList(buildtag)
     if len(repos) != 1:
         raise RuntimeError('FIXME: Module builds with more or none external repos not implemented!')
+
     ext_repo_name = repos[0]['external_repo_name']
+    ext_repo_path = urllib.parse.urlparse(repos[0]['url']).path
 
     # convert external repo to regular build tag
-    assert ext_repo_name.endswith('-repo'), f'External repo name "{ext_repo_name}" does not end with "-repo"!'
-    return ext_repo_name[:-5]
+    assert ext_repo_path.endswith('/latest/$arch/'), \
+        f'External repo "{ext_repo_name}" has invalid repo path: {ext_repo_path}'
+    build_tag = ext_repo_path.split('/')[-4]
+
+    # check that the converted build tag exists
+    if not koji_proxy.getTag(build_tag):
+        raise RuntimeError(f'External repo "{ext_repo_name}" is building from a'
+                           f' non-existent build tag "{build_tag}"!')
+
+    return build_tag
 
 
 def _get_build_arches(koji_proxy, task_id):
