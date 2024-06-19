@@ -190,6 +190,10 @@ def _create_mock_config(tag, arch, koji_profile, dest_dir):
     # use $basearch for the "[build]" repo
     contents = re.sub(fr'({tag}/latest/){arch}', r'\1$basearch', contents)
 
+    # use module_hotfixes=True for RHEL-8 and RHEL-9
+    if re.search(r'rhel-?[89]', tag):
+        contents = contents.replace("[build]", '[build]\\nmodule_hotfixes=True')
+
     # use randomly generated root directory name
     contents = re.sub(r"(config_opts\['root'\] = '[^']*)'",
                       fr"\1-{uuid.uuid4()}'", contents)
