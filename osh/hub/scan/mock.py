@@ -187,6 +187,9 @@ def _create_mock_config(tag, arch, koji_profile, dest_dir):
     extra_repos = '\n'.join(matched_repos).replace('\n', '\\n')
     contents = contents.replace("[main]", extra_repos + '\\n\\n[main]')
 
+    # use $basearch for the "[build]" repo
+    contents = re.sub(fr'({tag}/latest/){arch}', r'\1$basearch', contents)
+
     # use randomly generated root directory name
     contents = re.sub(r"(config_opts\['root'\] = '[^']*)'",
                       fr"\1-{uuid.uuid4()}'", contents)
