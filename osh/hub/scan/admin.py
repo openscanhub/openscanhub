@@ -10,8 +10,7 @@ from django.urls import path
 from django.utils.safestring import mark_safe
 from kobo.hub.models import TASK_STATES, Task
 
-from osh.hub.other.autoregister import autoregister_admin
-from osh.hub.other.shortcuts import add_link_field
+from osh.hub.other.autoregister import OSHModelAdmin, autoregister_app_admin
 from osh.hub.scan.models import SCAN_STATES, Scan, ScanBinding
 from osh.hub.scan.notify import send_scan_notification
 from osh.hub.scan.xmlrpc_helper import cancel_scan as h_cancel_scan
@@ -19,33 +18,30 @@ from osh.hub.scan.xmlrpc_helper import cancel_scan_tasks
 from osh.hub.scan.xmlrpc_helper import fail_scan as h_fail_scan
 from osh.hub.scan.xmlrpc_helper import finish_scan as h_finish_scan
 
-autoregister_admin('osh.hub.scan.models',
-                   exclude_models=['Scan'],
-                   reversed_relations={'MockConfig': ['analyzers']},
-                   admin_fields={
-                       'Tag': {'search_fields': ['name', 'mock__name', 'release__tag']},
-                       'ScanBinding': {'search_fields': ['scan__nvr', 'scan__package__name']},
-                       'Package': {'search_fields': ['name']},
-                       'AnalyzerVersion': {'search_fields': ['version', 'analyzer__name', 'mocks__name']},
-                   })
-autoregister_admin('django.contrib.admin.models')
+
+@admin.register(admin.models.LogEntry)
+class LogEntryAdmin(OSHModelAdmin):
+    """LogEntry ModelAdmin is read only!"""
+
+    def __init__(self, model, admin_site):
+        self.readonly_fields = [f.name for f in model._meta.get_fields()]
+        super().__init__(model, admin_site)
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+
+autoregister_app_admin('scan', exclude_models=[Scan])
 
 
 @admin.register(Scan)
-@add_link_field('scanbinding', 'scanbinding', field_label="Binding")
-@add_link_field('scan', 'base', field_label="Base")
-@add_link_field('scan', 'parent', field_label="Parent")
-@add_link_field('tag', 'tag', field_label="Tag")
-@add_link_field('package', 'package', field_label="Package")
-class ScanAdmin(admin.ModelAdmin):
-    list_display = ("id", "nvr", "state", "scan_type", 'base_link',
-                    'parent_link', "tag_link",
-                    'username', 'package_link', 'scanbinding_link', 'enabled')
-    raw_id_fields = ("base", "tag", "username", "package", "parent")
-    search_fields = ['package__name', 'nvr']
-    list_per_page = 15
-    review_template = 'admin/my_test/myentry/review.html'
-
+class ScanAdmin(OSHModelAdmin):
     def get_urls(self):
         urls = super().get_urls()
         slug = '<int:scan_id>/change'

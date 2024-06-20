@@ -1145,6 +1145,9 @@ class ClientAnalyzer(models.Model):
 class Analyzer(models.Model):
     name = models.CharField(max_length=64)
 
+    class Meta():
+        ordering = ['name']
+
     def __str__(self):
         return "%s" % (self.name)
 
@@ -1284,6 +1287,9 @@ class RetentionPolicySetting(models.Model):
         default=365, null=True, blank=True,
         help_text="Number of days before the task is deleted.",
     )
+
+    def __str__(self):
+        return self.name
 
 
 class TaskResultsRemoval(models.Model):
