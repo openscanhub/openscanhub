@@ -1,6 +1,11 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 # SPDX-FileCopyrightText: Copyright contributors to the OpenScanHub project.
 
+import optparse
+
+from osh.common.validators import parse_dist_git_url
+
+
 def add_download_results_option(parser):
     parser.add_option(
         "-d",
@@ -121,10 +126,26 @@ def add_nvr_option(parser):
     )
 
 
+def validate_git_url(option, opt_str, value, parser):
+
+    if value is None:
+        raise optparse.OptionValueError("Missing dist-git URL in request")
+    try:
+        # `ValueError` will be raised if an invalid dist-git URL is specified
+        parse_dist_git_url(value)
+    except ValueError as e:
+        raise optparse.OptionValueError(f"{e}")
+    else:
+        setattr(parser.values, option.dest, value)
+
+
 def add_dist_git_url_option(parser):
     parser.add_option(
         "--git-url",
         metavar="DIST_GIT_URL",
+        action="callback",
+        type="string",
+        callback=validate_git_url,
         help="use a dist-git URL(specified by git-url) instead of a local file"
     )
 
