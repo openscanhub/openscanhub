@@ -58,6 +58,7 @@ class Base_Build(OshCommand):
         config = kwargs.get(prefix + "config")
         nvr = kwargs.get(prefix + "nvr")
         srpm = kwargs.get(prefix + "srpm")
+        dist_git_url = kwargs.get(prefix + "git_url")
         tarball_build_script = kwargs.get(prefix + "tarball_build_script")
 
         if not config:
@@ -83,6 +84,8 @@ is not even one in your user configuration file \
             if result is not None:
                 self.parser.error(result)
             options[prefix + "brew_build"] = nvr
+        elif dist_git_url is not None:
+            options[prefix + "dist_git_url"] = dist_git_url
         else:
             if not os.path.exists(srpm):
                 self.parser.error(f"file does not exist: {srpm}")
