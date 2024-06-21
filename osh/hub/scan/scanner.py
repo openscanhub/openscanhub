@@ -17,6 +17,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from kobo.django.upload.models import FileUpload
 from kobo.hub.models import TASK_STATES, Arch, Task
 
+from osh.common.validators import parse_dist_git_url
 from osh.hub.other.exceptions import PackageBlockedException
 from osh.hub.scan.check import (check_analyzers, check_build, check_nvr,
                                 check_obsolete_scan, check_package_is_blocked,
@@ -365,7 +366,7 @@ class AbstractClientScanScheduler:
 
     @classmethod
     def determine_priority(cls, entered_priority, supposed_nvr, srpm_name,
-                           is_tarball=False):
+                           dist_git_url=None, is_tarball=False):
         """determine priority of scheduled task
 
         :param entered_priority: priority submitted by client
@@ -392,10 +393,15 @@ class AbstractClientScanScheduler:
             if is_tarball:
                 srpm_name = re.sub(r'\.tar(\.[a-z0-9]+)?$', '', srpm_name)
 
-        try:
-            name_candidates.append(check_nvr(supposed_nvr or srpm_name)['name'])
-        except RuntimeError:
-            pass
+        if supposed_nvr or srpm_name:
+            try:
+                name_candidates.append(check_nvr(supposed_nvr or srpm_name)['name'])
+            except RuntimeError:
+                pass
+
+        if dist_git_url:
+            _, _, repo_name, _ = parse_dist_git_url(dist_git_url)
+            name_candidates.append(repo_name)
 
         if srpm_name:
             # try also only NV and the whole filename
@@ -422,9 +428,10 @@ class AbstractClientScanScheduler:
         if is_tarball:
             f = os.path.basename(filename)
             return f.rsplit(".", 2 if ".tar." in f else 1)[0]
-        # FIXME: resolve result_filename later
+
         if git_url is not None:
-            return None
+            _, _, repo_name, commit_hash = parse_dist_git_url(git_url)
+            return f"{repo_name}-{commit_hash}"
 
         raise RuntimeError("unknown input format of sources")
 
@@ -508,8 +515,6 @@ class ClientScanScheduler(AbstractClientScanScheduler):
         self.task_args['label'] = input_pkg
         self.task_args['method'] = self.method
         self.task_args['comment'] = self.comment
-        self.task_args['priority'] = AbstractClientScanScheduler.determine_priority(
-            self.priority, self.build_nvr, self.srpm_name, self.is_tarball)
         self.task_args['state'] = TASK_STATES['CREATED']
         self.task_args['args'] = {}
         if self.build_nvr:
@@ -518,10 +523,19 @@ class ClientScanScheduler(AbstractClientScanScheduler):
                 'koji_profile': self.build_koji_profile,
             }
         elif self.dist_git_url is not None:
+            # FIXME: do we need to wrap the exception with RuntimeError at all?
+            try:
+                _, _, repo_name, commit_hash = parse_dist_git_url(self.dist_git_url)
+            except ValueError as e:
+                raise RuntimeError(f"{e}")
             self.task_args['args']['dist_git_url'] = self.dist_git_url
-            # FIXME: parse the dist_git_url and populate self.task_args['label']
+            # populate label with non-null value based on dist_git_url
+            self.task_args['label'] = f"{repo_name}#{commit_hash}"
         else:
             self.task_args['args']['srpm_name'] = self.srpm_name
+
+        self.task_args['priority'] = AbstractClientScanScheduler.determine_priority(
+            self.priority, self.build_nvr, self.srpm_name, self.dist_git_url, self.is_tarball)
 
         self.task_args['args']['result_filename'] = self.determine_result_filename(
             self.build_nvr, input_pkg, self.is_tarball, self.dist_git_url)
