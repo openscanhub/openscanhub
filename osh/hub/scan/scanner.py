@@ -486,6 +486,8 @@ class ClientScanScheduler(AbstractClientScanScheduler):
 
         self.client_csmock_args = self.options.get('csmock_args', None)
 
+        self.metadata = self.options.get('metadata')
+
         self.email_to = self.options.get("email_to", None)
 
     def prepare_args(self):
@@ -526,6 +528,10 @@ class ClientScanScheduler(AbstractClientScanScheduler):
         self.task_args['args']['csmock_args'] = csmock_args
         self.task_args['args']['custom_model_name'] = self.model_name
         self.task_args['args']['su_user'] = AppSettings.setting_get_su_user()
+
+        if self.metadata:
+            self.task_args['args']['metadata'] = self.metadata
+
         if self.email_to:
             self.task_args['args']['email_to'] = self.email_to
 
