@@ -17,7 +17,8 @@ from osh.client.commands.common import (add_analyzers_option,
                                         add_json_option, add_nowait_option,
                                         add_nvr_option, add_priority_option,
                                         add_profile_option,
-                                        add_task_id_file_option)
+                                        add_task_id_file_option,
+                                        add_task_metadata_option)
 from osh.client.commands.shortcuts import (check_analyzers, fetch_results,
                                            handle_perm_denied, upload_file,
                                            verify_koji_build, verify_mock,
@@ -44,6 +45,7 @@ class Base_Build(OshCommand):
         add_email_to_option(self.parser)
         add_install_to_chroot_option(self.parser)
         add_json_option(self.parser)
+        add_task_metadata_option(self.parser)
         add_nowait_option(self.parser)
         add_nvr_option(self.parser)
         add_priority_option(self.parser)
@@ -108,6 +110,7 @@ is not even one in your user configuration file \
         priority = kwargs.get("priority")
         profile = kwargs.get('profile')
         warn_level = kwargs.get('warn_level', '0')
+        metadata = kwargs.get("metadata")
 
         # non-negative priority
         if priority is not None and priority < 0:
@@ -151,6 +154,9 @@ is not even one in your user configuration file \
 
         if packages_to_install:
             options['install_to_chroot'] = packages_to_install
+
+        if metadata:
+            options['metadata'] = metadata
 
         return options
 
