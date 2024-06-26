@@ -17,7 +17,8 @@ from osh.client.commands.common import (add_analyzers_option,
                                         add_json_option, add_nowait_option,
                                         add_nvr_option, add_priority_option,
                                         add_profile_option,
-                                        add_task_id_file_option)
+                                        add_task_id_file_option,
+                                        add_task_metadata_option)
 from osh.client.commands.shortcuts import (check_analyzers, fetch_results,
                                            handle_perm_denied, upload_file,
                                            verify_koji_build, verify_mock,
@@ -49,6 +50,7 @@ class Base_Build(OshCommand):
         add_priority_option(self.parser)
         add_profile_option(self.parser)
         add_task_id_file_option(self.parser)
+        add_task_metadata_option(self.parser)
 
     def check_build(self, args, kwargs, prefix=""):
         local_conf = get_conf(self.conf)
@@ -104,6 +106,7 @@ is not even one in your user configuration file \
         cov_custom_model = kwargs.get('cov_custom_model')
         csmock_args = kwargs.get('csmock_args')
         email_to = kwargs.get("email_to", [])
+        metadata = kwargs.get("metadata")
         packages_to_install = kwargs.get('install_to_chroot')
         priority = kwargs.get("priority")
         profile = kwargs.get('profile')
@@ -151,6 +154,9 @@ is not even one in your user configuration file \
 
         if packages_to_install:
             options['install_to_chroot'] = packages_to_install
+
+        if metadata:
+            options['metadata'] = metadata
 
         return options
 

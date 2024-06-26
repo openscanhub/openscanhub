@@ -1,6 +1,10 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 # SPDX-FileCopyrightText: Copyright contributors to the OpenScanHub project.
 
+import json
+from optparse import OptionValueError
+
+
 def add_download_results_option(parser):
     parser.add_option(
         "-d",
@@ -149,4 +153,24 @@ def add_tarball_option(parser):
              "then the tarball will be scanned. "
              "This option sets command which should build the package, usually this should be just "
              "\"make\", in case of packages which doesn't need to be built, just pass \"true\".",
+    )
+
+
+def parse_json_option(option, opt, value, parser):
+    try:
+        json_value = json.loads(value)
+    except json.JSONDecodeError:
+        raise OptionValueError(f"Option {opt}: invalid JSON value: {value}")
+
+    setattr(parser.values, option.dest, json_value)
+
+
+def add_task_metadata_option(parser):
+    parser.add_option(
+        "--metadata",
+        dest="metadata",
+        action="callback",
+        callback=parse_json_option,
+        help="Specify task metadata as a JSON string, e.g., "
+             "--metadata='{\"product\": \"RHEL\", \"version\": \"9.3\"}'"
     )
