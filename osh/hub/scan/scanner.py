@@ -230,6 +230,12 @@ class AbstractTargetScheduler(AbstractScheduler):
             logger.warning("Trying to call store() second time.")
             return
 
+        pkg_name = self.package.name
+
+        # TODO: make this configurable
+        if pkg_name.startswith("kpatch-patch"):
+            raise PackageBlockedException('kpatch-patch is not eligible for scanning.')
+
         self.tag = Tag.objects.for_release_str(self.options['release'])
         mock_config = self.tag.mock.name
 
@@ -252,14 +258,8 @@ class AbstractTargetScheduler(AbstractScheduler):
         if mock_config == "cspodman":
             # TODO: make this configurable
             self.task_args['priority'] = 8
-        else:
-            pkg_name = self.package.name
-            # TODO: make this configurable
-            if pkg_name.startswith("kpatch-patch"):
-                raise PackageBlockedException('kpatch-patch is not eligible for scanning.')
-
-            if is_container:
-                raise PackageBlockedException(f'Container {pkg_name} is not eligible for scanning.')
+        elif is_container:
+            raise PackageBlockedException(f'Container {pkg_name} is not eligible for scanning.')
 
         check_package_is_blocked(self.package, self.tag.release)
         check_obsolete_scan(self.package, self.tag.release)
