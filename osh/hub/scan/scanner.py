@@ -20,7 +20,8 @@ from kobo.hub.models import TASK_STATES, Arch, Task
 from osh.hub.other.exceptions import PackageBlockedException
 from osh.hub.scan.check import (check_analyzers, check_build, check_nvr,
                                 check_obsolete_scan, check_package_is_blocked,
-                                check_srpm, check_upload, is_container_build)
+                                check_srpm, check_task_metadata, check_upload,
+                                is_container_build)
 from osh.hub.scan.mock import generate_mock_configs
 from osh.hub.scan.models import (REQUEST_STATES, SCAN_TYPES, AppSettings,
                                  ClientAnalyzer, ETMapping, MockConfig,
@@ -486,6 +487,10 @@ class ClientScanScheduler(AbstractClientScanScheduler):
 
         self.client_csmock_args = self.options.get('csmock_args', None)
 
+        self.metadata = self.options.get('metadata')
+        if self.metadata:
+            self.metadata = check_task_metadata(self.metadata)
+
         self.email_to = self.options.get("email_to", None)
 
     def prepare_args(self):
@@ -526,6 +531,10 @@ class ClientScanScheduler(AbstractClientScanScheduler):
         self.task_args['args']['csmock_args'] = csmock_args
         self.task_args['args']['custom_model_name'] = self.model_name
         self.task_args['args']['su_user'] = AppSettings.setting_get_su_user()
+
+        if self.metadata:
+            self.task_args['args']['metadata'] = self.metadata
+
         if self.email_to:
             self.task_args['args']['email_to'] = self.email_to
 
