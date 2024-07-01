@@ -5,6 +5,7 @@
 Functions related to checking provided data
 """
 
+import json
 import logging
 import os
 
@@ -121,3 +122,15 @@ def check_srpm(upload_id, build_nvr, task_user, is_tarball=False):
         }
 
     raise RuntimeError('No source RPM or tarball specified.')
+
+
+def check_task_metadata(metadata):
+    if isinstance(metadata, dict):
+        return metadata
+    if isinstance(metadata, str):
+        try:
+            return json.loads(metadata)
+        except json.JSONDecodeError:
+            raise RuntimeError(f"Invalid JSON value: {metadata}")
+
+    raise RuntimeError(f"Invalid JSON value: {metadata}")
