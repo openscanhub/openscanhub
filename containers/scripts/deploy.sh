@@ -13,9 +13,7 @@ CONTAINERS=(
     osh-worker
 )
 
-if [ -z "$IS_PODMAN" ]; then
-    PROFILE='--profile=full-dev'
-fi
+PROFILE='--profile=full-dev'
 LABEL='com.docker.compose.project=osh'
 START='-d'
 CLEAN='false'
@@ -45,7 +43,7 @@ main() {
     fi
 
     prepare_deploy
-    podman-compose -p osh up --build $START "${CONTAINERS[@]}"
+    podman-compose -p osh $PROFILE up --build $START "${CONTAINERS[@]}"
 
     if [ "$START" = '-d' ]; then
         wait_for_container 'HUB'
@@ -81,8 +79,6 @@ prepare_deploy() {
     fi
 
     # Bring compose down
-    # The $PROFILE variable may be unset.
-    # shellcheck disable=2086
     podman-compose -p osh $PROFILE down -v
 }
 
@@ -94,8 +90,6 @@ test_deploy_env() {
 
 
 clean() {
-    # The $PROFILE variable may be unset.
-    # shellcheck disable=2086
     podman-compose -p osh $PROFILE down -v
 
     images=$(podman images -q 'osh-*' | paste -s -d' ' -)
