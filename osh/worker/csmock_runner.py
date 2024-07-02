@@ -171,7 +171,9 @@ class CsmockRunner:
         if profile != "cspodman":
             print("dist-git URL scan is incompatible with profile:", profile, file=sys.stderr)
             return None, 2
-        return self.analyze(analyzers, dist_git_url, profile, su_user, additional_arguments, **kwargs)
+        # sanitize the URL before appending to the shell command
+        sanitized_url = shlex.quote(dist_git_url)
+        return self.analyze(analyzers, sanitized_url, profile, su_user, additional_arguments, **kwargs)
 
     def koji_analyze(self, analyzers, nvr, profile=None, su_user=None,
                      additional_arguments=None, koji_profile="koji", **kwargs):
