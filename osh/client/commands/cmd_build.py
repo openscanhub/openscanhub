@@ -56,6 +56,7 @@ class Base_Build(OshCommand):
         config = kwargs.get(prefix + "config")
         nvr = kwargs.get(prefix + "nvr")
         srpm = kwargs.get(prefix + "srpm")
+        dist_git_url = kwargs.get(prefix + "git_url")
         tarball_build_script = kwargs.get(prefix + "tarball_build_script")
 
         if not config:
@@ -81,6 +82,8 @@ is not even one in your user configuration file \
             if result is not None:
                 self.parser.error(result)
             options[prefix + "brew_build"] = nvr
+        elif dist_git_url is not None:
+            options[prefix + "dist_git_url"] = dist_git_url
         else:
             if not os.path.exists(srpm):
                 self.parser.error(f"file does not exist: {srpm}")
@@ -96,6 +99,17 @@ is not even one in your user configuration file \
                                                         target_dir, self.parser)
 
         return options
+
+    def _process_srpm_option(self, args, kwargs):
+        """Validate the srpm option and update kwargs in place."""
+        if not args:
+            # do nothing if no args are provided
+            return
+
+        if len(args) != 1:
+            self.parser.error("please specify exactly one SRPM")
+
+        kwargs["srpm"] = os.path.abspath(os.path.expanduser(args[0]))
 
     def prepare_task_options(self, args, kwargs):
         # optparser output is passed via args (args) and kwargs (opts)
