@@ -125,6 +125,7 @@ _osh-cli_args()
                 '--config=[specify mock config name]:osh:->configs'
                 '--comment=[a task description]'
                 '--json[print created task info in JSON]'
+                '--metadata=[specify task metadata as a JSON string]'
                 '--task-id-file=[task id is written to this file]:filename:_files'
                 "--nowait[don't wait until tasks finish]"
                 # '*' enables repetition
