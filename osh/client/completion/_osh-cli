@@ -145,7 +145,10 @@ _osh-cli_args()
             )
 
             if [[ "${words[1]}" == 'mock-build' ]]; then
-                args+=('--tarball-build-script=[sets command which should build the tarball]')
+                args+=(
+                    '--tarball-build-script=[sets command which should build the tarball]'
+                    '--git-url=[use a dist-git URL (specified by git-url) instead of a local file (EXPERIMENTAL)]'
+                )
             fi
             ;;
 
