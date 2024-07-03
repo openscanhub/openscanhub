@@ -202,8 +202,13 @@ _osh_cli()
                     _filedir
                     return
                     ;;
+                --git-url)
+                    COMPREPLY=()
+                    return
+                    ;;
                 *)
                     COMPREPLY+=( $(compgen -W "--tarball-build-script=" -- "${cur}") )
+                    COMPREPLY+=( $(compgen -W "--git-url=" -- "${cur}") )
                     ;;
                 esac
             fi
