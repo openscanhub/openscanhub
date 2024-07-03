@@ -152,7 +152,7 @@ _osh_cli()
             _osh_cli_complete profiles
             return
             ;;
-        --csmock-args|--comment|--email-to|--priority)
+        --csmock-args|--comment|--metadata|--email-to|--priority)
             COMPREPLY=()
             return
             ;;
@@ -169,7 +169,7 @@ _osh_cli()
             COMPREPLY+=( $(compgen -W "--cov-custom-model=" -- "${cur}") )
             COMPREPLY+=( $(compgen -W "--config=" -- "${cur}") )
             COMPREPLY+=( $(compgen -W "--comment= --task-id-file=" -- "${cur}") )
-            COMPREPLY+=( $(compgen -W "--nowait --email-to=" -- "${cur}") )
+            COMPREPLY+=( $(compgen -W "--metadata= --nowait --email-to=" -- "${cur}") )
             COMPREPLY+=( $(compgen -W "--priority= --json" -- "${cur}") )
             COMPREPLY+=( $(compgen -W "--nvr=" -- "${cur}") )
             ;;
