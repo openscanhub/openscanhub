@@ -28,9 +28,9 @@ RUN dnf -y --setopt=tsflags=nodocs install \
     /usr/bin/pg_isready \
     csdiff \
     gzip \
+    'python3dist(django) >= 3.2.0' \
     python3-bugzilla \
     python3-csdiff \
-    python3-django3 \
     python3-gssapi \
     python3-jira \
     python3-psycopg2 \

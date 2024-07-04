@@ -19,9 +19,9 @@ report bugs and feature requests on GitHub using the above URL.
 - `koji`
 - `mod_auth_gssapi`
 - `mod_ssl`
+- `python3dist(django) >= 3.2.0`
 - `python3-bugzilla`
 - `python3-csdiff`
-- `python3-django >= 3.2.0`
 - `python3-jira`
 - `python3-kobo-client`
 - `python3-kobo-django >= 0.35.0`

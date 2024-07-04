@@ -10,9 +10,9 @@ Source:         https://github.com/openscanhub/openscanhub/archive/refs/tags/%{n
 BuildArch:      noarch
 
 BuildRequires:  koji
+BuildRequires:  python3dist(django) >= %{min_required_version_django}
 BuildRequires:  python3-csdiff
 BuildRequires:  python3-devel
-BuildRequires:  python3-django >= %{min_required_version_django}
 BuildRequires:  python3-kobo-client
 BuildRequires:  python3-kobo-django
 BuildRequires:  python3-kobo-hub
@@ -83,7 +83,7 @@ Summary: OpenScanHub xml-rpc interface and web application
 Requires: httpd
 Requires: mod_auth_gssapi
 Requires: mod_ssl
-Requires: python3-django >= %{min_required_version_django}
+Requires: python3dist(django) >= %{min_required_version_django}
 Requires: python3-kobo-client
 Requires: python3-kobo-django >= 0.35.0
 Requires: python3-kobo-hub >= 0.35.0
