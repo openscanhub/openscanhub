@@ -58,6 +58,11 @@ em {
     line-height: 30px;
 }
 
+/* Make footer size slightly bigger */
+#footer {
+    font-size: 85%;
+}
+
 /* COLLAPSE / EXPAND */
 
 .hide_text {
