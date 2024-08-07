@@ -1,4 +1,4 @@
-ARG CENTOS_RELEASE=8
+ARG CENTOS_RELEASE=9
 
 FROM quay.io/centos/centos:stream${CENTOS_RELEASE}
 
