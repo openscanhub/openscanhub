@@ -13,9 +13,6 @@ CONTAINERS=(
     osh-worker
 )
 
-if [ -z "$IS_PODMAN" ]; then
-    PROFILE='--profile=full-dev'
-fi
 LABEL='com.docker.compose.project=osh'
 START='-d'
 CLEAN='false'
@@ -81,9 +78,7 @@ prepare_deploy() {
     fi
 
     # Bring compose down
-    # The $PROFILE variable may be unset.
-    # shellcheck disable=2086
-    podman-compose -p osh $PROFILE down -v
+    podman-compose -p osh down -v
 }
 
 
@@ -94,9 +89,7 @@ test_deploy_env() {
 
 
 clean() {
-    # The $PROFILE variable may be unset.
-    # shellcheck disable=2086
-    podman-compose -p osh $PROFILE down -v
+    podman-compose -p osh down -v
 
     images=$(podman images -q 'osh-*' | paste -s -d' ' -)
     # podman images -q has a defined format

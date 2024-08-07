@@ -77,8 +77,6 @@ services:
       - coverage:/cov
     stdin_open: true
     tty: true
-    profiles:
-      - full-dev
 
 networks:
   internal-network:
