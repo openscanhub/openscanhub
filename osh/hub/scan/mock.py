@@ -239,6 +239,11 @@ def generate_mock_configs(nvr, koji_profile):
     if not koji_proxy.getTag(tag):
         raise RuntimeError(f'Tag {tag} does not exists in {koji_profile}!')
 
+    # get arches of given tag
+    arches = _get_build_arches(koji_proxy, task['id'], tag)
+    if not arches:
+        raise RuntimeError(f'No arches found for tag "{tag}"!')
+
     # generate a config for every built arch
     logger.debug(f'Generating mock configs for build tag "{tag}"')
     for arch in _get_build_arches(koji_proxy, task['id'], tag):
