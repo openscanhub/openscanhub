@@ -7,10 +7,10 @@
 # precedence.
 
 # Default reviewers
-* @kdudka @lzaoral
+* @kdudka
 
 # Reviewers for specific paths
-.github/     @kdudka @lzaoral @siteshwar
-.packit.yaml @kdudka @lzaoral @siteshwar
-containers/  @kdudka @lzaoral @siteshwar
-tests/       @kdudka @lzaoral @siteshwar
+.github/     @kdudka @siteshwar
+.packit.yaml @kdudka @siteshwar
+containers/  @kdudka @siteshwar
+tests/       @kdudka @siteshwar
