@@ -116,12 +116,21 @@ def _get_build_arches(koji_proxy, task_id, tag):
     """
     returns all arches available for given build and tag
     """
+    def _get_tag_arches(tag):
+        # get all arches supported by given tag
+        # (which are stored in a string for some reason...)
+        return koji_proxy.getTag(tag)['arches'].split()
+
     arches = []
     for child_id in koji_proxy.getTaskDescendents(task_id, request=True):
         child = koji_proxy.getTaskInfo(child_id, request=True)
+        method = child['method']
+
+        # wrapperRPM tasks do not track arches directly
+        if method == 'wrapperRPM':
+            return _get_tag_arches(tag)
 
         # skip non-build subtasks
-        method = child['method']
         if method != 'buildArch':
             continue
 
@@ -130,9 +139,7 @@ def _get_build_arches(koji_proxy, task_id, tag):
 
         # handle noarch builds
         if arch == 'noarch':
-            # get all arches supported by given tag
-            # (which are stored in a string for some reason...)
-            return koji_proxy.getTag(tag)['arches'].split()
+            return _get_tag_arches(tag)
 
         # otherwise append
         arches.append(arch)
