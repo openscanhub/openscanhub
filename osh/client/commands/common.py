@@ -169,6 +169,7 @@ def add_task_metadata_option(parser):
     parser.add_option(
         "--metadata",
         dest="metadata",
+        type="string",
         action="callback",
         callback=parse_json_option,
         help="Specify task metadata as a JSON string, e.g., "
