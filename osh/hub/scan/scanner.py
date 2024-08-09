@@ -17,6 +17,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from kobo.django.upload.models import FileUpload
 from kobo.hub.models import TASK_STATES, Arch, Task
 
+from osh.common.validators import parse_dist_git_url
 from osh.hub.other.exceptions import PackageBlockedException
 from osh.hub.scan.check import (check_analyzers, check_build, check_nvr,
                                 check_obsolete_scan, check_package_is_blocked,
@@ -365,7 +366,7 @@ class AbstractClientScanScheduler:
 
     @classmethod
     def determine_priority(cls, entered_priority, supposed_nvr, srpm_name,
-                           is_tarball=False):
+                           dist_git_url=None, is_tarball=False):
         """determine priority of scheduled task
 
         :param entered_priority: priority submitted by client
@@ -392,10 +393,15 @@ class AbstractClientScanScheduler:
             if is_tarball:
                 srpm_name = re.sub(r'\.tar(\.[a-z0-9]+)?$', '', srpm_name)
 
-        try:
-            name_candidates.append(check_nvr(supposed_nvr or srpm_name)['name'])
-        except RuntimeError:
-            pass
+        if supposed_nvr or srpm_name:
+            try:
+                name_candidates.append(check_nvr(supposed_nvr or srpm_name)['name'])
+            except RuntimeError:
+                pass
+
+        if dist_git_url:
+            _, _, repo_name, _ = parse_dist_git_url(dist_git_url)
+            name_candidates.append(repo_name)
 
         if srpm_name:
             # try also only NV and the whole filename
@@ -412,16 +418,20 @@ class AbstractClientScanScheduler:
         # the priority must be non-negative
         return max(0, 10 + priority_offset)
 
-    def determine_result_filename(self, nvr, filename, is_tarball):
+    def determine_result_filename(self, nvr, filename, is_tarball, git_url=None):
         if nvr:
             return nvr
 
-        if filename.endswith(".src.rpm"):
+        if filename and filename.endswith(".src.rpm"):
             return os.path.basename(filename)[:-8]
 
         if is_tarball:
             f = os.path.basename(filename)
             return f.rsplit(".", 2 if ".tar." in f else 1)[0]
+
+        if git_url is not None:
+            _, _, repo_name, commit_hash = parse_dist_git_url(git_url)
+            return f"{repo_name}-{commit_hash}"
 
         raise RuntimeError("unknown input format of sources")
 
@@ -452,16 +462,21 @@ class ClientScanScheduler(AbstractClientScanScheduler):
 
         # srpm
         self.build_nvr = self.options.get('brew_build', None)
+        self.dist_git_url = self.options.get('dist_git_url')
         self.upload_id = self.options.get('upload_id', None)
         self.srpm_name = None
         self.srpm_path = None
         self.is_tarball = bool(self.options.get("tarball_build_script", None))
-        check_srpm_response = check_srpm(self.upload_id, self.build_nvr, self.username, self.is_tarball)
-        if check_srpm_response['type'] == 'build':
-            self.build_koji_profile = check_srpm_response['koji_profile']
-        elif check_srpm_response['type'] == 'upload':
-            self.srpm_path = check_srpm_response['srpm_path']
-            self.srpm_name = check_srpm_response['srpm_name']
+        if any((self.build_nvr, self.upload_id)):
+            check_srpm_response = check_srpm(self.upload_id, self.build_nvr, self.username, self.is_tarball)
+            if check_srpm_response['type'] == 'build':
+                self.build_koji_profile = check_srpm_response['koji_profile']
+            elif check_srpm_response['type'] == 'upload':
+                self.srpm_path = check_srpm_response['srpm_path']
+                self.srpm_name = check_srpm_response['srpm_name']
+        else:
+            if self.dist_git_url is None:
+                raise RuntimeError('No source RPM or tarball or dist-git URL specified.')
 
         # analyzers
         self.analyzers = self.options.get('analyzers', '')
@@ -501,8 +516,6 @@ class ClientScanScheduler(AbstractClientScanScheduler):
         self.task_args['label'] = input_pkg
         self.task_args['method'] = self.method
         self.task_args['comment'] = self.comment
-        self.task_args['priority'] = AbstractClientScanScheduler.determine_priority(
-            self.priority, self.build_nvr, self.srpm_name, self.is_tarball)
         self.task_args['state'] = TASK_STATES['CREATED']
         self.task_args['args'] = {}
         if self.build_nvr:
@@ -510,10 +523,23 @@ class ClientScanScheduler(AbstractClientScanScheduler):
                 'nvr': self.build_nvr,
                 'koji_profile': self.build_koji_profile,
             }
+        elif self.dist_git_url is not None:
+            # FIXME: do we need to wrap the exception with RuntimeError at all?
+            try:
+                _, _, repo_name, commit_hash = parse_dist_git_url(self.dist_git_url)
+            except ValueError as e:
+                raise RuntimeError(f"{e}")
+            self.task_args['args']['dist_git_url'] = self.dist_git_url
+            # populate label with non-null value based on dist_git_url
+            self.task_args['label'] = f"{repo_name}#{commit_hash}"
         else:
             self.task_args['args']['srpm_name'] = self.srpm_name
 
-        self.task_args['args']['result_filename'] = self.determine_result_filename(self.build_nvr, input_pkg, self.is_tarball)
+        self.task_args['priority'] = AbstractClientScanScheduler.determine_priority(
+            self.priority, self.build_nvr, self.srpm_name, self.dist_git_url, self.is_tarball)
+
+        self.task_args['args']['result_filename'] = self.determine_result_filename(
+            self.build_nvr, input_pkg, self.is_tarball, self.dist_git_url)
         # FIXME: ideally rewrite the code to stuff all input-related info to "source" (e.g. builds,
         #        nvrs, srpm filenames etc.)
         if self.is_tarball:
@@ -591,7 +617,10 @@ class ClientDiffScanScheduler(ClientScanScheduler):
         self.base_build_nvr = self.options.get('base_brew_build', None)
         self.base_upload_id = self.options.get('base_upload_id', None)
         self.base_is_tarball = 'base_tarball_build_script' in self.options
-        base_check_srpm_response = check_srpm(self.base_upload_id, self.base_build_nvr, self.username, self.base_is_tarball)
+        if any((self.base_upload_id, self.base_build_nvr)):
+            base_check_srpm_response = check_srpm(self.base_upload_id, self.base_build_nvr, self.username, self.base_is_tarball)
+        else:
+            raise RuntimeError("No source RPM or tarball specified.")
         if base_check_srpm_response['type'] == 'build':
             self.base_build_koji_profile = base_check_srpm_response['koji_profile']
         elif base_check_srpm_response['type'] == 'upload':
