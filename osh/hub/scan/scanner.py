@@ -485,10 +485,11 @@ class ClientScanScheduler(AbstractClientScanScheduler):
 
         # mock profile
         self.mock_config = get_or_fail('mock_config', self.options)
-        if self.mock_config == 'auto' and not self.build_nvr:
-            raise RuntimeError("'auto' mock config is only compatible with '--nvr'")
-        if self.mock_config == 'auto' and is_container_build(self.build_nvr, self.build_koji_profile):
-            self.mock_config = 'cspodman'
+        if self.mock_config == 'auto':
+            if not self.build_nvr and not self.dist_git_url:
+                raise RuntimeError("'auto' mock config is only compatible with '--nvr' or '--git-url'")
+            if self.dist_git_url is not None or is_container_build(self.build_nvr, self.build_koji_profile):
+                self.mock_config = 'cspodman'
         MockConfig.objects.verify_by_name(self.mock_config)
 
         self.comment = self.options.get('comment', '')
