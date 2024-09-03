@@ -47,12 +47,12 @@ def csdiff(old, new, result, workdir):
 
 
 def csdiff_new_defects(old, new, result, task_dir):
-    """ create file with newly introduced defects """
+    """ create file with newly introduced findings"""
     return csdiff(old, new, result, task_dir)
 
 
 def csdiff_fixed_defects(old, new, result, task_dir):
-    """ create file with fixed defects """
+    """ create file with fixed findings"""
     return csdiff(new, old, result, task_dir)
 
 
@@ -97,8 +97,8 @@ class TaskDiffer:
             if f_succ:
                 # these are basicly optional, don't fail if one of them
                 # was not successfull
-                add_title_to_json(self.paths.get_json_added(), 'Newly introduced defects')
-                add_title_to_json(self.paths.get_json_fixed(), 'Fixed defects')
+                add_title_to_json(self.paths.get_json_added(), 'Newly introduced findings')
+                add_title_to_json(self.paths.get_json_fixed(), 'Fixed findings')
 
                 cshtml(self.paths.get_json_added(), self.paths.get_html_added(), self.paths.task_dir)
                 cshtml(self.paths.get_json_fixed(), self.paths.get_html_fixed(), self.paths.task_dir)

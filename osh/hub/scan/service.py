@@ -86,8 +86,8 @@ old: %s new: %s', old_err, new_err)
             raise RuntimeError("'%s' wasn't successfull; path: %s, code: %s" %
                                (fixed_diff_cmd, task_dir, retcode))
 
-        add_title_to_json(diff_file_path, 'Newly introduced defects')
-        add_title_to_json(fixed_diff_file_path, 'Fixed defects')
+        add_title_to_json(diff_file_path, 'Newly introduced findings')
+        add_title_to_json(fixed_diff_file_path, 'Fixed findings')
 
         run('cshtml --scan-props-placement bottom %s > %s' %
             (diff_file_path, html_file_path),
