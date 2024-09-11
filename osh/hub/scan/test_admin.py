@@ -10,7 +10,7 @@ from osh.testing.html import parse_html
 from osh.testing.testcases import OshTestCase
 from osh.testing.testdata import TestDataMixin
 
-SCANS_CHANGELIST_ITEMS_PER_PAGE = 15
+SCANS_CHANGELIST_ITEMS_PER_PAGE = 20
 SCANS_CHANGELIST_TABLE_HEADER = """
 <thead>
 <tr>
