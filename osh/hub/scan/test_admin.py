@@ -178,6 +178,7 @@ SCANS_CHANGELIST_PAGINATOR = """
   <a href="?p=2" class="end">2</a>
   27 scans
   <a href="?all=" class="showall">Show all</a>
+  <input type="submit" name="_save" class="default" value="Save">
 </p>
 """
 
