@@ -24,44 +24,52 @@ SCANS_CHANGELIST_TABLE_HEADER = """
   <div class="text"><a href="?o=1">ID</a></div>
   <div class="clear"></div>
 </th>
-<th scope="col" class="sortable column-nvr">
-  <div class="text"><a href="?o=2">NVR</a></div>
+<th scope="col" class="column-get_link">
+  <div class="text"><span>Scan binding</span></div>
   <div class="clear"></div>
 </th>
-<th scope="col" class="sortable column-state">
-  <div class="text"><a href="?o=3">State</a></div>
+<th scope="col" class="sortable column-nvr">
+  <div class="text"><a href="?o=3">NVR</a></div>
   <div class="clear"></div>
 </th>
 <th scope="col" class="sortable column-scan_type">
   <div class="text"><a href="?o=4">Scan type</a></div>
   <div class="clear"></div>
 </th>
-<th scope="col" class="column-base_link">
-  <div class="text"><span>Base</span></div>
+<th scope="col" class="sortable column-state">
+  <div class="text"><a href="?o=5">State</a></div>
   <div class="clear"></div>
 </th>
-<th scope="col" class="column-parent_link">
-  <div class="text"><span>Parent</span></div>
+<th scope="col" class="column-get_link">
+  <div class="text"><span>Base Scan</span></div>
   <div class="clear"></div>
 </th>
-<th scope="col" class="column-tag_link">
+<th scope="col" class="column-get_link">
   <div class="text"><span>Tag</span></div>
   <div class="clear"></div>
 </th>
-<th scope="col" class="sortable column-username">
-  <div class="text"><a href="?o=8">Username</a></div>
+<th scope="col" class="column-get_link">
+  <div class="text"><span>Username</span></div>
   <div class="clear"></div>
 </th>
-<th scope="col" class="column-package_link">
-  <div class="text"><span>Package</span></div>
+<th scope="col" class="sortable column-last_access">
+  <div class="text"><a href="?o=9">Last access</a></div>
   <div class="clear"></div>
 </th>
-<th scope="col" class="column-scanbinding_link">
-  <div class="text"><span>Binding</span></div>
+<th scope="col" class="sortable column-date_submitted">
+  <div class="text"><a href="?o=10">Date submitted</a></div>
   <div class="clear"></div>
 </th>
 <th scope="col" class="sortable column-enabled">
   <div class="text"><a href="?o=11">Enabled</a></div>
+  <div class="clear"></div>
+</th>
+<th scope="col" class="column-get_link">
+  <div class="text"><span>Package</span></div>
+  <div class="clear"></div>
+</th>
+<th scope="col" class="column-get_link">
+  <div class="text"><span>Parent Scan</span></div>
   <div class="clear"></div>
 </th>
 </tr>
