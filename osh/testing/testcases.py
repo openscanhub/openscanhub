@@ -125,9 +125,19 @@ class OshTestCase(TestCase):
 
             Home > Scan > Scans
         """
-        element = get_child_by_tag_name(
+        container = get_child_by_tag_name(
             document.body, "div", (("id", "container"),)
         )
+
+        try:
+            # introduced in Django 4.2
+            element = get_child_by_tag_name(
+                container, "nav", (("aria-label", "Breadcrumbs"),)
+            )
+        except KeyError:
+            # fallback for Django 3.x
+            element = container
+
         breadcrumbs = get_child_by_tag_name(
             element, "div", (("class", "breadcrumbs"),)
         )
