@@ -196,6 +196,10 @@ NOTIFICATION_EMAIL_FOOTER = ""
 # If this setting is enabled, a worker is only used to perform a single task.
 ENABLE_SINGLE_USE_WORKERS = False
 
+# Disable sending messages to Fedora rabbitmq
+# Enabling this option requires `fedora-messaging` package
+ENABLE_FEDORA_MESSAGING = False
+
 # override default values with custom ones from local settings
 try:
     from .settings_local import *  # noqa
