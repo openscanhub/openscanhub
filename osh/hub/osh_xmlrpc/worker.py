@@ -27,6 +27,9 @@ from osh.hub.scan.xmlrpc_helper import (prepare_version_retriever,
 from osh.hub.service.csmock_parser import unpack_and_return_api
 from osh.hub.waiving.results_loader import TaskResultsProcessor
 
+if settings.ENABLE_FEDORA_MESSAGING:
+    from fedora_messaging import api, message
+
 logger = logging.getLogger(__name__)
 
 # DO NOT REMOVE!  The __all__ list contains all publicly exported XML-RPC
@@ -54,7 +57,19 @@ __all__ = [
 ]
 
 
+@validate_worker
+def publish_fedora_message(request, topic, task, body={}):
+    # Send messages only for main tasks (and not subtasks)
+    if settings.ENABLE_FEDORA_MESSAGING and task.parent_id is None:
+        body.update({'task_id': task.id})
+        try:
+            msg = message.Message(topic=topic, headers={}, body=body)
+            api.publish(msg)
+        except Exception as ex:  # noqa: B902
+            logger.error(ex)
+
 # REGULAR TASKS
+
 
 # FIXME: The configs should be created before the subtask is scheduled!
 @validate_worker
@@ -101,6 +116,7 @@ def finish_task(request, task_id):
     exclude_dirs = AppSettings.settings_get_results_tb_exclude_dirs()
     td = TaskResultsProcessor(task, base_task, exclude_dirs)
     td.unpack_results()
+
     if base_task:
         try:
             td.generate_diffs()
@@ -109,14 +125,38 @@ def finish_task(request, task_id):
             if not task.is_failed():
                 task.fail_task()
 
+    if settings.ENABLE_FEDORA_MESSAGING and task.parent_id is None:
+        import django.urls
+
+        js_file = os.path.join(task.args['result_filename'], "scan-results.js")
+        scan_results_js_path = django.urls.reverse("task/log", args=[task_id, js_file])
+        scan_results_js_path += "?format=raw"
+        scan_results_js_url = request.build_absolute_uri(scan_results_js_path)
+
+        body = {'scan-results.js': scan_results_js_url}
+        if base_task:
+            added_js_path = django.urls.reverse("task/log", args=[task_id, "added.js"])
+            added_js_path += "?format=raw"
+            added_js_url = request.build_absolute_uri(added_js_path)
+            body.update({'added.js': added_js_url})
+
+            fixed_js_path = django.urls.reverse("task/log", args=[task_id, "fixed.js"])
+            fixed_js_path += "?format=raw"
+            fixed_js_url = request.build_absolute_uri(fixed_js_path)
+            body.update({'fixed.js': fixed_js_url})
+
+        publish_fedora_message(request, 'task.finish', task, body)
+
 
 @validate_worker
 def open_task(request, task_id):
     response = kobo_open_task(request, task_id)
 
-    if settings.ENABLE_SINGLE_USE_WORKERS:
-        task = Task.objects.get(id=task_id)
+    task = Task.objects.get(id=task_id)
 
+    publish_fedora_message(request, 'task.open', task)
+
+    if settings.ENABLE_SINGLE_USE_WORKERS:
         # TODO: Check if we should create shutdown tasks before deleting a worker.
         # This would spam the tasks view with `ShutdownWorker` tasks.
         # It would also require changes in `osh-worker-manager --workers-needed` command.
@@ -293,6 +333,9 @@ def cancel_task(request, task_id):
     if sb is not None:
         cancel_scan(sb)
 
+    task = Task.objects.get(id=task_id)
+    publish_fedora_message(request, 'task.cancel', task)
+
     return response
 
 
@@ -304,6 +347,9 @@ def fail_task(request, task_id, task_result):
     sb = ScanBinding.objects.filter(task=task_id).first()
     if sb is not None and sb.scan.state != SCAN_STATES['FAILED']:
         fail_scan(request, sb.scan.id, 'Unspecified failure')
+
+    task = Task.objects.get(id=task_id)
+    publish_fedora_message(request, 'task.fail', task)
 
     return response
 
@@ -322,5 +368,7 @@ def interrupt_tasks(request, task_list):
             continue
 
         fail_scan(request, sb.scan.id, 'Task was interrupted')
+
+        publish_fedora_message(request, 'task.interrupt', task)
 
     return response
