@@ -103,7 +103,7 @@ def finish_task(request, task_id):
     td.unpack_results()
     if base_task:
         try:
-            return td.generate_diffs()
+            td.generate_diffs()
         except RuntimeError as ex:
             logger.error("Can't diff tasks %s %s: %s", base_task, task, ex)
             if not task.is_failed():
