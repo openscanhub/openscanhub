@@ -12,9 +12,9 @@ A short summary of test cases provided by this module:
 from django.test import TestCase
 from django.test.html import parse_html as django_parse_html
 
-from osh.testing.html import (extract_links, extract_text,
-                              get_child_by_tag_name, normalize_attributes,
-                              parse_html)
+from osh.tests.hub.admin.html import (extract_links, extract_text,
+                                      get_child_by_tag_name,
+                                      normalize_attributes, parse_html)
 
 
 class OshTestCase(TestCase):

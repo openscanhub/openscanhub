@@ -3,7 +3,7 @@ import unittest
 from unittest.mock import patch
 
 from osh.client.commands.cmd_list_mock_configs import List_Mock_Configs
-from osh.client.tests import OSHCLITestBase
+from osh.tests.client import OSHCLITestBase
 
 
 class TestListMockConfigs(OSHCLITestBase, unittest.TestCase):

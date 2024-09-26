@@ -51,7 +51,7 @@ package_data = {
 # patterns to exclude from packaging
 package_exclude = [
     "kobo*",
-    "osh.testing",
+    "osh.tests*",
 ]
 
 hub_path = Path("osh/hub")

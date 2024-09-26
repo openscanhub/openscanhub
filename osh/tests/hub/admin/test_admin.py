@@ -6,9 +6,9 @@ from django.urls import reverse
 from kobo.django.auth.models import User
 
 from osh.hub.scan.models import Scan
-from osh.testing.html import parse_html
-from osh.testing.testcases import OshTestCase
-from osh.testing.testdata import TestDataMixin
+from osh.tests.hub.admin.html import parse_html
+from osh.tests.hub.admin.testcases import OshTestCase
+from osh.tests.hub.admin.testdata import TestDataMixin
 
 SCANS_CHANGELIST_ITEMS_PER_PAGE = 20
 SCANS_CHANGELIST_TABLE_HEADER = """

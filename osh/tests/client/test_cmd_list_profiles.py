@@ -3,7 +3,7 @@ import unittest
 from unittest.mock import patch
 
 from osh.client.commands.cmd_list_profiles import List_Profiles
-from osh.client.tests import OSHCLITestBase
+from osh.tests.client import OSHCLITestBase
 
 
 class TestListProfilesCommand(OSHCLITestBase, unittest.TestCase):
