@@ -3,7 +3,7 @@ import unittest
 from unittest.mock import MagicMock, patch
 
 from osh.client.commands.cmd_download_results import Download_Results
-from osh.client.tests import OSHCLITestBase
+from osh.tests.client import OSHCLITestBase
 
 
 class TestDownloadResults(OSHCLITestBase, unittest.TestCase):

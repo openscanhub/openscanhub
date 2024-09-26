@@ -3,7 +3,7 @@ import unittest
 from unittest.mock import patch
 
 from osh.client.commands.cmd_mock_build import Mock_Build
-from osh.client.tests import OSHCLITestBase
+from osh.tests.client import OSHCLITestBase
 
 
 class TestMockBuild(OSHCLITestBase, unittest.TestCase):

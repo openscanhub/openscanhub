@@ -3,7 +3,7 @@ import unittest
 from unittest.mock import MagicMock, patch
 
 from osh.client.commands.cmd_version_diff_build import Version_Diff_Build
-from osh.client.tests import OSHCLITestBase
+from osh.tests.client import OSHCLITestBase
 
 
 class VersionDiffBuild(OSHCLITestBase, unittest.TestCase):

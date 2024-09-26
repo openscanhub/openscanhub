@@ -4,7 +4,7 @@ import unittest
 from unittest.mock import patch
 
 from osh.client.commands.cmd_task_info import Task_Info
-from osh.client.tests import OSHCLITestBase
+from osh.tests.client import OSHCLITestBase
 
 
 class TestTaskInfoCommand(OSHCLITestBase, unittest.TestCase):

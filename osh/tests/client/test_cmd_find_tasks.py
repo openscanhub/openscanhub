@@ -4,7 +4,7 @@ import unittest
 from unittest.mock import patch
 
 from osh.client.commands.cmd_find_tasks import Find_Tasks
-from osh.client.tests import OSHCLITestBase
+from osh.tests.client import OSHCLITestBase
 
 
 class TestFindTasksCommand(OSHCLITestBase, unittest.TestCase):

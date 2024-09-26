@@ -3,7 +3,7 @@ import unittest
 from unittest.mock import patch
 
 from osh.client.commands.cmd_diff_build import Diff_Build
-from osh.client.tests import OSHCLITestBase
+from osh.tests.client import OSHCLITestBase
 
 
 class TestDiffBuild(OSHCLITestBase, unittest.TestCase):
