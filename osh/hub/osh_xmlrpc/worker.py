@@ -133,7 +133,7 @@ def finish_task(request, task_id):
         scan_results_js_path += "?format=raw"
         scan_results_js_url = request.build_absolute_uri(scan_results_js_path)
 
-        body = {'scan-results.js': scan_results_js_url}
+        body = {'status': 'success', 'scan-results.js': scan_results_js_url}
         if base_task:
             added_js_path = django.urls.reverse("task/log", args=[task_id, "added.js"])
             added_js_path += "?format=raw"
@@ -145,7 +145,7 @@ def finish_task(request, task_id):
             fixed_js_url = request.build_absolute_uri(fixed_js_path)
             body.update({'fixed.js': fixed_js_url})
 
-        publish_fedora_message(request, 'task.finish', task, body)
+        publish_fedora_message(request, 'task.finished', task, body)
 
 
 @validate_worker
@@ -154,7 +154,7 @@ def open_task(request, task_id):
 
     task = Task.objects.get(id=task_id)
 
-    publish_fedora_message(request, 'task.open', task)
+    publish_fedora_message(request, 'task.started', task)
 
     if settings.ENABLE_SINGLE_USE_WORKERS:
         # TODO: Check if we should create shutdown tasks before deleting a worker.
@@ -334,7 +334,8 @@ def cancel_task(request, task_id):
         cancel_scan(sb)
 
     task = Task.objects.get(id=task_id)
-    publish_fedora_message(request, 'task.cancel', task)
+    body = {'status': 'cancel'}
+    publish_fedora_message(request, 'task.finished', task, body)
 
     return response
 
@@ -349,7 +350,8 @@ def fail_task(request, task_id, task_result):
         fail_scan(request, sb.scan.id, 'Unspecified failure')
 
     task = Task.objects.get(id=task_id)
-    publish_fedora_message(request, 'task.fail', task)
+    body = {'status': 'fail'}
+    publish_fedora_message(request, 'task.finished', task, body)
 
     return response
 
@@ -369,6 +371,7 @@ def interrupt_tasks(request, task_list):
 
         fail_scan(request, sb.scan.id, 'Task was interrupted')
 
-        publish_fedora_message(request, 'task.interrupt', task)
+        body = {'status': 'interrupt'}
+        publish_fedora_message(request, 'task.finished', task, body)
 
     return response
