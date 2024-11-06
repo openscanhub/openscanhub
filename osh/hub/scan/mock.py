@@ -166,6 +166,12 @@ def _get_tag_specific_config(target):
                f"config_opts['releasever'] = '{match[1]}'\n" \
                f"config_opts['bootstrap_image'] = 'registry.fedoraproject.org/fedora:{match[1]}'\n"
 
+    # RHEL-10 -> use the f40 bootstrap image until the ubi10 image is available
+    if re.search(r'rhel-?10', target):
+        return "config_opts['use_bootstrap_image'] = True\n" \
+               "config_opts['releasever'] = '10'\n" \
+               "config_opts['bootstrap_image'] = 'registry.fedoraproject.org/fedora:40'\n"
+
     # RHEL
     match = re.search(r'rhel-?(\d+)', target)
     if match is not None:
