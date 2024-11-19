@@ -187,6 +187,9 @@ USERS_ACL_PERMISSION = "staff"
 
 VALID_TASK_LOG_EXTENSIONS = ['.log', '.ini', '.err', '.out', '.js', '.txt', '.cfg']
 
+# Log file extensions to be viewed unrendered even when `?format=raw` is not used
+VIEW_RAW_LOG_EXTENSIONS = [".html", ".js", ".json"]
+
 # This is kept here for backward compatibility.
 # https://github.com/openscanhub/openscanhub/pull/256#pullrequestreview-2001187953
 DEFAULT_EMAIL_DOMAIN = "redhat.com"
