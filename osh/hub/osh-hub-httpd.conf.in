@@ -18,6 +18,7 @@ WSGISocketPrefix /var/run/wsgi
     SSLCertificateKeyFile   /etc/httpd/conf/localhost.key
 
     # WSGI handler
+    WSGIApplicationGroup %{GLOBAL}
     WSGIDaemonProcess osh display-name=%{GROUP} locale='C.UTF-8'
     WSGIProcessGroup osh
     WSGIScriptAlias /osh @PYTHON3_SITELIB@/osh/hub/osh-hub.wsgi process-group=osh
