@@ -1,5 +1,11 @@
 %global min_required_version_django 3.2
 
+%if 0%{?fedora} < 41
+%global psycopg_pkg python3-psycopg2
+%else
+%global psycopg_pkg python3-psycopg3
+%endif
+
 Name:           osh
 Version:        %{version}
 Release:        2%{?dist}
@@ -17,7 +23,7 @@ BuildRequires:  python3-kobo-client
 BuildRequires:  python3-kobo-django
 BuildRequires:  python3-kobo-hub
 BuildRequires:  python3-kobo-rpmlib
-BuildRequires:  python3-psycopg2
+BuildRequires:  %{psycopg_pkg}
 BuildRequires:  python3-qpid-proton
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-setuptools_scm
@@ -90,7 +96,7 @@ Requires: python3-kobo-hub >= 0.35.0
 Requires: python3-kobo-rpmlib
 Requires: python3-mod_wsgi
 # PostgreSQL adapter for python
-Requires: python3-psycopg2
+Requires: %{psycopg_pkg}
 Requires: gzip
 # inform ET about progress using UMB (Unified Message Bus)
 Requires: python3-qpid-proton
