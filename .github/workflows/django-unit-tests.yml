@@ -46,7 +46,7 @@ jobs:
           podman logs osh-worker
 
       - name: "Upload Django Unit Tests Coverage to Codecov"
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v5
         with:
           name: "Archive Django Unit Tests Coverage"
           files: coverage.xml
