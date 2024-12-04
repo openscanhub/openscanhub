@@ -31,6 +31,9 @@ jobs:
 
       - name: Run integration tests
         run: |
+          # Remove the buildroot_lock plug-in of mock, which does not work well in the Ubuntu CI environment
+          echo 'RUN rm -fv /usr/lib/python3.*/site-packages/mockbuild/plugins/buildroot_lock.py' >> containers/worker.Dockerfile
+
           CENTOS_RELEASE='${{matrix.centos-stream}}' containers/scripts/generate_integration_test_coverage.sh --force
 
       - name: "Upload Integration Tests Coverage to Codecov"
