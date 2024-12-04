@@ -46,9 +46,9 @@ systemctl start osh-worker
 # firewall-cmd --reload
 
 # Variables setting packages for testing
-FEDORA_VERSION=39
-EXPAT_NVR="expat-2.5.0-3.fc$FEDORA_VERSION"
-UNITS_NVR="units-2.22-6.fc$FEDORA_VERSION"
+FEDORA_VERSION=41
+EXPAT_NVR="expat-2.6.3-1.fc$FEDORA_VERSION"
+UNITS_NVR="units-2.23-3.fc$FEDORA_VERSION"
 
 # Test OpenScanHub
 /usr/bin/osh-cli mock-build --config=auto --nvr $UNITS_NVR
