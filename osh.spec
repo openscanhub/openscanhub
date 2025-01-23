@@ -210,9 +210,9 @@ mv %{buildroot}%{python3_sitelib}/osh/hub/settings_local.py %{buildroot}%{_sysco
 ln -s %{_sysconfdir}/osh/hub/settings_local.py %{buildroot}%{python3_sitelib}/osh/hub/settings_local.py
 
 %files client
-%attr(755,root,root) %{_bindir}/osh-cli
+%{_bindir}/osh-cli
 %{_bindir}/covscan
-%attr(644,root,root) %config(noreplace) %{_sysconfdir}/osh/client.conf
+%config(noreplace) %{_sysconfdir}/osh/client.conf
 %{bash_completions_dir}
 %{zsh_completions_dir}
 %{python3_sitelib}/osh/client
@@ -230,7 +230,7 @@ ln -s %{_sysconfdir}/osh/hub/settings_local.py %{buildroot}%{python3_sitelib}/os
 %files worker
 %{python3_sitelib}/osh/worker
 %{_unitdir}/osh-worker.service
-%attr(755,root,root) %{_sbindir}/osh-worker
+%{_sbindir}/osh-worker
 %dir %{_localstatedir}/log/osh
 
 %post client
