@@ -2,7 +2,7 @@
 Description=OpenScanHub statistics collector
 
 [Service]
-ExecStart=/usr/sbin/osh-stats
+ExecStart=/usr/bin/osh-stats
 Type=oneshot
 
 [Install]

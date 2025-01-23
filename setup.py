@@ -33,11 +33,9 @@ data_files = {
     ],
     "/usr/bin": [
         "osh/client/osh-cli",
-        "osh/hub/scripts/osh-worker-manager",
-    ],
-    "/usr/sbin": [
         "osh/hub/scripts/osh-retention",
         "osh/hub/scripts/osh-stats",
+        "osh/hub/scripts/osh-worker-manager",
         "osh/worker/osh-worker",
     ],
 }

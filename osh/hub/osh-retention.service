@@ -2,7 +2,7 @@
 Description=OpenScanHub retention policy enforcer
 
 [Service]
-ExecStart=/usr/sbin/osh-retention
+ExecStart=/usr/bin/osh-retention
 Type=oneshot
 
 [Install]
