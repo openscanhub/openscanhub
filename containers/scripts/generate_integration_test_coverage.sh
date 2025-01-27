@@ -99,9 +99,9 @@ main() {
 
     SCAN_STATUS=`podman exec osh-client "${CLI_XML[@]}" --hub http://osh-hub:8000/xmlrpc/kerbauth/ --username=user --password=xxxxxx get-scan-state 1 2>&1`
     while [[ $SCAN_STATUS == *"QUEUED"* ]] || [[ $SCAN_STATUS == *"SCANNING"* ]]; do
-        sleep 10;
+        sleep 10
         SCAN_STATUS=`podman exec osh-client "${CLI_XML[@]}" --hub http://osh-hub:8000/xmlrpc/kerbauth/ --username=user --password=xxxxxx get-scan-state 1 2>&1`
-    done;
+    done
 
     [[ $SCAN_STATUS == *"PASSED"* ]]
 
@@ -118,9 +118,9 @@ main() {
 
     SCAN_STATUS=`podman exec osh-client "${CLI_XML[@]}" --hub http://osh-hub:8000/xmlrpc/kerbauth/ --username=user --password=xxxxxx get-scan-state 2 2>&1`
     while [[ $SCAN_STATUS == *"QUEUED"* ]] || [[ $SCAN_STATUS == *"SCANNING"* ]]; do
-        sleep 10;
+        sleep 10
         SCAN_STATUS=`podman exec osh-client "${CLI_XML[@]}" --hub http://osh-hub:8000/xmlrpc/kerbauth/ --username=user --password=xxxxxx get-scan-state 2 2>&1`
-    done;
+    done
 
     [[ $SCAN_STATUS == *"PASSED"* ]]
 
@@ -163,8 +163,7 @@ main() {
     podman cp osh-client:/cov/coverage .
 
     # Avoid generating html reports in GitHub Actions CI
-    if [[ "$GITHUB_ACTIONS" = "true" ]];
-    then
+    if [[ "$GITHUB_ACTIONS" = "true" ]]; then
         # We use codecov in GitHub Actions CI. Upload xml reports to it.
         podman exec -it osh-client /usr/bin/coverage-3 xml --rcfile=/coveragerc -o /cov/coverage.xml
         podman cp osh-client:/cov/coverage.xml .
