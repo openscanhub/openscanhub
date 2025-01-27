@@ -97,10 +97,10 @@ main() {
 
     podman exec osh-client "${CLI_XML[@]}" --hub http://osh-hub:8000/xmlrpc/kerbauth/ --username=user --password=xxxxxx create-scan -b $LIBSSH2_NVR -t $LIBSSH2_NVR --et-scan-id=1 --release=Fedora-$FEDORA_VERSION --owner=admin --advisory-id=1
 
-    SCAN_STATUS=`podman exec osh-client "${CLI_XML[@]}" --hub http://osh-hub:8000/xmlrpc/kerbauth/ --username=user --password=xxxxxx get-scan-state 1 2>&1`
+    SCAN_STATUS="$(podman exec osh-client "${CLI_XML[@]}" --hub http://osh-hub:8000/xmlrpc/kerbauth/ --username=user --password=xxxxxx get-scan-state 1 2>&1)"
     while [[ $SCAN_STATUS == *"QUEUED"* ]] || [[ $SCAN_STATUS == *"SCANNING"* ]]; do
         sleep 10
-        SCAN_STATUS=`podman exec osh-client "${CLI_XML[@]}" --hub http://osh-hub:8000/xmlrpc/kerbauth/ --username=user --password=xxxxxx get-scan-state 1 2>&1`
+        SCAN_STATUS="$(podman exec osh-client "${CLI_XML[@]}" --hub http://osh-hub:8000/xmlrpc/kerbauth/ --username=user --password=xxxxxx get-scan-state 1 2>&1)"
     done
 
     [[ $SCAN_STATUS == *"PASSED"* ]]
@@ -116,10 +116,10 @@ main() {
     # submit errata scan and check its tasks priorities
     podman exec osh-client "${CLI_XML[@]}" --hub http://osh-hub:8000/xmlrpc/kerbauth/ --username=user --password=xxxxxx create-scan -b $EXPAT_NVR -t $EXPAT_NVR --et-scan-id=1 --release=Fedora-$FEDORA_VERSION --owner=admin --advisory-id=1
 
-    SCAN_STATUS=`podman exec osh-client "${CLI_XML[@]}" --hub http://osh-hub:8000/xmlrpc/kerbauth/ --username=user --password=xxxxxx get-scan-state 2 2>&1`
+    SCAN_STATUS="$(podman exec osh-client "${CLI_XML[@]}" --hub http://osh-hub:8000/xmlrpc/kerbauth/ --username=user --password=xxxxxx get-scan-state 2 2>&1)"
     while [[ $SCAN_STATUS == *"QUEUED"* ]] || [[ $SCAN_STATUS == *"SCANNING"* ]]; do
         sleep 10
-        SCAN_STATUS=`podman exec osh-client "${CLI_XML[@]}" --hub http://osh-hub:8000/xmlrpc/kerbauth/ --username=user --password=xxxxxx get-scan-state 2 2>&1`
+        SCAN_STATUS="$(podman exec osh-client "${CLI_XML[@]}" --hub http://osh-hub:8000/xmlrpc/kerbauth/ --username=user --password=xxxxxx get-scan-state 2 2>&1)"
     done
 
     [[ $SCAN_STATUS == *"PASSED"* ]]
@@ -128,7 +128,7 @@ main() {
     podman exec osh-client "${CLI_COV[@]}" task-info 8 | grep "priority = 11"
 
     # verify subtask priority inheritance if we have recent enough Kobo
-    if [ $(git -C kobo log --tags --oneline --grep='0\.26\.0' | wc -l) == 1 ]; then
+    if [ "$(git -C kobo log --tags --oneline --grep='0\.26\.0' | wc -l)" == 1 ]; then
         podman exec osh-client "${CLI_COV[@]}" task-info 9 | grep "priority = 11"
     fi
 
