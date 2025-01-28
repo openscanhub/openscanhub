@@ -42,7 +42,7 @@ def check_obsolete_scan(package, release):
 
 
 def check_build(nvr):
-    configs = ['brew', 'koji']
+    configs = ['brew', 'koji', 'stream']
 
     for config in configs:
         try:

@@ -19,6 +19,7 @@ WORKDIR /src
 ENV PYTHONPATH=.:kobo
 
 RUN dnf -y --setopt=tsflags=nodocs install \
+    centpkg \
     koji \
     python3-coverage \
     python3
