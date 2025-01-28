@@ -8,7 +8,7 @@
 
 Name:           osh
 Version:        %{version}
-Release:        2%{?dist}
+Release:        1%{?dist}
 License:        GPL-3.0-or-later
 Summary:        Static and Dynamic Analysis as a Service
 URL:            https://github.com/openscanhub/openscanhub/
@@ -337,6 +337,12 @@ fi
 
 
 %changelog
+* Tue Jan 28 2025 Kamil Dudka <kdudka@redhat.com> - 1.1.1-1
+- new minor release to update the version in setup.py
+
+* Fri Jan 24 2025 Kamil Dudka <kdudka@redhat.com> - 1.1.0-1
+- new stable upstream release (fixes rhbz#2340988)
+
 * Mon Apr 22 2024 Siteshwar Vashisht <svashisht@redhat.com> - 1.0.0-2
 - add subpackage for osh-worker-manager
 
