@@ -39,8 +39,6 @@ export_host_variables
 # Returns:
 # 0 if container is running, 1 if it isn't started in 60s
 wait_for_container() (
-    set +x
-
     filename="$(echo "$1" | tr '[:lower:]' '[:upper:]')"
     filename+="_IS_READY"
 

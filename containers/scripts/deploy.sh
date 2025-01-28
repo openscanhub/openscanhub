@@ -42,9 +42,13 @@ main() {
     fi
 
     prepare_deploy
-    podman-compose -p osh up --build $START "${CONTAINERS[@]}"
+
+    # build the containers but do not start them
+    podman-compose -p osh up --build --no-start "${CONTAINERS[@]}"
 
     if [ "$START" = '-d' ]; then
+        # start the containers and wait for hub to become ready
+        podman-compose -p osh up -d "${CONTAINERS[@]}"
         wait_for_container 'HUB'
     fi
 }
