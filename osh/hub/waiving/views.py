@@ -124,8 +124,7 @@ def get_result_context(request, sb):
         context['fixed_count'] = f_count
         context['old_count'] = o_count
     elif sb.scan.state == SCAN_STATES['FAILED']:
-        context['not_finished'] = "Scan wasn't successful. \
-We are checking what happened."
+        context['not_finished'] = "Scan wasn't successful."
     elif sb.scan.state == SCAN_STATES['CANCELED']:
         context['not_finished'] = "Scan is canceled (is superseded by newer \
 one)."
