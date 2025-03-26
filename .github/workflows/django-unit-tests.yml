@@ -25,7 +25,7 @@ jobs:
       - name: Checkout Kobo Git Repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          ref: refs/tags/kobo-0.39.0
           path: kobo
           repository: release-engineering/kobo
 
