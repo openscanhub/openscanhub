@@ -24,7 +24,7 @@ def add_comp_warnings_option(parser):
         choices=['0', '1', '2', '3'],
         metavar="LEVEL",
         help="adjust compiler warning level: 0 (default), 1 (appends -Wall \
-and -Wextra, 2 (additional useful warnings)"
+and -Wextra), 2 (additional useful warnings)"
     )
 
 
