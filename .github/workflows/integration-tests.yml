@@ -25,9 +25,9 @@ jobs:
       - name: Checkout Kobo Git Repository
         uses: actions/checkout@v4
         with:
-          ref: refs/tags/kobo-0.39.0
+          ref: canceled-by-fixup
           path: kobo
-          repository: release-engineering/kobo
+          repository: kdudka/kobo
 
       - name: Run integration tests
         run: |
