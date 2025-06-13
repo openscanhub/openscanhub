@@ -36,9 +36,11 @@ def handle_deprecated_options(conf):
               file=sys.stderr)
 
     # xmlrpclib/httplib do not follow HTTP redirect
-    if "cov01.lab.eng.brq.redhat.com" in conf["HUB_URL"]:
-        conf["HUB_URL"] = "https://cov01.lab.eng.brq2.redhat.com/osh/xmlrpc"
-        print_warning("HUB_URL")
+    hosts = ("cov01.lab.eng.brq.redhat.com", "cov01.lab.eng.brq2.redhat.com")
+    for h in hosts:
+        if h in conf["HUB_URL"]:
+            conf["HUB_URL"] = "https://osh.prodsec.redhat.com/osh/xmlrpc"
+            print_warning("HUB_URL")
 
     # Handle URL prefix change from `/covscahub` to `/osh` if client has custom configurations
     conf["HUB_URL"] = conf["HUB_URL"].replace("/covscanhub/", "/osh/")
