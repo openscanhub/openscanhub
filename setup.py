@@ -14,24 +14,24 @@ THIS_FILE_PATH = os.path.dirname(os.path.abspath(__file__))
 package_version = "1.1.1"
 
 data_files = {
-    "/etc/osh": [
+    "etc/osh": [
         "osh/client/client.conf",
         "osh/worker/worker.conf",
     ],
-    "/usr/lib/systemd/system": [
+    "lib/systemd/system": [
         "osh/hub/osh-retention.service",
         "osh/hub/osh-retention.timer",
         "osh/hub/osh-stats.service",
         "osh/hub/osh-stats.timer",
         "osh/worker/osh-worker.service",
     ],
-    "/usr/share/bash-completion/completions": [
+    "share/bash-completion/completions": [
         "osh/client/completion/osh-cli.bash",
     ],
-    "/usr/share/zsh/site-functions": [
+    "share/zsh/site-functions": [
         "osh/client/completion/_osh-cli"
     ],
-    "/usr/bin": [
+    "bin": [
         "osh/client/osh-cli",
         "osh/hub/scripts/osh-retention",
         "osh/hub/scripts/osh-stats",

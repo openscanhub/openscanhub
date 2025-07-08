@@ -151,16 +151,15 @@ Conflicts: osh-worker-conf
 %description worker-conf-devel
 OpenScanHub worker devel configurations.
 
+%if 0%{?fedora} > 41 || 0%{?rhel} > 10
+%generate_buildrequires
+%pyproject_buildrequires
+%endif
+
 %prep
 %setup -q
 
 %build
-
-# Add -s to the shebang in osh/client/osh-cli:
-# https://docs.fedoraproject.org/en-US/packaging-guidelines/Python/#_shebang_macros
-# TODO: Remove this when we migrate to newer Python packaging macros which
-# do this automatically.
-%py3_shebang_fix osh/client/osh-cli
 
 # collect static files from Django itself
 PYTHONPATH=. osh/hub/manage.py collectstatic --noinput
@@ -168,11 +167,24 @@ PYTHONPATH=. osh/hub/manage.py collectstatic --noinput
 # set path to python sitelib in the example httpd config
 sed 's|@PYTHON3_SITELIB@|%{python3_sitelib}|' osh/hub/osh-hub-httpd.conf.in > osh/hub/osh-hub-httpd.conf
 
+%if 0%{?fedora} > 41 || 0%{?rhel} > 10
+%pyproject_wheel
+%else
+# Add -s to the shebang in osh/client/osh-cli:
+# https://docs.fedoraproject.org/en-US/packaging-guidelines/Python/#_shebang_macros
+%py3_shebang_fix osh/client/osh-cli
+
 %py3_build
+%endif
 
 
 %install
+%if 0%{?fedora} > 41 || 0%{?rhel} > 10
+%pyproject_install
+%else
 %py3_install
+%endif
+mv %{buildroot}{/usr,}/etc/
 
 # install the files collected by `manage.py collectstatic`
 cp -a {,%{buildroot}%{python3_sitelib}/}osh/hub/static/
@@ -222,13 +234,17 @@ ln -s %{_sysconfdir}/osh/hub/settings_local.py %{buildroot}%{python3_sitelib}/os
 %{bash_completions_dir}
 %{zsh_completions_dir}
 %{python3_sitelib}/osh/client
-%{python3_sitelib}/osh-*-py%{python3_version}.egg-info
 
 %files common
 %dir %{_sysconfdir}/osh
 %{python3_sitelib}/osh/common
 %{python3_sitelib}/osh/__init__.py*
 %{python3_sitelib}/osh/__pycache__
+%if 0%{?fedora} > 41 || 0%{?rhel} > 10
+%{python3_sitelib}/osh-*.dist-info
+%else
+%{python3_sitelib}/osh-*-py%{python3_version}.egg-info
+%endif
 %dir %{python3_sitelib}/osh
 %dir %{_sharedstatedir}/osh
 %license LICENSE
