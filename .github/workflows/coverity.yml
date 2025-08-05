@@ -3,7 +3,9 @@ name: Coverity
 
 on:
   push:
-    branches: [main]
+    branches:
+      - coverity
+      - main
 
 jobs:
   coverity:
@@ -22,4 +24,8 @@ jobs:
           email: ${{ secrets.COVERITY_SCAN_EMAIL }}
           token: ${{ secrets.COVERITY_SCAN_TOKEN }}
           project: openscanhub/openscanhub
-          command: --no-command --fs-capture-search . --fs-capture-search-exclude-regex '/cov-(int|analysis)/'
+
+          # The GitHub Action this workflow is based on uses `cov-build`, which
+          # does not support buildless capture any more.  This way we make it
+          # use `coverity capture` instead of `cov-build`.
+          command: --ident; set -x; coverity --ticker-mode=no-spin capture --dir=cov-int --file-include-regex="osh|scripts" --language=python
