@@ -227,6 +227,7 @@ def generate_mock_configs(nvr, koji_profile):
     method = task['method']
     params = koji.parse_task_params(method, task['request'])
 
+    tag = None
     # parse build tag name from task parameters
     if method == 'build':
         # obtain module build target
@@ -239,7 +240,8 @@ def generate_mock_configs(nvr, koji_profile):
     elif method == 'wrapperRPM':
         tag = params['build_target']['build_tag_name']
     # TODO: add other methods
-    else:
+
+    if tag is None:
         raise RuntimeError(f'No build target for "{nvr}" available!')
 
     # assert that the selected tag always exists
