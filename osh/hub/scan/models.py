@@ -284,22 +284,39 @@ of this packages scan")
     scans_number = property(calculateScanNumbers)
 
     def get_latest_scans(self):
-        srs = SystemRelease.objects.filter(active=True)
-        response = ""
-        for sr in srs:
-            scans = Scan.objects.filter(package=self, tag__release=sr,
-                                        enabled=True)
-            if scans:
-                scan = scans.latest()
-                response += '%s: <a href="%s">%s</a>, ' % (
-                    sr.tag,
-                    reverse("waiving/result/newest", args=(self.name, sr.tag)),
-                    scan.nvr,
-                )
-        if response == "":
+        # Single query to get all scans for this package across all releases
+        all_scans = Scan.objects.filter(
+            package=self,
+            enabled=True,
+            tag__release__active=True
+        ).select_related(
+            'tag__release'
+        ).order_by(
+            'tag__release__tag',
+            '-date_submitted'
+        )
+
+        if not all_scans:
             return "None"
-        else:
-            return mark_safe(response[:-2])
+
+        # Group scans by release and keep only the latest (first due to ordering)
+        latest_by_release = {}
+        for scan in all_scans:
+            release = scan.tag.release
+            if release.tag not in latest_by_release:
+                latest_by_release[release.tag] = scan.nvr
+
+        if not latest_by_release:
+            return "None"
+
+        # Build response in consistent order
+        response_parts = []
+        for release_tag in sorted(latest_by_release.keys()):
+            scan_nvr = latest_by_release[release_tag]
+            url = reverse("waiving/result/newest", args=(self.name, release_tag))
+            response_parts.append(f'{release_tag}: <a href="{url}">{scan_nvr}</a>')
+
+        return mark_safe(', '.join(response_parts))
 
     display_latest_scans = property(get_latest_scans)
 
