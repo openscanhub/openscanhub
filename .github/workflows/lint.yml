@@ -14,7 +14,7 @@ jobs:
           dnf install -qy pre-commit gcc git-core make python3-devel
 
       - name: Checkout Git Repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
