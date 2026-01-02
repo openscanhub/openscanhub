@@ -259,7 +259,7 @@
   "model": "scan.mockconfig",
   "fields": {
     "enabled": true,
-    "name": "fedora-42-aarch64"
+    "name": "fedora-44-aarch64"
   }
 },
 {
@@ -267,7 +267,7 @@
   "model": "scan.mockconfig",
   "fields": {
     "enabled": true,
-    "name": "fedora-42-x86_64"
+    "name": "fedora-44-x86_64"
   }
 },
 {
@@ -283,7 +283,7 @@
   "model": "scan.mockconfig",
   "fields": {
     "enabled": true,
-    "name": "fedora-40-aarch64"
+    "name": "fedora-42-aarch64"
   }
 },
 {
@@ -291,7 +291,7 @@
   "model": "scan.mockconfig",
   "fields": {
     "enabled": true,
-    "name": "fedora-40-x86_64"
+    "name": "fedora-42-x86_64"
   }
 },
 {
@@ -299,7 +299,7 @@
   "model": "scan.mockconfig",
   "fields": {
     "enabled": true,
-    "name": "fedora-41-aarch64"
+    "name": "fedora-43-aarch64"
   }
 },
 {
@@ -307,7 +307,7 @@
   "model": "scan.mockconfig",
   "fields": {
     "enabled": true,
-    "name": "fedora-41-x86_64"
+    "name": "fedora-43-x86_64"
   }
 },
 {
@@ -659,6 +659,17 @@
   "pk": 1,
   "model": "scan.systemrelease",
   "fields": {
+    "release": 44,
+    "active": true,
+    "product": "Fedora",
+    "tag": "fedora-44",
+    "parent": null
+  }
+},
+{
+  "pk": 3,
+  "model": "scan.systemrelease",
+  "fields": {
     "release": 42,
     "active": true,
     "product": "Fedora",
@@ -667,24 +678,13 @@
   }
 },
 {
-  "pk": 3,
-  "model": "scan.systemrelease",
-  "fields": {
-    "release": 40,
-    "active": true,
-    "product": "Fedora",
-    "tag": "fedora-40",
-    "parent": null
-  }
-},
-{
   "pk": 4,
   "model": "scan.systemrelease",
   "fields": {
-    "release": 41,
+    "release": 43,
     "active": true,
     "product": "Fedora",
-    "tag": "fedora-41",
+    "tag": "fedora-43",
     "parent": null
   }
 },
@@ -792,7 +792,7 @@
   "model": "scan.tag",
   "fields": {
     "release": 1,
-    "name": "Fedora-42",
+    "name": "Fedora-44",
     "mock": 6
   }
 },
@@ -801,7 +801,7 @@
   "model": "scan.tag",
   "fields": {
     "release": 3,
-    "name": "Fedora-40",
+    "name": "Fedora-42",
     "mock": 10
   }
 },
@@ -810,7 +810,7 @@
   "model": "scan.tag",
   "fields": {
     "release": 4,
-    "name": "Fedora-41",
+    "name": "Fedora-43",
     "mock": 12
   }
 },

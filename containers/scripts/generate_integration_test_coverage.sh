@@ -50,10 +50,10 @@ main() {
     set -ex
 
     # Variables setting packages for testing
-    FEDORA_VERSION=41
-    EXPAT_NVR="expat-2.6.3-1.fc$FEDORA_VERSION"
-    LIBSSH2_NVR="libssh2-1.11.0-8.fc$FEDORA_VERSION"
-    UNITS_NVR="units-2.23-3.fc$FEDORA_VERSION"
+    FEDORA_VERSION=43
+    EXPAT_NVR="expat-2.7.3-1.fc$FEDORA_VERSION"
+    LIBSSH2_NVR="libssh2-1.11.1-4.fc$FEDORA_VERSION"
+    UNITS_NVR="units-2.24-4.fc$FEDORA_VERSION"
 
     # Try to run jobs in foreground for better coverage reports
     sed "s/RUN_TASKS_IN_FOREGROUND = 0/RUN_TASKS_IN_FOREGROUND = 1/g" osh/worker/worker-local.conf > osh/worker/worker-local.conf.new
