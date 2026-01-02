@@ -11,7 +11,7 @@ jobs:
     steps:
       - name: Install packages required for lint
         run: |
-          dnf install -y pre-commit make git-core
+          dnf install -qy pre-commit gcc git-core make
 
       - name: Checkout Git Repository
         uses: actions/checkout@v5
