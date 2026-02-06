@@ -239,6 +239,11 @@ def generate_mock_configs(nvr, koji_profile):
         raise RuntimeError('Generation of mock configs is unsupported for container builds!')
     elif method == 'wrapperRPM':
         tag = params['build_target']['build_tag_name']
+    elif method == 'cg_import':
+        export_source = build.get('extra', {}).get('_export_source', {})
+        buildroot_tag = export_source.get('buildroot_tag')
+        if export_source.get('source') == 'konflux' and buildroot_tag:
+            tag = buildroot_tag
     # TODO: add other methods
 
     if tag is None:
