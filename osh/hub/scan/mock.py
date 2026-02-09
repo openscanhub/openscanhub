@@ -112,23 +112,28 @@ def _get_module_build_tag(koji_proxy, task_id):
     return build_tag
 
 
-def _get_build_arches(koji_proxy, task_id, tag):
+def _get_build_arches(koji_proxy, task_id, taginfo):
     """
     returns all arches available for given build and tag
     """
-    def _get_tag_arches(tag):
+    def _get_tag_arches(taginfo):
         # get all arches supported by given tag
         # (which are stored in a string for some reason...)
-        return koji_proxy.getTag(tag)['arches'].split()
+        return taginfo['arches'].split()
 
     arches = []
+    # task descendents will include the original task
     for child_id in koji_proxy.getTaskDescendents(task_id, request=True):
         child = koji_proxy.getTaskInfo(child_id, request=True)
         method = child['method']
 
+        # import tasks do not have child tasks
+        if method == 'cg_import':
+            return _get_tag_arches(taginfo)
+
         # wrapperRPM tasks do not track arches directly
         if method == 'wrapperRPM':
-            return _get_tag_arches(tag)
+            return _get_tag_arches(taginfo)
 
         # skip non-build subtasks
         if method != 'buildArch':
@@ -139,7 +144,7 @@ def _get_build_arches(koji_proxy, task_id, tag):
 
         # handle noarch builds
         if arch == 'noarch':
-            return _get_tag_arches(tag)
+            return _get_tag_arches(taginfo)
 
         # otherwise append
         arches.append(arch)
@@ -250,17 +255,18 @@ def generate_mock_configs(nvr, koji_profile):
         raise RuntimeError(f'No build target for "{nvr}" available!')
 
     # assert that the selected tag always exists
-    if not koji_proxy.getTag(tag):
+    taginfo = koji_proxy.getTag(tag)
+    if not taginfo:
         raise RuntimeError(f'Tag {tag} does not exists in {koji_profile}!')
 
-    # get arches of given tag
-    arches = _get_build_arches(koji_proxy, task['id'], tag)
+    # get arches of given tag, for all task descendents
+    arches = _get_build_arches(koji_proxy, task['id'], taginfo)
     if not arches:
         raise RuntimeError(f'No arches found for tag "{tag}"!')
 
     # generate a config for every built arch
     logger.debug(f'Generating mock configs for build tag "{tag}"')
-    for arch in _get_build_arches(koji_proxy, task['id'], tag):
+    for arch in arches:
         _create_mock_config(tag, arch, koji_profile, tmpdir)
 
     return tmpdir
