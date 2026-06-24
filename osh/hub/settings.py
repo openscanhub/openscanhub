@@ -203,6 +203,11 @@ ENABLE_SINGLE_USE_WORKERS = False
 # Enabling this option requires `fedora-messaging` package
 ENABLE_FEDORA_MESSAGING = False
 
+SEND_BUS_MESSAGE_UMB = True
+SEND_BUS_MESSAGE_KAFKA = False
+KAFKA_API_VERSION = (2, 8, 0)
+KAFKA_SSL_CAFILE = '/etc/pki/tls/certs/ca-bundle.crt'
+
 # override default values with custom ones from local settings
 try:
     from .settings_local import *  # noqa

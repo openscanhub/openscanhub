@@ -42,6 +42,7 @@ RUN dnf -y --setopt=tsflags=nodocs install \
     python3-gssapi \
     python3-jira \
     python3-psycopg2 \
+    python3-kafka \
     python3-qpid-proton \
     xz
 
