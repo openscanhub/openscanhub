@@ -711,11 +711,13 @@ counted in statistics.")
         if self.is_errata_base_scan():
             return
         if AppSettings.setting_send_bus_message():
-            post_qpid_message(
-                SCAN_STATES.get_value(self.state),
-                ETMapping.objects.get(latest_run=self.scanbinding),
-                key
-            )
+            state_value = SCAN_STATES.get_value(self.state)
+            etm = ETMapping.objects.get(latest_run=self.scanbinding)
+            if settings.SEND_BUS_MESSAGE_UMB:
+                post_qpid_message(state_value, etm, key)
+            if settings.SEND_BUS_MESSAGE_KAFKA:
+                from osh.hub.scan.kafka_messaging import post_kafka_message
+                post_kafka_message(state_value, etm, key)
 
     def set_base(self, base, save=True):
         self.base = base
