@@ -1,11 +1,12 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 # SPDX-FileCopyrightText: Copyright contributors to the OpenScanHub project.
 
+import fnmatch
 import glob
 import json
 import logging
 import os
-import subprocess
+import tarfile
 import tempfile
 
 RESULT_FILE_JSON = 'scan-results.js'
@@ -39,23 +40,24 @@ class ResultsExtractor:
         return self._json_path
 
     def extract_tarball(self, exclude_patterns=None):
-        """
-
-        """
         exclude_patterns = exclude_patterns or []
-        exclude_patterns.append("*debug")  # do not unpack debug dir
-        # python 2 does not support lzma
-        command = [
-            'tar', '-xf', self.path,
-            '-C', self.output_dir,
-            '--wildcards',
-            '--wildcards-match-slash',
-        ]
-        if exclude_patterns:
-            # do NOT quote pattern! it won't work
-            command += ['--exclude=' + p for p in exclude_patterns]
-        logger.debug('Running command %s', command)
-        subprocess.check_call(command)
+        exclude_patterns.append("*debug")
+        logger.debug('Extracting %s to %s (excluding %s)',
+                     self.path, self.output_dir, exclude_patterns)
+        # filter='data' strips ownership/permissions (Python 3.12+)
+        extract_kwargs = {}
+        if hasattr(tarfile, 'data_filter'):
+            extract_kwargs['filter'] = 'data'
+        with tarfile.open(self.path) as tf:
+            for member in tf.getmembers():
+                # match each path component against exclude patterns
+                # to replicate tar's --wildcards-match-slash --exclude
+                parts = member.name.rstrip('/').split('/')
+                if any(fnmatch.fnmatch(part, p)
+                       for part in parts
+                       for p in exclude_patterns):
+                    continue
+                tf.extract(member, path=self.output_dir, **extract_kwargs)
 
     def get_json_result_path(self):
         return self.json_path
