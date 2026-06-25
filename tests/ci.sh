@@ -52,7 +52,19 @@ UNITS_NVR="units-2.24-4.fc$FEDORA_VERSION"
 
 # Test OpenScanHub
 /usr/bin/osh-cli mock-build --config=auto --nvr $UNITS_NVR
-/usr/bin/osh-cli task-info 1 | grep "is_failed = False"
+/usr/bin/osh-cli task-info 1 | grep "is_failed = False" || {
+    osh-cli download-results 1
+    tar -xf "${UNITS_NVR}.tar.xz" "${UNITS_NVR}/scan.log" --to-command=cat
+    tail -n1024 /var/log/{httpd/error_log,osh/{hub/hub,worker}.log}
+    cd /var/lib/osh/hub/tasks/0/0/1/
+    for log in {error,traceback}.log.gz; do
+        if test -r "$log"; then
+            gzip -cd "$log"
+        fi
+    done
+    exit 1
+}
+ls -Ral /var/lib/osh/hub/tasks/0/0/1/
 
 (cd /tmp && koji download-build -a src $UNITS_NVR)
 /usr/bin/osh-cli diff-build --config=fedora-$FEDORA_VERSION-x86_64 /tmp/$UNITS_NVR.src.rpm
