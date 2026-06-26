@@ -100,6 +100,8 @@ Requires: %{psycopg_pkg}
 Requires: gzip
 # inform ET about progress using UMB (Unified Message Bus)
 Requires: python3-qpid-proton
+# optional: inform ET about progress using Kafka (IT Managed Kafka)
+Recommends: python3-kafka
 # hub is interacting with brew
 Requires: koji
 # extract tarballs created by csmock
@@ -293,6 +295,7 @@ fi
 %{_unitdir}/osh-stats.*
 %exclude %{python3_sitelib}/osh/hub/scripts/osh-xmlrpc-client.py*
 %exclude %{python3_sitelib}/osh/hub/scripts/umb-emit.py*
+%exclude %{python3_sitelib}/osh/hub/scripts/kafka-emit.py*
 %exclude %{python3_sitelib}/osh/hub/settings_local.py*
 %exclude %{python3_sitelib}/osh/hub/settings_local.ci.py*
 %exclude %{python3_sitelib}/osh/hub/__pycache__/settings_local.*
