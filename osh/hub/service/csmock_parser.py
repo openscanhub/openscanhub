@@ -1,6 +1,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 # SPDX-FileCopyrightText: Copyright contributors to the OpenScanHub project.
 
+import datetime
 import fnmatch
 import glob
 import json
@@ -148,6 +149,13 @@ class CsmockAPI:
                 analyzer = {'name': key[17:], 'version': value}
                 analyzers.append(analyzer)
         return analyzers
+
+
+def parse_elapsed_time(time_str):
+    """Parse an HH:MM:SS time string into total seconds, allowing hours > 23."""
+    hours, minutes, seconds = time_str.split(':')
+    td = datetime.timedelta(hours=int(hours), minutes=int(minutes), seconds=int(seconds))
+    return int(td.total_seconds())
 
 
 def unpack_and_return_api(tb_path, in_dir=""):

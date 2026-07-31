@@ -1,7 +1,6 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 # SPDX-FileCopyrightText: Copyright contributors to the OpenScanHub project.
 
-import datetime
 import logging
 
 from django.core.exceptions import ObjectDoesNotExist
@@ -9,7 +8,8 @@ from kobo.hub.models import Task
 
 from osh.common.constants import DEFAULT_CHECKER_GROUP
 from osh.hub.scan.models import AnalyzerVersion, AppSettings
-from osh.hub.service.csmock_parser import CsmockAPI, ResultsExtractor
+from osh.hub.service.csmock_parser import (CsmockAPI, ResultsExtractor,
+                                           parse_elapsed_time)
 from osh.hub.service.path import TaskResultPaths
 from osh.hub.service.processing import (TaskDiffer, task_has_results,
                                         task_is_diffed)
@@ -130,11 +130,7 @@ class ResultsLoader:
         self.result.lines = scan_metadata.get('cov-lines-processed', None)
         time = scan_metadata.get('cov-time-elapsed-analysis', None)
         if time:
-            t = datetime.datetime.strptime(time, "%H:%M:%S")
-            time_delta = datetime.timedelta(hours=t.hour,
-                                            minutes=t.minute,
-                                            seconds=t.second)
-            self.result.scanning_time = int(time_delta.days * 86400 + time_delta.seconds)
+            self.result.scanning_time = parse_elapsed_time(time)
         self.result.save()
 
         self.sb.result = self.result
