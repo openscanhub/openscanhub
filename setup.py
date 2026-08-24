@@ -11,7 +11,7 @@ find_namespace_packages = PEP420PackageFinder.find
 
 THIS_FILE_PATH = os.path.dirname(os.path.abspath(__file__))
 
-package_version = "1.1.1"
+package_version = "1.2.0"
 
 data_files = {
     "etc/osh": [

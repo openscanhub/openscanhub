@@ -346,6 +346,9 @@ fi
 
 
 %changelog
+* Tue Aug 25 2026 Kamil Dudka <kdudka@redhat.com> - 1.2.0-1
+- new stable upstream release (fixes rhbz#2377365)
+
 * Tue Jan 28 2025 Kamil Dudka <kdudka@redhat.com> - 1.1.1-1
 - new minor release to update the version in setup.py
 
