@@ -194,12 +194,6 @@ cp -a {,%{buildroot}%{python3_sitelib}/}osh/hub/static/
 # Temporarily provide /usr/bin/covscan for backward compatibility
 ln -s osh-cli %{buildroot}%{_bindir}/covscan
 
-%if "%{_bindir}" != "%{_sbindir}"
-# Temporarily provide /usr/sbin/osh-worker to support reexec upon upgrade
-mkdir -p %{buildroot}%{_sbindir}
-ln -s ../bin/osh-worker %{buildroot}%{_sbindir}/osh-worker
-%endif
-
 # create /etc/osh/hub/secrets directory
 mkdir -p %{buildroot}%{_sysconfdir}/osh/hub/secrets
 
@@ -255,10 +249,6 @@ ln -s %{_sysconfdir}/osh/hub/settings_local.py %{buildroot}%{python3_sitelib}/os
 %{python3_sitelib}/osh/worker
 %{_unitdir}/osh-worker.service
 %{_bindir}/osh-worker
-%if "%{_bindir}" != "%{_sbindir}"
-# Temporarily provide /usr/sbin/osh-worker to support reexec upon upgrade
-%{_sbindir}/osh-worker
-%endif
 %dir %{_localstatedir}/log/osh
 
 %post client
